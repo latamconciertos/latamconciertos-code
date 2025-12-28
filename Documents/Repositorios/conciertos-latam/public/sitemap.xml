@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Static Pages -->
+  <sitemap>
+    <loc>https://www.conciertoslatam.app/sitemap-pages.xml</loc>
+    <lastmod>2025-01-08</lastmod>
+  </sitemap>
+
+  <!-- Country Concert Pages (e.g., /conciertos/colombia) -->
+  <sitemap>
+    <loc>https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-countries-sitemap</loc>
+    <lastmod>2025-12-28</lastmod>
+  </sitemap>
+
+  <!-- Blog/News Sitemap (all published articles) -->
+  <sitemap>
+    <loc>https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-blog-sitemap</loc>
+    <lastmod>2025-12-28</lastmod>
+  </sitemap>
+
+  <!-- Google News Sitemap (last 2 days only) -->
+  <sitemap>
+    <loc>https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-news-sitemap</loc>
+    <lastmod>2025-12-28</lastmod>
+  </sitemap>
+
+  <!-- Dynamic Artists Sitemap -->
+  <sitemap>
+    <loc>https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-artists-sitemap</loc>
+    <lastmod>2025-12-28</lastmod>
+  </sitemap>
+
+  <!-- Dynamic Concerts Sitemap (18 months history) -->
+  <sitemap>
+    <loc>https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-concerts-sitemap</loc>
+    <lastmod>2025-12-28</lastmod>
+  </sitemap>
+</sitemapindex>

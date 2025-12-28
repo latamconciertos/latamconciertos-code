@@ -1,0 +1,35 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /auth
+
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+Disallow: /auth
+
+User-agent: Googlebot-News
+Allow: /blog/
+Disallow: /admin
+Disallow: /auth
+
+User-agent: Bingbot
+Allow: /
+Disallow: /admin
+Disallow: /auth
+
+User-agent: Twitterbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+# Main Sitemap Index
+Sitemap: https://www.conciertoslatam.app/sitemap.xml
+
+# Individual Sitemaps
+Sitemap: https://www.conciertoslatam.app/sitemap-pages.xml
+Sitemap: https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-news-sitemap
+Sitemap: https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-artists-sitemap
+Sitemap: https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-concerts-sitemap
+Sitemap: https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-promoters-sitemap
