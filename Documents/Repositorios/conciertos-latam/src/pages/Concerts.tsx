@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Calendar, MapPin, Ticket, Music, Star, ListMusic, Globe, Search, Users, Info } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -33,6 +33,7 @@ import WelcomePopup from '@/components/WelcomePopup';
 import { useConcertsPage, useConcertBySlugDirect, type ConcertPageItem } from '@/hooks/queries/useConcertsPage';
 import { useCountries, useCitiesByCountry } from '@/hooks/queries/useGeography';
 import { useSetlistByConcert } from '@/hooks/queries/useSetlists';
+import { optimizeUnsplashUrl, getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
 
 const ITEMS_PER_PAGE = 12;
 const SITE_URL = 'https://www.conciertoslatam.app';
@@ -146,40 +147,42 @@ const Concerts = () => {
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return { day: '', month: '', year: '', fullDate: 'Fecha por confirmar' };
-    
+
     const [year, month, day] = dateString.split('-').map(Number);
     const date = new Date(year, month - 1, day);
-    
+
     return {
       day: date.getDate().toString(),
       month: date.toLocaleDateString('es', { month: 'short' }),
       year: date.getFullYear().toString(),
-      fullDate: date.toLocaleDateString('es', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
+      fullDate: date.toLocaleDateString('es', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
       })
     };
   };
 
-  const getDefaultImage = () => "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&h=400&fit=crop";
+  // Use optimized default image
+  const getDefaultImage = () => getDefaultImageUtil('concert');
 
-  const handleConcertClick = (concert: ConcertPageItem) => {
+  // Memoized handler to prevent unnecessary re-renders
+  const handleConcertClick = useCallback((concert: ConcertPageItem) => {
     setSelectedConcert(concert);
     setSearchParams({ id: concert.slug });
-  };
+  }, [setSearchParams]);
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog = useCallback(() => {
     setSelectedConcert(null);
     setSearchParams({});
-  };
+  }, [setSearchParams]);
 
   // Get selected country/city names for SEO
-  const selectedCountryName = selectedCountry !== 'all' 
-    ? countries.find(c => c.id === selectedCountry)?.name 
+  const selectedCountryName = selectedCountry !== 'all'
+    ? countries.find(c => c.id === selectedCountry)?.name
     : null;
-  const selectedCityName = selectedCity !== 'all' 
-    ? cities.find(c => c.id === selectedCity)?.name 
+  const selectedCityName = selectedCity !== 'all'
+    ? cities.find(c => c.id === selectedCity)?.name
     : null;
 
   // Dynamic SEO title and description based on filters
@@ -187,7 +190,7 @@ const Concerts = () => {
     let title = 'Conciertos en América Latina 2025';
     let description = 'Encuentra todos los conciertos y eventos musicales en América Latina. ';
     let keywords = 'conciertos, conciertos 2025, eventos musicales, shows en vivo, entradas, boletas, tickets, ';
-    
+
     if (selectedCityName) {
       title = `Conciertos en ${selectedCityName} 2025`;
       description = `Descubre todos los conciertos y eventos musicales en ${selectedCityName}. `;
@@ -346,16 +349,16 @@ const Concerts = () => {
     ];
 
     if (selectedCountryName) {
-      items.push({ 
-        name: `Conciertos en ${selectedCountryName}`, 
-        item: `${SITE_URL}/concerts?country=${selectedCountry}` 
+      items.push({
+        name: `Conciertos en ${selectedCountryName}`,
+        item: `${SITE_URL}/concerts?country=${selectedCountry}`
       });
     }
 
     if (selectedCityName) {
-      items.push({ 
-        name: `Conciertos en ${selectedCityName}`, 
-        item: `${SITE_URL}/concerts?city=${selectedCity}` 
+      items.push({
+        name: `Conciertos en ${selectedCityName}`,
+        item: `${SITE_URL}/concerts?city=${selectedCity}`
       });
     }
 
@@ -371,12 +374,18 @@ const Concerts = () => {
     };
   }, [selectedCountryName, selectedCityName, selectedCountry, selectedCity]);
 
-  const ConcertCard = ({ concert, isPast = false }: { concert: ConcertPageItem; isPast?: boolean }) => {
+  // Memoized ConcertCard to prevent unnecessary re-renders
+  const ConcertCard = memo(({ concert, isPast = false }: { concert: ConcertPageItem; isPast?: boolean }) => {
     const dateInfo = formatDate(concert.date);
-    
+
+    // Optimize image URL for better performance
+    const optimizedImageUrl = concert.artist_image_url
+      ? optimizeUnsplashUrl(concert.artist_image_url, { width: 800, height: 640, quality: 85 })
+      : getDefaultImage();
+
     return (
-      <Card 
-        className={`group overflow-hidden hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer ${isPast ? 'opacity-75' : ''}`}
+      <Card
+        className={`group overflow-hidden hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer concert-card ${isPast ? 'opacity-75' : ''}`}
         onClick={() => handleConcertClick(concert)}
       >
         {/* Hidden SEO metadata */}
@@ -384,34 +393,35 @@ const Concerts = () => {
         <meta itemProp="startDate" content={concert.date || ''} />
         {concert.description && <meta itemProp="description" content={concert.description} />}
         <link itemProp="url" href={`${SITE_URL}/concerts?id=${concert.slug}`} />
-        
+
         <div className="relative overflow-hidden">
-          <img 
-            src={concert.artist_image_url || getDefaultImage()} 
+          <img
+            src={optimizedImageUrl}
             alt={`${concert.artists?.name || 'Artista'} - ${concert.title} - Concierto en ${concert.venues?.cities?.name || 'América Latina'}`}
             className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
             itemProp="image"
             loading="lazy"
+            decoding="async"
           />
-          
+
           <div className="absolute top-4 left-4">
             <Badge className={isPast ? "bg-gray-500 text-white" : "bg-green-500 text-white font-bold px-3 py-1"}>
               {isPast ? 'Finalizado' : 'Próximo'}
             </Badge>
           </div>
-          
-          <time 
-            dateTime={concert.date || ''} 
+
+          <time
+            dateTime={concert.date || ''}
             className="absolute bottom-4 right-4 bg-primary text-primary-foreground rounded-full w-16 h-16 flex flex-col items-center justify-center text-center shadow-lg"
             itemProp="startDate"
           >
             <span className="text-xs font-medium">{dateInfo.month}</span>
             <span className="text-lg font-bold leading-none">{dateInfo.day}</span>
           </time>
-          
+
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </div>
-        
+
         <CardContent className="p-6 flex flex-col h-[280px]">
           <div className="flex-1 space-y-3">
             <div>
@@ -429,7 +439,7 @@ const Concerts = () => {
                 </p>
               )}
             </div>
-            
+
             <div className="space-y-2" itemProp="location" itemScope itemType="https://schema.org/Place">
               {concert.venues?.name && (
                 <div className="flex items-center text-muted-foreground text-sm">
@@ -439,7 +449,7 @@ const Concerts = () => {
                   </span>
                 </div>
               )}
-              
+
               {concert.venues?.cities && (
                 <div className="flex items-center text-muted-foreground text-sm" itemProp="address" itemScope itemType="https://schema.org/PostalAddress">
                   <Globe className="h-4 w-4 mr-2 text-primary flex-shrink-0" aria-hidden="true" />
@@ -451,7 +461,7 @@ const Concerts = () => {
                   </span>
                 </div>
               )}
-              
+
               {concert.date && (
                 <div className="flex items-center text-muted-foreground text-sm">
                   <Calendar className="h-4 w-4 mr-2 text-primary flex-shrink-0" aria-hidden="true" />
@@ -460,9 +470,9 @@ const Concerts = () => {
               )}
             </div>
           </div>
-          
+
           {!isPast && (
-            <Button 
+            <Button
               className="w-full group/btn mt-4"
               onClick={(e) => {
                 e.stopPropagation();
@@ -480,7 +490,13 @@ const Concerts = () => {
         </CardContent>
       </Card>
     );
-  };
+  }, (prevProps, nextProps) => {
+    // Custom comparison function for memo
+    // Only re-render if concert id or relevant fields change
+    return prevProps.concert.id === nextProps.concert.id &&
+      prevProps.concert.artist_image_url === nextProps.concert.artist_image_url &&
+      prevProps.isPast === nextProps.isPast;
+  });
 
   if (isLoading) {
     return (
@@ -498,7 +514,7 @@ const Concerts = () => {
 
   return (
     <>
-      <SEO 
+      <SEO
         title={seoData.title}
         description={seoData.description}
         keywords={seoData.keywords}
@@ -508,14 +524,14 @@ const Concerts = () => {
       <WelcomePopup />
       <div className="min-h-screen bg-background">
         <Header />
-        
+
         <main className="container mx-auto px-4 py-16" itemScope itemType="https://schema.org/CollectionPage">
           <Breadcrumbs items={[
             { label: 'Conciertos', href: '/concerts' },
             ...(selectedCountryName ? [{ label: selectedCountryName }] : []),
             ...(selectedCityName ? [{ label: selectedCityName }] : [])
           ]} />
-          
+
           {/* Hero Section with enhanced SEO content */}
           <header className="text-center mb-8">
             <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
@@ -523,20 +539,20 @@ const Concerts = () => {
               <span className="text-primary font-semibold">Eventos Musicales</span>
             </div>
             <h1 className="page-title mb-4" itemProp="name">
-              {selectedCityName 
-                ? `Conciertos en ${selectedCityName}` 
-                : selectedCountryName 
-                  ? `Conciertos en ${selectedCountryName}` 
+              {selectedCityName
+                ? `Conciertos en ${selectedCityName}`
+                : selectedCountryName
+                  ? `Conciertos en ${selectedCountryName}`
                   : 'Conciertos en América Latina'}
             </h1>
             <p className="page-subtitle max-w-3xl mx-auto" itemProp="description">
-              {selectedCityName 
+              {selectedCityName
                 ? `Encuentra todos los conciertos y eventos musicales en ${selectedCityName}. Fechas, venues, entradas y más.`
-                : selectedCountryName 
+                : selectedCountryName
                   ? `Calendario completo de conciertos y festivales musicales en ${selectedCountryName}. La guía más completa de música en vivo.`
                   : 'Tu guía definitiva de conciertos, festivales y eventos musicales en toda Latinoamérica. Fechas, entradas, setlists y comunidad de fans.'}
             </p>
-            
+
             {/* Stats for credibility */}
             <div className="flex flex-wrap justify-center gap-6 mt-6 text-sm text-muted-foreground">
               <div className="flex items-center gap-2">
@@ -597,8 +613,8 @@ const Concerts = () => {
 
                       <div>
                         <FilterLabel icon={<Globe className="h-4 w-4" />}>Ciudad</FilterLabel>
-                        <Select 
-                          value={selectedCity} 
+                        <Select
+                          value={selectedCity}
                           onValueChange={setSelectedCity}
                           disabled={selectedCountry === 'all'}
                         >
@@ -644,7 +660,7 @@ const Concerts = () => {
                       </div>
                     </div>
                   </MobileFiltersSheet>
-                  
+
                   {/* Status filter as scrollable tabs on mobile */}
                   <div className="flex-1 overflow-x-auto scrollbar-hide">
                     <div className="flex gap-2 min-w-max">
@@ -675,9 +691,9 @@ const Concerts = () => {
 
                 {/* Active Filters Chips */}
                 {activeFilters.length > 0 && (
-                  <ActiveFiltersChips 
-                    filters={activeFilters} 
-                    onRemove={handleRemoveFilter} 
+                  <ActiveFiltersChips
+                    filters={activeFilters}
+                    onRemove={handleRemoveFilter}
                   />
                 )}
               </div>
@@ -699,8 +715,8 @@ const Concerts = () => {
                     </SelectContent>
                   </Select>
 
-                  <Select 
-                    value={selectedCity} 
+                  <Select
+                    value={selectedCity}
                     onValueChange={setSelectedCity}
                     disabled={selectedCountry === 'all'}
                   >
@@ -750,16 +766,16 @@ const Concerts = () => {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" itemScope itemType="https://schema.org/ItemList">
                 {concerts.map((concert, index) => (
-                  <article 
+                  <article
                     key={concert.id}
-                    itemScope 
+                    itemScope
                     itemType="https://schema.org/MusicEvent"
                     itemProp="itemListElement"
                   >
                     <meta itemProp="position" content={String(index + 1)} />
-                    <ConcertCard 
-                      concert={concert} 
-                      isPast={filterStatus === 'past'} 
+                    <ConcertCard
+                      concert={concert}
+                      isPast={filterStatus === 'past'}
                     />
                   </article>
                 ))}
@@ -773,7 +789,7 @@ const Concerts = () => {
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
-                    <PaginationPrevious 
+                    <PaginationPrevious
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
@@ -783,10 +799,10 @@ const Concerts = () => {
                       aria-label="Ir a la página anterior"
                     />
                   </PaginationItem>
-                  
+
                   {Array.from({ length: totalPages }).map((_, idx) => {
                     const pageNum = idx + 1;
-                    
+
                     if (
                       pageNum === 1 ||
                       pageNum === totalPages ||
@@ -815,9 +831,9 @@ const Concerts = () => {
                     }
                     return null;
                   })}
-                  
+
                   <PaginationItem>
-                    <PaginationNext 
+                    <PaginationNext
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
@@ -846,32 +862,32 @@ const Concerts = () => {
           <nav className="mt-16 pt-8 border-t border-border/50 text-center" aria-label="Enlaces relacionados">
             <h3 className="text-lg font-semibold text-foreground mb-4">Explora más contenido</h3>
             <div className="flex flex-wrap justify-center gap-3 mb-6">
-              <Link 
-                to="/artists" 
+              <Link
+                to="/artists"
                 className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 Artistas
               </Link>
-              <Link 
-                to="/setlists" 
+              <Link
+                to="/setlists"
                 className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 Setlists
               </Link>
-              <Link 
-                to="/promoters" 
+              <Link
+                to="/promoters"
                 className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 Promotoras
               </Link>
-              <Link 
-                to="/blog" 
+              <Link
+                to="/blog"
                 className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
               >
                 Noticias
               </Link>
             </div>
-            
+
             <h4 className="text-sm font-medium text-muted-foreground mb-3">Conciertos por país</h4>
             <div className="flex flex-wrap justify-center gap-3">
               <Link to="/conciertos/colombia" className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
@@ -910,7 +926,7 @@ const Concerts = () => {
             </div>
           </nav>
         </main>
-        
+
         <Footer />
 
         {/* Concert Details Dialog */}
@@ -921,11 +937,11 @@ const Concerts = () => {
                 <DialogHeader>
                   <DialogTitle className="text-2xl">{selectedConcert.title}</DialogTitle>
                 </DialogHeader>
-                
+
                 <div className="grid md:grid-cols-2 gap-6">
                   {/* Concert Image - Square */}
                   <div className="relative w-full aspect-square rounded-lg overflow-hidden">
-                    <img 
+                    <img
                       src={selectedConcert.artist_image_url || getDefaultImage()}
                       alt={selectedConcert.title}
                       className="w-full h-full object-cover"
@@ -981,7 +997,7 @@ const Concerts = () => {
                                   <Globe className="h-5 w-5 text-primary" />
                                   <p className="text-lg">
                                     {selectedConcert.venues.cities.name}
-                                    {selectedConcert.venues.cities.countries?.name && 
+                                    {selectedConcert.venues.cities.countries?.name &&
                                       `, ${selectedConcert.venues.cities.countries.name}`}
                                   </p>
                                 </div>
@@ -998,8 +1014,8 @@ const Concerts = () => {
                         )}
 
                         {selectedConcert.ticket_url && (
-                          <Button 
-                            className="w-full" 
+                          <Button
+                            className="w-full"
                             size="lg"
                             onClick={() => window.open(selectedConcert.ticket_url!, '_blank')}
                           >
@@ -1010,9 +1026,9 @@ const Concerts = () => {
 
                         {/* Link to full concert detail page */}
                         <Link to={`/concerts/${selectedConcert.slug}`} className="block">
-                          <Button 
+                          <Button
                             variant="outline"
-                            className="w-full gap-2" 
+                            className="w-full gap-2"
                             size="lg"
                           >
                             <Info className="h-5 w-5" />
@@ -1028,7 +1044,7 @@ const Concerts = () => {
                           </div>
                         ) : setlist.length > 0 ? (
                           <div className="space-y-4">
-                            <SocialShare 
+                            <SocialShare
                               url={`https://www.conciertoslatam.app/concerts#${selectedConcert.slug}`}
                               title={`Setlist de ${selectedConcert.title}`}
                               setlistData={{
@@ -1052,8 +1068,8 @@ const Concerts = () => {
                                     )}
                                   </div>
                                   {song.spotify_url && (
-                                    <Button 
-                                      size="sm" 
+                                    <Button
+                                      size="sm"
                                       variant="ghost"
                                       onClick={() => window.open(song.spotify_url!, '_blank')}
                                     >
@@ -1073,8 +1089,8 @@ const Concerts = () => {
                       </TabsContent>
 
                       <TabsContent value="community" className="pt-4">
-                        <ConcertCommunity 
-                          concertId={selectedConcert.id} 
+                        <ConcertCommunity
+                          concertId={selectedConcert.id}
                           concertTitle={selectedConcert.title}
                         />
                       </TabsContent>

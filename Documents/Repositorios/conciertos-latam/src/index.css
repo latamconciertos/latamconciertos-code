@@ -290,4 +290,61 @@ All colors MUST be HSL.
   .dark .ticket-prices-content a {
     color: hsl(var(--primary)) !important;
   }
+
+  /* ========================================
+     Performance Optimizations
+     ======================================== */
+
+  /* CSS Containment - Helps browser optimize rendering */
+  .concert-card,
+  .festival-card,
+  .card {
+    contain: layout style paint;
+  }
+
+  /* Optimize hover animations with will-change */
+  img:hover {
+    will-change: transform;
+  }
+
+  /* Remove will-change when not needed */
+  img:not(:hover) {
+    will-change: auto;
+  }
+
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Mobile-specific optimizations */
+  @media (max-width: 768px) {
+    /* Reduce shadow complexity on mobile */
+    .shadow-2xl {
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+                  0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Disable hover effects on touch devices */
+    @media (hover: none) and (pointer: coarse) {
+      .hover\:scale-105,
+      .hover\:scale-110 {
+        transform: none !important;
+      }
+      
+      /* Ensure minimum touch target size */
+      button,
+      a {
+        min-height: 44px;
+        min-width: 44px;
+      }
+    }
+  }
 }

@@ -35,6 +35,9 @@ export function useUpcomingConcerts(limit?: number) {
       if (!result.success) throw new Error(result.error || 'Failed to fetch upcoming concerts');
       return result.data as ConcertWithBasicRelations[];
     },
+    // Keep upcoming concerts fresh for 5 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 }
 
@@ -63,6 +66,9 @@ export function useFeaturedConcerts() {
       if (!result.success) throw new Error(result.error || 'Failed to fetch featured concerts');
       return result.data as FeaturedConcert[];
     },
+    // Featured concerts can be cached for 5 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 }
 

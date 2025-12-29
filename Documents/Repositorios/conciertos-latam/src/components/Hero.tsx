@@ -9,6 +9,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { queryKeys } from '@/hooks/queries';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
+import { optimizeUnsplashUrl, getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
 
 interface NewsArticle {
   id: string;
@@ -30,7 +31,7 @@ interface NewsArticle {
 
 const Hero = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  
+
   // Use the shared hook for featured artists
   const { artists: featuredArtists, loading: loadingArtists } = useFeaturedArtists();
 
@@ -61,6 +62,9 @@ const Hero = () => {
       if (error) throw error;
       return (data || []) as NewsArticle[];
     },
+    // News articles can be cached for 5 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
   });
 
   const featuredArticles = allArticles.slice(0, 5);
@@ -68,7 +72,7 @@ const Hero = () => {
 
   useEffect(() => {
     if (featuredArticles.length === 0) return;
-    
+
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % featuredArticles.length);
     }, 6000);
@@ -80,14 +84,28 @@ const Hero = () => {
     return formatDisplayDate(dateString);
   };
 
-  const getDefaultImage = () => {
-    return 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&h=600&fit=crop';
-  };
+  // Use optimized default image
+  const getDefaultImage = () => getDefaultImageUtil('concert');
 
   const getArticleImage = (article: NewsArticle) => {
     if (article.featured_image) return article.featured_image;
     if (article.artists?.photo_url) return article.artists.photo_url;
     return getDefaultImage();
+  };
+
+  // Optimize article images for better performance
+  const getOptimizedArticleImage = (article: NewsArticle, size: 'large' | 'small' = 'large') => {
+    const imageUrl = getArticleImage(article);
+
+    // If it's an Unsplash URL, optimize it
+    if (imageUrl.includes('unsplash.com')) {
+      return optimizeUnsplashUrl(imageUrl, {
+        width: size === 'large' ? 1200 : 400,
+        quality: size === 'large' ? 90 : 85,
+      });
+    }
+
+    return imageUrl;
   };
 
   if (isLoading) {
@@ -134,20 +152,21 @@ const Hero = () => {
                 {featuredArticles.map((article, index) => (
                   <div
                     key={article.id}
-                    className={`transition-opacity duration-700 ${
-                      index === currentIndex ? 'opacity-100' : 'opacity-0 absolute inset-0 pointer-events-none'
-                    }`}
+                    className={`transition-opacity duration-700 ${index === currentIndex ? 'opacity-100' : 'opacity-0 absolute inset-0 pointer-events-none'
+                      }`}
                   >
-                    <Link 
+                    <Link
                       to={`/blog/${article.slug}`}
                       className={`group block ${index === currentIndex ? '' : 'pointer-events-none'}`}
                     >
                       {/* Featured Image */}
                       <div className="relative mb-6 overflow-hidden rounded-lg aspect-video bg-muted">
                         <img
-                          src={getArticleImage(article)}
+                          src={getOptimizedArticleImage(article, 'large')}
                           alt={article.title}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          loading={index === 0 || index === 1 ? 'eager' : 'lazy'}
+                          decoding="async"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                       </div>
@@ -164,7 +183,7 @@ const Hero = () => {
                             </span>
                           </div>
                         )}
-                        
+
                         <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
                           {article.title}
                         </h2>
@@ -191,11 +210,10 @@ const Hero = () => {
                   <button
                     key={index}
                     onClick={() => setCurrentIndex(index)}
-                    className={`h-2 rounded-full transition-all ${
-                      index === currentIndex 
-                        ? 'w-8 bg-primary' 
-                        : 'w-2 bg-primary/30 hover:bg-primary/50'
-                    }`}
+                    className={`h-2 rounded-full transition-all ${index === currentIndex
+                      ? 'w-8 bg-primary'
+                      : 'w-2 bg-primary/30 hover:bg-primary/50'
+                      }`}
                     aria-label={`Go to slide ${index + 1}`}
                   />
                 ))}
@@ -223,9 +241,11 @@ const Hero = () => {
                     {/* Small Image */}
                     <div className="relative mb-3 overflow-hidden rounded aspect-video bg-muted">
                       <img
-                        src={getArticleImage(article)}
+                        src={getOptimizedArticleImage(article, 'small')}
                         alt={article.title}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
 
@@ -241,7 +261,7 @@ const Hero = () => {
                           </span>
                         </div>
                       )}
-                      
+
                       <h3 className="font-bold text-sm md:text-base text-foreground leading-tight line-clamp-3 group-hover:text-primary transition-colors">
                         {article.title}
                       </h3>
@@ -263,21 +283,23 @@ const Hero = () => {
               Artistas Destacados
             </h2>
           </div>
-          
+
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-6 pb-4 pt-2 px-4 sm:px-6 lg:px-8 justify-center">
               {featuredArtists.map((artist) => (
-                <Link 
+                <Link
                   key={artist.id}
                   to={`/artists/${artist.slug}`}
                   className="flex-shrink-0 flex flex-col items-center gap-2 transition-transform hover:scale-105"
                 >
                   <div className="relative">
                     <div className="w-20 h-20 rounded-full overflow-hidden ring-2 ring-primary p-0.5 bg-background">
-                      <img 
-                        src={artist.photo_url || getDefaultImage()} 
+                      <img
+                        src={artist.photo_url ? optimizeUnsplashUrl(artist.photo_url, { width: 160, quality: 85 }) : getDefaultImage()}
                         alt={artist.name}
                         className="w-full h-full object-cover rounded-full"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </div>
                   </div>

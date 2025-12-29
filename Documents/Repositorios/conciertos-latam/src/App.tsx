@@ -43,10 +43,11 @@ const FanProjectLightMode = lazy(() => import("./pages/FanProjectLightMode"));
 const Friends = lazy(() => import("./pages/Friends"));
 const FriendProfile = lazy(() => import("./pages/FriendProfile"));
 const ConcertsByCountry = lazy(() => import("./pages/ConcertsByCountry"));
+const Festivals = lazy(() => import("./pages/Festivals"));
 
 const AppContent = () => {
   useTrafficTracking();
-  
+
   return (
     <>
       <Toaster />
@@ -60,6 +61,7 @@ const AppContent = () => {
           <Route path="/admin/google-search-console-setup" element={<GoogleSearchConsoleSetup />} />
           <Route path="/artists" element={<Artists />} />
           <Route path="/artists/:slug" element={<ArtistDetail />} />
+          <Route path="/festivals" element={<Festivals />} />
           <Route path="/concerts" element={<Concerts />} />
           <Route path="/concerts/:slug" element={<ConcertDetail />} />
           <Route path="/promoters" element={<Promoters />} />

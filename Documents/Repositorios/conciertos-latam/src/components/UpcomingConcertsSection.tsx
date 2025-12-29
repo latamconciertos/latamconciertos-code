@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Calendar, MapPin, Clock, Ticket, Music, ArrowRight, Users } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import { spotifyService } from '@/lib/spotify';
+import { format, parseISO } from 'date-fns';
+import { es } from 'date-fns/locale';
+import { optimizeUnsplashUrl, getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
 import { SocialShare } from './SocialShare';
 import ConcertAttendanceButtons from '@/components/ConcertAttendanceButtons';
 import ConcertCommunity from '@/components/ConcertCommunity';
@@ -50,6 +53,7 @@ interface SetlistSong {
 }
 
 const UpcomingConcertsSection = () => {
+  // Optimized query with staleTime for better caching
   const { data: concerts = [], isLoading } = useUpcomingConcerts(6);
   const [concertsWithImages, setConcertsWithImages] = useState<ConcertWithImage[]>([]);
   const [selectedConcert, setSelectedConcert] = useState<ConcertWithImage | null>(null);
@@ -57,7 +61,7 @@ const UpcomingConcertsSection = () => {
   const [loadingSetlist, setLoadingSetlist] = useState(false);
   const isMobile = useIsMobile();
 
-  // Fetch artist images when concerts data changes
+  // Fetch artist images in parallel batches for better performance
   useEffect(() => {
     const fetchArtistImages = async () => {
       if (concerts.length === 0) {
@@ -65,18 +69,35 @@ const UpcomingConcertsSection = () => {
         return;
       }
 
+      // Process in batches of 3 for better performance
+      const BATCH_SIZE = 3;
       const withImages: ConcertWithImage[] = [];
-      for (const concert of concerts) {
-        if (concert.artists?.name) {
-          const artistImage = await spotifyService.getArtistImage(
-            concert.artists.name,
-            concert.artists.photo_url || undefined
-          );
-          withImages.push({ ...concert, artist_image_url: artistImage } as ConcertWithImage);
-        } else {
-          withImages.push(concert as ConcertWithImage);
-        }
+
+      for (let i = 0; i < concerts.length; i += BATCH_SIZE) {
+        const batch = concerts.slice(i, i + BATCH_SIZE);
+
+        // Fetch images in parallel within each batch
+        const batchResults = await Promise.all(
+          batch.map(async (concert) => {
+            if (concert.artists?.name) {
+              try {
+                const artistImage = await spotifyService.getArtistImage(
+                  concert.artists.name,
+                  concert.artists.photo_url || undefined
+                );
+                return { ...concert, artist_image_url: artistImage } as ConcertWithImage;
+              } catch (error) {
+                console.error('Error fetching artist image:', error);
+                return concert as ConcertWithImage;
+              }
+            }
+            return concert as ConcertWithImage;
+          })
+        );
+
+        withImages.push(...batchResults);
       }
+
       setConcertsWithImages(withImages);
     };
 
@@ -119,7 +140,8 @@ const UpcomingConcertsSection = () => {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  const getDefaultImage = () => "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop";
+  // Use optimized default image
+  const getDefaultImage = () => getDefaultImageUtil('concert');
 
   const displayConcerts = concertsWithImages.length > 0 ? concertsWithImages : (concerts as ConcertWithImage[]);
 
@@ -153,11 +175,11 @@ const UpcomingConcertsSection = () => {
           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
             {displayConcerts.map((concert) => {
               const dateInfo = concert.date ? formatDate(concert.date) : { day: 0, month: '', year: 0 };
-              
+
               return (
                 <Dialog key={concert.id}>
                   <DialogTrigger asChild>
-                    <Card 
+                    <Card
                       className="flex-shrink-0 w-[280px] overflow-hidden cursor-pointer group shadow-md"
                       onClick={() => {
                         setSelectedConcert(concert);
@@ -165,31 +187,33 @@ const UpcomingConcertsSection = () => {
                       }}
                     >
                       <div className="relative overflow-hidden">
-                        <img 
-                          src={concert.artist_image_url || getDefaultImage()} 
+                        <img
+                          src={concert.artist_image_url || getDefaultImage()}
                           alt={concert.artists?.name || concert.title}
                           className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                          decoding="async"
                         />
-                        
+
                         <Badge className="absolute top-2 left-2 bg-green-500 text-white text-xs">
                           Próximamente
                         </Badge>
-                        
+
                         <div className="absolute bottom-2 right-2 bg-primary text-primary-foreground rounded-lg px-2 py-1 text-center shadow-lg">
                           <span className="text-xs font-medium">{dateInfo.month}</span>
                           <div className="text-base font-bold leading-none">{dateInfo.day}</div>
                         </div>
                       </div>
-                      
+
                       <CardContent className="p-3">
                         <h3 className="font-semibold text-foreground text-sm mb-1 line-clamp-1">
                           {concert.title}
                         </h3>
-                        
+
                         <p className="text-primary font-medium text-xs mb-2 truncate">
                           {concert.artists?.name || 'Artista por confirmar'}
                         </p>
-                        
+
                         <div className="flex items-center text-muted-foreground text-xs mb-1">
                           <MapPin className="h-3 w-3 mr-1" />
                           <span className="truncate">{concert.venues?.name}</span>
@@ -200,7 +224,7 @@ const UpcomingConcertsSection = () => {
                             <MapPin className="h-3 w-3 mr-1" />
                             <span className="truncate">
                               {concert.venues.cities.name}
-                              {concert.venues.cities.countries?.name && 
+                              {concert.venues.cities.countries?.name &&
                                 `, ${concert.venues.cities.countries.name}`}
                             </span>
                           </div>
@@ -213,14 +237,14 @@ const UpcomingConcertsSection = () => {
                     <DialogHeader>
                       <DialogTitle className="text-lg">{selectedConcert?.title}</DialogTitle>
                     </DialogHeader>
-                    
+
                     {selectedConcert && (
                       <Tabs defaultValue="details" className="w-full">
                         <TabsList className="grid w-full grid-cols-2">
                           <TabsTrigger value="details">Detalles</TabsTrigger>
                           <TabsTrigger value="community">Comunidad</TabsTrigger>
                         </TabsList>
-                        
+
                         <TabsContent value="details" className="space-y-4">
                           {/* Attendance Buttons */}
                           <div>
@@ -246,7 +270,7 @@ const UpcomingConcertsSection = () => {
                                 <span className="font-medium">Ubicación:</span>
                                 <span>
                                   {selectedConcert.venues.cities.name}
-                                  {selectedConcert.venues.cities.countries?.name && 
+                                  {selectedConcert.venues.cities.countries?.name &&
                                     `, ${selectedConcert.venues.cities.countries.name}`}
                                 </span>
                               </div>
@@ -276,7 +300,7 @@ const UpcomingConcertsSection = () => {
                               <Music className="h-4 w-4 mr-2" />
                               Setlist
                             </h4>
-                            
+
                             {loadingSetlist ? (
                               <LoadingSpinnerMini message="Cargando setlist..." />
                             ) : setlist.length > 0 ? (
@@ -311,7 +335,7 @@ const UpcomingConcertsSection = () => {
 
                           {/* Tickets Button */}
                           {selectedConcert.ticket_url && (
-                            <Button 
+                            <Button
                               className="w-full"
                               size="sm"
                               onClick={() => window.open(selectedConcert.ticket_url!, '_blank')}
@@ -323,7 +347,7 @@ const UpcomingConcertsSection = () => {
                         </TabsContent>
 
                         <TabsContent value="community">
-                          <ConcertCommunity 
+                          <ConcertCommunity
                             concertId={selectedConcert.id}
                             concertTitle={selectedConcert.title}
                           />
@@ -361,11 +385,11 @@ const UpcomingConcertsSection = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {displayConcerts.map((concert) => {
               const dateInfo = concert.date ? formatDate(concert.date) : { day: 0, month: '', year: 0 };
-              
+
               return (
                 <Dialog key={concert.id}>
                   <DialogTrigger asChild>
-                    <Card 
+                    <Card
                       className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
                       onClick={() => {
                         setSelectedConcert(concert);
@@ -373,43 +397,45 @@ const UpcomingConcertsSection = () => {
                       }}
                     >
                       <div className="relative overflow-hidden">
-                        <img 
-                          src={concert.artist_image_url || getDefaultImage()} 
+                        <img
+                          src={concert.artist_image_url || getDefaultImage()}
                           alt={concert.artists?.name || concert.title}
                           className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                          decoding="async"
                         />
-                        
+
                         <Badge className="absolute top-3 left-3 bg-green-500 text-white text-xs">
                           Próximamente
                         </Badge>
-                        
+
                         <div className="absolute bottom-3 right-3 bg-primary text-primary-foreground rounded-lg px-3 py-2 text-center shadow-lg">
                           <span className="text-xs font-medium">{dateInfo.month}</span>
                           <div className="text-xl font-bold leading-none">{dateInfo.day}</div>
                         </div>
                       </div>
-                      
+
                       <CardContent className="p-4">
                         <h3 className="font-semibold text-foreground text-base mb-2 line-clamp-2 group-hover:text-primary transition-colors">
                           {concert.title}
                         </h3>
-                        
+
                         <p className="text-primary font-medium text-sm mb-3">
                           {concert.artists?.name || 'Artista por confirmar'}
                         </p>
-                        
+
                         <div className="space-y-2">
                           <div className="flex items-center text-muted-foreground text-xs">
                             <MapPin className="h-3 w-3 mr-2 flex-shrink-0" />
                             <span className="truncate">{concert.venues?.name}</span>
                           </div>
-                          
+
                           {concert.venues?.cities && (
                             <div className="flex items-center text-muted-foreground text-xs">
                               <MapPin className="h-3 w-3 mr-2 flex-shrink-0" />
                               <span className="truncate">
                                 {concert.venues.cities.name}
-                                {concert.venues.cities.countries?.name && 
+                                {concert.venues.cities.countries?.name &&
                                   `, ${concert.venues.cities.countries.name}`}
                               </span>
                             </div>
@@ -423,21 +449,21 @@ const UpcomingConcertsSection = () => {
                     <DialogHeader>
                       <DialogTitle className="text-xl">{selectedConcert?.title}</DialogTitle>
                     </DialogHeader>
-                    
+
                     {selectedConcert && (
                       <Tabs defaultValue="details" className="w-full">
                         <TabsList className="grid w-full grid-cols-2">
                           <TabsTrigger value="details">Detalles</TabsTrigger>
                           <TabsTrigger value="community">Comunidad</TabsTrigger>
                         </TabsList>
-                        
+
                         <TabsContent value="details" className="space-y-6">
                           {/* Two Column Layout for Desktop */}
                           <div className="grid md:grid-cols-2 gap-6">
                             {/* Left Column - Image */}
                             <div className="aspect-square rounded-lg overflow-hidden bg-muted">
-                              <img 
-                                src={selectedConcert.artist_image_url || getDefaultImage()} 
+                              <img
+                                src={selectedConcert.artist_image_url || getDefaultImage()}
                                 alt={selectedConcert.artists?.name || selectedConcert.title}
                                 className="w-full h-full object-cover"
                               />
@@ -474,7 +500,7 @@ const UpcomingConcertsSection = () => {
                                       <span className="font-medium">Ubicación</span>
                                       <p className="text-muted-foreground">
                                         {selectedConcert.venues.cities.name}
-                                        {selectedConcert.venues.cities.countries?.name && 
+                                        {selectedConcert.venues.cities.countries?.name &&
                                           `, ${selectedConcert.venues.cities.countries.name}`}
                                       </p>
                                     </div>
@@ -505,7 +531,7 @@ const UpcomingConcertsSection = () => {
 
                               {/* Tickets Button */}
                               {selectedConcert.ticket_url && (
-                                <Button 
+                                <Button
                                   className="w-full"
                                   onClick={() => window.open(selectedConcert.ticket_url!, '_blank')}
                                 >
@@ -522,7 +548,7 @@ const UpcomingConcertsSection = () => {
                               <Music className="h-5 w-5 mr-2" />
                               Setlist
                             </h4>
-                            
+
                             {loadingSetlist ? (
                               <LoadingSpinnerMini message="Cargando setlist..." />
                             ) : setlist.length > 0 ? (
@@ -557,7 +583,7 @@ const UpcomingConcertsSection = () => {
                         </TabsContent>
 
                         <TabsContent value="community">
-                          <ConcertCommunity 
+                          <ConcertCommunity
                             concertId={selectedConcert.id}
                             concertTitle={selectedConcert.title}
                           />
