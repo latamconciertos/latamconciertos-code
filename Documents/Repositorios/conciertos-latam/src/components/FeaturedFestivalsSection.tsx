@@ -1,4 +1,4 @@
-import { PartyPopper, MapPin, ArrowRight, Music } from 'lucide-react';
+import { PartyPopper, MapPin, ArrowRight, Music, Calendar, Globe, Ticket, Info, Users } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,10 +9,16 @@ import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import FestivalAttendanceButtons from '@/components/FestivalAttendanceButtons';
+import { optimizeUnsplashUrl } from '@/lib/imageOptimization';
+import { useState } from 'react';
 
 const FeaturedFestivalsSection = () => {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
+  const [selectedFestival, setSelectedFestival] = useState<any>(null);
 
   const { data: festivals = [], isLoading } = useQuery({
     queryKey: ['festivals', 'upcoming', 4],
@@ -54,8 +60,12 @@ const FeaturedFestivalsSection = () => {
 
   const getDefaultImage = () => "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&h=300&fit=crop";
 
-  const handleFestivalClick = (slug: string) => {
-    navigate(`/concerts?festival=${slug}`);
+  const handleFestivalClick = (festival: any) => {
+    setSelectedFestival(festival);
+  };
+
+  const handleCloseDialog = () => {
+    setSelectedFestival(null);
   };
 
   if (isLoading) {
@@ -97,7 +107,7 @@ const FeaturedFestivalsSection = () => {
                 <Card
                   key={festival.id}
                   className="flex-shrink-0 w-[280px] overflow-hidden cursor-pointer group shadow-md"
-                  onClick={() => handleFestivalClick(festival.slug)}
+                  onClick={() => handleFestivalClick(festival)}
                 >
                   <div className="relative overflow-hidden">
                     <img
@@ -177,7 +187,7 @@ const FeaturedFestivalsSection = () => {
               <Card
                 key={festival.id}
                 className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
-                onClick={() => handleFestivalClick(festival.slug)}
+                onClick={() => handleFestivalClick(festival)}
               >
                 <div className="relative overflow-hidden">
                   <img
@@ -230,6 +240,136 @@ const FeaturedFestivalsSection = () => {
           })}
         </div>
       </div>
+
+      {/* Festival Details Dialog */}
+      <Dialog open={!!selectedFestival} onOpenChange={(open) => !open && handleCloseDialog()}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          {selectedFestival && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl">{selectedFestival.name}</DialogTitle>
+                {selectedFestival.edition && (
+                  <p className="text-lg text-muted-foreground">Edición {selectedFestival.edition}</p>
+                )}
+              </DialogHeader>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Festival Image - Square */}
+                <div className="relative w-full aspect-square rounded-lg overflow-hidden">
+                  <img
+                    src={optimizeUnsplashUrl(
+                      selectedFestival.image_url || getDefaultImage(),
+                      { width: 800, height: 800, quality: 90 }
+                    )}
+                    alt={selectedFestival.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+
+                {/* Content Column */}
+                <div className="space-y-6">
+                  {/* Attendance Buttons */}
+                  <div className="flex justify-center md:justify-start">
+                    <FestivalAttendanceButtons festivalId={selectedFestival.id} />
+                  </div>
+
+                  <Tabs defaultValue="details" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3">
+                      <TabsTrigger value="details">Detalles</TabsTrigger>
+                      <TabsTrigger value="lineup">Lineup</TabsTrigger>
+                      <TabsTrigger value="community">Comunidad</TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="details" className="space-y-4 pt-4">
+                      {selectedFestival.start_date && (
+                        <div>
+                          <h3 className="text-sm font-semibold text-muted-foreground mb-1">Fecha</h3>
+                          <div className="flex items-center gap-2">
+                            <Calendar className="h-5 w-5 text-primary" />
+                            <p className="text-lg">
+                              {formatDateRange(selectedFestival.start_date, selectedFestival.end_date)}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {selectedFestival.venues && (
+                        <>
+                          <div>
+                            <h3 className="text-sm font-semibold text-muted-foreground mb-1">Venue</h3>
+                            <div className="flex items-center gap-2">
+                              <MapPin className="h-5 w-5 text-primary" />
+                              <p className="text-lg">{selectedFestival.venues.name}</p>
+                            </div>
+                          </div>
+
+                          {selectedFestival.venues.cities && (
+                            <div>
+                              <h3 className="text-sm font-semibold text-muted-foreground mb-1">Ubicación</h3>
+                              <div className="flex items-center gap-2">
+                                <Globe className="h-5 w-5 text-primary" />
+                                <p className="text-lg">
+                                  {selectedFestival.venues.cities.name}
+                                  {selectedFestival.venues.cities.countries?.name &&
+                                    `, ${selectedFestival.venues.cities.countries.name}`}
+                                </p>
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      )}
+
+                      {selectedFestival.description && (
+                        <div>
+                          <h3 className="text-sm font-semibold text-muted-foreground mb-1">Descripción</h3>
+                          <p className="text-muted-foreground">{selectedFestival.description}</p>
+                        </div>
+                      )}
+
+                      {selectedFestival.ticket_url && (
+                        <Button
+                          className="w-full"
+                          size="lg"
+                          onClick={() => window.open(selectedFestival.ticket_url, '_blank')}
+                        >
+                          <Ticket className="h-5 w-5 mr-2" />
+                          Comprar Entradas
+                        </Button>
+                      )}
+
+                      <Link to={`/festivals/${selectedFestival.slug}`} className="block">
+                        <Button
+                          variant="outline"
+                          className="w-full gap-2"
+                          size="lg"
+                        >
+                          <Info className="h-5 w-5" />
+                          Ver página completa
+                        </Button>
+                      </Link>
+                    </TabsContent>
+
+                    <TabsContent value="lineup" className="pt-4">
+                      <div className="text-center py-8">
+                        <Users className="h-16 w-16 text-muted-foreground mx-auto mb-3 opacity-50" />
+                        <p className="text-muted-foreground">Lineup por confirmar</p>
+                      </div>
+                    </TabsContent>
+
+                    <TabsContent value="community" className="pt-4">
+                      <div className="text-center py-8">
+                        <p className="text-muted-foreground">
+                          La funcionalidad de comunidad estará disponible próximamente
+                        </p>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
