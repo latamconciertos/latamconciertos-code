@@ -19,12 +19,10 @@ const HeroLanding = ({
     scrollY
   } = useScroll();
 
-  // Parallax effects - simplified for mobile performance
+  // Parallax effects - simplified for stability across device sizes
   const y = useTransform(scrollY, [0, windowHeight], [0, windowHeight * 0.3]);
   const opacity = useTransform(scrollY, [0, windowHeight * 0.8], [1, 0]);
   const contentOpacity = useTransform(scrollY, [0, windowHeight * 0.5], [1, 0]);
-  // Blur is VERY expensive on mobile - disable it
-  const blur = useTransform(scrollY, [windowHeight * 0.2, windowHeight * 0.6], [0, isMobile ? 0 : 8]);
   useEffect(() => {
     setWindowHeight(window.innerHeight);
     const handleResize = () => {
@@ -90,8 +88,7 @@ const HeroLanding = ({
 
     {/* Content container - no blur on mobile for better performance */}
     <motion.div className="relative z-10 flex flex-col items-center justify-center h-full px-4" style={{
-      opacity: contentOpacity,
-      ...(isMobile ? {} : { filter: useTransform(blur, v => `blur(${v}px)`) })
+      opacity: contentOpacity
     }}>
       {/* Logo - faster animation on mobile */}
       <motion.div initial={{

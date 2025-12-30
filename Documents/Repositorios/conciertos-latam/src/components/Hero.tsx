@@ -210,7 +210,7 @@ const Hero = () => {
                   <button
                     key={index}
                     onClick={() => setCurrentIndex(index)}
-                    className={`h-2 rounded-full transition-all ${index === currentIndex
+                    className={`h-2 rounded-full transition-all min-h-0 min-w-0 ${index === currentIndex
                       ? 'w-8 bg-primary'
                       : 'w-2 bg-primary/30 hover:bg-primary/50'
                       }`}
