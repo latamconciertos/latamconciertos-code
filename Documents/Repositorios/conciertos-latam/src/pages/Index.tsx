@@ -1,25 +1,43 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import HeroLanding from '@/components/HeroLanding';
-import FeaturedVideosSection from '@/components/FeaturedVideosSection';
-import FeaturedPhotosSection from '@/components/FeaturedPhotosSection';
-import LatestNewsSection from '@/components/LatestNewsSection';
-import AnnouncementsSection from '@/components/AnnouncementsSection';
-import AdSpacesSection from '@/components/AdSpacesSection';
-import UpcomingConcertsSection from '@/components/UpcomingConcertsSection';
-import FeaturedConcertsSection from '@/components/FeaturedConcertsSection';
-import FeaturedFestivalsSection from '@/components/FeaturedFestivalsSection';
-import FeaturedArtistsMobile from '@/components/FeaturedArtistsMobile';
-import RecommendedNewsSection from '@/components/RecommendedNewsSection';
-import { SpotifyCharts } from '@/components/SpotifyCharts';
 import Footer from '@/components/Footer';
 import { AuroraBackground } from '@/components/ui/aurora-background';
 
+// Critical components - load immediately
+import FeaturedArtistsMobile from '@/components/FeaturedArtistsMobile';
+import UpcomingConcertsSection from '@/components/UpcomingConcertsSection';
+import FeaturedConcertsSection from '@/components/FeaturedConcertsSection';
+import FeaturedFestivalsSection from '@/components/FeaturedFestivalsSection';
+
+// Below-fold components - lazy load for better performance
+const FeaturedVideosSection = lazy(() => import('@/components/FeaturedVideosSection'));
+const FeaturedPhotosSection = lazy(() => import('@/components/FeaturedPhotosSection'));
+const LatestNewsSection = lazy(() => import('@/components/LatestNewsSection'));
+const AnnouncementsSection = lazy(() => import('@/components/AnnouncementsSection'));
+const AdSpacesSection = lazy(() => import('@/components/AdSpacesSection'));
+const RecommendedNewsSection = lazy(() => import('@/components/RecommendedNewsSection'));
+const SpotifyCharts = lazy(() => import('@/components/SpotifyCharts').then(module => ({ default: module.SpotifyCharts })));
+
+// Skeleton loading component for lazy sections
+const SectionSkeleton = () => (
+  <div className="w-full py-8 animate-pulse">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="h-8 bg-muted/20 rounded w-48 mb-6"></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="h-64 bg-muted/20 rounded-lg"></div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
 const Index = () => {
   const [showHeader, setShowHeader] = useState(false);
-  
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -48,34 +66,59 @@ const Index = () => {
   try {
     return (
       <>
-        <SEO 
+        <SEO
           title="Conciertos en América Latina - Próximos Eventos y Shows Musicales"
           description="Descubre los mejores conciertos y eventos musicales en toda América Latina. Encuentra fechas, lugares, artistas y compra tus entradas."
           keywords="conciertos, eventos musicales, shows en vivo, América Latina, entradas conciertos, próximos conciertos"
           url="/"
           structuredData={structuredData}
         />
-        
+
         {/* Hero Landing - Primera interacción */}
         <HeroLanding onScrollPastHero={setShowHeader} />
-        
+
         {/* Main content with parallax reveal */}
         <div className="relative z-10">
           <AuroraBackground>
             <Header visible={showHeader} />
             <main className="pt-0">
+              {/* Critical components - load immediately */}
               <Hero />
               <FeaturedArtistsMobile />
-              <FeaturedVideosSection />
-              <FeaturedPhotosSection />
-              <LatestNewsSection />
-              <AnnouncementsSection />
-              <AdSpacesSection />
-              <SpotifyCharts />
+
+              {/* Below-fold components - lazy load with Suspense */}
+              <Suspense fallback={<SectionSkeleton />}>
+                <FeaturedVideosSection />
+              </Suspense>
+
+              <Suspense fallback={<SectionSkeleton />}>
+                <FeaturedPhotosSection />
+              </Suspense>
+
+              <Suspense fallback={<SectionSkeleton />}>
+                <LatestNewsSection />
+              </Suspense>
+
+              <Suspense fallback={<SectionSkeleton />}>
+                <AnnouncementsSection />
+              </Suspense>
+
+              <Suspense fallback={<SectionSkeleton />}>
+                <AdSpacesSection />
+              </Suspense>
+
+              <Suspense fallback={<SectionSkeleton />}>
+                <SpotifyCharts />
+              </Suspense>
+
+              {/* Important sections - load immediately */}
               <UpcomingConcertsSection />
               <FeaturedFestivalsSection />
               <FeaturedConcertsSection />
-              <RecommendedNewsSection />
+
+              <Suspense fallback={<SectionSkeleton />}>
+                <RecommendedNewsSection />
+              </Suspense>
             </main>
             <Footer />
           </AuroraBackground>
