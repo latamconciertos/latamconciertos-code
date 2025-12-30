@@ -5,6 +5,7 @@ import Hero from '@/components/Hero';
 import HeroLanding from '@/components/HeroLanding';
 import Footer from '@/components/Footer';
 import { AuroraBackground } from '@/components/ui/aurora-background';
+import { SpotifyCharts } from '@/components/SpotifyCharts';
 
 // Critical components - load immediately
 import FeaturedArtistsMobile from '@/components/FeaturedArtistsMobile';
@@ -19,7 +20,6 @@ const LatestNewsSection = lazy(() => import('@/components/LatestNewsSection'));
 const AnnouncementsSection = lazy(() => import('@/components/AnnouncementsSection'));
 const AdSpacesSection = lazy(() => import('@/components/AdSpacesSection'));
 const RecommendedNewsSection = lazy(() => import('@/components/RecommendedNewsSection'));
-const SpotifyCharts = lazy(() => import('@/components/SpotifyCharts').then(module => ({ default: module.SpotifyCharts })));
 
 // Skeleton loading component for lazy sections
 const SectionSkeleton = () => (
@@ -107,9 +107,9 @@ const Index = () => {
                 <AdSpacesSection />
               </Suspense>
 
-              <Suspense fallback={<SectionSkeleton />}>
-                <SpotifyCharts />
-              </Suspense>
+
+              {/* SpotifyCharts - normal import (uses named export) */}
+              <SpotifyCharts />
 
               {/* Important sections - load immediately */}
               <UpcomingConcertsSection />
