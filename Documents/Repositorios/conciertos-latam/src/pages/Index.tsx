@@ -78,7 +78,7 @@ const Index = () => {
         <HeroLanding onScrollPastHero={setShowHeader} />
 
         {/* Main content with parallax reveal */}
-        <div className="relative z-10">
+        <div className="relative z-10 mt-[100vh]">
           <AuroraBackground>
             <Header visible={showHeader} />
             <main className="pt-0">

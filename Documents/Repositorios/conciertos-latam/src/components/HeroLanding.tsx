@@ -49,7 +49,7 @@ const HeroLanding = ({
   const animDuration = isMobile ? 0.4 : 0.8;
   const auroraOpacity = isMobile ? 0.4 : 0.7;
 
-  return <motion.div ref={containerRef} className="relative h-screen w-full overflow-hidden" style={{
+  return <motion.div ref={containerRef} className="fixed top-0 left-0 right-0 h-screen w-full overflow-hidden z-0" style={{
     y
   }}>
     {/* Background - matching AuroraBackground */}
