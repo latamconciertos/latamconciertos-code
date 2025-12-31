@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Video, Image as ImageIcon, Crop } from 'lucide-react';
+import { Plus, Edit, Trash2, Video, Image as ImageIcon, Crop, Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { MediaUpload } from './MediaUpload';
 import { ImageCropDialog } from './ImageCropDialog';
+import { processVideoUrl, detectVideoPlatform } from '@/lib/videoUtils';
 
 interface MediaItem {
   id: string;
@@ -50,6 +51,7 @@ export const MediaAdmin = () => {
   });
 
   const [useEmbed, setUseEmbed] = useState(false);
+  const [videoUrl, setVideoUrl] = useState('');
 
   useEffect(() => {
     fetchMediaItems();
@@ -208,7 +210,7 @@ export const MediaAdmin = () => {
                     <Label>Tipo</Label>
                     <Select
                       value={formData.type}
-                      onValueChange={(value: 'video' | 'image') => 
+                      onValueChange={(value: 'video' | 'image') =>
                         setFormData({ ...formData, type: value })
                       }
                     >
@@ -247,14 +249,57 @@ export const MediaAdmin = () => {
                         currentMediaUrl={formData.media_url}
                       />
                     ) : (
-                      <div>
-                        <Label>Código de inserción</Label>
-                        <Textarea
-                          value={formData.embed_code}
-                          onChange={(e) => setFormData({ ...formData, embed_code: e.target.value })}
-                          placeholder="<iframe src='...'></iframe>"
-                          rows={4}
-                        />
+                      <div className="space-y-4">
+                        <div>
+                          <Label className="flex items-center gap-2">
+                            <Youtube className="h-4 w-4" />
+                            URL de YouTube o Vimeo
+                          </Label>
+                          <Input
+                            value={videoUrl}
+                            onChange={(e) => {
+                              const url = e.target.value;
+                              setVideoUrl(url);
+
+                              // Auto-detect and process video URL
+                              const platform = detectVideoPlatform(url);
+                              if (platform !== 'unknown') {
+                                const { embedCode, thumbnailUrl } = processVideoUrl(url);
+                                setFormData({
+                                  ...formData,
+                                  embed_code: embedCode,
+                                  thumbnail_url: formData.thumbnail_url || thumbnailUrl,
+                                });
+                              }
+                            }}
+                            placeholder="https://www.youtube.com/watch?v=..."
+                          />
+                          <p className="text-xs text-muted-foreground mt-1">
+                            El código embed y thumbnail se generarán automáticamente
+                          </p>
+                        </div>
+
+                        <div>
+                          <Label>Código de inserción (Generado automáticamente)</Label>
+                          <Textarea
+                            value={formData.embed_code}
+                            onChange={(e) => setFormData({ ...formData, embed_code: e.target.value })}
+                            placeholder="<iframe src='...'></iframe>"
+                            rows={4}
+                            className="font-mono text-xs"
+                          />
+                        </div>
+
+                        {/* Preview del video */}
+                        {formData.embed_code && (
+                          <div>
+                            <Label>Preview</Label>
+                            <div
+                              className="aspect-video w-full rounded-lg overflow-hidden border bg-black"
+                              dangerouslySetInnerHTML={{ __html: formData.embed_code }}
+                            />
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -338,7 +383,7 @@ export const MediaAdmin = () => {
                       <Label>Destacar</Label>
                       <Switch
                         checked={formData.featured}
-                        onCheckedChange={(checked) => 
+                        onCheckedChange={(checked) =>
                           setFormData({ ...formData, featured: checked })
                         }
                       />
@@ -349,7 +394,7 @@ export const MediaAdmin = () => {
                       <Input
                         type="number"
                         value={formData.position}
-                        onChange={(e) => 
+                        onChange={(e) =>
                           setFormData({ ...formData, position: parseInt(e.target.value) })
                         }
                         min="0"
@@ -402,7 +447,7 @@ export const MediaAdmin = () => {
                   )}
                 </div>
               )}
-              
+
               <div className="flex items-start gap-2">
                 {item.type === 'video' ? (
                   <Video className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />

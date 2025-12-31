@@ -114,7 +114,7 @@ export const queryKeys = {
     },
     photos: {
       all: () => [...queryKeys.media.all, 'photos'] as const,
-      featured: (limit?: number) => [...queryKeys.media.all, 'photos', 'featured', { limit }] as const,
+      featured: (limit?: number | string) => [...queryKeys.media.all, 'photos', 'featured', { limit }] as const,
     },
   },
 

@@ -24,10 +24,11 @@ export function useFeaturedVideos(limit: number = 6) {
 
 /**
  * Hook to fetch featured photos for homepage gallery
+ * @param limit - Optional limit. If not provided, fetches all featured photos
  */
-export function useFeaturedPhotos(limit: number = 6) {
+export function useFeaturedPhotos(limit?: number) {
   return useQuery({
-    queryKey: queryKeys.media.photos.featured(limit),
+    queryKey: queryKeys.media.photos.featured(limit || 'all'),
     queryFn: async () => {
       const result = await mediaService.getFeaturedPhotos(limit);
       if (!result.success) throw new Error(result.error || 'Failed to fetch featured photos');

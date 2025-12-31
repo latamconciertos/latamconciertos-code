@@ -6,7 +6,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
-import type { 
+import type {
   MediaItem,
   MediaItemInsert,
   MediaItemUpdate,
@@ -78,17 +78,23 @@ class MediaServiceClass {
 
   /**
    * Get featured photos for homepage gallery
+   * @param limit - Optional limit. If not provided, fetches all featured photos
    */
-  async getFeaturedPhotos(limit: number = 10): Promise<ServiceResponse<FeaturedPhoto[]>> {
+  async getFeaturedPhotos(limit?: number): Promise<ServiceResponse<FeaturedPhoto[]>> {
     return handleServiceCallArray(async () => {
-      return supabase
+      let query = supabase
         .from('media_items')
         .select('id, title, summary, media_url, thumbnail_url')
         .eq('type', 'image')
         .eq('status', 'published')
         .eq('featured', true)
-        .order('position', { ascending: true })
-        .limit(limit);
+        .order('position', { ascending: true });
+
+      if (limit !== undefined) {
+        query = query.limit(limit);
+      }
+
+      return query;
     }, 'MediaService.getFeaturedPhotos');
   }
 
@@ -115,7 +121,7 @@ class MediaServiceClass {
         .insert(data)
         .select('*')
         .single();
-      
+
       return { data: item, error };
     }, 'MediaService.create');
   }
@@ -131,7 +137,7 @@ class MediaServiceClass {
         .eq('id', id)
         .select('*')
         .single();
-      
+
       return { data: item, error };
     }, 'MediaService.update');
   }
@@ -145,7 +151,7 @@ class MediaServiceClass {
         .from('media_items')
         .delete()
         .eq('id', id);
-      
+
       return { data: !error, error };
     }, 'MediaService.delete');
   }
@@ -194,12 +200,12 @@ class MediaServiceClass {
         .select('impressions')
         .eq('id', adId)
         .single();
-      
+
       const { error } = await supabase
         .from('ad_items')
         .update({ impressions: (current?.impressions || 0) + 1 })
         .eq('id', adId);
-      
+
       return { data: !error, error };
     }, 'MediaService.recordImpression');
   }
@@ -214,12 +220,12 @@ class MediaServiceClass {
         .select('clicks')
         .eq('id', adId)
         .single();
-      
+
       const { error } = await supabase
         .from('ad_items')
         .update({ clicks: (current?.clicks || 0) + 1 })
         .eq('id', adId);
-      
+
       return { data: !error, error };
     }, 'MediaService.recordClick');
   }
@@ -264,7 +270,7 @@ class MediaServiceClass {
         .eq('id', id)
         .select('*')
         .single();
-      
+
       return { data: network, error };
     }, 'MediaService.updateSocialNetwork');
   }

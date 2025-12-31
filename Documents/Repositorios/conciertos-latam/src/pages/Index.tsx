@@ -15,7 +15,7 @@ import FeaturedFestivalsSection from '@/components/FeaturedFestivalsSection';
 
 // Below-fold components - lazy load for better performance
 const FeaturedVideosSection = lazy(() => import('@/components/FeaturedVideosSection'));
-const FeaturedPhotosSection = lazy(() => import('@/components/FeaturedPhotosSection'));
+const ImageAutoSlider = lazy(() => import('@/components/ui/image-auto-slider'));
 const LatestNewsSection = lazy(() => import('@/components/LatestNewsSection'));
 const AnnouncementsSection = lazy(() => import('@/components/AnnouncementsSection'));
 const AdSpacesSection = lazy(() => import('@/components/AdSpacesSection'));
@@ -96,7 +96,7 @@ const Index = () => {
               </Suspense>
 
               <Suspense fallback={<SectionSkeleton />}>
-                <FeaturedPhotosSection />
+                <ImageAutoSlider />
               </Suspense>
 
               <Suspense fallback={<SectionSkeleton />}>
