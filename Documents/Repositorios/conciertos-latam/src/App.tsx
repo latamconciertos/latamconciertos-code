@@ -44,6 +44,7 @@ const Friends = lazy(() => import("./pages/Friends"));
 const FriendProfile = lazy(() => import("./pages/FriendProfile"));
 const ConcertsByCountry = lazy(() => import("./pages/ConcertsByCountry"));
 const Festivals = lazy(() => import("./pages/Festivals"));
+const FestivalDetail = lazy(() => import("./pages/FestivalDetail"));
 
 const AppContent = () => {
   useTrafficTracking();
@@ -62,6 +63,7 @@ const AppContent = () => {
           <Route path="/artists" element={<Artists />} />
           <Route path="/artists/:slug" element={<ArtistDetail />} />
           <Route path="/festivals" element={<Festivals />} />
+          <Route path="/festivals/:slug" element={<FestivalDetail />} />
           <Route path="/concerts" element={<Concerts />} />
           <Route path="/concerts/:slug" element={<ConcertDetail />} />
           <Route path="/promoters" element={<Promoters />} />

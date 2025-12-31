@@ -102,6 +102,10 @@ export type { ArtistDetail, ArtistConcert, ArtistNewsArticle } from './useArtist
 export { useConcertDetail } from './useConcertDetail';
 export type { ConcertDetail, ConcertSetlistSong } from './useConcertDetail';
 
+// Festival Detail Hooks
+export { useFestivalDetail } from './useFestivalDetail';
+export type { FestivalDetail, FestivalLineupArtist } from './useFestivalDetail';
+
 // Profile Hooks
 export { useUserProfile, useProfileCountries, useProfileCities, useProfileArtists, useUpdateProfile } from './useProfile';
 export type { UserProfile } from './useProfile';

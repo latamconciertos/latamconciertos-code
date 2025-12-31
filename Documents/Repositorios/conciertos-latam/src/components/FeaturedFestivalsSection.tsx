@@ -158,6 +158,136 @@ const FeaturedFestivalsSection = () => {
             })}
           </div>
         </div>
+
+        {/* Festival Details Dialog - Mobile */}
+        <Dialog open={!!selectedFestival} onOpenChange={(open) => !open && handleCloseDialog()}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
+            {selectedFestival && (
+              <>
+                <DialogHeader>
+                  <DialogTitle className="text-xl sm:text-2xl">{selectedFestival.name}</DialogTitle>
+                  {selectedFestival.edition && (
+                    <p className="text-base sm:text-lg text-muted-foreground">Edición {selectedFestival.edition}</p>
+                  )}
+                </DialogHeader>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                  {/* Festival Image */}
+                  <div className="relative w-full aspect-video md:aspect-square rounded-lg overflow-hidden">
+                    <img
+                      src={optimizeUnsplashUrl(
+                        selectedFestival.image_url || getDefaultImage(),
+                        { width: 800, height: 800, quality: 90 }
+                      )}
+                      alt={selectedFestival.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  {/* Content Column */}
+                  <div className="space-y-4 md:space-y-6">
+                    {/* Attendance Buttons */}
+                    <div className="flex justify-center md:justify-start">
+                      <FestivalAttendanceButtons festivalId={selectedFestival.id} />
+                    </div>
+
+                    <Tabs defaultValue="details" className="w-full">
+                      <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="details">Detalles</TabsTrigger>
+                        <TabsTrigger value="lineup">Lineup</TabsTrigger>
+                        <TabsTrigger value="community">Comunidad</TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="details" className="space-y-4 pt-4">
+                        {selectedFestival.start_date && (
+                          <div>
+                            <h3 className="text-sm font-semibold text-muted-foreground mb-1">Fecha</h3>
+                            <div className="flex items-center gap-2">
+                              <Calendar className="h-5 w-5 text-primary" />
+                              <p className="text-base sm:text-lg">
+                                {formatDateRange(selectedFestival.start_date, selectedFestival.end_date)}
+                              </p>
+                            </div>
+                          </div>
+                        )}
+
+                        {selectedFestival.venues && (
+                          <>
+                            <div>
+                              <h3 className="text-sm font-semibold text-muted-foreground mb-1">Venue</h3>
+                              <div className="flex items-center gap-2">
+                                <MapPin className="h-5 w-5 text-primary" />
+                                <p className="text-base sm:text-lg">{selectedFestival.venues.name}</p>
+                              </div>
+                            </div>
+
+                            {selectedFestival.venues.cities && (
+                              <div>
+                                <h3 className="text-sm font-semibold text-muted-foreground mb-1">Ubicación</h3>
+                                <div className="flex items-center gap-2">
+                                  <Globe className="h-5 w-5 text-primary" />
+                                  <p className="text-base sm:text-lg">
+                                    {selectedFestival.venues.cities.name}
+                                    {selectedFestival.venues.cities.countries?.name &&
+                                      `, ${selectedFestival.venues.cities.countries.name}`}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                          </>
+                        )}
+
+                        {selectedFestival.description && (
+                          <div>
+                            <h3 className="text-sm font-semibold text-muted-foreground mb-1">Descripción</h3>
+                            <p className="text-muted-foreground">{selectedFestival.description}</p>
+                          </div>
+                        )}
+
+                        {selectedFestival.ticket_url && (
+                          <Button
+                            className="w-full"
+                            size="lg"
+                            onClick={() => window.open(selectedFestival.ticket_url, '_blank')}
+                          >
+                            <Ticket className="h-5 w-5 mr-2" />
+                            Comprar Entradas
+                          </Button>
+                        )}
+
+                        <Link to={`/festivals/${selectedFestival.slug}`} className="block">
+                          <Button
+                            variant="outline"
+                            className="w-full gap-2"
+                            size="lg"
+                          >
+                            <Info className="h-5 w-5" />
+                            Ver página completa
+                          </Button>
+                        </Link>
+                      </TabsContent>
+
+                      <TabsContent value="lineup" className="pt-4">
+                        <div className="text-center py-8">
+                          <Users className="h-16 w-16 text-muted-foreground mx-auto mb-3 opacity-50" />
+                          <p className="text-muted-foreground">Lineup por confirmar</p>
+                        </div>
+                      </TabsContent>
+
+                      <TabsContent value="community" className="pt-4">
+                        <div className="text-center py-8">
+                          <p className="text-muted-foreground">
+                            La funcionalidad de comunidad estará disponible próximamente
+                          </p>
+                        </div>
+                      </TabsContent>
+                    </Tabs>
+                  </div>
+                </div>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
       </section>
     );
   }
@@ -243,19 +373,19 @@ const FeaturedFestivalsSection = () => {
 
       {/* Festival Details Dialog */}
       <Dialog open={!!selectedFestival} onOpenChange={(open) => !open && handleCloseDialog()}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
           {selectedFestival && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-2xl">{selectedFestival.name}</DialogTitle>
+                <DialogTitle className="text-xl sm:text-2xl">{selectedFestival.name}</DialogTitle>
                 {selectedFestival.edition && (
-                  <p className="text-lg text-muted-foreground">Edición {selectedFestival.edition}</p>
+                  <p className="text-base sm:text-lg text-muted-foreground">Edición {selectedFestival.edition}</p>
                 )}
               </DialogHeader>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 {/* Festival Image - Square */}
-                <div className="relative w-full aspect-square rounded-lg overflow-hidden">
+                <div className="relative w-full aspect-video md:aspect-square rounded-lg overflow-hidden">
                   <img
                     src={optimizeUnsplashUrl(
                       selectedFestival.image_url || getDefaultImage(),
@@ -267,7 +397,7 @@ const FeaturedFestivalsSection = () => {
                 </div>
 
                 {/* Content Column */}
-                <div className="space-y-6">
+                <div className="space-y-4 md:space-y-6">
                   {/* Attendance Buttons */}
                   <div className="flex justify-center md:justify-start">
                     <FestivalAttendanceButtons festivalId={selectedFestival.id} />
@@ -286,7 +416,7 @@ const FeaturedFestivalsSection = () => {
                           <h3 className="text-sm font-semibold text-muted-foreground mb-1">Fecha</h3>
                           <div className="flex items-center gap-2">
                             <Calendar className="h-5 w-5 text-primary" />
-                            <p className="text-lg">
+                            <p className="text-base sm:text-lg">
                               {formatDateRange(selectedFestival.start_date, selectedFestival.end_date)}
                             </p>
                           </div>
@@ -299,7 +429,7 @@ const FeaturedFestivalsSection = () => {
                             <h3 className="text-sm font-semibold text-muted-foreground mb-1">Venue</h3>
                             <div className="flex items-center gap-2">
                               <MapPin className="h-5 w-5 text-primary" />
-                              <p className="text-lg">{selectedFestival.venues.name}</p>
+                              <p className="text-base sm:text-lg">{selectedFestival.venues.name}</p>
                             </div>
                           </div>
 
@@ -308,7 +438,7 @@ const FeaturedFestivalsSection = () => {
                               <h3 className="text-sm font-semibold text-muted-foreground mb-1">Ubicación</h3>
                               <div className="flex items-center gap-2">
                                 <Globe className="h-5 w-5 text-primary" />
-                                <p className="text-lg">
+                                <p className="text-base sm:text-lg">
                                   {selectedFestival.venues.cities.name}
                                   {selectedFestival.venues.cities.countries?.name &&
                                     `, ${selectedFestival.venues.cities.countries.name}`}

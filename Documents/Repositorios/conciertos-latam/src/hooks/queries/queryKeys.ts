@@ -19,6 +19,17 @@ export const queryKeys = {
     byArtist: (artistId: string, status?: string) => [...queryKeys.concerts.all, 'byArtist', artistId, status] as const,
   },
 
+  // Festivals
+  festivals: {
+    all: ['festivals'] as const,
+    lists: () => [...queryKeys.festivals.all, 'list'] as const,
+    list: (filters: object) => [...queryKeys.festivals.lists(), filters] as const,
+    upcoming: (limit?: number) => [...queryKeys.festivals.all, 'upcoming', { limit }] as const,
+    featured: () => [...queryKeys.festivals.all, 'featured'] as const,
+    details: () => [...queryKeys.festivals.all, 'detail'] as const,
+    detail: (slug: string) => [...queryKeys.festivals.details(), slug] as const,
+  },
+
   // News
   news: {
     all: ['news'] as const,
