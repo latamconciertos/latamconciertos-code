@@ -86,6 +86,10 @@ const Index = () => {
               <Hero />
               <FeaturedArtistsMobile />
 
+              {/* Priority business content - upcoming events */}
+              <UpcomingConcertsSection />
+              <FeaturedFestivalsSection />
+
               {/* Below-fold components - lazy load with Suspense */}
               <Suspense fallback={<SectionSkeleton />}>
                 <FeaturedVideosSection />
@@ -111,9 +115,7 @@ const Index = () => {
               {/* SpotifyCharts - normal import (uses named export) */}
               <SpotifyCharts />
 
-              {/* Important sections - load immediately */}
-              <UpcomingConcertsSection />
-              <FeaturedFestivalsSection />
+              {/* Featured concerts section */}
               <FeaturedConcertsSection />
 
               <Suspense fallback={<SectionSkeleton />}>
