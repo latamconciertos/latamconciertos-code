@@ -16,6 +16,7 @@ interface SearchResults {
   concerts: Array<{
     id: string;
     title: string;
+    slug: string;
     date: string;
     venue_name?: string;
     artist_name?: string;
@@ -67,6 +68,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
           .select(`
             id,
             title,
+            slug,
             date,
             venues(name),
             artists(name)
@@ -89,6 +91,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
           concerts: concertsData?.map(c => ({
             id: c.id,
             title: c.title,
+            slug: c.slug,
             date: c.date,
             venue_name: c.venues?.name,
             artist_name: c.artists?.name,
@@ -197,7 +200,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
                 {results.concerts.map((concert) => (
                   <Link
                     key={concert.id}
-                    to={`/concerts`}
+                    to={`/concerts?id=${concert.slug}`}
                     onClick={handleClose}
                     className="flex items-start gap-3 p-3 rounded-lg hover:bg-accent transition-colors"
                   >
