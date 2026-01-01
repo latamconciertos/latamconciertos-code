@@ -103,11 +103,11 @@ const ImageAutoSlider = () => {
                         msOverflowStyle: 'none',
                     }}
                 >
-                    <div className="flex gap-4 md:gap-6 px-4 md:px-8">
+                    <div className="flex gap-4 md:gap-6 px-4 md:px-8 justify-center">
                         {mediaItems.map((item) => (
                             <div
                                 key={item.id}
-                                className="flex-shrink-0 w-48 h-48 sm:w-56 sm:h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-105 hover:brightness-110 cursor-pointer"
+                                className="flex-shrink-0 w-48 h-48 sm:w-56 sm:h-56 md:w-60 md:h-60 lg:w-60 lg:h-60 rounded-xl overflow-hidden shadow-2xl transition-transform duration-300 hover:scale-105 hover:brightness-110 cursor-pointer"
                             >
                                 <img
                                     src={getThumbnail(item)}
