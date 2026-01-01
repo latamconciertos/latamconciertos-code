@@ -40,7 +40,7 @@ const Artists = () => {
   const totalCount = data?.count || 0;
 
   const getDefaultImage = () => "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop";
-  
+
   const getSocialIcon = (platform: string) => {
     switch (platform.toLowerCase()) {
       case 'instagram':
@@ -99,19 +99,19 @@ const Artists = () => {
 
   return (
     <>
-      <SEO 
-        title="Artistas Musicales - Directorio de Músicos Latinos" 
-        description="Descubre los mejores artistas y bandas de música latina. Biografías, conciertos, noticias y toda la información sobre tus músicos favoritos." 
-        keywords="artistas latinos, músicos, bandas, intérpretes, cantantes, América Latina" 
-        url="/artists" 
-        structuredData={structuredData} 
+      <SEO
+        title="Artistas Musicales - Directorio de Músicos Latinos"
+        description="Descubre los mejores artistas y bandas de música latina. Biografías, conciertos, noticias y toda la información sobre tus músicos favoritos."
+        keywords="artistas latinos, músicos, bandas, intérpretes, cantantes, América Latina"
+        url="/artists"
+        structuredData={structuredData}
       />
       <div className="min-h-screen bg-background">
         <Header />
-      
+
         <main className="container mx-auto px-4 py-16">
           <Breadcrumbs items={[{ label: 'Artistas' }]} />
-          
+
           {/* Header Section */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
@@ -127,12 +127,12 @@ const Artists = () => {
           {/* Search Bar */}
           <div className="max-w-2xl mx-auto mb-12 relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-            <Input 
-              type="search" 
-              placeholder="Buscar artistas por nombre..." 
-              value={searchTerm} 
-              onChange={e => setSearchTerm(e.target.value)} 
-              className="w-full h-12 text-lg pl-12" 
+            <Input
+              type="search"
+              placeholder="Buscar artistas por nombre..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="w-full h-12 text-sm md:text-base pl-12"
             />
           </div>
 
@@ -144,28 +144,28 @@ const Artists = () => {
                   const validSocialLinks = getValidSocialLinks(artist.social_links);
                   const hasValidLinks = Object.keys(validSocialLinks).length > 0;
                   return (
-                    <Card 
-                      key={artist.id} 
-                      className="group overflow-hidden hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer" 
+                    <Card
+                      key={artist.id}
+                      className="group overflow-hidden hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer"
                       onClick={() => navigate(`/artists/${artist.slug}`)}
                     >
                       <div className="relative overflow-hidden">
-                        <img 
-                          src={artist.photo_url || getDefaultImage()} 
-                          alt={artist.name} 
-                          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500" 
+                        <img
+                          src={artist.photo_url || getDefaultImage()}
+                          alt={artist.name}
+                          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                        
+
                         {hasValidLinks && (
                           <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <div className="flex gap-2 justify-center">
                               {Object.entries(validSocialLinks).map(([platform, url]) => (
-                                <Button 
-                                  key={platform} 
-                                  size="sm" 
-                                  variant="secondary" 
-                                  className="bg-black/70 hover:bg-black/90 text-white border-0" 
+                                <Button
+                                  key={platform}
+                                  size="sm"
+                                  variant="secondary"
+                                  className="bg-black/70 hover:bg-black/90 text-white border-0"
                                   onClick={e => {
                                     e.stopPropagation();
                                     window.open(url, '_blank');
@@ -178,7 +178,7 @@ const Artists = () => {
                           </div>
                         )}
                       </div>
-                      
+
                       <CardContent className="p-6">
                         <div className="space-y-4">
                           <div>
@@ -191,7 +191,7 @@ const Artists = () => {
                               </p>
                             )}
                           </div>
-                          
+
                           <div className="flex items-center justify-between">
                             <Badge variant="secondary" className="text-xs">
                               Artista
@@ -210,28 +210,28 @@ const Artists = () => {
                   <Pagination>
                     <PaginationContent>
                       <PaginationItem>
-                        <PaginationPrevious 
-                          href="#" 
+                        <PaginationPrevious
+                          href="#"
                           onClick={e => {
                             e.preventDefault();
                             if (currentPage > 1) setCurrentPage(currentPage - 1);
-                          }} 
-                          className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''} 
+                          }}
+                          className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
                         />
                       </PaginationItem>
-                      
+
                       {Array.from({ length: Math.ceil(totalCount / itemsPerPage) }).map((_, idx) => {
                         const pageNum = idx + 1;
                         const totalPages = Math.ceil(totalCount / itemsPerPage);
                         if (pageNum === 1 || pageNum === totalPages || (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)) {
                           return (
                             <PaginationItem key={pageNum}>
-                              <PaginationLink 
-                                href="#" 
+                              <PaginationLink
+                                href="#"
                                 onClick={e => {
                                   e.preventDefault();
                                   setCurrentPage(pageNum);
-                                }} 
+                                }}
                                 isActive={currentPage === pageNum}
                               >
                                 {pageNum}
@@ -247,17 +247,17 @@ const Artists = () => {
                         }
                         return null;
                       })}
-                      
+
                       <PaginationItem>
-                        <PaginationNext 
-                          href="#" 
+                        <PaginationNext
+                          href="#"
                           onClick={e => {
                             e.preventDefault();
                             if (currentPage < Math.ceil(totalCount / itemsPerPage)) {
                               setCurrentPage(currentPage + 1);
                             }
-                          }} 
-                          className={currentPage >= Math.ceil(totalCount / itemsPerPage) ? 'pointer-events-none opacity-50' : ''} 
+                          }}
+                          className={currentPage >= Math.ceil(totalCount / itemsPerPage) ? 'pointer-events-none opacity-50' : ''}
                         />
                       </PaginationItem>
                     </PaginationContent>
@@ -273,7 +273,7 @@ const Artists = () => {
             </div>
           )}
         </main>
-        
+
         <Footer />
       </div>
     </>

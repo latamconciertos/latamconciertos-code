@@ -580,7 +580,7 @@ const Concerts = () => {
                 placeholder="Buscar conciertos, artistas o venues..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full h-12 text-lg pl-10"
+                className="w-full h-12 text-sm md:text-base pl-10"
               />
             </div>
 
