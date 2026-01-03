@@ -10,6 +10,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { spotifyService } from '@/lib/spotify';
 import { queryKeys } from '@/hooks/queries';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
+import { cardVariants, cardStyles } from '@/lib/styles/cardStyles';
+import { AnimatedCard } from '@/components/ui/animated';
 
 interface FeaturedConcertData {
   id: string;
@@ -144,7 +146,7 @@ const FeaturedConcertsSection = () => {
 
           <div className="space-y-6">
             {displayConcerts.map((concert) => (
-              <Card key={concert.id} className="overflow-hidden border-0 shadow-lg rounded-3xl">
+              <Card key={concert.id} className="overflow-hidden border-0 shadow-xl rounded-3xl hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300">
                 {/* User header style */}
                 <div className="flex items-center gap-3 p-3">
                   <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-primary/20">
@@ -225,59 +227,61 @@ const FeaturedConcertsSection = () => {
 
         {displayConcerts.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {displayConcerts.map((concert) => (
-              <Link key={concert.id} to={`/concerts?id=${concert.slug}`} className="h-full">
-                <Card className="overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer group h-full flex flex-col">
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={concert.artist_image_url || getDefaultImage()}
-                      alt={concert.artists?.name || concert.title}
-                      className="w-full h-36 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+            {displayConcerts.map((concert, index) => (
+              <AnimatedCard key={concert.id} delay={index * 0.1}>
+                <Link to={`/concerts?id=${concert.slug}`} className="h-full block">
+                  <Card className={cardVariants.concert}>
+                    <div className={cardStyles.imageContainer}>
+                      <img
+                        src={concert.artist_image_url || getDefaultImage()}
+                        alt={concert.artists?.name || concert.title}
+                        className={`w-full h-36 object-cover ${cardStyles.imageZoom}`}
+                      />
 
-                    {isPastConcert(concert.date) && (
-                      <Badge className="absolute top-2 left-2 bg-muted text-muted-foreground text-xs">
-                        Finalizado
-                      </Badge>
-                    )}
-                  </div>
+                      {isPastConcert(concert.date) && (
+                        <Badge className="absolute top-2 left-2 bg-muted text-muted-foreground text-xs">
+                          Finalizado
+                        </Badge>
+                      )}
+                    </div>
 
-                  <CardContent className="p-3 flex-1 flex flex-col">
-                    <h3 className="font-semibold text-foreground mb-1.5 group-hover:text-primary transition-colors line-clamp-2 text-sm leading-5 min-h-[2.5rem]">
-                      {concert.title}
-                    </h3>
+                    <CardContent className="p-3 flex-1 flex flex-col">
+                      <h3 className="font-semibold text-foreground mb-1.5 group-hover:text-primary transition-colors line-clamp-2 text-sm leading-5 min-h-[2.5rem]">
+                        {concert.title}
+                      </h3>
 
-                    <p className="text-primary font-medium text-sm mb-1.5">
-                      {concert.artists?.name || 'Artista'}
-                    </p>
+                      <p className="text-primary font-medium text-sm mb-1.5">
+                        {concert.artists?.name || 'Artista'}
+                      </p>
 
-                    <div className="space-y-1.5 mt-auto">
-                      <div className="flex items-center text-muted-foreground text-xs space-x-1">
-                        <MapPin className="h-3 w-3 flex-shrink-0" />
-                        <span className="truncate">
-                          {concert.venues?.name || 'Venue'}
-                        </span>
-                      </div>
-
-                      {concert.venues?.cities && (
+                      <div className="space-y-1.5 mt-auto">
                         <div className="flex items-center text-muted-foreground text-xs space-x-1">
                           <MapPin className="h-3 w-3 flex-shrink-0" />
                           <span className="truncate">
-                            {concert.venues.cities.name}
-                            {concert.venues.cities.countries?.name &&
-                              `, ${concert.venues.cities.countries.name}`}
+                            {concert.venues?.name || 'Venue'}
                           </span>
                         </div>
-                      )}
 
-                      <div className="flex items-center text-muted-foreground text-xs space-x-1">
-                        <Calendar className="h-3 w-3 flex-shrink-0" />
-                        <span>{formatDate(concert.date)}</span>
+                        {concert.venues?.cities && (
+                          <div className="flex items-center text-muted-foreground text-xs space-x-1">
+                            <MapPin className="h-3 w-3 flex-shrink-0" />
+                            <span className="truncate">
+                              {concert.venues.cities.name}
+                              {concert.venues.cities.countries?.name &&
+                                `, ${concert.venues.cities.countries.name}`}
+                            </span>
+                          </div>
+                        )}
+
+                        <div className="flex items-center text-muted-foreground text-xs space-x-1">
+                          <Calendar className="h-3 w-3 flex-shrink-0" />
+                          <span>{formatDate(concert.date)}</span>
+                        </div>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </AnimatedCard>
             ))}
           </div>
         ) : (

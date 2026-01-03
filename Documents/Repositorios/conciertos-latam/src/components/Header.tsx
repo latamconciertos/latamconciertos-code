@@ -216,12 +216,10 @@ const Header = ({ visible = true }: HeaderProps) => {
 
             {user ? (
               <div className="hidden lg:flex items-center space-x-1">
-                {/* Mi Cuenta Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="text-white hover:bg-white/10 text-sm font-fira font-medium px-4 py-2 flex items-center gap-1">
-                      Mi Cuenta
-                      <ChevronDown className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+                      <User className="h-5 w-5" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
@@ -409,7 +407,7 @@ const Header = ({ visible = true }: HeaderProps) => {
       </nav>
 
       <GlobalSearch open={isSearchOpen} onOpenChange={setIsSearchOpen} />
-    </header>
+    </header >
   );
 };
 

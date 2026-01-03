@@ -14,6 +14,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import FestivalAttendanceButtons from '@/components/FestivalAttendanceButtons';
 import { optimizeUnsplashUrl } from '@/lib/imageOptimization';
 import { useState } from 'react';
+import { cardVariants, cardStyles } from '@/lib/styles/cardStyles';
+import { AnimatedCard } from '@/components/ui/animated';
 
 const FeaturedFestivalsSection = () => {
   const navigate = useNavigate();
@@ -100,60 +102,61 @@ const FeaturedFestivalsSection = () => {
           </div>
 
           <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-            {festivals.map((festival) => {
+            {festivals.map((festival, index) => {
               const dateInfo = formatDate(festival.start_date);
 
               return (
-                <Card
-                  key={festival.id}
-                  className="flex-shrink-0 w-[280px] overflow-hidden cursor-pointer group shadow-md"
-                  onClick={() => handleFestivalClick(festival)}
-                >
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={festival.image_url || getDefaultImage()}
-                      alt={festival.name}
-                      className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+                <AnimatedCard key={festival.id} delay={index * 0.1}>
+                  <Card
+                    className="flex-shrink-0 w-[280px] overflow-hidden cursor-pointer group shadow-xl hover:shadow-2xl hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-1"
+                    onClick={() => handleFestivalClick(festival)}
+                  >
+                    <div className={cardStyles.imageContainer}>
+                      <img
+                        src={festival.image_url || getDefaultImage()}
+                        alt={festival.name}
+                        className={`w-full h-40 object-cover ${cardStyles.imageZoom}`}
+                      />
 
-                    {festival.edition && (
-                      <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs">
-                        Edición {festival.edition}
-                      </Badge>
-                    )}
+                      {festival.edition && (
+                        <Badge className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs">
+                          Edición {festival.edition}
+                        </Badge>
+                      )}
 
-                    <div className="absolute bottom-2 right-2 bg-primary text-primary-foreground rounded-lg px-2 py-1 text-center shadow-lg">
-                      <span className="text-xs font-medium">{dateInfo.month}</span>
-                      <div className="text-base font-bold leading-none">{dateInfo.day}</div>
+                      <div className="absolute bottom-2 right-2 bg-primary text-primary-foreground rounded-lg px-2 py-1 text-center shadow-lg">
+                        <span className="text-xs font-medium">{dateInfo.month}</span>
+                        <div className="text-base font-bold leading-none">{dateInfo.day}</div>
+                      </div>
                     </div>
-                  </div>
 
-                  <CardContent className="p-3">
-                    <h3 className="font-semibold text-foreground text-sm mb-1 line-clamp-1">
-                      {festival.name}
-                    </h3>
+                    <CardContent className="p-3">
+                      <h3 className="font-semibold text-foreground text-sm mb-1 line-clamp-1">
+                        {festival.name}
+                      </h3>
 
-                    {festival.venues && (
-                      <>
-                        <div className="flex items-center text-muted-foreground text-xs mb-1">
-                          <MapPin className="h-3 w-3 mr-1" />
-                          <span className="truncate">{festival.venues.name}</span>
-                        </div>
-
-                        {festival.venues.cities && (
-                          <div className="flex items-center text-muted-foreground text-xs">
+                      {festival.venues && (
+                        <>
+                          <div className="flex items-center text-muted-foreground text-xs mb-1">
                             <MapPin className="h-3 w-3 mr-1" />
-                            <span className="truncate">
-                              {festival.venues.cities.name}
-                              {festival.venues.cities.countries?.name &&
-                                `, ${festival.venues.cities.countries.name}`}
-                            </span>
+                            <span className="truncate">{festival.venues.name}</span>
                           </div>
-                        )}
-                      </>
-                    )}
-                  </CardContent>
-                </Card>
+
+                          {festival.venues.cities && (
+                            <div className="flex items-center text-muted-foreground text-xs">
+                              <MapPin className="h-3 w-3 mr-1" />
+                              <span className="truncate">
+                                {festival.venues.cities.name}
+                                {festival.venues.cities.countries?.name &&
+                                  `, ${festival.venues.cities.countries.name}`}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </CardContent>
+                  </Card>
+                </AnimatedCard>
               );
             })}
           </div>
@@ -288,7 +291,7 @@ const FeaturedFestivalsSection = () => {
             )}
           </DialogContent>
         </Dialog>
-      </section>
+      </section >
     );
   }
 
@@ -310,62 +313,63 @@ const FeaturedFestivalsSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {festivals.map((festival) => {
+          {festivals.map((festival, index) => {
             const dateInfo = formatDate(festival.start_date);
 
             return (
-              <Card
-                key={festival.id}
-                className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
-                onClick={() => handleFestivalClick(festival)}
-              >
-                <div className="relative overflow-hidden">
-                  <img
-                    src={festival.image_url || getDefaultImage()}
-                    alt={festival.name}
-                    className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+              <AnimatedCard key={festival.id} delay={index * 0.1}>
+                <Card
+                  className={cardVariants.festival}
+                  onClick={() => handleFestivalClick(festival)}
+                >
+                  <div className={cardStyles.imageContainer}>
+                    <img
+                      src={festival.image_url || getDefaultImage()}
+                      alt={festival.name}
+                      className={`w-full h-48 object-cover ${cardStyles.imageZoom}`}
+                    />
 
-                  {festival.edition && (
-                    <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs">
-                      Edición {festival.edition}
-                    </Badge>
-                  )}
+                    {festival.edition && (
+                      <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs">
+                        Edición {festival.edition}
+                      </Badge>
+                    )}
 
-                  <div className="absolute bottom-3 right-3 bg-primary text-primary-foreground rounded-lg px-3 py-2 text-center shadow-lg">
-                    <span className="text-xs font-medium">{dateInfo.month}</span>
-                    <div className="text-xl font-bold leading-none">{dateInfo.day}</div>
+                    <div className="absolute bottom-3 right-3 bg-primary text-primary-foreground rounded-lg px-3 py-2 text-center shadow-lg">
+                      <span className="text-xs font-medium">{dateInfo.month}</span>
+                      <div className="text-xl font-bold leading-none">{dateInfo.day}</div>
+                    </div>
                   </div>
-                </div>
 
-                <CardContent className="p-4">
-                  <h3 className="font-semibold text-foreground text-base mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                    {festival.name}
-                  </h3>
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-foreground text-base mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+                      {festival.name}
+                    </h3>
 
-                  <div className="space-y-1">
-                    {festival.venues && (
-                      <>
-                        <div className="flex items-center text-muted-foreground text-sm">
-                          <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
-                          <span className="truncate">{festival.venues.name}</span>
-                        </div>
-
-                        {festival.venues.cities && (
+                    <div className="space-y-1">
+                      {festival.venues && (
+                        <>
                           <div className="flex items-center text-muted-foreground text-sm">
                             <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
-                            <span className="truncate">
-                              {festival.venues.cities.name}
-                              {festival.venues.cities.countries?.name &&
-                                `, ${festival.venues.cities.countries.name}`}
-                            </span>
+                            <span className="truncate">{festival.venues.name}</span>
                           </div>
-                        )}
-                      </>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+
+                          {festival.venues.cities && (
+                            <div className="flex items-center text-muted-foreground text-sm">
+                              <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
+                              <span className="truncate">
+                                {festival.venues.cities.name}
+                                {festival.venues.cities.countries?.name &&
+                                  `, ${festival.venues.cities.countries.name}`}
+                              </span>
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              </AnimatedCard>
             );
           })}
         </div>
@@ -500,7 +504,7 @@ const FeaturedFestivalsSection = () => {
           )}
         </DialogContent>
       </Dialog>
-    </section>
+    </section >
   );
 };
 
