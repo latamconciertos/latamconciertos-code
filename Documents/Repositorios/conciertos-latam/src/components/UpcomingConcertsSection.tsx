@@ -333,6 +333,19 @@ const UpcomingConcertsSection = () => {
                             )}
                           </div>
 
+                          {/* View Full Page Button */}
+                          <Button
+                            variant="outline"
+                            className="w-full"
+                            size="sm"
+                            asChild
+                          >
+                            <Link to={`/concerts/${selectedConcert.slug}`}>
+                              <ArrowRight className="h-4 w-4 mr-2" />
+                              Ver página completa
+                            </Link>
+                          </Button>
+
                           {/* Tickets Button */}
                           {selectedConcert.ticket_url && (
                             <Button
@@ -528,6 +541,18 @@ const UpcomingConcertsSection = () => {
                                   </p>
                                 </div>
                               )}
+
+                              {/* View Full Page Button */}
+                              <Button
+                                variant="outline"
+                                className="w-full"
+                                asChild
+                              >
+                                <Link to={`/concerts/${selectedConcert.slug}`}>
+                                  <ArrowRight className="h-4 w-4 mr-2" />
+                                  Ver página completa
+                                </Link>
+                              </Button>
 
                               {/* Tickets Button */}
                               {selectedConcert.ticket_url && (

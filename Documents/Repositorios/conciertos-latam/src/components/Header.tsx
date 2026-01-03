@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Search, User, Settings, Moon, Sun, Calendar, LogOut, Home, Mic2, Music2, BookOpen, ListMusic, Lightbulb, Users, ChevronDown } from "lucide-react";
+import { Menu, X, Search, User, Settings, Moon, Sun, Calendar, LogOut, Home, Mic2, Music2, BookOpen, ListMusic, Lightbulb, Users, ChevronDown, Bot } from "lucide-react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { supabase } from "@/integrations/supabase/client";
@@ -27,11 +27,11 @@ const Header = ({ visible = true }: HeaderProps) => {
   const [pendingNotifications, setPendingNotifications] = useState(0);
   const [experienciasOpen, setExperienciasOpen] = useState(false);
   const [miCuentaOpen, setMiCuentaOpen] = useState(false);
-  const { theme, setTheme } = useTheme() || { theme: 'system', setTheme: () => {} };
+  const { theme, setTheme } = useTheme() || { theme: 'system', setTheme: () => { } };
 
   useEffect(() => {
     console.log('[Header] Initializing auth check');
-    
+
     const checkAuth = async () => {
       try {
         const {
@@ -52,7 +52,7 @@ const Header = ({ visible = true }: HeaderProps) => {
             .select("first_name, last_name, username")
             .eq("id", session.user.id)
             .single();
-          
+
           if (profile) {
             const displayName = profile.first_name && profile.last_name
               ? `${profile.first_name} ${profile.last_name}`
@@ -71,7 +71,7 @@ const Header = ({ visible = true }: HeaderProps) => {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('[Header] Auth state changed:', event, session?.user?.email || 'No user');
-      
+
       setUser(session?.user ?? null);
 
       if (session?.user) {
@@ -87,7 +87,7 @@ const Header = ({ visible = true }: HeaderProps) => {
               .select("first_name, last_name, username")
               .eq("id", session.user.id)
               .single();
-            
+
             if (profile) {
               const displayName = profile.first_name && profile.last_name
                 ? `${profile.first_name} ${profile.last_name}`
@@ -124,6 +124,7 @@ const Header = ({ visible = true }: HeaderProps) => {
   ];
 
   const experienciasItems = [
+    { name: "Asistente IA", path: "/ai-assistant", icon: Bot },
     { name: "Setlists", path: "/setlists", icon: ListMusic },
     { name: "Proyectos Fans", path: "/fan-projects", icon: Lightbulb },
   ];
@@ -135,7 +136,7 @@ const Header = ({ visible = true }: HeaderProps) => {
   ];
 
   return (
-    <header 
+    <header
       className={cn(
         "fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl transition-all duration-500",
         visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
@@ -163,7 +164,7 @@ const Header = ({ visible = true }: HeaderProps) => {
                 {item.name}
               </Link>
             ))}
-            
+
             {/* Experiencias con hover */}
             <NavigationMenu>
               <NavigationMenuList>
@@ -176,8 +177,8 @@ const Header = ({ visible = true }: HeaderProps) => {
                       {experienciasItems.map((item) => (
                         <li key={item.path}>
                           <NavigationMenuLink asChild>
-                            <Link 
-                              to={item.path} 
+                            <Link
+                              to={item.path}
                               className="flex items-center gap-2 rounded-md p-2 text-sm hover:bg-accent hover:text-accent-foreground transition-colors"
                             >
                               <item.icon className="h-4 w-4" />
@@ -204,9 +205,9 @@ const Header = ({ visible = true }: HeaderProps) => {
               {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
             </Button>
 
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="text-white hover:bg-white/10"
               onClick={() => setIsSearchOpen(true)}
             >

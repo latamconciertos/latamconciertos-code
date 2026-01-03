@@ -35,4 +35,9 @@
     <loc>https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-concerts-sitemap</loc>
     <lastmod>2025-12-28</lastmod>
   </sitemap>
+
+  <!-- Dynamic Festivals Sitemap -->
+  <sitemap>
+    <loc>https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-festivals-sitemap</loc>
+  </sitemap>
 </sitemapindex>

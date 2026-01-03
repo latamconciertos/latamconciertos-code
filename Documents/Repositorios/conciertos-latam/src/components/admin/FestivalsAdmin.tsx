@@ -1,26 +1,25 @@
 /**
  * Festivals Admin Component
  * 
- * Main admin panel for festival management.
- * Orchestrates the festival form, list, filters, and lineup manager.
+ * Main admin panel for festival management with professional table view.
  */
 
 import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Loader2, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { 
+import {
   useAdminFestivals,
   useCreateFestival,
   useUpdateFestival,
   useDeleteFestival,
   useToggleFeaturedFestival,
 } from '@/hooks/queries/useAdminFestivals';
-import { 
+import {
   FestivalForm,
-  FestivalCard,
   FestivalFilters,
   FestivalLineupManager,
+  FestivalsTable,
   DEFAULT_FILTERS,
 } from './festivals';
 import type { FestivalFiltersState } from './festivals';
@@ -156,7 +155,7 @@ export function FestivalsAdmin() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('¿Estás seguro de que quieres eliminar este festival? Esta acción también eliminará todo el lineup.')) return;
-    
+
     try {
       await deleteFestival.mutateAsync(id);
     } catch (error) {
@@ -218,7 +217,7 @@ export function FestivalsAdmin() {
         />
       )}
 
-      {/* List */}
+      {/* Table */}
       {!showForm && (
         <div className="space-y-4">
           {festivalsLoading ? (
@@ -230,8 +229,8 @@ export function FestivalsAdmin() {
               <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No se encontraron festivales</p>
               {festivals.length === 0 && (
-                <Button 
-                  className="mt-4" 
+                <Button
+                  className="mt-4"
                   onClick={() => setShowForm(true)}
                 >
                   Crear el primer festival
@@ -239,18 +238,15 @@ export function FestivalsAdmin() {
               )}
             </div>
           ) : (
-            filteredFestivals.map((festival) => (
-              <FestivalCard
-                key={festival.id}
-                festival={festival}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-                onToggleFeatured={handleToggleFeatured}
-                onManageLineup={setLineupFestival}
-                isDeleting={deleteFestival.isPending}
-                isTogglingFeatured={toggleFeatured.isPending}
-              />
-            ))
+            <FestivalsTable
+              festivals={filteredFestivals}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+              onToggleFeatured={handleToggleFeatured}
+              onManageLineup={setLineupFestival}
+              isDeleting={deleteFestival.isPending}
+              isTogglingFeatured={toggleFeatured.isPending}
+            />
           )}
         </div>
       )}

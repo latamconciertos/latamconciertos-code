@@ -33,3 +33,5 @@ Sitemap: https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-news-sit
 Sitemap: https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-artists-sitemap
 Sitemap: https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-concerts-sitemap
 Sitemap: https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-promoters-sitemap
+Sitemap: https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-festivals-sitemap
+

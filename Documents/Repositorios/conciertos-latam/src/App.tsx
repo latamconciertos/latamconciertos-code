@@ -8,7 +8,7 @@ import { FloatingAIChat } from "@/components/FloatingAIChat";
 import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 // Critical route - load immediately
 import Index from "./pages/Index";
@@ -48,6 +48,10 @@ const FestivalDetail = lazy(() => import("./pages/FestivalDetail"));
 
 const AppContent = () => {
   useTrafficTracking();
+  const location = useLocation();
+
+  // Hide floating AI chat when already on AI assistant page
+  const showFloatingChat = location.pathname !== '/ai-assistant';
 
   return (
     <>
@@ -90,7 +94,7 @@ const AppContent = () => {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
-      <FloatingAIChat />
+      {showFloatingChat && <FloatingAIChat />}
     </>
   );
 };

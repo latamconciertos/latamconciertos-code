@@ -7,3 +7,4 @@ export { FestivalCard } from './FestivalCard';
 export { FestivalFilters, DEFAULT_FILTERS } from './FestivalFilters';
 export type { FestivalFiltersState } from './FestivalFilters';
 export { FestivalLineupManager } from './FestivalLineupManager';
+export { FestivalsTable } from './FestivalsTable.tsx';
