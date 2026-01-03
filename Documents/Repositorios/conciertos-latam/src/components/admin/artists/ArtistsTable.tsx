@@ -68,10 +68,10 @@ export const ArtistsTable = ({ artists, onEdit, onDelete }: ArtistsTableProps) =
             </div>
 
             {/* Table */}
-            <div className="border rounded-lg">
+            <div className="border rounded-lg overflow-hidden bg-card">
                 <Table>
                     <TableHeader>
-                        <TableRow>
+                        <TableRow className="bg-muted/50">
                             <TableHead className="w-20">Foto</TableHead>
                             <TableHead>Nombre</TableHead>
                             <TableHead>Slug</TableHead>
