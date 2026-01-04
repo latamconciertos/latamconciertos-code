@@ -19,10 +19,10 @@ const HeroLanding = ({
     scrollY
   } = useScroll();
 
-  // Parallax effects - simplified for stability across device sizes
-  const y = useTransform(scrollY, [0, windowHeight], [0, windowHeight * 0.3]);
-  const opacity = useTransform(scrollY, [0, windowHeight * 0.8], [1, 0]);
-  const contentOpacity = useTransform(scrollY, [0, windowHeight * 0.5], [1, 0]);
+  // Parallax effects - optimized for smoother transition
+  const y = useTransform(scrollY, [0, windowHeight], [0, windowHeight * 0.2]);
+  const opacity = useTransform(scrollY, [0, windowHeight * 0.7], [1, 0]);
+  const contentOpacity = useTransform(scrollY, [0, windowHeight * 0.6], [1, 0]);
   useEffect(() => {
     setWindowHeight(window.innerHeight);
     const handleResize = () => {
@@ -145,8 +145,8 @@ const HeroLanding = ({
       </motion.div>
     </motion.div>
 
-    {/* Bottom fade gradient - matching AuroraBackground */}
-    <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#0c1a3d] via-[#0c1a3d]/50 to-transparent pointer-events-none" />
+    {/* Bottom fade gradient - enhanced for smoother transition */}
+    <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#0c1a3d] via-[#0c1a3d]/80 to-transparent pointer-events-none" />
 
     {/* Scroll indicator */}
     <motion.button onClick={scrollToContent} className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 hover:text-white/90 transition-colors z-20" initial={{

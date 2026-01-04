@@ -6,6 +6,7 @@ import HeroLanding from '@/components/HeroLanding';
 import Footer from '@/components/Footer';
 import { AuroraBackground } from '@/components/ui/aurora-background';
 import { SpotifyCharts } from '@/components/SpotifyCharts';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 // Critical components - load immediately
 import FeaturedArtistsMobile from '@/components/FeaturedArtistsMobile';
@@ -36,6 +37,14 @@ const SectionSkeleton = () => (
 
 const Index = () => {
   const [showHeader, setShowHeader] = useState(false);
+
+  // Scroll-based fade-in for main content
+  const { scrollY } = useScroll();
+  const contentOpacity = useTransform(
+    scrollY,
+    [typeof window !== 'undefined' ? window.innerHeight * 0.5 : 400, typeof window !== 'undefined' ? window.innerHeight : 800],
+    [0, 1]
+  );
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -80,7 +89,7 @@ const Index = () => {
         <div className="relative z-10 mt-[100vh]">
           <AuroraBackground>
             <Header visible={showHeader} />
-            <main className="pt-0">
+            <motion.main className="pt-0" style={{ opacity: contentOpacity }}>
               {/* Critical components - load immediately */}
               <Hero />
               <FeaturedArtistsMobile />
@@ -116,7 +125,7 @@ const Index = () => {
 
               {/* Featured concerts section */}
               <FeaturedConcertsSection />
-            </main>
+            </motion.main>
             <Footer />
           </AuroraBackground>
         </div>
