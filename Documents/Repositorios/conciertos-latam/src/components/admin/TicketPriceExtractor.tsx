@@ -22,12 +22,12 @@ interface TicketPriceExtractorProps {
   compact?: boolean;
 }
 
-export const TicketPriceExtractor = ({ 
-  ticketUrl, 
+export const TicketPriceExtractor = ({
+  ticketUrl,
   initialPricesHtml,
-  onInsertContent, 
+  onInsertContent,
   onPricesExtracted,
-  compact = false 
+  compact = false
 }: TicketPriceExtractorProps) => {
   const [url, setUrl] = useState(ticketUrl || '');
   const [imageUrl, setImageUrl] = useState('');
@@ -65,7 +65,7 @@ export const TicketPriceExtractor = ({
 
       if (response.success && response.data) {
         setExtractedData({ ...response.data, source_url: url });
-        
+
         const totalPrices = (response.data.presale_prices?.length || 0) + (response.data.regular_prices?.length || 0);
         if (totalPrices === 0) {
           toast.warning('No se encontraron precios en la página. Verifica que la URL sea correcta.');
@@ -100,7 +100,7 @@ export const TicketPriceExtractor = ({
 
       if (response.success && response.data) {
         setExtractedData({ ...response.data, source_url: imageUrl || 'imagen subida' });
-        
+
         const totalPrices = (response.data.presale_prices?.length || 0) + (response.data.regular_prices?.length || 0);
         if (totalPrices === 0) {
           toast.warning('No se encontraron precios en la imagen.');
@@ -140,7 +140,7 @@ export const TicketPriceExtractor = ({
 
   const getAvailabilityBadge = (availability?: string) => {
     const status = availability?.toLowerCase() || '';
-    
+
     if (status.includes('agotado') || status.includes('sold')) {
       return <Badge variant="destructive">🔴 Agotado</Badge>;
     }
@@ -157,45 +157,158 @@ export const TicketPriceExtractor = ({
     if (!prices || prices.length === 0) return '';
 
     const hasServiceFees = prices.some(p => p.service_fee);
-    
-    const headerCols = hasServiceFees 
-      ? '<th style="padding: 12px; text-align: left;">Zona</th><th style="padding: 12px; text-align: left;">Precio</th><th style="padding: 12px; text-align: left;">Servicio</th><th style="padding: 12px; text-align: left;">Disponibilidad</th>'
-      : '<th style="padding: 12px; text-align: left;">Zona</th><th style="padding: 12px; text-align: left;">Precio</th><th style="padding: 12px; text-align: left;">Disponibilidad</th>';
 
-    const priceRows = prices.map(p => {
-      const availabilityEmoji = p.availability?.toLowerCase().includes('agotado') ? '🔴' :
-        p.availability?.toLowerCase().includes('poca') ? '🟡' : 
-        p.availability?.toLowerCase().includes('próxima') ? '⏳' : '🟢';
-      const availabilityText = p.availability || 'Disponible';
-      
-      if (hasServiceFees) {
-        return `<tr><td style="padding: 10px; border-bottom: 1px solid #dee2e6;"><strong>${p.zone}</strong></td><td style="padding: 10px; border-bottom: 1px solid #dee2e6;">${p.price}</td><td style="padding: 10px; border-bottom: 1px solid #dee2e6;">${p.service_fee || '-'}</td><td style="padding: 10px; border-bottom: 1px solid #dee2e6;">${availabilityEmoji} ${availabilityText}</td></tr>`;
-      }
-      return `<tr><td style="padding: 10px; border-bottom: 1px solid #dee2e6;"><strong>${p.zone}</strong></td><td style="padding: 10px; border-bottom: 1px solid #dee2e6;">${p.price}</td><td style="padding: 10px; border-bottom: 1px solid #dee2e6;">${availabilityEmoji} ${availabilityText}</td></tr>`;
-    }).join('\n');
+    // Generate price items HTML
+    const priceItems = prices.map(p => {
+      const serviceFeeHtml = hasServiceFees
+        ? `<span class="price-service">${p.service_fee || '-'}</span>`
+        : '';
+
+      return `
+        <div class="price-item">
+          <span class="price-zone">${p.zone}</span>
+          <span class="price-amount">${p.price}</span>
+          ${serviceFeeHtml}
+        </div>
+      `.trim();
+    }).join('\n        ');
+
+    // Header HTML
+    const headerHtml = hasServiceFees
+      ? `
+        <div class="price-header">
+          <span>Zona</span>
+          <span>Precio</span>
+          <span>Servicio</span>
+        </div>
+      `.trim()
+      : `
+        <div class="price-header">
+          <span>Zona</span>
+          <span>Precio</span>
+        </div>
+      `.trim();
+
+    // CSS Grid columns based on service fees
+    const gridColumns = hasServiceFees ? '2fr 1fr 1fr' : '2fr 1fr';
 
     return `
-  <div style="margin-bottom: 20px;">
-    <h4 style="margin: 0 0 12px 0; color: #212529; font-size: 1.1rem; background: ${bgColor}; padding: 10px 12px; border-radius: 8px 8px 0 0; margin-bottom: 0;">${title}</h4>
-    <table style="width: 100%; border-collapse: collapse; background: white;">
-      <thead>
-        <tr style="background: #495057; color: white;">
-          ${headerCols}
-        </tr>
-      </thead>
-      <tbody>
-        ${priceRows}
-      </tbody>
-    </table>
+  <div class="price-section" style="margin-bottom: 20px;">
+    <h4 style="margin: 0 0 12px 0; color: #212529; font-size: 1.1rem; background: ${bgColor}; padding: 10px 12px; border-radius: 8px;">${title}</h4>
+    <style>
+      /* Desktop: Grid layout */
+      @media (min-width: 640px) {
+        .price-section .price-header {
+          display: grid;
+          grid-template-columns: ${gridColumns};
+          background: #495057;
+          color: white;
+          font-weight: 600;
+          padding: 12px;
+          border-radius: 8px 8px 0 0;
+          gap: 12px;
+        }
+        
+        .price-section .price-list {
+          border: 1px solid #dee2e6;
+          border-radius: 0 0 8px 8px;
+          overflow: hidden;
+        }
+        
+        .price-section .price-item {
+          display: grid;
+          grid-template-columns: ${gridColumns};
+          gap: 12px;
+          padding: 12px;
+          background: white;
+          border-bottom: 1px solid #dee2e6;
+        }
+        
+        .price-section .price-item:last-child {
+          border-bottom: none;
+        }
+        
+        .price-section .price-item:hover {
+          background: #f8f9fa;
+        }
+        
+        .price-section .price-zone {
+          font-weight: 600;
+        }
+        
+        .price-section .price-amount {
+          color: #0d6efd;
+          font-weight: 500;
+        }
+        
+        .price-section .price-service {
+          color: #6c757d;
+        }
+      }
+      
+      /* Mobile: Stack layout */
+      @media (max-width: 639px) {
+        .price-section .price-header {
+          display: none;
+        }
+        
+        .price-section .price-list {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+        
+        .price-section .price-item {
+          background: white;
+          border-radius: 8px;
+          padding: 12px;
+          border: 1px solid #dee2e6;
+        }
+        
+        .price-section .price-zone {
+          font-weight: 600;
+          font-size: 0.95rem;
+          display: block;
+          margin-bottom: 6px;
+          color: #212529;
+        }
+        
+        .price-section .price-amount {
+          font-size: 1.15rem;
+          color: #0d6efd;
+          font-weight: 600;
+          display: block;
+          margin-bottom: 4px;
+        }
+        
+        .price-section .price-service {
+          font-size: 0.85rem;
+          color: #6c757d;
+          display: block;
+        }
+        
+        .price-section .price-service:before {
+          content: "+ ";
+        }
+        
+        .price-section .price-service:after {
+          content: " servicio";
+        }
+      }
+    </style>
+    ${headerHtml}
+    <div class="price-list">
+      ${priceItems}
+    </div>
   </div>`;
   };
 
   const generateHtmlBlock = (): string => {
     if (!extractedData) return '';
-    
+
     const hasPresale = extractedData.presale_prices && extractedData.presale_prices.length > 0;
     const hasRegular = extractedData.regular_prices && extractedData.regular_prices.length > 0;
-    
+
     if (!hasPresale && !hasRegular) return '';
 
     const today = new Date().toLocaleDateString('es-ES', {
@@ -211,11 +324,11 @@ export const TicketPriceExtractor = ({
       sourceDomain = 'fuente oficial';
     }
 
-    const presaleTable = hasPresale 
+    const presaleTable = hasPresale
       ? generatePriceTableHtml(extractedData.presale_prices, '🎟️ Precios Preventa', '#e3f2fd')
       : '';
-    
-    const regularTable = hasRegular 
+
+    const regularTable = hasRegular
       ? generatePriceTableHtml(extractedData.regular_prices, '🎫 Precios Venta General', '#f5f5f5')
       : '';
 
@@ -278,7 +391,7 @@ export const TicketPriceExtractor = ({
 
   const renderPriceTable = (prices: TicketPrice[], title: string, badgeVariant: 'default' | 'secondary') => {
     if (!prices || prices.length === 0) return null;
-    
+
     const hasServiceFees = prices.some(p => p.service_fee);
 
     return (
@@ -291,16 +404,14 @@ export const TicketPriceExtractor = ({
                 <th className="text-left p-3 font-medium">Zona</th>
                 <th className="text-left p-3 font-medium">Precio</th>
                 {hasServiceFees && <th className="text-left p-3 font-medium">Servicio</th>}
-                <th className="text-left p-3 font-medium">Estado</th>
               </tr>
             </thead>
             <tbody className="divide-y">
               {prices.map((price, index) => (
                 <tr key={index} className="hover:bg-muted/30">
                   <td className="p-3 font-medium">{price.zone}</td>
-                  <td className="p-3">{price.price}</td>
+                  <td className="p-3 text-primary font-medium">{price.price}</td>
                   {hasServiceFees && <td className="p-3 text-muted-foreground">{price.service_fee || '-'}</td>}
-                  <td className="p-3">{getAvailabilityBadge(price.availability)}</td>
                 </tr>
               ))}
             </tbody>
@@ -341,9 +452,9 @@ export const TicketPriceExtractor = ({
                 <Check className="h-4 w-4" />
                 <AlertDescription className="flex items-center justify-between">
                   <span>Ya hay precios guardados para este evento.</span>
-                  <Button 
-                    variant="destructive" 
-                    size="sm" 
+                  <Button
+                    variant="destructive"
+                    size="sm"
                     onClick={handleClearPrices}
                     type="button"
                   >
@@ -365,7 +476,7 @@ export const TicketPriceExtractor = ({
                   Desde Imagen
                 </TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="url" className="mt-4">
                 <div className="flex gap-2">
                   <div className="flex-1">
@@ -389,7 +500,7 @@ export const TicketPriceExtractor = ({
                   </Button>
                 </div>
               </TabsContent>
-              
+
               <TabsContent value="image" className="mt-4 space-y-3">
                 <div className="flex gap-2">
                   <div className="flex-1">
@@ -421,8 +532,8 @@ export const TicketPriceExtractor = ({
                     onChange={handleFileUpload}
                     className="hidden"
                   />
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isLoading}
                     className="flex-1"
@@ -486,7 +597,7 @@ export const TicketPriceExtractor = ({
               Desde Imagen
             </TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="url" className="mt-4">
             <div className="flex gap-2">
               <div className="flex-1">
@@ -512,7 +623,7 @@ export const TicketPriceExtractor = ({
               </Button>
             </div>
           </TabsContent>
-          
+
           <TabsContent value="image" className="mt-4 space-y-3">
             <div className="flex gap-2">
               <div className="flex-1">
@@ -546,8 +657,8 @@ export const TicketPriceExtractor = ({
                 onChange={handleFileUpload}
                 className="hidden"
               />
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading}
                 className="flex-1"
@@ -571,7 +682,7 @@ export const TicketPriceExtractor = ({
 
             {/* Presale prices table */}
             {renderPriceTable(extractedData.presale_prices, '🎟️ Precios Preventa', 'default')}
-            
+
             {/* Regular prices table */}
             {renderPriceTable(extractedData.regular_prices, '🎫 Precios Venta General', 'secondary')}
 
