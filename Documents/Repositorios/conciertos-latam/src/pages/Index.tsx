@@ -19,7 +19,6 @@ const ImageAutoSlider = lazy(() => import('@/components/ui/image-auto-slider'));
 const LatestNewsSection = lazy(() => import('@/components/LatestNewsSection'));
 const AnnouncementsSection = lazy(() => import('@/components/AnnouncementsSection'));
 const AdSpacesSection = lazy(() => import('@/components/AdSpacesSection'));
-const RecommendedNewsSection = lazy(() => import('@/components/RecommendedNewsSection'));
 
 // Skeleton loading component for lazy sections
 const SectionSkeleton = () => (
@@ -117,10 +116,6 @@ const Index = () => {
 
               {/* Featured concerts section */}
               <FeaturedConcertsSection />
-
-              <Suspense fallback={<SectionSkeleton />}>
-                <RecommendedNewsSection />
-              </Suspense>
             </main>
             <Footer />
           </AuroraBackground>
