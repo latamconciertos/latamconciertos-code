@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Loader2, MessageCircle, LogIn, Plus, Menu, X } from 'lucide-react';
+import { Send, Loader2, MessageCircle, LogIn, Plus, Menu, X, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,18 +11,25 @@ import Header from '@/components/Header';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { linkifyText } from '@/lib/sanitize';
-
-interface Message {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
-interface Conversation {
-  id: string;
-  title: string;
-  created_at: string;
-  updated_at: string;
-}
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { generateConversationTitle } from '@/lib/ai/conversationUtils';
+import type { Message, Conversation } from '@/types/aiAssistant';
+import { useAIConversations } from '@/hooks/useAIConversations';
 
 const AIAssistant = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -30,12 +37,14 @@ const AIAssistant = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [userName, setUserName] = useState<string>('');
-  const [conversationId, setConversationId] = useState<string | null>(null);
-  const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  // Use conversation management hook
+  const conversationHook = useAIConversations({ userId, userName });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -56,98 +65,36 @@ const AIAssistant = () => {
       }
 
       setUserId(session.user.id);
-
-      // Obtener nombre del usuario
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('first_name, username')
-        .eq('id', session.user.id)
-        .single();
-
-      if (profile) {
-        setUserName(profile.first_name || profile.username || 'Usuario');
-      }
-
-      // Cargar conversaciones existentes
-      loadConversations(session.user.id);
+      setUserName(session.user.user_metadata?.full_name || session.user.email || 'Usuario');
     };
 
     initAuth();
   }, []);
 
-  const loadConversations = async (uid: string) => {
-    const { data, error } = await supabase
-      .from('ai_conversations')
-      .select('*')
-      .eq('user_id', uid)
-      .order('updated_at', { ascending: false });
-
-    if (error) {
-      console.error('Error loading conversations:', error);
-      return;
-    }
-
-    setConversations(data || []);
-  };
-
-  const createNewConversation = async () => {
-    if (!userId) return;
-
-    const { data: conversation, error } = await supabase
-      .from('ai_conversations')
-      .insert({
-        user_id: userId,
-        title: 'Nueva conversación',
-      })
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error creating conversation:', error);
-      toast({
-        title: "Error",
-        description: "No se pudo crear la conversación",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setConversationId(conversation.id);
+  // Wrapper for createNewConversation that also resets messages
+  const handleCreateNewConversation = () => {
+    conversationHook.createNewConversation();
     setMessages([{
-      role: 'assistant',
+      role: 'bot',
       content: `¡Hola${userName ? ' ' + userName : ''}! Soy tu asistente para conciertos. Puedo ayudarte a encontrar el concierto perfecto, recomendarte hoteles cercanos, sugerirte qué llevar al evento y mucho más. ¿En qué puedo ayudarte hoy?`
     }]);
-    loadConversations(userId);
     setIsSidebarOpen(false);
   };
 
-  const loadConversation = async (convId: string) => {
-    setConversationId(convId);
-
-    // Cargar mensajes de la conversación
-    const { data, error } = await supabase
-      .from('ai_messages')
-      .select('*')
-      .eq('conversation_id', convId)
-      .order('created_at', { ascending: true });
-
-    if (error) {
-      console.error('Error loading messages:', error);
-      toast({
-        title: "Error",
-        description: "No se pudieron cargar los mensajes",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const mappedMessages: Message[] = (data || []).map(msg => ({
-      role: msg.role as 'user' | 'assistant',
-      content: msg.content
-    }));
-
-    setMessages(mappedMessages);
+  // Wrapper for loadConversation that also sets messages
+  const handleLoadConversation = async (convId: string) => {
+    const msgs = await conversationHook.loadConversation(convId);
+    setMessages(msgs);
     setIsSidebarOpen(false);
+  };
+
+  // Wrapper for handleDeleteConversation that also clears messages
+  const handleDelete = async () => {
+    const isCurrentConv = conversationHook.conversationToDelete === conversationHook.conversationId;
+    await conversationHook.handleDeleteConversation();
+    if (isCurrentConv) {
+      setMessages([]);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -171,14 +118,19 @@ const AIAssistant = () => {
     setIsLoading(true);
 
     try {
-      // Guardar mensaje del usuario en la base de datos
-      if (conversationId) {
-        await supabase.from('ai_messages').insert({
-          conversation_id: conversationId,
-          role: 'user',
-          content: userMessage,
-        });
+      // 🔧 FIX: Crear conversación automáticamente si no existe
+      let currentConversationId = conversationHook.conversationId;
+
+      if (!currentConversationId) {
+        currentConversationId = await conversationHook.createConversationWithTitle(userId, userMessage);
       }
+
+      // Guardar mensaje del usuario en la base de datos
+      await supabase.from('ai_messages').insert({
+        conversation_id: currentConversationId,
+        role: 'user',
+        content: userMessage,
+      });
 
       const response = await fetch(`https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/ai-concert-assistant`, {
         method: 'POST',
@@ -188,7 +140,7 @@ const AIAssistant = () => {
         body: JSON.stringify({
           messages: [...messages, { role: 'user', content: userMessage }],
           userId,
-          conversationId,
+          conversationId: currentConversationId,
         })
       });
 
@@ -197,32 +149,38 @@ const AIAssistant = () => {
       }
 
       const data = await response.json();
+      console.log('Response from AI assistant:', data);
+
       const assistantMessage = data.response;
 
-      setMessages(prev => [...prev, { role: 'assistant', content: assistantMessage }]);
+      // Actualizar UI con la respuesta del asistente
+      setMessages(prev => [...prev, { role: 'bot' as const, content: assistantMessage }]);
 
-      // Guardar el mensaje del asistente en la base de datos
-      if (conversationId) {
-        const { error: saveError } = await supabase.from('ai_messages').insert({
-          conversation_id: conversationId,
-          role: 'assistant',
-          content: assistantMessage,
+      // Guardar respuesta del asistente
+      console.log('Saving assistant message to database...');
+      const { error: saveError } = await supabase.from('ai_messages').insert({
+        conversation_id: currentConversationId,
+        role: 'bot',
+        content: assistantMessage,
+      });
+
+      if (saveError) {
+        console.error('Error saving assistant message:', saveError);
+        toast({
+          title: "Advertencia",
+          description: "La respuesta no se pudo guardar en el historial",
         });
-
-        if (saveError) {
-          console.error('Error saving assistant message:', saveError);
-        }
+      } else {
+        console.log('Assistant message saved successfully');
       }
 
-      // Actualizar título de la conversación con el primer mensaje del usuario
-      if (conversationId && messages.length === 1) {
-        const title = userMessage.substring(0, 50) + (userMessage.length > 50 ? '...' : '');
-        await supabase
-          .from('ai_conversations')
-          .update({ title, updated_at: new Date().toISOString() })
-          .eq('id', conversationId);
-        loadConversations(userId);
-      }
+      // Actualizar timestamp de la conversación
+      await supabase
+        .from('ai_conversations')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('id', currentConversationId);
+
+      conversationHook.loadConversations(userId);
     } catch (error) {
       console.error('Error:', error);
       toast({
@@ -231,7 +189,7 @@ const AIAssistant = () => {
         variant: "destructive",
       });
       setMessages(prev => [...prev, {
-        role: 'assistant',
+        role: 'bot' as const,
         content: 'Lo siento, tuve un problema al procesar tu solicitud. Por favor, intenta de nuevo.'
       }]);
     } finally {
@@ -255,7 +213,7 @@ const AIAssistant = () => {
           <aside className="hidden lg:flex w-64 border-r border-border bg-card/50 flex-col h-full">
             <div className="p-4 border-b border-border">
               <Button
-                onClick={createNewConversation}
+                onClick={handleCreateNewConversation}
                 className="w-full"
                 disabled={!userId}
               >
@@ -266,18 +224,81 @@ const AIAssistant = () => {
             <div className="flex-1 overflow-hidden">
               <ScrollArea className="h-full">
                 <div className="p-4 space-y-2">
-                  {conversations.map((conv) => (
-                    <button
+                  {conversationHook.conversations.map((conv) => (
+                    <div
                       key={conv.id}
-                      onClick={() => loadConversation(conv.id)}
-                      className={`w-full text-left p-3 rounded-lg hover:bg-accent transition-colors ${conversationId === conv.id ? 'bg-accent' : ''
-                        }`}
+                      className={`relative group p-3 rounded-lg hover:bg-accent transition-colors ${conversationHook.conversationId === conv.id ? 'bg-accent' : ''}`}
                     >
-                      <p className="text-sm font-medium truncate">{conv.title}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(conv.updated_at).toLocaleDateString()}
-                      </p>
-                    </button>
+                      {conversationHook.renamingConversation === conv.id ? (
+                        <div className="flex gap-2">
+                          <Input
+                            value={conversationHook.renameValue}
+                            onChange={(e) => conversationHook.setRenameValue(e.target.value)}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') conversationHook.handleRenameConversation(conv.id);
+                              if (e.key === 'Escape') {
+                                conversationHook.setRenamingConversation(null);
+                                conversationHook.setRenameValue('');
+                              }
+                            }}
+                            className="h-8 text-sm"
+                            autoFocus
+                          />
+                          <Button
+                            size="sm"
+                            onClick={() => conversationHook.handleRenameConversation(conv.id)}
+                          >
+                            <Pencil className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div
+                          onClick={() => handleLoadConversation(conv.id)}
+                          className="cursor-pointer pr-8"
+                        >
+                          <p className="text-sm font-medium truncate">{conv.title}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(conv.updated_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      )}
+
+                      {conversationHook.renamingConversation !== conv.id && (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-2 top-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                              onClick={() => {
+                                conversationHook.setRenamingConversation(conv.id);
+                                conversationHook.setRenameValue(conv.title);
+                              }}
+                            >
+                              <Pencil className="h-4 w-4 mr-2" />
+                              Renombrar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                conversationHook.setConversationToDelete(conv.id);
+                                conversationHook.setDeleteDialogOpen(true);
+                              }}
+                              className="text-destructive focus:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Eliminar
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      )}
+                    </div>
                   ))}
                 </div>
               </ScrollArea>
@@ -289,7 +310,7 @@ const AIAssistant = () => {
             <SheetContent side="left" className="w-[280px] p-0 flex flex-col">
               <div className="p-4 border-b border-border shrink-0">
                 <Button
-                  onClick={createNewConversation}
+                  onClick={handleCreateNewConversation}
                   className="w-full"
                   disabled={!userId}
                 >
@@ -300,18 +321,86 @@ const AIAssistant = () => {
               <div className="flex-1 overflow-hidden">
                 <ScrollArea className="h-full">
                   <div className="p-4 space-y-2">
-                    {conversations.map((conv) => (
-                      <button
+                    {conversationHook.conversations.map((conv) => (
+                      <div
                         key={conv.id}
-                        onClick={() => loadConversation(conv.id)}
-                        className={`w-full text-left p-3 rounded-lg hover:bg-accent transition-colors ${conversationId === conv.id ? 'bg-accent' : ''
-                          }`}
+                        className={`relative group p-3 rounded-lg hover:bg-accent transition-colors ${conversationHook.conversationId === conv.id ? 'bg-accent' : ''}`}
+                        onTouchStart={() => conversationHook.handleLongPressStart(conv.id, conv.title)}
+                        onTouchEnd={conversationHook.handleLongPressEnd}
+                        onMouseDown={() => conversationHook.handleLongPressStart(conv.id, conv.title)}
+                        onMouseUp={conversationHook.handleLongPressEnd}
+                        onMouseLeave={conversationHook.handleLongPressEnd}
                       >
-                        <p className="text-sm font-medium truncate">{conv.title}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {new Date(conv.updated_at).toLocaleDateString()}
-                        </p>
-                      </button>
+                        {conversationHook.renamingConversation === conv.id ? (
+                          <div className="flex gap-2">
+                            <Input
+                              value={conversationHook.renameValue}
+                              onChange={(e) => conversationHook.setRenameValue(e.target.value)}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter') conversationHook.handleRenameConversation(conv.id);
+                                if (e.key === 'Escape') {
+                                  conversationHook.setRenamingConversation(null);
+                                  conversationHook.setRenameValue('');
+                                }
+                              }}
+                              className="h-8 text-sm"
+                              autoFocus
+                            />
+                            <Button
+                              size="sm"
+                              onClick={() => conversationHook.handleRenameConversation(conv.id)}
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <div
+                            onClick={() => handleLoadConversation(conv.id)}
+                            className="cursor-pointer pr-8"
+                          >
+                            <p className="text-sm font-medium truncate">{conv.title}</p>
+                            <p className="text-xs text-muted-foreground">
+                              {new Date(conv.updated_at).toLocaleDateString()}
+                            </p>
+                          </div>
+                        )}
+
+                        {conversationHook.renamingConversation !== conv.id && (
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="absolute right-2 top-2 h-7 w-7"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  conversationHook.setRenamingConversation(conv.id);
+                                  conversationHook.setRenameValue(conv.title);
+                                }}
+                              >
+                                <Pencil className="h-4 w-4 mr-2" />
+                                Renombrar
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  conversationHook.setConversationToDelete(conv.id);
+                                  conversationHook.setDeleteDialogOpen(true);
+                                }}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Eliminar
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        )}
+                      </div>
                     ))}
                   </div>
                 </ScrollArea>
@@ -351,7 +440,7 @@ const AIAssistant = () => {
                 )}
 
                 {/* Mostrar conversación o pantalla de inicio */}
-                {!conversationId ? (
+                {messages.length === 0 ? (
                   <div className="flex-1 flex items-center justify-center">
                     <div className="text-center max-w-2xl">
                       <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
@@ -365,7 +454,7 @@ const AIAssistant = () => {
                         Soy tu asistente para conciertos. Puedo ayudarte a encontrar el concierto perfecto, recomendarte hoteles cercanos y mucho más.
                       </p>
                       <Button
-                        onClick={createNewConversation}
+                        onClick={handleCreateNewConversation}
                         size="lg"
                         disabled={!userId}
                       >
@@ -386,39 +475,70 @@ const AIAssistant = () => {
                         }}
                       >
                         <ScrollArea className="h-full">
-                          <div className="max-w-3xl mx-auto px-6 py-4 space-y-4 min-h-full">
-                            {messages.map((message, index) => (
-                              <div
-                                key={index}
-                                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                              >
-                                <div
-                                  className={`max-w-[80%] rounded-2xl px-4 py-3 ${message.role === 'user'
-                                    ? 'bg-primary text-primary-foreground'
-                                    : 'bg-card border border-border'
-                                    }`}
-                                >
-                                  {message.role === 'assistant' ? (
+                          <div className="max-w-3xl mx-auto px-6 py-4 space-y-4 min-h-full flex flex-col">
+                            {messages.length === 0 ? (
+                              <div className="flex-1 flex items-center justify-center">
+                                <div className="w-full max-w-2xl space-y-6">
+                                  <div className="text-center space-y-2">
+                                    <h3 className="text-lg font-semibold">¿En qué puedo ayudarte?</h3>
+                                    <p className="text-sm text-muted-foreground">Selecciona una pregunta o escribe la tuya</p>
+                                  </div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {[
+                                      '¿Qué conciertos hay próximamente?',
+                                      'Recomiéndame hoteles cerca del venue',
+                                      '¿Qué debo llevar a un concierto?',
+                                      '¿Cuándo es el próximo concierto de [artista]?'
+                                    ].map((suggestion, index) => (
+                                      <Button
+                                        key={index}
+                                        variant="outline"
+                                        className="text-left justify-start h-auto py-3 px-4 hover:bg-accent"
+                                        onClick={() => setInput(suggestion)}
+                                        disabled={isLoading}
+                                      >
+                                        <span className="text-sm text-muted-foreground">{suggestion}</span>
+                                      </Button>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                {messages.map((message, index) => (
+                                  <div
+                                    key={index}
+                                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                                  >
                                     <div
-                                      className="text-sm whitespace-pre-wrap prose prose-sm max-w-none"
-                                      dangerouslySetInnerHTML={{
-                                        __html: linkifyText(message.content.replace(/\*\*/g, ''))
-                                      }}
-                                    />
-                                  ) : (
-                                    <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                            {isLoading && (
-                              <div className="flex justify-start">
-                                <div className="bg-card border border-border rounded-2xl px-4 py-3">
-                                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                                </div>
-                              </div>
+                                      className={`max-w-[80%] rounded-2xl px-4 py-3 ${message.role === 'user'
+                                        ? 'bg-primary text-primary-foreground'
+                                        : 'bg-card border border-border'
+                                        }`}
+                                    >
+                                      {message.role === 'bot' ? (
+                                        <div
+                                          className="text-sm whitespace-pre-wrap prose prose-sm max-w-none"
+                                          dangerouslySetInnerHTML={{
+                                            __html: linkifyText(message.content.replace(/\*\*/g, ''))
+                                          }}
+                                        />
+                                      ) : (
+                                        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                                      )}
+                                    </div>
+                                  </div>
+                                ))}
+                                {isLoading && (
+                                  <div className="flex justify-start">
+                                    <div className="bg-card border border-border rounded-2xl px-4 py-3">
+                                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                                    </div>
+                                  </div>
+                                )}
+                                <div ref={messagesEndRef} />
+                              </>
                             )}
-                            <div ref={messagesEndRef} />
                           </div>
                         </ScrollArea>
                       </div>
@@ -452,27 +572,7 @@ const AIAssistant = () => {
                       </div>
                     </div>
 
-                    {/* Suggestions */}
-                    {messages.length === 0 && (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {[
-                          '¿Qué conciertos hay próximamente?',
-                          'Recomiéndame hoteles cerca del venue',
-                          '¿Qué debo llevar a un concierto?',
-                          '¿Cuándo es el próximo concierto de [artista]?'
-                        ].map((suggestion, index) => (
-                          <Button
-                            key={index}
-                            variant="outline"
-                            className="text-left justify-start h-auto py-3 px-4"
-                            onClick={() => setInput(suggestion)}
-                            disabled={isLoading}
-                          >
-                            <span className="text-sm text-muted-foreground">{suggestion}</span>
-                          </Button>
-                        ))}
-                      </div>
-                    )}
+
                   </>
                 )}
               </div>
@@ -480,6 +580,27 @@ const AIAssistant = () => {
           </div>
         </main>
       </div>
+
+      {/* Alert Dialog para confirmar eliminación */}
+      <AlertDialog open={conversationHook.deleteDialogOpen} onOpenChange={conversationHook.setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar conversación?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. La conversación y todos sus mensajes serán eliminados permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
