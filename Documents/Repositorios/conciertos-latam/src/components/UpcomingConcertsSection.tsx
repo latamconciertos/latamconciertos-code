@@ -233,53 +233,61 @@ const UpcomingConcertsSection = () => {
                     </Card>
                   </DialogTrigger>
 
-                  <DialogContent className="max-w-[95vw] max-h-[85vh] overflow-y-auto">
-                    <DialogHeader>
+                  <DialogContent className="max-w-[95vw] max-h-[85vh] overflow-y-auto p-6">
+                    <DialogHeader className="mb-6">
                       <DialogTitle className="text-lg">{selectedConcert?.title}</DialogTitle>
                     </DialogHeader>
 
                     {selectedConcert && (
                       <Tabs defaultValue="details" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2">
+                        <TabsList className="grid w-full grid-cols-2 mb-6">
                           <TabsTrigger value="details">Detalles</TabsTrigger>
                           <TabsTrigger value="community">Comunidad</TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="details" className="space-y-4">
+                        <TabsContent value="details" className="space-y-6 mt-0">
                           {/* Attendance Buttons */}
-                          <div>
-                            <h4 className="font-semibold mb-2 text-sm">¿Vas a asistir?</h4>
+                          <div className="space-y-4">
+                            <h4 className="font-semibold text-base">¿Vas a asistir?</h4>
                             <ConcertAttendanceButtons concertId={selectedConcert.id} />
                           </div>
 
                           {/* Concert Info */}
-                          <div className="space-y-2 text-sm">
-                            <div className="flex items-center space-x-2">
-                              <Users className="h-4 w-4 text-primary flex-shrink-0" />
-                              <span className="font-medium">Artista:</span>
-                              <span>{selectedConcert.artists?.name}</span>
+                          <div className="space-y-3 text-sm bg-muted/30 rounded-lg p-4">
+                            <div className="flex items-start space-x-2">
+                              <Users className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                              <div className="flex-1">
+                                <span className="font-medium block text-muted-foreground text-xs">Artista</span>
+                                <span className="text-foreground">{selectedConcert.artists?.name}</span>
+                              </div>
                             </div>
-                            <div className="flex items-center space-x-2">
-                              <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
-                              <span className="font-medium">Venue:</span>
-                              <span>{selectedConcert.venues?.name}</span>
+                            <div className="flex items-start space-x-2">
+                              <MapPin className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                              <div className="flex-1">
+                                <span className="font-medium block text-muted-foreground text-xs">Venue</span>
+                                <span className="text-foreground">{selectedConcert.venues?.name}</span>
+                              </div>
                             </div>
                             {selectedConcert.venues?.cities && (
-                              <div className="flex items-center space-x-2">
-                                <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
-                                <span className="font-medium">Ubicación:</span>
-                                <span>
-                                  {selectedConcert.venues.cities.name}
-                                  {selectedConcert.venues.cities.countries?.name &&
-                                    `, ${selectedConcert.venues.cities.countries.name}`}
-                                </span>
+                              <div className="flex items-start space-x-2">
+                                <MapPin className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                                <div className="flex-1">
+                                  <span className="font-medium block text-muted-foreground text-xs">Ubicación</span>
+                                  <span className="text-foreground">
+                                    {selectedConcert.venues.cities.name}
+                                    {selectedConcert.venues.cities.countries?.name &&
+                                      `, ${selectedConcert.venues.cities.countries.name}`}
+                                  </span>
+                                </div>
                               </div>
                             )}
                             {selectedConcert.date && (
-                              <div className="flex items-center space-x-2">
-                                <Calendar className="h-4 w-4 text-primary flex-shrink-0" />
-                                <span className="font-medium">Fecha:</span>
-                                <span>{formatDate(selectedConcert.date).day}/{formatDate(selectedConcert.date).month}/{formatDate(selectedConcert.date).year}</span>
+                              <div className="flex items-start space-x-2">
+                                <Calendar className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                                <div className="flex-1">
+                                  <span className="font-medium block text-muted-foreground text-xs">Fecha</span>
+                                  <span className="text-foreground">{formatDate(selectedConcert.date).day}/{formatDate(selectedConcert.date).month}/{formatDate(selectedConcert.date).year}</span>
+                                </div>
                               </div>
                             )}
                           </div>
@@ -294,49 +302,10 @@ const UpcomingConcertsSection = () => {
                             </div>
                           )}
 
-                          {/* Setlist */}
-                          <div>
-                            <h4 className="font-semibold mb-2 text-sm flex items-center">
-                              <Music className="h-4 w-4 mr-2" />
-                              Setlist
-                            </h4>
-
-                            {loadingSetlist ? (
-                              <LoadingSpinnerMini message="Cargando setlist..." />
-                            ) : setlist.length > 0 ? (
-                              <div className="space-y-2 max-h-40 overflow-y-auto">
-                                {setlist.map((song) => (
-                                  <div key={song.id} className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
-                                    <div className="flex items-center space-x-2">
-                                      <span className="text-xs bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center font-medium flex-shrink-0">
-                                        {song.position}
-                                      </span>
-                                      <div>
-                                        <p className="font-medium text-xs">{song.song_name}</p>
-                                        {song.artist_name && (
-                                          <p className="text-xs text-muted-foreground">{song.artist_name}</p>
-                                        )}
-                                      </div>
-                                    </div>
-                                    {song.duration_seconds && (
-                                      <span className="text-xs text-muted-foreground">
-                                        {formatDuration(song.duration_seconds)}
-                                      </span>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (
-                              <p className="text-muted-foreground text-xs py-4 text-center">
-                                El setlist aún no está disponible
-                              </p>
-                            )}
-                          </div>
-
                           {/* View Full Page Button */}
-                          <div className="border-t border-border pt-3">
-                            <p className="text-xs text-muted-foreground text-center mb-2">
-                              Ver información completa de precios, fechas de preventa y más
+                          <div className="border-t border-border pt-4 mt-4">
+                            <p className="text-xs text-muted-foreground text-center mb-3">
+                              Ver setlist, información completa de precios, fechas de preventa y más
                             </p>
                             <Button
                               variant="outline"
@@ -364,7 +333,7 @@ const UpcomingConcertsSection = () => {
                           )}
                         </TabsContent>
 
-                        <TabsContent value="community">
+                        <TabsContent value="community" className="mt-0">
                           <ConcertCommunity
                             concertId={selectedConcert.id}
                             concertTitle={selectedConcert.title}
@@ -463,23 +432,23 @@ const UpcomingConcertsSection = () => {
                     </Card>
                   </DialogTrigger>
 
-                  <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
+                  <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto p-8">
+                    <DialogHeader className="mb-8">
                       <DialogTitle className="text-xl">{selectedConcert?.title}</DialogTitle>
                     </DialogHeader>
 
                     {selectedConcert && (
                       <Tabs defaultValue="details" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2">
+                        <TabsList className="grid w-full grid-cols-2 mb-8">
                           <TabsTrigger value="details">Detalles</TabsTrigger>
                           <TabsTrigger value="community">Comunidad</TabsTrigger>
                         </TabsList>
 
-                        <TabsContent value="details" className="space-y-6">
+                        <TabsContent value="details" className="space-y-8 mt-0">
                           {/* Two Column Layout for Desktop */}
-                          <div className="grid md:grid-cols-2 gap-6">
+                          <div className="grid md:grid-cols-2 gap-8">
                             {/* Left Column - Image */}
-                            <div className="aspect-square rounded-lg overflow-hidden bg-muted">
+                            <div className="aspect-square rounded-lg overflow-hidden bg-muted shadow-md">
                               <img
                                 src={selectedConcert.artist_image_url || getDefaultImage()}
                                 alt={selectedConcert.artists?.name || selectedConcert.title}
@@ -488,10 +457,10 @@ const UpcomingConcertsSection = () => {
                             </div>
 
                             {/* Right Column - Details */}
-                            <div className="space-y-4">
+                            <div className="space-y-7">
                               {/* Attendance Buttons */}
-                              <div>
-                                <h4 className="font-semibold mb-2">¿Vas a asistir?</h4>
+                              <div className="space-y-4">
+                                <h4 className="font-semibold text-lg">¿Vas a asistir?</h4>
                                 <ConcertAttendanceButtons concertId={selectedConcert.id} />
                               </div>
 
@@ -548,9 +517,9 @@ const UpcomingConcertsSection = () => {
                               )}
 
                               {/* View Full Page Button */}
-                              <div className="border-t border-border pt-4">
+                              <div className="border-t border-border pt-5 mt-2">
                                 <p className="text-sm text-muted-foreground text-center mb-3">
-                                  Ver información completa de precios, fechas de preventa y más
+                                  Ver setlist, información completa de precios, fechas de preventa y más
                                 </p>
                                 <Button
                                   variant="outline"
@@ -577,47 +546,10 @@ const UpcomingConcertsSection = () => {
                             </div>
                           </div>
 
-                          {/* Setlist - Full Width */}
-                          <div>
-                            <h4 className="font-semibold mb-3 flex items-center">
-                              <Music className="h-5 w-5 mr-2" />
-                              Setlist
-                            </h4>
 
-                            {loadingSetlist ? (
-                              <LoadingSpinnerMini message="Cargando setlist..." />
-                            ) : setlist.length > 0 ? (
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                                {setlist.map((song) => (
-                                  <div key={song.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                                    <div className="flex items-center space-x-3">
-                                      <span className="text-sm bg-primary text-primary-foreground rounded-full w-7 h-7 flex items-center justify-center font-medium flex-shrink-0">
-                                        {song.position}
-                                      </span>
-                                      <div>
-                                        <p className="font-medium text-sm">{song.song_name}</p>
-                                        {song.artist_name && (
-                                          <p className="text-xs text-muted-foreground">{song.artist_name}</p>
-                                        )}
-                                      </div>
-                                    </div>
-                                    {song.duration_seconds && (
-                                      <span className="text-sm text-muted-foreground">
-                                        {formatDuration(song.duration_seconds)}
-                                      </span>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (
-                              <p className="text-muted-foreground text-sm py-8 text-center bg-muted/30 rounded-lg">
-                                El setlist aún no está disponible
-                              </p>
-                            )}
-                          </div>
                         </TabsContent>
 
-                        <TabsContent value="community">
+                        <TabsContent value="community" className="mt-0">
                           <ConcertCommunity
                             concertId={selectedConcert.id}
                             concertTitle={selectedConcert.title}

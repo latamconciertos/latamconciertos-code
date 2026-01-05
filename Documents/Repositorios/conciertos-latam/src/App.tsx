@@ -50,8 +50,8 @@ const AppContent = () => {
   useTrafficTracking();
   const location = useLocation();
 
-  // Hide floating AI chat when already on AI assistant page
-  const showFloatingChat = location.pathname !== '/ai-assistant';
+  // Hide floating AI chat when already on AI assistant page or community chat
+  const showFloatingChat = location.pathname !== '/ai-assistant' && !location.pathname.includes('/chat');
 
   return (
     <>
