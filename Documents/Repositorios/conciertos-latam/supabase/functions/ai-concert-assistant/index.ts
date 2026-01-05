@@ -1,3 +1,5 @@
+// deno-lint-ignore-file
+// @ts-nocheck
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
@@ -7,7 +9,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-serve(async (req) => {
+serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -76,7 +78,7 @@ serve(async (req) => {
 
     // Combinar conciertos
     const allConcerts = [...(concerts || []), ...(pastConcertsWithSetlists || [])];
-    const concertIds = allConcerts.map(c => c.id);
+    const concertIds = allConcerts.map((c: any) => c.id);
 
     // Obtener setlists de todos los conciertos
     const { data: setlists } = await supabase
@@ -116,7 +118,7 @@ serve(async (req) => {
     }
 
     // Obtener lineup de los festivales
-    const festivalIds = (festivals || []).map(f => f.id);
+    const festivalIds = (festivals || []).map((f: any) => f.id);
     const { data: festivalLineups } = await supabase
       .from('festival_lineup')
       .select(`
@@ -135,24 +137,23 @@ serve(async (req) => {
     let concertContext = '\n\n=== INFORMACIÓN DE CONCIERTOS Y SETLISTS DISPONIBLES ===\n\n';
 
     // Separar conciertos próximos y pasados
-    const upcomingConcerts = allConcerts.filter(c => new Date(c.date) >= new Date());
-    const pastConcerts = allConcerts.filter(c => new Date(c.date) < new Date());
+    const upcomingConcerts = allConcerts.filter((c: any) => new Date(c.date) >= new Date());
+    const pastConcerts = allConcerts.filter((c: any) => new Date(c.date) < new Date());
 
     // Conciertos próximos
     if (upcomingConcerts.length > 0) {
       concertContext += '📅 PRÓXIMOS CONCIERTOS:\n\n';
-      upcomingConcerts.forEach((concert) => {
+      upcomingConcerts.forEach((concert: any) => {
         concertContext += `🎵 ${concert.title}\n`;
         concertContext += `   Artista: ${concert.artists.name}\n`;
         concertContext += `   Fecha: ${new Date(concert.date).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\n`;
         concertContext += `   Venue: ${concert.venues.name} (${concert.venues.location || concert.venues.cities?.name}, ${concert.venues.country})\n`;
-        concertContext += `   URL: /setlist/${concert.artists.slug}/${concert.slug}/${concert.venues.cities?.slug || 'ciudad'}/${concert.date}\n`;
         if (concert.ticket_url) concertContext += `   Entradas: ${concert.ticket_url}\n`;
 
-        const concertSetlist = setlists?.filter(s => s.concert_id === concert.id);
+        const concertSetlist = setlists?.filter((s: any) => s.concert_id === concert.id);
         if (concertSetlist && concertSetlist.length > 0) {
           concertContext += `   ✓ SETLIST DISPONIBLE (${concertSetlist.length} canciones):\n`;
-          concertSetlist.slice(0, 10).forEach((song, idx) => {
+          concertSetlist.slice(0, 10).forEach((song: any, idx: number) => {
             concertContext += `      ${idx + 1}. ${song.song_name}${song.artist_name ? ` - ${song.artist_name}` : ''}\n`;
           });
           if (concertSetlist.length > 10) {
@@ -166,16 +167,15 @@ serve(async (req) => {
     // Conciertos pasados con setlists
     if (pastConcerts.length > 0) {
       concertContext += '\n📝 SETLISTS DE CONCIERTOS PASADOS (últimos 90 días):\n\n';
-      pastConcerts.forEach((concert) => {
-        const concertSetlist = setlists?.filter(s => s.concert_id === concert.id);
+      pastConcerts.forEach((concert: any) => {
+        const concertSetlist = setlists?.filter((s: any) => s.concert_id === concert.id);
         if (concertSetlist && concertSetlist.length > 0) {
           concertContext += `🎵 ${concert.title}\n`;
           concertContext += `   Artista: ${concert.artists.name}\n`;
           concertContext += `   Fecha: ${new Date(concert.date).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}\n`;
           concertContext += `   Venue: ${concert.venues.name} (${concert.venues.location || concert.venues.cities?.name})\n`;
-          concertContext += `   URL: /setlist/${concert.artists.slug}/${concert.slug}/${concert.venues.cities?.slug || 'ciudad'}/${concert.date}\n`;
           concertContext += `   SETLIST COMPLETO (${concertSetlist.length} canciones):\n`;
-          concertSetlist.forEach((song, idx) => {
+          concertSetlist.forEach((song: any, idx: number) => {
             concertContext += `      ${idx + 1}. ${song.song_name}${song.artist_name ? ` - ${song.artist_name}` : ''}${song.notes ? ` (${song.notes})` : ''}\n`;
           });
           concertContext += '\n';
@@ -186,7 +186,7 @@ serve(async (req) => {
     // Añadir información de festivales
     if (festivals && festivals.length > 0) {
       concertContext += '\n\n=== FESTIVALES PRÓXIMOS ===\n\n';
-      festivals.forEach((festival) => {
+      festivals.forEach((festival: any) => {
         concertContext += `🎪 ${festival.name}${festival.edition ? ` - Edición ${festival.edition}` : ''}\n`;
 
         // Formato de fechas
@@ -214,10 +214,10 @@ serve(async (req) => {
         }
 
         // Lineup del festival
-        const lineup = festivalLineups?.filter(l => l.festival_id === festival.id);
+        const lineup = festivalLineups?.filter((l: any) => l.festival_id === festival.id);
         if (lineup && lineup.length > 0) {
           concertContext += `   🎵 LINEUP CONFIRMADO (${lineup.length} artistas):\n`;
-          lineup.forEach((artist, idx) => {
+          lineup.forEach((artist: any, idx: number) => {
             concertContext += `      ${idx + 1}. ${artist.artists.name}`;
             if (artist.stage) concertContext += ` (${artist.stage})`;
             if (artist.performance_date) {
@@ -240,56 +240,66 @@ serve(async (req) => {
       concertContext += 'No hay información de conciertos o festivales disponible en este momento.\n';
     }
 
-    const systemPrompt = `Eres un asistente virtual experto en conciertos y festivales de música latina en Latinoamérica. Tu trabajo es:
+    const systemPrompt = `Eres un asistente virtual amigable y experto en conciertos y festivales de música latina en Latinoamérica. 
 
-1. Recomendar conciertos Y FESTIVALES basándote en las preferencias del usuario y la información disponible en la base de datos
-2. Proporcionar información precisa sobre fechas, venues, artistas, LINEUPS de festivales y SETLISTS cuando estén disponibles
-3. Sugerir hoteles cercanos a los venues (puedes mencionar cadenas hoteleras comunes)
-4. Dar recomendaciones sobre qué llevar a un concierto o festival (considerando clima, tipo de evento, duración, etc.)
-5. Responder preguntas sobre logística, transporte y planificación
-6. Ser amigable, entusiasta y conocedor de la escena musical latina
+🎯 TU PERSONALIDAD:
+- Eres empático, entusiasta y cercano - habla como un amigo que ama la música
+- Siempre saluda con calidez y pregunta cómo puedes ayudar
+- Celebra la pasión del usuario por la música y los conciertos
+- Usa emojis ocasionales para transmitir emoción (🎵 🎸 🎉 ✨ 🙌)
+- Termina tus respuestas invitando al usuario a preguntar más o explorando otros conciertos
 
-IMPORTANTE - FESTIVALES:
-- Tenemos información completa de festivales próximos con sus LINEUPS de artistas confirmados
-- Cuando el usuario pregunte por festivales, menciona TODOS los artistas del lineup que tenemos en la base de datos
-- Indica las fechas de inicio y fin si el festival dura varios días
-- Menciona la edición del festival si está disponible (ej: "Festival Estéreo Picnic - Edición 2026")
-- Si el festival tiene información de escenarios (stages) o fechas de presentación por artista, compártela
-- SIEMPRE menciona la URL del festival para que puedan ver toda la información completa: /festivals/[slug]
+📋 TU TRABAJO ES:
+1. Recomendar conciertos Y festivales basándote en preferencias del usuario
+2. Proporcionar información precisa sobre fechas, venues, artistas, lineups y setlists
+3. Sugerir recomendaciones logísticas (hoteles, transporte, qué llevar)
+4. Ser un guía útil y amigable en la planificación de conciertos
+5. No te involucres en temas políticos, religiosos o personales, solo conciertos y festivales y un guia para su aventura en los conciertos y festivale
 
-IMPORTANTE - SETLISTS:
-- SI el usuario pregunta por un setlist específico y LO TENEMOS en la base de datos, responde con el setlist COMPLETO
-- Menciona cuántas canciones tiene el setlist y lista TODAS las canciones en orden
-- Si el setlist está disponible, di algo como: "¡Sí! Tengo el setlist completo de ese concierto con [X] canciones:"
-- Si NO tenemos el setlist en la base de datos, sé honesto y di que no tienes esa información específica
-- Puedes sugerir setlists probables basados en canciones populares del artista SOLO si no tenemos el setlist real
-- SIEMPRE menciona la URL del setlist para que puedan verlo completo en la web
+✨ FORMATO DE RESPUESTAS (MUY IMPORTANTE):
+- NUNCA uses formato markdown con ** para negritas
+- Usa TEXTO PLANO limpio con buena estructura
+- Separa secciones con LÍNEAS EN BLANCO para mejor legibilidad
+- Usa emojis al inicio de secciones para organizar visualmente
+- Mantén párrafos cortos (máximo 2-3 líneas)
+- Numera listas claramente (1., 2., 3.)
 
-IMPORTANTE - FORMATO DE RESPUESTA:
-- NO uses formato markdown con ** para negritas o énfasis
-- Usa texto plano y limpio, bien estructurado con saltos de línea
-- Enumera los conciertos y festivales de forma clara (1., 2., 3., etc.)
-- Para cada concierto/festival menciona:
-  * Nombre del artista/concierto/festival
-  * Fecha en formato legible (ejemplo: "Miércoles, 15 de octubre de 2025" o "20-22 de marzo de 2026")
-  * Venue y ubicación
-  * Para festivales: número de artistas en el lineup y menciona los principales
-  * Si hay setlist/lineup disponible, mencionalo y lista las canciones/artistas
-  * Si hay entradas disponibles, menciona que pueden ver más detalles en el sitio
-- Si mencionas URLs, usa el formato completo que está en el contexto
-- Al final de cada recomendación, INVITA al usuario a unirse a la comunidad del concierto/festival para conectar con otros fans
+EJEMPLO DE FORMATO CORRECTO:
 
-Algunos consejos generales que puedes dar:
-- Para festivales de varios días: llevar ropa cómoda para varios cambios, protector solar, gorra, mochila pequeña
-- Para conciertos al aire libre: llevar bloqueador solar, gorra, botella de agua
-- Para conciertos en recintos cerrados: llegar temprano, llevar identificación
-- Para festivales: revisar el lineup por día para planificar cuáles artistas quieres ver
-- Siempre recomendar llegar con anticipación
-- Sugerir revisar las políticas del venue sobre objetos permitidos
+¡Hola! 🎵 Te ayudo con mucho gusto.
+
+Aquí te comparto los próximos conciertos en Colombia:
+
+1. Avenged Sevenfold - Life is but a dream
+   📅 Martes, 20 de enero de 2026
+   📍 Movistar Arena, Bogotá
+   🎟️ Entradas disponibles en Tuboleta
+
+2. Otro concierto...
+
+¿Te gustaría saber más detalles de alguno de estos conciertos? 🎸
+
+🎪 FESTIVALES:
+- Cuando menciones festivales, resalta que hay múltiples artistas
+- Indica fechas de inicio/fin si dura varios días  
+- Menciona los artistas principales del lineup
+- Proporciona URL del festival: /festivals/[slug]
+
+🎵 SETLISTS:
+- Si tenemos el setlist COMPLETO en la base de datos, compártelo TODO con entusiasmo
+- Di algo como: "¡Genial! Tengo el setlist completo de ese concierto con [X] canciones: 🎶"
+- Lista TODAS las canciones en orden numerado
+- NO incluyas URLs de setlists - el usuario ya está en la interfaz web
+- Si no tenemos el setlist, sé honesto: "Aún no tengo el setlist de ese concierto, pero puedes contribuir si asististe!"
+
+🎟️ INFORMACIÓN PRÁCTICA:
+Para festivales de varios días: ropa cómoda, protector solar, botella reutilizable
+Para conciertos al aire libre: bloqueador, gorra, llegar temprano
+Para venues cerrados: ID, llegar con anticipación
 
 ${concertContext}
 
-Responde en español de forma natural, conversacional y útil. Usa la información de conciertos, festivales y setlists disponible para dar respuestas precisas y específicas. Si tienes el setlist o lineup, compártelo completo. Si no lo tienes, sé honesto. Recuerda: NUNCA uses ** para negritas, mantén el texto limpio y legible.`;
+RECUERDA: Sé cálido, organiza bien tu respuesta con espacios, NUNCA uses **, y ayuda como un experto amigo. Cada respuesta debe ser fácil de leer y sentirse como una conversación genuina.`;
 
     console.log('Calling OpenAI API...');
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -319,28 +329,19 @@ Responde en español de forma natural, conversacional y útil. Usa la informaci�
     console.log('Received response from OpenAI');
     const aiResponse = data.choices[0].message.content;
 
-    // Guardar el mensaje del asistente si hay conversationId
-    if (conversationId && userId) {
-      console.log('Saving assistant message to database...');
-      const { error: saveError } = await supabase.from('ai_messages').insert({
-        conversation_id: conversationId,
-        role: 'assistant',
-        content: aiResponse,
-      });
-
-      if (saveError) {
-        console.error('Error saving message:', saveError);
-      }
-    }
+    // Note: El frontend se encarga de guardar los mensajes en la BD
+    // No guardamos aquí para evitar duplicación y conflictos
 
     console.log('Request completed successfully');
     return new Response(
       JSON.stringify({ response: aiResponse }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error in ai-concert-assistant:', error);
-    console.error('Error details:', error.message, error.stack);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    const errorStack = error instanceof Error ? error.stack : '';
+    console.error('Error details:', errorMessage, errorStack);
     return new Response(
       JSON.stringify({
         error: 'Error procesando tu solicitud. Por favor intenta de nuevo.'

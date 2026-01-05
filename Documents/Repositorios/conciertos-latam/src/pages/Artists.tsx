@@ -20,12 +20,12 @@ const Artists = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
-  // Debounce search term
+  // Debounce search term - increased to 700ms for better performance
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
       setCurrentPage(1);
-    }, 500);
+    }, 700);
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
@@ -139,7 +139,7 @@ const Artists = () => {
           {/* Artists Grid */}
           {artists.length > 0 ? (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-8">
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
                 {artists.map((artist: any) => {
                   const validSocialLinks = getValidSocialLinks(artist.social_links);
                   const hasValidLinks = Object.keys(validSocialLinks).length > 0;
@@ -149,11 +149,18 @@ const Artists = () => {
                       className="group overflow-hidden hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer"
                       onClick={() => navigate(`/artists/${artist.slug}`)}
                     >
-                      <div className="relative overflow-hidden">
+                      <div className="relative overflow-hidden bg-card">
+                        {/* Blurred background image */}
+                        <div
+                          className="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-60"
+                          style={{ backgroundImage: `url(${artist.photo_url || getDefaultImage()})` }}
+                        />
+
+                        {/* Main image */}
                         <img
                           src={artist.photo_url || getDefaultImage()}
                           alt={artist.name}
-                          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="relative w-full h-48 sm:h-56 md:h-64 object-contain group-hover:scale-105 transition-transform duration-500"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
@@ -179,24 +186,14 @@ const Artists = () => {
                         )}
                       </div>
 
-                      <CardContent className="p-6">
-                        <div className="space-y-4">
-                          <div>
-                            <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors mb-2">
-                              {artist.name}
-                            </h3>
-                            {artist.bio && (
-                              <p className="text-muted-foreground text-sm line-clamp-3">
-                                {artist.bio}
-                              </p>
-                            )}
-                          </div>
-
-                          <div className="flex items-center justify-between">
-                            <Badge variant="secondary" className="text-xs">
-                              Artista
-                            </Badge>
-                          </div>
+                      <CardContent className="p-4 sm:p-5">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-bold text-lg sm:text-xl text-foreground group-hover:text-primary transition-colors truncate">
+                            {artist.name}
+                          </h3>
+                          <Badge variant="secondary" className="text-xs ml-2 flex-shrink-0">
+                            Artista
+                          </Badge>
                         </div>
                       </CardContent>
                     </Card>

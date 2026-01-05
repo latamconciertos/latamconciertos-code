@@ -62,6 +62,9 @@ export default function ConcertCommunityChat() {
   }, [messages]);
 
   useEffect(() => {
+    let messageChannel: any;
+    let memberChannel: any;
+
     const initializeCommunity = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -137,10 +140,11 @@ export default function ConcertCommunityChat() {
         await loadMessages(community.id);
         // Load members
         await loadMembers(community.id);
-        // Subscribe to new messages
-        subscribeToMessages(community.id);
-        // Subscribe to member changes
-        subscribeToMembers(community.id);
+
+        // Subscribe to new messages (with cleanup reference)
+        messageChannel = subscribeToMessages(community.id);
+        // Subscribe to member changes (with cleanup reference)
+        memberChannel = subscribeToMembers(community.id);
 
       } catch (error) {
         console.error('Error initializing community:', error);
@@ -150,6 +154,16 @@ export default function ConcertCommunityChat() {
     };
 
     initializeCommunity();
+
+    // Cleanup function to unsubscribe when component unmounts
+    return () => {
+      if (messageChannel) {
+        messageChannel();
+      }
+      if (memberChannel) {
+        memberChannel();
+      }
+    };
   }, [concertId]);
 
   const loadMessages = async (communityId: string) => {
@@ -222,6 +236,8 @@ export default function ConcertCommunityChat() {
   };
 
   const subscribeToMessages = (communityId: string) => {
+    console.log('[Realtime] Subscribing to messages for community:', communityId);
+
     const channel = supabase
       .channel(`community-messages-${communityId}`)
       .on(
@@ -233,6 +249,8 @@ export default function ConcertCommunityChat() {
           filter: `community_id=eq.${communityId}`
         },
         async (payload) => {
+          console.log('[Realtime] New message received:', payload.new);
+
           const { data: profileData } = await supabase
             .from('profiles')
             .select('username, first_name, last_name')
@@ -247,17 +265,32 @@ export default function ConcertCommunityChat() {
             sender: profileData || { username: null, first_name: null, last_name: null }
           };
 
+          console.log('[Realtime] Adding message to state:', newMessage);
+
           setMessages((prev) => {
+            // Evitar duplicados
             if (prev.some(msg => msg.id === newMessage.id)) {
+              console.log('[Realtime] Message already exists, skipping');
               return prev;
             }
+            console.log('[Realtime] Message added to chat');
             return [...prev, newMessage];
           });
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        console.log('[Realtime] Subscription status:', status);
+        if (status === 'SUBSCRIBED') {
+          console.log('[Realtime] ✅ Successfully subscribed to messages');
+        } else if (status === 'CHANNEL_ERROR') {
+          console.error('[Realtime] ❌ Channel error - check RLS policies');
+        } else if (status === 'TIMED_OUT') {
+          console.error('[Realtime] ❌ Connection timed out');
+        }
+      });
 
     return () => {
+      console.log('[Realtime] Unsubscribing from messages');
       supabase.removeChannel(channel);
     };
   };
@@ -362,8 +395,8 @@ export default function ConcertCommunityChat() {
   };
 
   const getMembersPreview = () => {
-    return members.slice(0, 3).map(m => getMemberDisplayName(m)).join(', ') + 
-           (members.length > 3 ? '...' : '');
+    return members.slice(0, 3).map(m => getMemberDisplayName(m)).join(', ') +
+      (members.length > 3 ? '...' : '');
   };
 
   if (loading) {
@@ -411,8 +444,8 @@ export default function ConcertCommunityChat() {
               {/* Group Avatar */}
               <div className="w-10 h-10 rounded-full bg-primary-foreground/20 shrink-0 overflow-hidden">
                 {concertInfo.image_url ? (
-                  <img 
-                    src={concertInfo.image_url} 
+                  <img
+                    src={concertInfo.image_url}
                     alt={concertInfo.title}
                     className="w-full h-full object-cover"
                   />
@@ -422,7 +455,7 @@ export default function ConcertCommunityChat() {
                   </div>
                 )}
               </div>
-              
+
               {/* Group Info */}
               <div className="flex-1 min-w-0">
                 <h1 className="font-semibold text-sm truncate">{concertInfo.title}</h1>
@@ -430,7 +463,7 @@ export default function ConcertCommunityChat() {
                   {getMembersPreview()}
                 </p>
               </div>
-              
+
               <ChevronRight className="h-4 w-4 text-primary-foreground/50 shrink-0" />
             </button>
           </SheetTrigger>
@@ -441,8 +474,8 @@ export default function ConcertCommunityChat() {
               {/* Header Image */}
               <div className="relative h-48 bg-gradient-to-b from-primary/20 to-background">
                 {concertInfo.image_url ? (
-                  <img 
-                    src={concertInfo.image_url} 
+                  <img
+                    src={concertInfo.image_url}
                     alt={concertInfo.title}
                     className="w-full h-full object-cover"
                   />
@@ -482,8 +515,8 @@ export default function ConcertCommunityChat() {
                 <ScrollArea className="h-[calc(100%-2rem)]">
                   <div className="px-4 space-y-1 pb-4">
                     {members.map((member) => (
-                      <div 
-                        key={member.id} 
+                      <div
+                        key={member.id}
                         className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
                       >
                         <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
@@ -529,11 +562,10 @@ export default function ConcertCommunityChat() {
                   className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-3 py-2 shadow-sm ${
-                      isOwn
-                        ? 'bg-primary text-primary-foreground rounded-br-md'
-                        : 'bg-card text-card-foreground rounded-bl-md'
-                    }`}
+                    className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-3 py-2 shadow-sm ${isOwn
+                      ? 'bg-primary text-primary-foreground rounded-br-md'
+                      : 'bg-card text-card-foreground rounded-bl-md'
+                      }`}
                   >
                     {!isOwn && (
                       <p className="text-xs font-semibold mb-0.5 text-primary">
@@ -541,9 +573,8 @@ export default function ConcertCommunityChat() {
                       </p>
                     )}
                     <p className="text-sm break-words whitespace-pre-wrap">{msg.message}</p>
-                    <p className={`text-[10px] mt-1 text-right ${
-                      isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'
-                    }`}>
+                    <p className={`text-[10px] mt-1 text-right ${isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'
+                      }`}>
                       {new Date(msg.created_at).toLocaleTimeString('es-ES', {
                         hour: '2-digit',
                         minute: '2-digit'
@@ -575,8 +606,8 @@ export default function ConcertCommunityChat() {
             disabled={isSending}
             className="flex-1 rounded-full bg-muted border-0 focus-visible:ring-1 focus-visible:ring-primary"
           />
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             size="icon"
             disabled={isSending || !input.trim()}
             className="rounded-full shrink-0 h-10 w-10"

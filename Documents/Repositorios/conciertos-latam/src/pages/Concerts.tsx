@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import { Calendar, MapPin, Ticket, Music, Star, ListMusic, Globe, Search, Users, Info } from 'lucide-react';
+import { Calendar, MapPin, Ticket, Music, Star, ListMusic, Globe, Search, Users, Info, ArrowRight } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -1078,6 +1078,23 @@ const Concerts = () => {
                                   )}
                                 </div>
                               ))}
+                            </div>
+                            {/* View Full Page Button */}
+                            <div className="border-t border-border pt-3 mt-4">
+                              <p className="text-xs text-muted-foreground text-center mb-2">
+                                Ver información completa de precios, fechas de preventa y más
+                              </p>
+                              <Button
+                                variant="outline"
+                                className="w-full"
+                                size="sm"
+                                asChild
+                              >
+                                <Link to={`/concerts/${selectedConcert?.slug}`}>
+                                  <ArrowRight className="h-4 w-4 mr-2" />
+                                  Ver página completa
+                                </Link>
+                              </Button>
                             </div>
                           </div>
                         ) : (

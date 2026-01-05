@@ -44,6 +44,8 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    const abortController = new AbortController();
+
     const performSearch = async () => {
       if (searchQuery.length < 2) {
         setResults({ artists: [], concerts: [], news: [] });
@@ -60,6 +62,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
           .from("artists")
           .select("id, name, slug, photo_url")
           .ilike("name", searchTerm)
+          .abortSignal(abortController.signal)
           .limit(5);
 
         // Search concerts with artist and venue info
@@ -74,6 +77,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
             artists(name)
           `)
           .or(`title.ilike.${searchTerm}`)
+          .abortSignal(abortController.signal)
           .order("date", { ascending: true })
           .limit(5);
 
@@ -83,6 +87,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
           .select("id, title, slug, published_at")
           .eq("status", "published")
           .ilike("title", searchTerm)
+          .abortSignal(abortController.signal)
           .order("published_at", { ascending: false })
           .limit(5);
 
@@ -98,15 +103,23 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
           })) || [],
           news: newsData || [],
         });
-      } catch (error) {
-        console.error("Error searching:", error);
+      } catch (error: any) {
+        // Ignore abort errors
+        if (error.name !== 'AbortError') {
+          console.error("Error searching:", error);
+        }
       } finally {
         setIsLoading(false);
       }
     };
 
-    const timeoutId = setTimeout(performSearch, 300);
-    return () => clearTimeout(timeoutId);
+    // Increased debounce to 500ms for better performance
+    const timeoutId = setTimeout(performSearch, 500);
+
+    return () => {
+      clearTimeout(timeoutId);
+      abortController.abort();
+    };
   }, [searchQuery]);
 
   const handleClose = () => {

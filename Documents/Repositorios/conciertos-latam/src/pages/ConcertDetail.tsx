@@ -134,37 +134,158 @@ const ConcertDetail = () => {
               { label: concert.title }
             ]} />
 
-            {/* Hero Section */}
-            <div className="relative mb-6 sm:mb-8">
-              <div className="h-48 sm:h-64 md:h-96 rounded-xl sm:rounded-2xl overflow-hidden">
-                <img
-                  src={concert.image_url || artistImage || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&h=600&fit=crop"}
-                  alt={concert.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+            {/* Hero Section - Redesigned */}
+            <div className="bg-gradient-to-br from-card to-muted border border-border rounded-xl mb-6 sm:mb-8 overflow-hidden">
+              {/* Desktop Layout */}
+              <div className="hidden lg:block relative p-6">
+                {/* Share Button - Top Right Corner (Desktop) */}
+                <div className="absolute top-4 right-4 z-10">
+                  <SocialShare
+                    url={window.location.href}
+                    title={concert.title}
+                  />
+                </div>
+
+                <div className="lg:flex lg:gap-8 lg:items-start">
+                  {/* Desktop: Full size image */}
+                  <div className="lg:w-64 lg:flex-shrink-0">
+                    <div className="relative">
+                      <img
+                        src={artistImage || concert.image_url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop"}
+                        alt={concert.artists?.name || concert.title}
+                        className="w-full aspect-square object-cover rounded-xl"
+                      />
+                      {/* Favorite Button - Overlay on image */}
+                      <div className="absolute top-3 right-3">
+                        <ConcertAttendanceButtons concertId={concert.id} variant="card-favorite" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Event Info - Right Column (Desktop) */}
+                  <div className="flex-1 space-y-4">
+                    {/* Badge & Title */}
+                    <div>
+                      <Badge className={isUpcoming ? "bg-green-500 text-white mb-3" : "bg-muted text-muted-foreground mb-3"}>
+                        {isUpcoming ? 'Próximo' : 'Finalizado'}
+                      </Badge>
+                      <h1 className="text-4xl font-bold text-foreground mb-2">
+                        {concert.title}
+                      </h1>
+                      {concert.artists && (
+                        <Link to={`/artists/${concert.artists.slug}`}>
+                          <p className="text-xl text-primary hover:underline font-medium">
+                            {concert.artists.name}
+                          </p>
+                        </Link>
+                      )}
+                    </div>
+
+                    {/* Quick Info - Date & Venue */}
+                    <div className="space-y-3 pt-2">
+                      <div className="flex items-center gap-3">
+                        <Calendar className="h-5 w-5 text-primary flex-shrink-0" />
+                        <span className="text-base text-foreground capitalize">
+                          {formatDate(concert.date)}
+                        </span>
+                      </div>
+
+                      {concert.venues && (
+                        <div className="flex items-start gap-3">
+                          <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                          <div className="text-base text-foreground">
+                            <div className="font-medium">{concert.venues.name}</div>
+                            {concert.venues.cities && (
+                              <div className="text-muted-foreground">
+                                {concert.venues.cities.name}, {concert.venues.cities.countries?.name}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Action Button - Desktop */}
+                    <div className="pt-4">
+                      <ConcertAttendanceButtons concertId={concert.id} variant="default" />
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              {/* Floating Favorite Button */}
-              <div className="absolute top-4 right-4 z-10">
-                <ConcertAttendanceButtons concertId={concert.id} variant="card-favorite" />
-              </div>
+              {/* Mobile Layout - Completely Redesigned */}
+              <div className="lg:hidden">
+                {/* Top Section: Image + Share */}
+                <div className="relative bg-gradient-to-b from-background/10 to-transparent p-4">
+                  <div className="flex items-start gap-4">
+                    {/* Artist Image - Small, Left-aligned */}
+                    <div className="relative w-20 h-20 flex-shrink-0">
+                      <img
+                        src={artistImage || concert.image_url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop"}
+                        alt={concert.artists?.name || concert.title}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    </div>
 
-              {/* Concert Info Overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8">
-                <Badge className={isUpcoming ? "bg-green-500 text-white mb-2 sm:mb-4" : "bg-muted text-muted-foreground mb-2 sm:mb-4"}>
-                  {isUpcoming ? 'Próximo' : 'Finalizado'}
-                </Badge>
-                <h1 className="text-xl sm:text-3xl md:text-5xl font-bold text-foreground mb-1 sm:mb-2 line-clamp-2">
-                  {concert.title}
-                </h1>
-                {concert.artists && (
-                  <Link to={`/artists/${concert.artists.slug}`}>
-                    <p className="text-base sm:text-xl md:text-2xl text-primary hover:underline">
-                      {concert.artists.name}
-                    </p>
-                  </Link>
-                )}
+                    {/* Badge + Share in same row */}
+                    <div className="flex-1 flex items-start justify-between">
+                      <Badge className={isUpcoming ? "bg-green-500 text-white" : "bg-muted text-muted-foreground"}>
+                        {isUpcoming ? 'Próximo' : 'Finalizado'}
+                      </Badge>
+
+                      <SocialShare
+                        url={window.location.href}
+                        title={concert.title}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content Section */}
+                <div className="p-4 pt-2 space-y-3">
+                  {/* Title */}
+                  <div>
+                    <h1 className="text-xl font-bold text-foreground leading-tight mb-1">
+                      {concert.title}
+                    </h1>
+                    {concert.artists && (
+                      <Link to={`/artists/${concert.artists.slug}`}>
+                        <p className="text-base text-primary hover:underline font-medium">
+                          {concert.artists.name}
+                        </p>
+                      </Link>
+                    )}
+                  </div>
+
+                  {/* Event Info - Compact */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span className="text-sm text-foreground capitalize">
+                        {formatDate(concert.date)}
+                      </span>
+                    </div>
+
+                    {concert.venues && (
+                      <div className="flex items-start gap-2">
+                        <MapPin className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                        <div className="text-sm text-foreground">
+                          <div className="font-medium">{concert.venues.name}</div>
+                          {concert.venues.cities && (
+                            <div className="text-muted-foreground text-xs">
+                              {concert.venues.cities.name}, {concert.venues.cities.countries?.name}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Action Button - Mobile (Compact) */}
+                  <div className="pt-2">
+                    <ConcertAttendanceButtons concertId={concert.id} variant="default" />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -265,7 +386,7 @@ const ConcertDetail = () => {
               {concert.ticket_prices_html && (
                 <Card>
                   <CardContent className="p-4">
-                    <div 
+                    <div
                       className="ticket-prices-content prose prose-sm max-w-none dark:prose-invert"
                       dangerouslySetInnerHTML={{ __html: concert.ticket_prices_html }}
                     />
@@ -331,7 +452,7 @@ const ConcertDetail = () => {
                 {concert.ticket_prices_html && (
                   <Card>
                     <CardContent className="p-6">
-                      <div 
+                      <div
                         className="ticket-prices-content prose max-w-none dark:prose-invert"
                         dangerouslySetInnerHTML={{ __html: concert.ticket_prices_html }}
                       />

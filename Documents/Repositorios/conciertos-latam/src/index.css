@@ -1,370 +1,432 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+  @tailwind base;
+  @tailwind components;
+  @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+  /* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
 All colors MUST be HSL.
 */
 
-@layer base {
-  :root {
-    --background: 220 20% 96%;
-    --foreground: 222.2 84% 4.9%;
+  @layer base {
+    :root {
+      --background: 220 20% 96%;
+      --foreground: 222.2 84% 4.9%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+      --card: 0 0% 100%;
+      --card-foreground: 222.2 84% 4.9%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+      --popover: 0 0% 100%;
+      --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 218 100% 34%;
-    --primary-foreground: 0 0% 100%;
+      --primary: 218 100% 34%;
+      --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+      --secondary: 210 40% 96.1%;
+      --secondary-foreground: 222.2 47.4% 11.2%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+      --muted: 210 40% 96.1%;
+      --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+      --accent: 210 40% 96.1%;
+      --accent-foreground: 222.2 47.4% 11.2%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+      --destructive: 0 84.2% 60.2%;
+      --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 218 100% 34%;
+      --border: 214.3 31.8% 91.4%;
+      --input: 214.3 31.8% 91.4%;
+      --ring: 218 100% 34%;
 
-    --radius: 0.5rem;
+      --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+      --sidebar-background: 0 0% 98%;
+      --sidebar-foreground: 240 5.3% 26.1%;
+      --sidebar-primary: 240 5.9% 10%;
+      --sidebar-primary-foreground: 0 0% 98%;
+      --sidebar-accent: 240 4.8% 95.9%;
+      --sidebar-accent-foreground: 240 5.9% 10%;
+      --sidebar-border: 220 13% 91%;
+      --sidebar-ring: 217.2 91.2% 59.8%;
 
-    --midnight-blue: #0a1128;
-  }
-
-  .dark {
-    --background: 222 60% 8%;
-    --foreground: 210 40% 98%;
-
-    --card: 220 30% 12%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 220 30% 10%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 217 91% 60%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217 20% 20%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217 20% 18%;
-    --muted-foreground: 215 20% 65%;
-
-    --accent: 217 30% 22%;
-    --accent-foreground: 210 40% 98%;
-
-    --destructive: 0 62.8% 50.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217 20% 25%;
-    --input: 217 20% 25%;
-    --ring: 217 91% 60%;
-    --sidebar-background: 220 30% 10%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 222.2 47.4% 11.2%;
-    --sidebar-accent: 217 30% 22%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 217 20% 25%;
-    --sidebar-ring: 217 91% 60%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-
-  html,
-  body {
-    overflow-x: hidden;
-    max-width: 100vw;
-  }
-
-  body {
-    @apply bg-background text-foreground font-spotify;
-  }
-
-  /* Typography hierarchy */
-  h1,
-  .h1 {
-    @apply font-fira text-2xl font-bold;
-  }
-
-  h2,
-  .h2 {
-    @apply font-fira text-lg font-bold;
-  }
-
-  h3,
-  .h3 {
-    @apply font-roboto text-lg font-normal;
-  }
-
-  h4,
-  .h4 {
-    @apply font-roboto text-base font-normal;
-  }
-
-  h5,
-  .h5 {
-    @apply font-roboto text-sm font-normal;
-  }
-
-  h6,
-  .h6 {
-    @apply font-roboto text-xs font-normal;
-  }
-
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    @apply bg-muted;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-primary;
-    border-radius: 4px;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary/80;
-  }
-}
-
-@layer components {
-
-  /* Título principal de páginas (H1) */
-  .page-title {
-    @apply font-fira text-2xl md:text-3xl font-bold text-foreground;
-  }
-
-  /* Subtítulo/descripción de páginas */
-  .page-subtitle {
-    @apply text-muted-foreground text-base md:text-lg;
-  }
-
-  /* Título de secciones (H2) */
-  .section-title {
-    @apply font-fira text-xl md:text-2xl font-bold;
-  }
-}
-
-@layer utilities {
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
-
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  .gradient-blue {
-    background: linear-gradient(135deg, #004aad 0%, #0066cc 100%);
-  }
-
-  .text-shadow {
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  /* Stage lights effect */
-  .stage-lights {
-    position: relative;
-    overflow: hidden;
-  }
-
-  .stage-lights::before,
-  .stage-lights::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.3;
-    animation: spotlight 8s ease-in-out infinite;
-  }
-
-  .stage-lights::before {
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, hsl(var(--primary)) 0%, transparent 70%);
-    top: -200px;
-    left: 10%;
-    animation-delay: 0s;
-  }
-
-  .stage-lights::after {
-    width: 350px;
-    height: 350px;
-    background: radial-gradient(circle, hsl(218 100% 60%) 0%, transparent 70%);
-    top: -150px;
-    right: 15%;
-    animation-delay: 4s;
-  }
-
-  @keyframes spotlight {
-
-    0%,
-    100% {
-      transform: translateY(0) scale(1);
-      opacity: 0.2;
+      --midnight-blue: #0a1128;
     }
 
-    50% {
-      transform: translateY(20px) scale(1.1);
-      opacity: 0.4;
+    .dark {
+      --background: 222 60% 8%;
+      --foreground: 210 40% 98%;
+
+      --card: 220 30% 12%;
+      --card-foreground: 210 40% 98%;
+
+      --popover: 220 30% 10%;
+      --popover-foreground: 210 40% 98%;
+
+      --primary: 217 91% 60%;
+      --primary-foreground: 222.2 47.4% 11.2%;
+
+      --secondary: 217 20% 20%;
+      --secondary-foreground: 210 40% 98%;
+
+      --muted: 217 20% 18%;
+      --muted-foreground: 215 20% 65%;
+
+      --accent: 217 30% 22%;
+      --accent-foreground: 210 40% 98%;
+
+      --destructive: 0 62.8% 50.6%;
+      --destructive-foreground: 210 40% 98%;
+
+      --border: 217 20% 25%;
+      --input: 217 20% 25%;
+      --ring: 217 91% 60%;
+      --sidebar-background: 220 30% 10%;
+      --sidebar-foreground: 210 40% 98%;
+      --sidebar-primary: 217 91% 60%;
+      --sidebar-primary-foreground: 222.2 47.4% 11.2%;
+      --sidebar-accent: 217 30% 22%;
+      --sidebar-accent-foreground: 210 40% 98%;
+      --sidebar-border: 217 20% 25%;
+      --sidebar-ring: 217 91% 60%;
     }
   }
 
-  /* Newspaper grid */
-  .editorial-grid {
-    display: grid;
-    grid-template-columns: repeat(12, 1fr);
-    gap: 1rem;
+  @layer base {
+    * {
+      @apply border-border;
+    }
+
+    html,
+    body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    body {
+      @apply bg-background text-foreground font-spotify;
+    }
+
+    /* Typography hierarchy */
+    h1,
+    .h1 {
+      @apply font-fira text-2xl font-bold;
+    }
+
+    h2,
+    .h2 {
+      @apply font-fira text-lg font-bold;
+    }
+
+    h3,
+    .h3 {
+      @apply font-roboto text-lg font-normal;
+    }
+
+    h4,
+    .h4 {
+      @apply font-roboto text-base font-normal;
+    }
+
+    h5,
+    .h5 {
+      @apply font-roboto text-sm font-normal;
+    }
+
+    h6,
+    .h6 {
+      @apply font-roboto text-xs font-normal;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      @apply bg-muted;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      @apply bg-primary;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      @apply bg-primary/80;
+    }
   }
 
-  /* Breaking news ticker */
-  .breaking-news {
-    border-left: 4px solid hsl(var(--primary));
-    padding-left: 1rem;
+  @layer components {
+
+    /* Título principal de páginas (H1) */
+    .page-title {
+      @apply font-fira text-2xl md:text-3xl font-bold text-foreground;
+    }
+
+    /* Subtítulo/descripción de páginas */
+    .page-subtitle {
+      @apply text-muted-foreground text-base md:text-lg;
+    }
+
+    /* Título de secciones (H2) */
+    .section-title {
+      @apply font-fira text-xl md:text-2xl font-bold;
+    }
   }
 
-  /* Story link animation */
-  .story-link * {
-    @apply relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
-  }
+  @layer utilities {
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
 
-  /* Hide scrollbar */
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
 
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
-  }
+    .gradient-blue {
+      background: linear-gradient(135deg, #004aad 0%, #0066cc 100%);
+    }
 
-  /* Ticket Prices Styling for dark mode */
-  .dark .ticket-prices-content>div {
-    background: linear-gradient(135deg, hsl(var(--card)) 0%, hsl(var(--muted)) 100%) !important;
-    border-color: hsl(var(--border)) !important;
-  }
+    .text-shadow {
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
-  .dark .ticket-prices-content h3,
-  .dark .ticket-prices-content h4 {
-    color: hsl(var(--foreground)) !important;
-    background: hsl(var(--muted)) !important;
-  }
+    /* Stage lights effect */
+    .stage-lights {
+      position: relative;
+      overflow: hidden;
+    }
 
-  .dark .ticket-prices-content table {
-    background: hsl(var(--card)) !important;
-  }
+    .stage-lights::before,
+    .stage-lights::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.3;
+      animation: spotlight 8s ease-in-out infinite;
+    }
 
-  .dark .ticket-prices-content thead tr {
-    background: hsl(var(--secondary)) !important;
-  }
+    .stage-lights::before {
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, hsl(var(--primary)) 0%, transparent 70%);
+      top: -200px;
+      left: 10%;
+      animation-delay: 0s;
+    }
 
-  .dark .ticket-prices-content thead th {
-    color: hsl(var(--foreground)) !important;
-  }
+    .stage-lights::after {
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, hsl(218 100% 60%) 0%, transparent 70%);
+      top: -150px;
+      right: 15%;
+      animation-delay: 4s;
+    }
 
-  .dark .ticket-prices-content tbody td {
-    border-color: hsl(var(--border)) !important;
-    color: hsl(var(--foreground)) !important;
-  }
+    @keyframes spotlight {
 
-  .dark .ticket-prices-content p {
-    color: hsl(var(--muted-foreground)) !important;
-  }
+      0%,
+      100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.2;
+      }
 
-  .dark .ticket-prices-content p[style*="background: #fff3cd"] {
-    background: hsl(var(--accent)) !important;
-    color: hsl(var(--foreground)) !important;
-  }
+      50% {
+        transform: translateY(20px) scale(1.1);
+        opacity: 0.4;
+      }
+    }
 
-  .dark .ticket-prices-content a {
-    color: hsl(var(--primary)) !important;
-  }
+    /* Newspaper grid */
+    .editorial-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1rem;
+    }
 
-  /* ========================================
+    /* Breaking news ticker */
+    .breaking-news {
+      border-left: 4px solid hsl(var(--primary));
+      padding-left: 1rem;
+    }
+
+    /* Story link animation */
+    .story-link * {
+      @apply relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
+    }
+
+    /* Hide scrollbar */
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Pricing Tables - Theme Integrated */
+    .ticket-prices-content .price-section {
+      @apply my-5;
+    }
+
+    .ticket-prices-content .price-section h3 {
+      @apply font-roboto text-xl font-bold text-foreground mb-5;
+    }
+
+    /* Subsections for Preventa/Venta General */
+    .ticket-prices-content .price-subsection {
+      @apply mb-5 last:mb-0 bg-gradient-to-br from-card to-muted border border-border rounded-xl p-6;
+    }
+
+    .ticket-prices-content .price-subsection h4 {
+      @apply font-roboto text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-3 px-1;
+    }
+
+    /* Desktop Grid Layout - Always 3 columns */
+    @media (min-width: 640px) {
+
+      .ticket-prices-content .price-header,
+      .ticket-prices-content .price-item {
+        @apply grid gap-3;
+        grid-template-columns: 2fr 1fr 1fr;
+      }
+
+      .ticket-prices-content .price-header {
+        @apply bg-secondary text-secondary-foreground font-semibold p-3 rounded-t-lg;
+      }
+
+      .ticket-prices-content .price-list {
+        @apply border border-border rounded-b-lg overflow-hidden;
+      }
+
+      .ticket-prices-content .price-item {
+        @apply p-3 bg-card border-b border-border transition-colors;
+      }
+
+      .ticket-prices-content .price-item:last-child {
+        @apply border-b-0;
+      }
+
+      .ticket-prices-content .price-item:hover {
+        @apply bg-muted/50;
+      }
+
+      .ticket-prices-content .price-zone {
+        @apply font-medium text-foreground;
+      }
+
+      .ticket-prices-content .price-amount {
+        @apply text-primary font-bold;
+      }
+
+      .ticket-prices-content .price-service {
+        @apply text-muted-foreground;
+      }
+    }
+
+    /* Mobile Cards Layout */
+    @media (max-width: 639px) {
+      .ticket-prices-content .price-header {
+        @apply hidden;
+      }
+
+      .ticket-prices-content .price-list {
+        @apply space-y-2;
+      }
+
+      .ticket-prices-content .price-item {
+        @apply bg-card border border-border rounded-lg p-3;
+      }
+
+      .ticket-prices-content .price-zone {
+        @apply block font-semibold text-sm mb-1.5 text-foreground;
+      }
+
+      .ticket-prices-content .price-amount {
+        @apply block text-lg text-primary font-bold mb-1;
+      }
+
+      .ticket-prices-content .price-service {
+        @apply block text-sm text-muted-foreground;
+      }
+
+      .ticket-prices-content .price-service::before {
+        content: '+ ';
+      }
+
+      .ticket-prices-content .price-service::after {
+        content: ' servicio';
+      }
+    }
+
+    /* Footer metadata styling */
+    .ticket-prices-content p {
+      @apply text-muted-foreground text-sm mt-4;
+    }
+
+    .ticket-prices-content a {
+      @apply text-primary hover:underline;
+    }
+
+    /* ========================================
      Performance Optimizations
      ======================================== */
 
-  /* CSS Containment - Helps browser optimize rendering */
-  .concert-card,
-  .festival-card,
-  .card {
-    contain: layout style paint;
-  }
-
-  /* Optimize hover animations with will-change */
-  img:hover {
-    will-change: transform;
-  }
-
-  /* Remove will-change when not needed */
-  img:not(:hover) {
-    will-change: auto;
-  }
-
-  /* Respect user's motion preferences */
-  @media (prefers-reduced-motion: reduce) {
-
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-      scroll-behavior: auto !important;
-    }
-  }
-
-  /* Mobile-specific optimizations */
-  @media (max-width: 768px) {
-
-    /* Reduce shadow complexity on mobile */
-    .shadow-2xl {
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
-        0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    /* CSS Containment - Helps browser optimize rendering */
+    .concert-card,
+    .festival-card,
+    .card {
+      contain: layout style paint;
     }
 
-    /* Disable hover effects on touch devices */
-    @media (hover: none) and (pointer: coarse) {
+    /* Optimize hover animations with will-change */
+    img:hover {
+      will-change: transform;
+    }
 
-      .hover\:scale-105,
-      .hover\:scale-110 {
-        transform: none !important;
-      }
+    /* Remove will-change when not needed */
+    img:not(:hover) {
+      will-change: auto;
+    }
 
-      /* Ensure minimum touch target size */
-      button,
-      a {
-        min-height: 44px;
-        min-width: 44px;
+    /* Respect user's motion preferences */
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
       }
     }
+
+    /* Mobile-specific optimizations */
+    @media (max-width: 768px) {
+
+      /* Reduce shadow complexity on mobile */
+      .shadow-2xl {
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+          0 8px 10px -6px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Disable hover effects on touch devices */
+      @media (hover: none) and (pointer: coarse) {
+
+        .hover\:scale-105,
+        .hover\:scale-110 {
+          transform: none !important;
+        }
+
+        /* Ensure minimum touch target size */
+        button,
+        a {
+          min-height: 44px;
+          min-width: 44px;
+        }
+      }
+    }
   }
-}

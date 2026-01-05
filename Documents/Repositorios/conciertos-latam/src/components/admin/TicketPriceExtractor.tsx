@@ -153,10 +153,11 @@ export const TicketPriceExtractor = ({
     return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">🟢 Disponible</Badge>;
   };
 
-  const generatePriceTableHtml = (prices: TicketPrice[], title: string, bgColor: string): string => {
+  const generatePriceTableHtml = (prices: TicketPrice[], title: string): string => {
     if (!prices || prices.length === 0) return '';
 
     const hasServiceFees = prices.some(p => p.service_fee);
+    const gridClass = hasServiceFees ? 'has-service-fees' : '';
 
     // Generate price items HTML
     const priceItems = prices.map(p => {
@@ -174,133 +175,23 @@ export const TicketPriceExtractor = ({
     }).join('\n        ');
 
     // Header HTML
-    const headerHtml = hasServiceFees
-      ? `
-        <div class="price-header">
-          <span>Zona</span>
-          <span>Precio</span>
-          <span>Servicio</span>
-        </div>
-      `.trim()
-      : `
-        <div class="price-header">
-          <span>Zona</span>
-          <span>Precio</span>
-        </div>
-      `.trim();
-
-    // CSS Grid columns based on service fees
-    const gridColumns = hasServiceFees ? '2fr 1fr 1fr' : '2fr 1fr';
-
-    return `
-  <div class="price-section" style="margin-bottom: 20px;">
-    <h4 style="margin: 0 0 12px 0; color: #212529; font-size: 1.1rem; background: ${bgColor}; padding: 10px 12px; border-radius: 8px;">${title}</h4>
-    <style>
-      /* Desktop: Grid layout */
-      @media (min-width: 640px) {
-        .price-section .price-header {
-          display: grid;
-          grid-template-columns: ${gridColumns};
-          background: #495057;
-          color: white;
-          font-weight: 600;
-          padding: 12px;
-          border-radius: 8px 8px 0 0;
-          gap: 12px;
-        }
-        
-        .price-section .price-list {
-          border: 1px solid #dee2e6;
-          border-radius: 0 0 8px 8px;
-          overflow: hidden;
-        }
-        
-        .price-section .price-item {
-          display: grid;
-          grid-template-columns: ${gridColumns};
-          gap: 12px;
-          padding: 12px;
-          background: white;
-          border-bottom: 1px solid #dee2e6;
-        }
-        
-        .price-section .price-item:last-child {
-          border-bottom: none;
-        }
-        
-        .price-section .price-item:hover {
-          background: #f8f9fa;
-        }
-        
-        .price-section .price-zone {
-          font-weight: 600;
-        }
-        
-        .price-section .price-amount {
-          color: #0d6efd;
-          font-weight: 500;
-        }
-        
-        .price-section .price-service {
-          color: #6c757d;
-        }
-      }
-      
-      /* Mobile: Stack layout */
-      @media (max-width: 639px) {
-        .price-section .price-header {
-          display: none;
-        }
-        
-        .price-section .price-list {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-        
-        .price-section .price-item {
-          background: white;
-          border-radius: 8px;
-          padding: 12px;
-          border: 1px solid #dee2e6;
-        }
-        
-        .price-section .price-zone {
-          font-weight: 600;
-          font-size: 0.95rem;
-          display: block;
-          margin-bottom: 6px;
-          color: #212529;
-        }
-        
-        .price-section .price-amount {
-          font-size: 1.15rem;
-          color: #0d6efd;
-          font-weight: 600;
-          display: block;
-          margin-bottom: 4px;
-        }
-        
-        .price-section .price-service {
-          font-size: 0.85rem;
-          color: #6c757d;
-          display: block;
-        }
-        
-        .price-section .price-service:before {
-          content: "+ ";
-        }
-        
-        .price-section .price-service:after {
-          content: " servicio";
-        }
-      }
-    </style>
-    ${headerHtml}
-    <div class="price-list">
-      ${priceItems}
+    const headerHtml = `
+    <div class="price-header ${gridClass}">
+      <span>Zona</span>
+      <span>Precio</span>
+      ${hasServiceFees ? '<span>Servicio</span>' : ''}
     </div>
-  </div>`;
+  `.trim();
+
+    // Subsection with simple h4 label
+    return `
+<div class="price-subsection">
+  <h4>${title}</h4>
+  ${headerHtml}
+  <div class="price-list">
+    ${priceItems}
+  </div>
+</div>`;
   };
 
   const generateHtmlBlock = (): string => {
@@ -324,12 +215,12 @@ export const TicketPriceExtractor = ({
       sourceDomain = 'fuente oficial';
     }
 
-    const presaleTable = hasPresale
-      ? generatePriceTableHtml(extractedData.presale_prices, '🎟️ Precios Preventa', '#e3f2fd')
+    const presaleSection = hasPresale
+      ? generatePriceTableHtml(extractedData.presale_prices, 'Preventa')
       : '';
 
-    const regularTable = hasRegular
-      ? generatePriceTableHtml(extractedData.regular_prices, '🎫 Precios Venta General', '#f5f5f5')
+    const regularSection = hasRegular
+      ? generatePriceTableHtml(extractedData.regular_prices, 'Venta General')
       : '';
 
     let datesInfo = '';
@@ -340,15 +231,14 @@ export const TicketPriceExtractor = ({
       datesInfo = `<p style="margin-top: 12px; padding: 10px; background: #fff3cd; border-radius: 6px;">${parts.join(' | ')}</p>`;
     }
 
+    // Single container with one h3 title
     return `
-<div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; padding: 20px; margin: 20px 0; border: 1px solid #dee2e6;">
-  <h3 style="margin: 0 0 16px 0; color: #212529; font-size: 1.25rem;">🎫 Precios de Entradas</h3>
-  ${presaleTable}
-  ${regularTable}
+<div class="price-section">
+  <h3>🎫 Precios de Entradas</h3>
+  ${presaleSection}
+  ${regularSection}
   ${datesInfo}
-  <p style="margin: 16px 0 0 0; font-size: 0.85rem; color: #6c757d;">
-    <em>Precios actualizados: ${today} | Fuente: <a href="${extractedData.source_url}" target="_blank" rel="noopener noreferrer" style="color: #0d6efd;">${sourceDomain}</a></em>
-  </p>
+  <p><em>Precios actualizados: ${today} | Fuente: <a href="${extractedData.source_url}" target="_blank" rel="noopener noreferrer">${sourceDomain}</a></em></p>
 </div>
 `.trim();
   };

@@ -34,9 +34,12 @@ type SetlistFilter = 'all' | 'past' | 'upcoming' | 'no-setlist';
 /**
  * Fetch concerts with their setlist counts
  */
-export function useSetlistsPage(filter: SetlistFilter = 'all') {
+export function useSetlistsPage(
+  filter: SetlistFilter = 'all',
+  searchTerm?: string
+) {
   return useQuery({
-    queryKey: [...queryKeys.setlists.all, 'page', filter],
+    queryKey: [...queryKeys.setlists.all, 'page', filter, searchTerm],
     queryFn: async () => {
       if (filter === 'no-setlist') {
         // Fetch concerts without approved setlist songs
@@ -64,7 +67,14 @@ export function useSetlistsPage(filter: SetlistFilter = 'all') {
         if (setlistError) throw setlistError;
 
         const concertIdsWithSetlists = new Set(concertsWithSetlists?.map(s => s.concert_id) || []);
-        const concertsWithoutSetlists = allConcerts?.filter(c => !concertIdsWithSetlists.has(c.id)) || [];
+        let concertsWithoutSetlists = allConcerts?.filter(c => !concertIdsWithSetlists.has(c.id)) || [];
+
+        // Apply artist search filter if provided
+        if (searchTerm) {
+          concertsWithoutSetlists = concertsWithoutSetlists.filter(c =>
+            c.artist?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+          );
+        }
 
         return concertsWithoutSetlists.map(c => ({ ...c, setlist_count: 0 })) as ConcertWithSetlist[];
       }
@@ -92,9 +102,17 @@ export function useSetlistsPage(filter: SetlistFilter = 'all') {
 
       if (concertsError) throw concertsError;
 
+      // Apply artist search filter if provided (client-side for joined data)
+      let filteredConcerts = concertsData || [];
+      if (searchTerm) {
+        filteredConcerts = filteredConcerts.filter(c =>
+          c.artist?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+
       // Count setlist songs for each concert
       const concertsWithCounts = await Promise.all(
-        (concertsData || []).map(async (concert) => {
+        filteredConcerts.map(async (concert) => {
           const { count } = await supabase
             .from('setlist_songs')
             .select('*', { count: 'exact', head: true })
