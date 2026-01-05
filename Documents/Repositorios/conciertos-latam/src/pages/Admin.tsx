@@ -8,6 +8,7 @@ import { LogOut } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AdminSidebar } from '@/components/AdminSidebar';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
+import { useAuth } from '@/hooks/useAuth';
 
 // Lazy loaded admin components
 const UsersAdmin = lazy(() => import('@/components/admin/UsersAdmin').then(m => ({ default: m.UsersAdmin })));
@@ -36,6 +37,7 @@ const Admin = () => {
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'news');
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { logout } = useAuth();
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -45,7 +47,7 @@ const Admin = () => {
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      
+
       if (!session?.user) {
         navigate('/auth');
         return;
@@ -60,7 +62,7 @@ const Admin = () => {
         .eq('user_id', session.user.id);
 
       const hasAdminRole = roles?.some(r => r.role === 'admin');
-      
+
       if (!hasAdminRole) {
         toast({
           title: "Acceso denegado",
@@ -88,13 +90,8 @@ const Admin = () => {
     return () => subscription.unsubscribe();
   }, [navigate, toast]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate('/');
-    toast({
-      title: "Sesión cerrada",
-      description: "Has cerrado sesión exitosamente",
-    });
+  const handleLogout = () => {
+    logout('manual');
   };
 
   if (loading) {
@@ -144,7 +141,7 @@ const Admin = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-background">
         <AdminSidebar activeTab={activeTab} onTabChange={handleTabChange} />
-        
+
         <div className="flex-1 flex flex-col">
           <header className="border-b bg-card shadow-sm sticky top-0 z-10">
             <div className="container mx-auto px-4 py-4 flex justify-between items-center">

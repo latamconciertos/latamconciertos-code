@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Menu, X, Search, User, Settings, Moon, Sun, Calendar, LogOut, Home, Mic2, Music2, BookOpen, ListMusic, Lightbulb, Users, ChevronDown, Bot } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,7 +10,6 @@ import { useTheme } from "next-themes";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "./ui/navigation-menu";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
-import { toast } from "sonner";
 import logo from "@/assets/logo.png";
 import { GlobalSearch } from "./GlobalSearch";
 import { cn } from "@/lib/utils";
@@ -28,6 +28,7 @@ const Header = ({ visible = true }: HeaderProps) => {
   const [experienciasOpen, setExperienciasOpen] = useState(false);
   const [miCuentaOpen, setMiCuentaOpen] = useState(false);
   const { theme, setTheme } = useTheme() || { theme: 'system', setTheme: () => { } };
+  const { logout } = useAuth();
 
   useEffect(() => {
     console.log('[Header] Initializing auth check');
@@ -110,11 +111,6 @@ const Header = ({ visible = true }: HeaderProps) => {
       subscription.unsubscribe();
     };
   }, []);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast.success("Sesión cerrada correctamente");
-  };
 
   const mainNavItems = [
     { name: "Inicio", path: "/", icon: Home },
@@ -253,7 +249,7 @@ const Header = ({ visible = true }: HeaderProps) => {
                       </>
                     )}
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                    <DropdownMenuItem onClick={() => logout('manual')} className="cursor-pointer">
                       <LogOut className="h-4 w-4 mr-2" />
                       Cerrar Sesión
                     </DropdownMenuItem>
@@ -380,7 +376,7 @@ const Header = ({ visible = true }: HeaderProps) => {
 
                   <button
                     onClick={() => {
-                      handleLogout();
+                      logout('manual');
                       setIsMenuOpen(false);
                     }}
                     className="text-sm font-fira font-medium text-white hover:bg-white/10 px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2 w-full text-left"

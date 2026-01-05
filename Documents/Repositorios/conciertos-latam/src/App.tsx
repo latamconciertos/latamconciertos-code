@@ -45,6 +45,7 @@ const FriendProfile = lazy(() => import("./pages/FriendProfile"));
 const ConcertsByCountry = lazy(() => import("./pages/ConcertsByCountry"));
 const Festivals = lazy(() => import("./pages/Festivals"));
 const FestivalDetail = lazy(() => import("./pages/FestivalDetail"));
+const NewHome = lazy(() => import("./pages/NewHome"));
 
 const AppContent = () => {
   useTrafficTracking();
@@ -90,6 +91,7 @@ const AppContent = () => {
           <Route path="/friends" element={<Friends />} />
           <Route path="/friends/:friendId" element={<FriendProfile />} />
           <Route path="/conciertos/:countrySlug" element={<ConcertsByCountry />} />
+          <Route path="/nuevo-home" element={<NewHome />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

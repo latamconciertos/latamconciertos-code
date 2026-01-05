@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -23,20 +23,20 @@ const Auth = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const checkRoleAndRedirect = async (userId: string) => {
+  const checkRoleAndRedirect = useCallback(async (userId: string) => {
     const { data: roleData } = await supabase
       .from('user_roles')
       .select('role')
       .eq('user_id', userId)
       .eq('role', 'admin')
       .maybeSingle();
-    
+
     if (roleData) {
       navigate('/admin');
     } else {
       navigate('/');
     }
-  };
+  }, [navigate]);
 
   useEffect(() => {
     // Check if user is already logged in
@@ -58,7 +58,7 @@ const Auth = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [checkRoleAndRedirect]);
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
