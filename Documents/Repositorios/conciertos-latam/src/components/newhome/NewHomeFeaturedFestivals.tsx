@@ -46,7 +46,7 @@ export const NewHomeFeaturedFestivals = () => {
     return (
         <section className="w-full py-8 md:py-12 bg-background">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Section Header - Always visible, clickable on mobile */}
+                {/* Section Header */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -66,42 +66,22 @@ export const NewHomeFeaturedFestivals = () => {
                     </p>
                 </motion.div>
 
-                {/* Festival Cards - Horizontal scroll on mobile, Grid on desktop */}
-                <div className="relative">
-                    {/* Mobile: Horizontal scroll */}
-                    <div className="md:hidden overflow-x-auto pb-4 -mx-4 px-4 scrollbar-hide">
-                        <div className="flex gap-4 snap-x snap-mandatory">
-                            {festivals.map((festival) => (
-                                <div
-                                    key={festival.id}
-                                    className="flex-none w-[280px] snap-start"
-                                >
-                                    <ModernFestivalCard
-                                        festival={festival}
-                                        onClick={() => handleFestivalClick(festival)}
-                                    />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Desktop: Grid layout */}
-                    <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                        {festivals.map((festival, index) => (
-                            <motion.div
-                                key={festival.id}
-                                initial={{ opacity: 0, y: 30 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ duration: 0.6, delay: index * 0.1 }}
-                            >
-                                <ModernFestivalCard
-                                    festival={festival}
-                                    onClick={() => handleFestivalClick(festival)}
-                                />
-                            </motion.div>
-                        ))}
-                    </div>
+                {/* Festival Cards Grid - Same layout as concerts */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {festivals.map((festival, index) => (
+                        <motion.div
+                            key={festival.id}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, delay: index * 0.1 }}
+                        >
+                            <ModernFestivalCard
+                                festival={festival}
+                                onClick={() => handleFestivalClick(festival)}
+                            />
+                        </motion.div>
+                    ))}
                 </div>
 
                 {/* View All Button */}
@@ -126,4 +106,3 @@ export const NewHomeFeaturedFestivals = () => {
         </section>
     );
 };
-

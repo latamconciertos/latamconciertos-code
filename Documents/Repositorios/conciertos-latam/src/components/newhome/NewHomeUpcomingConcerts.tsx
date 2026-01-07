@@ -144,23 +144,23 @@ export const NewHomeUpcomingConcerts = () => {
                                 </div>
                             </DialogTrigger>
 
-                            <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto p-0 gap-0 bg-gradient-to-br from-background via-background to-muted/20">
-                                <DialogHeader className="sticky top-0 z-10 backdrop-blur-xl bg-background/80 border-b border-border/50 p-6 pb-4">
-                                    <div className="flex items-start gap-4">
+                            <DialogContent className="max-w-[95vw] sm:max-w-[85vw] md:max-w-5xl lg:max-w-6xl max-h-[92vh] md:max-h-[90vh] overflow-y-auto p-0 gap-0 bg-gradient-to-br from-background via-background to-muted/20">
+                                <DialogHeader className="backdrop-blur-xl bg-background/95 border-b border-border/50 p-4 sm:p-5 md:p-6 pb-3 md:pb-4">
+                                    <div className="flex items-start gap-2 md:gap-4">
                                         <Badge className="bg-primary text-primary-foreground text-sm px-3 py-1.5 font-bold shrink-0">
                                             <Music className="h-4 w-4 mr-1.5" />
                                             Concierto
                                         </Badge>
-                                        <DialogTitle className="text-2xl md:text-3xl font-bold leading-tight text-foreground font-fira">
+                                        <DialogTitle className="text-xl md:text-2xl lg:text-3xl font-bold leading-tight text-foreground font-fira">
                                             {selectedConcert?.title}
                                         </DialogTitle>
                                     </div>
                                 </DialogHeader>
 
-                                <div className="p-6 md:p-8">
+                                <div className="p-4 sm:p-5 md:p-6 lg:p-8">
                                     {selectedConcert && (
                                         <Tabs defaultValue="details" className="w-full">
-                                            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8 h-12 bg-muted/50">
+                                            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-6 md:mb-8 h-11 md:h-12 bg-muted/50">
                                                 <TabsTrigger
                                                     value="details"
                                                     className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-semibold"
@@ -178,11 +178,11 @@ export const NewHomeUpcomingConcerts = () => {
                                             </TabsList>
 
                                             <TabsContent value="details" className="space-y-6 mt-0">
-                                                <div className="grid md:grid-cols-[2fr_3fr] gap-6 md:gap-8">
+                                                <div className="grid md:grid-cols-[2fr_3fr] gap-4 sm:gap-5 md:gap-6 lg:gap-8">
                                                     {/* Image with premium styling */}
-                                                    <div className="relative">
-                                                        <div className="aspect-square rounded-2xl overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5 p-1 shadow-2xl">
-                                                            <div className="w-full h-full rounded-xl overflow-hidden bg-muted">
+                                                    <div className="relative md:aspect-square w-full">
+                                                        <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5 p-1 shadow-2xl h-full">
+                                                            <div className="h-48 sm:h-64 md:h-full w-full rounded-xl overflow-hidden bg-muted">
                                                                 <img
                                                                     src={selectedConcert.artist_image_url || getDefaultImage()}
                                                                     alt={selectedConcert.artists?.name || selectedConcert.title}
@@ -194,7 +194,7 @@ export const NewHomeUpcomingConcerts = () => {
                                                     </div>
 
                                                     {/* Details */}
-                                                    <div className="space-y-6">
+                                                    <div className="space-y-4 md:space-y-6">
                                                         {/* Attendance */}
                                                         <div className="space-y-3">
                                                             <Badge variant="outline" className="text-sm px-3 py-1">

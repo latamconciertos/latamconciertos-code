@@ -149,7 +149,7 @@ const HeroLanding = ({
     <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#0c1a3d] via-[#0c1a3d]/80 to-transparent pointer-events-none" />
 
     {/* Scroll indicator */}
-    <motion.button onClick={scrollToContent} className="absolute bottom-8 left-1/2 -translate-x-1/2 text-white/60 hover:text-white/90 transition-colors z-20" initial={{
+    <motion.button onClick={scrollToContent} className="absolute bottom-8 left-0 right-0 mx-auto w-12 h-12 flex items-center justify-center text-white/60 hover:text-white/90 transition-colors z-20" initial={{
       opacity: 0
     }} animate={{
       opacity: 1,

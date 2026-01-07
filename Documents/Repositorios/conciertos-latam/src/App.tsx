@@ -10,10 +10,9 @@ import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
-// Critical route - load immediately
-import Index from "./pages/Index";
-
 // Lazy loaded routes
+
+const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Artists = lazy(() => import("./pages/Artists"));
@@ -60,7 +59,7 @@ const AppContent = () => {
       <Sonner />
       <Suspense fallback={<LoadingSpinner />}>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<NewHome />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/seo-guide" element={<SEOGuide />} />
@@ -91,7 +90,7 @@ const AppContent = () => {
           <Route path="/friends" element={<Friends />} />
           <Route path="/friends/:friendId" element={<FriendProfile />} />
           <Route path="/conciertos/:countrySlug" element={<ConcertsByCountry />} />
-          <Route path="/nuevo-home" element={<NewHome />} />
+
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -56,7 +56,7 @@ export const NewHomeFeaturedArtists = () => {
                 </div>
 
                 {/* Artists Grid - Horizontal Scroll */}
-                <div className="flex gap-4 overflow-x-auto pb-2 pt-2 scrollbar-hide justify-center">
+                <div className="flex gap-4 overflow-x-auto pb-2 pt-2 scrollbar-hide md:justify-center">
                     {artists.map((artist) => (
                         <Link
                             key={artist.id}
