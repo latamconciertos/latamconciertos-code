@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Play, X } from 'lucide-react';
+import { Play, X, Video } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useFeaturedVideos } from '@/hooks/queries';
+import { Badge } from '@/components/ui/badge';
 import DOMPurify from 'dompurify';
 
 interface MediaItem {
@@ -73,26 +74,26 @@ const FeaturedVideosSection = () => {
 
   return (
     <>
-      <section className="py-16 bg-gradient-to-br from-background via-background to-muted/20 relative overflow-hidden">
-        {/* Decorative background elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent/5 rounded-full blur-3xl -z-10" />
+      <section className="py-8 md:py-12 bg-background">
+
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Header */}
+          {/* Section Header - Styled like other sections in new home */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-8"
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
           >
-            <p className="lg:text-md mb-2 text-center text-xs font-light uppercase tracking-widest text-muted-foreground">
-              Contenido Exclusivo
-            </p>
-            <h2 className="section-title text-center mb-2 md:mb-3">
-              Videos <span className="text-primary">Destacados</span>
+            <Badge className="bg-primary text-primary-foreground hover:bg-primary text-base px-4 py-1.5 font-bold font-fira mb-4">
+              <Video className="h-4 w-4 mr-2" />
+              Videos Destacados
+            </Badge>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 font-fira">
+              Videos Destacados
             </h2>
-            <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
+            <p className="text-base text-muted-foreground max-w-2xl mx-auto">
               Los mejores momentos de conciertos y festivales en América Latina
             </p>
           </motion.div>

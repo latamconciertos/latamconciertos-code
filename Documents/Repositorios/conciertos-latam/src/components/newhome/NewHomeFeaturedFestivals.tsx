@@ -44,7 +44,7 @@ export const NewHomeFeaturedFestivals = () => {
     }
 
     return (
-        <section className="w-full py-16 md:py-20 bg-background">
+        <section className="w-full py-8 md:py-12 bg-background">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Section Header - Always visible, clickable on mobile */}
                 <motion.div
@@ -58,10 +58,10 @@ export const NewHomeFeaturedFestivals = () => {
                         <PartyPopper className="h-4 w-4 mr-2" />
                         Festivales Destacados
                     </Badge>
-                    <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 font-fira">
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 font-fira">
                         Las Mejores Experiencias Musicales
                     </h2>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                    <p className="text-base text-muted-foreground max-w-2xl mx-auto">
                         Descubre los festivales más esperados de la región
                     </p>
                 </motion.div>
@@ -115,7 +115,7 @@ export const NewHomeFeaturedFestivals = () => {
                     <Link to="/festivals">
                         <Button
                             size="lg"
-                            className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-8 py-6 text-base rounded-full transition-all hover:scale-105"
+                            className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-6 py-3 text-base rounded-lg transition-all hover:scale-105"
                         >
                             Ver Todos los Festivales
                             <ArrowRight className="ml-2 h-5 w-5" />

@@ -7,6 +7,10 @@ import { HeroCarousel } from '@/components/HeroCarousel';
 import { FeatureCards } from '@/components/FeatureCards';
 import { NewHomeUpcomingConcerts } from '@/components/newhome/NewHomeUpcomingConcerts';
 import { NewHomeFeaturedFestivals } from '@/components/newhome/NewHomeFeaturedFestivals';
+import { NewHomeFeaturedArtists } from '@/components/newhome/NewHomeFeaturedArtists';
+import { NewHomeFeaturedImages } from '@/components/newhome/NewHomeFeaturedImages';
+import { NewHomeSpotifyCharts } from '@/components/newhome/NewHomeSpotifyCharts';
+import FeaturedVideosSection from '@/components/FeaturedVideosSection';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 const NewHome = () => {
@@ -57,6 +61,16 @@ const NewHome = () => {
                     {/* News by Category Section */}
                     <FeatureCards />
 
+                    {/* Featured Artists Section with modern design and parallax scroll reveal */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 60 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                    >
+                        <NewHomeFeaturedArtists />
+                    </motion.div>
+
                     {/* Upcoming Concerts Section with modern design and parallax scroll reveal */}
                     <motion.div
                         initial={{ opacity: 0, y: 60 }}
@@ -75,6 +89,36 @@ const NewHome = () => {
                         transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
                     >
                         <NewHomeFeaturedFestivals />
+                    </motion.div>
+
+                    {/* Featured Videos Section with modern design and parallax scroll reveal */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 60 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                    >
+                        <FeaturedVideosSection />
+                    </motion.div>
+
+                    {/* Featured Images Gallery Section with modern design and parallax scroll reveal */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 60 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                    >
+                        <NewHomeFeaturedImages />
+                    </motion.div>
+
+                    {/* Top 10 Conciertos LATAM Section with modern design and parallax scroll reveal */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 60 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+                    >
+                        <NewHomeSpotifyCharts />
                     </motion.div>
                 </motion.main>
 

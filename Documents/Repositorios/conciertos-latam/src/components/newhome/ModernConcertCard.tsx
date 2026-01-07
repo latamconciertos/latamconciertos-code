@@ -2,6 +2,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Bookmark, Share2, MapPin, Music } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { parseISO, format } from 'date-fns';
 
 interface ModernConcertCardProps {
     concert: {
@@ -24,10 +25,10 @@ interface ModernConcertCardProps {
 }
 
 export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) => {
-    // Format date for badge
-    const concertDate = new Date(concert.date);
-    const day = concertDate.getDate();
-    const month = concertDate.toLocaleDateString('es', { month: 'short' }).toUpperCase();
+    // Format date for badge - using parseISO to avoid timezone issues
+    const concertDate = parseISO(concert.date);
+    const day = format(concertDate, 'd');
+    const month = format(concertDate, 'MMM').toUpperCase();
 
     // Get artist name
     const artistName = concert.artists?.name || 'Artista';
@@ -51,7 +52,7 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
                 onClick={onClick}
             >
                 {/* Image Section with Date Badge */}
-                <div className="relative h-64 overflow-hidden bg-muted flex-shrink-0">
+                <div className="relative h-72 overflow-hidden bg-muted flex-shrink-0">
                     <img
                         src={imageUrl}
                         alt={concert.title}
@@ -63,14 +64,14 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
 
                     {/* Date Badge */}
-                    <div className="absolute top-4 right-4 bg-white dark:bg-gray-900 rounded-2xl p-3 shadow-lg text-center min-w-[70px]">
-                        <div className="text-3xl font-bold text-foreground leading-none">{day}</div>
-                        <div className="text-sm uppercase text-muted-foreground font-semibold mt-1">{month}</div>
+                    <div className="absolute top-3 right-3 bg-white dark:bg-gray-900 rounded-xl p-2.5 shadow-lg text-center min-w-[60px]">
+                        <div className="text-2xl font-bold text-foreground leading-none">{day}</div>
+                        <div className="text-xs uppercase text-muted-foreground font-semibold mt-0.5">{month}</div>
                     </div>
                 </div>
 
                 {/* Content Section */}
-                <div className="p-6 space-y-3 flex-1 flex flex-col">
+                <div className="p-4 space-y-2 flex-1 flex flex-col">
                     {/* Category/Artist */}
                     <div className="flex items-center gap-2">
                         <Music className="h-4 w-4 text-primary" />
@@ -80,7 +81,7 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-2xl font-bold text-foreground line-clamp-2 leading-tight font-fira">
+                    <h3 className="text-xl font-bold text-foreground line-clamp-2 leading-tight font-fira">
                         {concert.title}
                     </h3>
 

@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Bookmark, Share2, MapPin, Calendar, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
+import { parseISO, format } from 'date-fns';
 
 interface ModernFestivalCardProps {
     festival: {
@@ -23,10 +24,10 @@ interface ModernFestivalCardProps {
 }
 
 export const ModernFestivalCard = ({ festival, onClick }: ModernFestivalCardProps) => {
-    // Format dates for badge
-    const startDate = new Date(festival.start_date);
-    const day = startDate.getDate();
-    const month = startDate.toLocaleDateString('es', { month: 'short' }).toUpperCase();
+    // Format dates for badge - using parseISO to avoid timezone issues
+    const startDate = parseISO(festival.start_date);
+    const day = format(startDate, 'd');
+    const month = format(startDate, 'MMM').toUpperCase();
 
     // Check if multi-day festival
     const isMultiDay = festival.end_date && festival.end_date !== festival.start_date;
@@ -50,7 +51,7 @@ export const ModernFestivalCard = ({ festival, onClick }: ModernFestivalCardProp
                 onClick={onClick}
             >
                 {/* Image Section with Date Badge */}
-                <div className="relative h-64 overflow-hidden bg-muted flex-shrink-0">
+                <div className="relative h-72 overflow-hidden bg-muted flex-shrink-0">
                     <img
                         src={imageUrl}
                         alt={festival.name}
@@ -62,9 +63,9 @@ export const ModernFestivalCard = ({ festival, onClick }: ModernFestivalCardProp
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
 
                     {/* Date Badge */}
-                    <div className="absolute top-4 right-4 bg-white dark:bg-gray-900 rounded-2xl p-3 shadow-lg text-center min-w-[70px]">
-                        <div className="text-3xl font-bold text-foreground leading-none">{day}</div>
-                        <div className="text-sm uppercase text-muted-foreground font-semibold mt-1">{month}</div>
+                    <div className="absolute top-3 right-3 bg-white dark:bg-gray-900 rounded-xl p-2.5 shadow-lg text-center min-w-[60px]">
+                        <div className="text-2xl font-bold text-foreground leading-none">{day}</div>
+                        <div className="text-xs uppercase text-muted-foreground font-semibold mt-0.5">{month}</div>
                         {isMultiDay && (
                             <div className="text-xs text-primary font-semibold mt-1">VARIOS DÍAS</div>
                         )}
@@ -79,9 +80,9 @@ export const ModernFestivalCard = ({ festival, onClick }: ModernFestivalCardProp
                 </div>
 
                 {/* Content Section */}
-                <div className="p-6 space-y-3 flex-1 flex flex-col">
+                <div className="p-4 space-y-2 flex-1 flex flex-col">
                     {/* Title */}
-                    <h3 className="text-2xl font-bold text-foreground line-clamp-2 leading-tight font-fira">
+                    <h3 className="text-xl font-bold text-foreground line-clamp-2 leading-tight font-fira">
                         {festival.name}
                     </h3>
 

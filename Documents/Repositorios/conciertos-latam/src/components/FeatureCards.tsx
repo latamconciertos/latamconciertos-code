@@ -325,7 +325,7 @@ export const FeatureCards = () => {
                 >
                     <Link
                         to="/blog"
-                        className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-8 py-4 text-base rounded-lg transition-all hover:scale-105"
+                        className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-6 py-3 text-base rounded-lg transition-all hover:scale-105"
                     >
                         Ver Todas las Noticias
                         <ArrowRight className="h-5 w-5" />
