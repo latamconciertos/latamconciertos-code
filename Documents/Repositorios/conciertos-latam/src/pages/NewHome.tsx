@@ -11,6 +11,7 @@ import { NewHomeFeaturedArtists } from '@/components/newhome/NewHomeFeaturedArti
 import { NewHomeFeaturedImages } from '@/components/newhome/NewHomeFeaturedImages';
 import { NewHomeSpotifyCharts } from '@/components/newhome/NewHomeSpotifyCharts';
 import FeaturedVideosSection from '@/components/FeaturedVideosSection';
+import { HomeSEOContent } from '@/components/newhome/HomeSEOContent';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 const NewHome = () => {
@@ -27,9 +28,9 @@ const NewHome = () => {
     const structuredData = {
         "@context": "https://schema.org",
         "@type": "WebPage",
-        "name": "Nuevo Home - Conciertos Latam",
-        "description": "Descubre la nueva experiencia de Conciertos Latam - La plataforma líder de conciertos y eventos musicales de América Latina.",
-        "url": "https://www.conciertoslatam.app/nuevo-home",
+        "name": "Conciertos Latam - La Comunidad de Conciertos en Vivo",
+        "description": "La plataforma líder de conciertos y eventos musicales de América Latina. Descubre conciertos, festivales, setlists y conecta con otros fans.",
+        "url": "https://www.conciertoslatam.app/",
         "publisher": {
             "@type": "Organization",
             "name": "Conciertos Latam"
@@ -39,10 +40,10 @@ const NewHome = () => {
     return (
         <>
             <SEO
-                title="Nuevo Home - Conciertos Latam | La Comunidad Musical de América Latina"
-                description="Únete a la comunidad más grande de música en vivo de Latinoamérica. Descubre conciertos, festivales y las últimas noticias musicales."
-                keywords="conciertos latam, música en vivo, noticias musicales, eventos latinoamérica"
-                url="/nuevo-home"
+                title="Conciertos y Festivales en Latinoamérica 2026 | Calendario, Entradas y Setlists"
+                description="Encuentra todos los conciertos y festivales en América Latina 2026. Calendario actualizado, precios de entradas, setlists, venues y comunidad de fans en Colombia, México, Argentina, Chile y más. Tu guía #1 de música en vivo."
+                keywords="conciertos 2026, conciertos latinoamérica, calendario conciertos, festivales latam, cuando es el concierto de, entradas conciertos, boletas, tickets, setlists, conciertos en colombia, conciertos en mexico, conciertos en argentina, movistar arena, estadio nacional, tu boleta, ticketmaster latam, próximos conciertos, agenda de conciertos"
+                url="/"
                 structuredData={structuredData}
             />
 
@@ -121,6 +122,9 @@ const NewHome = () => {
                         <NewHomeSpotifyCharts />
                     </motion.div>
                 </motion.main>
+
+
+                <HomeSEOContent />
 
                 <Footer />
             </div>

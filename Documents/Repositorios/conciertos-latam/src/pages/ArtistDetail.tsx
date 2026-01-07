@@ -81,9 +81,9 @@ const ArtistDetail = () => {
   return (
     <>
       <SEO
-        title={`${artist.name} - Artista`}
-        description={artist.bio || `Descubre toda la información sobre ${artist.name}: conciertos, noticias, música y más.`}
-        keywords={`${artist.name}, conciertos, música, eventos, América Latina`}
+        title={`${artist.name} en Concierto | Próximas Fechas, Entradas y Setlists 2026`}
+        description={artist.bio || `Descubre todos los conciertos de ${artist.name} en América Latina 2026. ${concerts.length} shows programados. Fechas, entradas, setlists, noticias y música. No te pierdas ver a ${artist.name} en vivo.`}
+        keywords={`${artist.name}, ${artist.name} conciertos, ${artist.name} tour 2026, ${artist.name} en vivo, ${artist.name} tickets, ${artist.name} entradas, cuando toca ${artist.name}, ${artist.name} próximas fechas, ${artist.name} setlist, música ${artist.name}, ${concerts.map(c => c.venues?.location).filter(Boolean).join(', ')}`}
         image={artist.photo_url || undefined}
         url={`/artists/${artist.slug}`}
         type="music.song"
@@ -213,7 +213,7 @@ const ArtistDetail = () => {
                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                               />
                               {/* Status Badge */}
-                              <Badge 
+                              <Badge
                                 className={`absolute top-3 left-3 ${isUpcoming ? 'bg-green-500 hover:bg-green-600' : 'bg-muted hover:bg-muted/80'}`}
                               >
                                 {isUpcoming ? 'Próximo' : 'Pasado'}

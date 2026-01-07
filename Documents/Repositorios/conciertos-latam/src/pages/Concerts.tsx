@@ -14,6 +14,7 @@ import Footer from '@/components/Footer';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import ConcertAttendanceButtons from '@/components/ConcertAttendanceButtons';
 import ConcertCommunity from '@/components/ConcertCommunity';
+import { ConcertsFAQ } from '@/components/ConcertsFAQ';
 import { SocialShare } from '@/components/SocialShare';
 import { LoadingSpinnerInline, LoadingSpinnerMini } from '@/components/ui/loading-spinner';
 import {
@@ -187,16 +188,16 @@ const Concerts = () => {
 
   // Dynamic SEO title and description based on filters
   const seoData = useMemo(() => {
-    let title = 'Conciertos en América Latina 2025';
+    let title = 'Conciertos en América Latina 2026';
     let description = 'Encuentra todos los conciertos y eventos musicales en América Latina. ';
-    let keywords = 'conciertos, conciertos 2025, eventos musicales, shows en vivo, entradas, boletas, tickets, ';
+    let keywords = 'conciertos, conciertos 2026, eventos musicales, shows en vivo, entradas, boletas, tickets, ';
 
     if (selectedCityName) {
-      title = `Conciertos en ${selectedCityName} 2025`;
+      title = `Conciertos en ${selectedCityName} 2026`;
       description = `Descubre todos los conciertos y eventos musicales en ${selectedCityName}. `;
       keywords += `conciertos en ${selectedCityName}, eventos en ${selectedCityName}, shows en ${selectedCityName}, `;
     } else if (selectedCountryName) {
-      title = `Conciertos en ${selectedCountryName} 2025`;
+      title = `Conciertos en ${selectedCountryName} 2026`;
       description = `Calendario completo de conciertos y festivales en ${selectedCountryName}. `;
       keywords += `conciertos en ${selectedCountryName}, eventos en ${selectedCountryName}, festivales en ${selectedCountryName}, `;
     }
@@ -926,6 +927,8 @@ const Concerts = () => {
             </div>
           </nav>
         </main>
+
+        <ConcertsFAQ countryName={selectedCountryName || undefined} cityName={selectedCityName || undefined} />
 
         <Footer />
 

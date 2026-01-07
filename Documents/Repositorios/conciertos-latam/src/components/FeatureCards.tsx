@@ -122,8 +122,8 @@ export const FeatureCards = () => {
                     <Badge className="bg-primary text-primary-foreground hover:bg-primary text-base px-4 py-1.5 font-bold font-fira mb-4">
                         Categorías de Noticias
                     </Badge>
-                    <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 font-fira">
-                        Últimas Noticias por Categoría
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 font-fira">
+                        Últimas Noticias
                     </h2>
                     <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                         Mantente informado con las noticias más recientes del mundo musical

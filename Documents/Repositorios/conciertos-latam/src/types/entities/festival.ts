@@ -95,6 +95,8 @@ export interface FestivalWithRelations extends FestivalRow {
     name: string;
   } | null;
   lineup_count?: number;
+  lineup_artists?: string[]; // Array of artist names for the lineup
+  website_url?: string | null; // Official festival website
 }
 
 // =============================================================================

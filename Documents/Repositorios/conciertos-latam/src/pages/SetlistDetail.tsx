@@ -127,13 +127,15 @@ export default function SetlistDetail() {
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title={`Setlist: ${concert.title} | Conciertos Latam`}
-        description={`Setlist completo del concierto ${concert.title}. ${songs.length} canciones.`}
+        title={`Setlist ${concert.artist?.name || ''} - ${concert.venue?.name || ''}, ${concert.venue?.location || ''} ${concert.date ? new Date(concert.date).toLocaleDateString('es', { year: 'numeric', month: 'long', day: 'numeric' }) : ''} | Lista de Canciones`}
+        description={`Lista completa de canciones del concierto de ${concert.artist?.name || 'artista'} en ${concert.venue?.name || 'venue'}, ${concert.venue?.location || 'ciudad'} el ${concert.date ? new Date(concert.date).toLocaleDateString('es', { year: 'numeric', month: 'long', day: 'numeric' }) : 'fecha'}. ${songs.length} canciones interpretadas. Setlist oficial y contribuciones de la comunidad.`}
+        keywords={`setlist ${concert.artist?.name || ''}, setlist ${concert.artist?.name || ''} ${concert.venue?.location || ''}, ${concert.artist?.name || ''} ${concert.date ? new Date(concert.date).getFullYear() : ''}, lista de canciones ${concert.artist?.name || ''}, ${concert.artist?.name || ''} live, ${concert.artist?.name || ''} tour, setlist ${concert.venue?.name || ''}, canciones ${concert.title}`}
         type="article"
         image={concert.image_url || undefined}
+        url={`/setlists/${artistSlug}/${concertSlug}/${city}/${date}`}
       />
       <Header />
-      
+
       <main className="container mx-auto px-4 pt-20 md:pt-24 pb-6">
         <div className="max-w-3xl mx-auto">
           {/* Concert Header */}
@@ -147,9 +149,9 @@ export default function SetlistDetail() {
                 />
               </div>
             )}
-            
+
             <h1 className="text-2xl md:text-3xl font-bold mb-3">{concert.title}</h1>
-            
+
             <div className="flex flex-wrap gap-3 text-sm text-muted-foreground mb-3">
               {concert.artist && (
                 <div className="flex items-center gap-1.5">
@@ -328,7 +330,7 @@ export default function SetlistDetail() {
           )}
         </div>
       </main>
-      
+
       <Footer />
     </div>
   );
