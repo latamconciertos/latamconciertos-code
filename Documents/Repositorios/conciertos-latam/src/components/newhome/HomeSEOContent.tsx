@@ -35,7 +35,7 @@ export const HomeSEOContent = () => {
                 <div>
                     <div className="flex items-center gap-2 mb-6">
                         <MapPin className="h-5 w-5 text-primary" />
-                        <h3 className="text-2xl md:text-3xl font-bold text-foreground">Explora por País</h3>
+                        <h3 className="text-xl font-bold text-foreground">Explora por País</h3>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
                         {[
@@ -72,7 +72,7 @@ export const HomeSEOContent = () => {
                 <div>
                     <div className="flex items-center gap-2 mb-6">
                         <HelpCircle className="h-5 w-5 text-primary" />
-                        <h3 className="text-2xl md:text-3xl font-bold text-foreground">Preguntas Frecuentes</h3>
+                        <h3 className="text-xl font-bold text-foreground">Preguntas Frecuentes</h3>
                     </div>
 
                     <Accordion type="single" collapsible className="space-y-3">
