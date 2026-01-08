@@ -9,7 +9,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { formatDisplayDate } from '@/lib/timezone';
+import { formatDisplayDate, formatInBogota } from '@/lib/timezone';
 import {
   useArtistDetail,
   useArtistConcerts,
@@ -199,8 +199,8 @@ const ArtistDetail = () => {
                     {concerts.map((concert) => {
                       const concertDate = new Date(concert.date);
                       const isUpcoming = concertDate >= new Date();
-                      const monthShort = concertDate.toLocaleDateString('es-ES', { month: 'short' });
-                      const day = concertDate.getDate();
+                      const monthShort = formatInBogota(concert.date, 'MMM');
+                      const day = formatInBogota(concert.date, 'd');
 
                       return (
                         <Link key={concert.id} to={`/concerts/${concert.slug}`}>
@@ -230,7 +230,7 @@ const ArtistDetail = () => {
                               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                             </div>
 
-                            <CardContent className="p-6 flex flex-col h-[200px]">
+                            <CardContent className="p-6 flex flex-col h-[250px]">
                               <div className="flex-1 space-y-3">
                                 <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors line-clamp-2">
                                   {concert.title}
