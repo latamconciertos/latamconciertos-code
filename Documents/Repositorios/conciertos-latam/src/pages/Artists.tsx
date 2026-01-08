@@ -146,24 +146,19 @@ const Artists = () => {
                   return (
                     <Card
                       key={artist.id}
-                      className="group overflow-hidden hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer"
+                      className="group overflow-hidden rounded-2xl hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer"
                       onClick={() => navigate(`/artists/${artist.slug}`)}
                     >
-                      <div className="relative overflow-hidden bg-card">
-                        {/* Blurred background image */}
-                        <div
-                          className="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-60"
-                          style={{ backgroundImage: `url(${artist.photo_url || getDefaultImage()})` }}
-                        />
-
-                        {/* Main image */}
+                      <div className="relative overflow-hidden">
                         <img
                           src={artist.photo_url || getDefaultImage()}
                           alt={artist.name}
-                          className="relative w-full h-48 sm:h-56 md:h-64 object-contain group-hover:scale-105 transition-transform duration-500"
+                          className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500 rounded-t-2xl"
+                          loading="lazy"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
+                        {/* Social links on hover */}
                         {hasValidLinks && (
                           <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             <div className="flex gap-2 justify-center">
@@ -172,7 +167,7 @@ const Artists = () => {
                                   key={platform}
                                   size="sm"
                                   variant="secondary"
-                                  className="bg-black/70 hover:bg-black/90 text-white border-0"
+                                  className="bg-black/70 hover:bg-black/90 text-white border-0 h-8 w-8 p-0"
                                   onClick={e => {
                                     e.stopPropagation();
                                     window.open(url, '_blank');
@@ -186,14 +181,26 @@ const Artists = () => {
                         )}
                       </div>
 
-                      <CardContent className="p-4 sm:p-5">
-                        <div className="flex items-center justify-between">
-                          <h3 className="font-bold text-lg sm:text-xl text-foreground group-hover:text-primary transition-colors truncate">
+                      <CardContent className="p-5">
+                        <div className="space-y-3">
+                          <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors line-clamp-1">
                             {artist.name}
                           </h3>
-                          <Badge variant="secondary" className="text-xs ml-2 flex-shrink-0">
-                            Artista
-                          </Badge>
+
+                          {/* Genre Tags */}
+                          {artist.genre && (
+                            <div className="flex flex-wrap gap-2">
+                              {artist.genre.split(',').slice(0, 3).map((genre: string, index: number) => (
+                                <Badge
+                                  key={index}
+                                  variant="secondary"
+                                  className="text-xs bg-primary/10 text-primary hover:bg-primary/20"
+                                >
+                                  {genre.trim()}
+                                </Badge>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </CardContent>
                     </Card>

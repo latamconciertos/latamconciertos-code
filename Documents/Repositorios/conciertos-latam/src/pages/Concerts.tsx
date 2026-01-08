@@ -386,7 +386,7 @@ const Concerts = () => {
 
     return (
       <Card
-        className={`group overflow-hidden hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer concert-card ${isPast ? 'opacity-75' : ''}`}
+        className={`group overflow-hidden rounded-2xl hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer concert-card ${isPast ? 'opacity-75' : ''}`}
         onClick={() => handleConcertClick(concert)}
       >
         {/* Hidden SEO metadata */}
@@ -399,7 +399,7 @@ const Concerts = () => {
           <img
             src={optimizedImageUrl}
             alt={`${concert.artists?.name || 'Artista'} - ${concert.title} - Concierto en ${concert.venues?.cities?.name || 'América Latina'}`}
-            className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+            className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500 rounded-t-2xl"
             itemProp="image"
             loading="lazy"
             decoding="async"
@@ -859,73 +859,44 @@ const Concerts = () => {
             </div>
           )}
 
-          {/* Internal Links for SEO */}
-          <nav className="mt-16 pt-8 border-t border-border/50 text-center" aria-label="Enlaces relacionados">
-            <h3 className="text-lg font-semibold text-foreground mb-4">Explora más contenido</h3>
-            <div className="flex flex-wrap justify-center gap-3 mb-6">
-              <Link
-                to="/artists"
-                className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-              >
-                Artistas
-              </Link>
-              <Link
-                to="/setlists"
-                className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-              >
-                Setlists
-              </Link>
-              <Link
-                to="/promoters"
-                className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-              >
-                Promotoras
-              </Link>
-              <Link
-                to="/blog"
-                className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-              >
-                Noticias
-              </Link>
+          {/* Conciertos por País - Cards con Banderas */}
+          <section className="mt-16 pt-8 border-t border-border/50" aria-label="Conciertos por país">
+            <div className="max-w-5xl mx-auto">
+              <div className="flex items-center justify-center gap-2 mb-8">
+                <MapPin className="h-5 w-5 text-primary" />
+                <h3 className="text-xl font-bold text-foreground">Explora por País</h3>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+                {[
+                  { name: 'Colombia', flag: '🇨🇴', slug: 'colombia' },
+                  { name: 'México', flag: '🇲🇽', slug: 'mexico' },
+                  { name: 'Argentina', flag: '🇦🇷', slug: 'argentina' },
+                  { name: 'Chile', flag: '🇨🇱', slug: 'chile' },
+                  { name: 'Perú', flag: '🇵🇪', slug: 'peru' },
+                  { name: 'Brasil', flag: '🇧🇷', slug: 'brasil' },
+                  { name: 'Ecuador', flag: '🇪🇨', slug: 'ecuador' },
+                  { name: 'Uruguay', flag: '🇺🇾', slug: 'uruguay' },
+                ].map((country) => (
+                  <Link
+                    key={country.slug}
+                    to={`/conciertos/${country.slug}`}
+                    className="group"
+                  >
+                    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-105 border-2 hover:border-primary/50">
+                      <CardContent className="p-4 text-center">
+                        <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">
+                          {country.flag}
+                        </div>
+                        <p className="font-semibold text-sm group-hover:text-primary transition-colors">
+                          {country.name}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
             </div>
-
-            <h4 className="text-sm font-medium text-muted-foreground mb-3">Conciertos por país</h4>
-            <div className="flex flex-wrap justify-center gap-3">
-              <Link to="/conciertos/colombia" className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
-                Colombia
-              </Link>
-              <Link to="/conciertos/mexico" className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
-                México
-              </Link>
-              <Link to="/conciertos/argentina" className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
-                Argentina
-              </Link>
-              <Link to="/conciertos/chile" className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
-                Chile
-              </Link>
-              <Link to="/conciertos/peru" className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
-                Perú
-              </Link>
-              <Link to="/conciertos/brasil" className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
-                Brasil
-              </Link>
-              <Link to="/conciertos/ecuador" className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
-                Ecuador
-              </Link>
-              <Link to="/conciertos/costa-rica" className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
-                Costa Rica
-              </Link>
-              <Link to="/conciertos/panama" className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
-                Panamá
-              </Link>
-              <Link to="/conciertos/republica-dominicana" className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
-                Rep. Dominicana
-              </Link>
-              <Link to="/conciertos/puerto-rico" className="px-4 py-2 bg-muted rounded-full text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors">
-                Puerto Rico
-              </Link>
-            </div>
-          </nav>
+          </section>
         </main>
 
         <ConcertsFAQ countryName={selectedCountryName || undefined} cityName={selectedCityName || undefined} />

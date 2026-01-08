@@ -204,47 +204,56 @@ const ArtistDetail = () => {
 
                       return (
                         <Link key={concert.id} to={`/concerts/${concert.slug}`}>
-                          <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 h-full">
+                          <Card className="group overflow-hidden rounded-2xl hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer h-full">
                             {/* Image with artist photo */}
-                            <div className="relative aspect-[4/3] overflow-hidden">
+                            <div className="relative overflow-hidden">
                               <img
                                 src={artist.photo_url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop"}
                                 alt={artist.name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500 rounded-t-2xl"
+                                loading="lazy"
                               />
+
                               {/* Status Badge */}
                               <Badge
-                                className={`absolute top-3 left-3 ${isUpcoming ? 'bg-green-500 hover:bg-green-600' : 'bg-muted hover:bg-muted/80'}`}
+                                className={`absolute top-4 left-4 ${isUpcoming ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-500 text-white'} font-bold px-3 py-1`}
                               >
-                                {isUpcoming ? 'Próximo' : 'Pasado'}
+                                {isUpcoming ? 'Próximo' : 'Finalizado'}
                               </Badge>
+
                               {/* Date Badge */}
-                              <div className="absolute bottom-3 right-3 bg-primary text-primary-foreground rounded-full w-14 h-14 flex flex-col items-center justify-center shadow-lg">
+                              <time className="absolute bottom-4 right-4 bg-primary text-primary-foreground rounded-full w-16 h-16 flex flex-col items-center justify-center text-center shadow-lg">
                                 <span className="text-xs font-medium capitalize">{monthShort}</span>
                                 <span className="text-lg font-bold leading-none">{day}</span>
-                              </div>
+                              </time>
+
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                             </div>
-                            <CardContent className="p-5">
-                              <h3 className="font-bold text-lg mb-1 line-clamp-1 group-hover:text-primary transition-colors">
-                                {concert.title}
-                              </h3>
-                              <p className="text-primary font-medium text-sm mb-3">{artist.name}</p>
-                              <div className="space-y-1.5 text-sm text-muted-foreground">
-                                {concert.venues && (
-                                  <>
+
+                            <CardContent className="p-6 flex flex-col h-[200px]">
+                              <div className="flex-1 space-y-3">
+                                <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                                  {concert.title}
+                                </h3>
+                                <p className="text-primary font-semibold text-lg">{artist.name}</p>
+
+                                <div className="space-y-2 text-sm text-muted-foreground">
+                                  {concert.venues && (
                                     <div className="flex items-center gap-2">
-                                      <MapPin className="h-4 w-4 flex-shrink-0" />
-                                      <span className="truncate">{concert.venues.name}</span>
+                                      <MapPin className="h-4 w-4 text-primary flex-shrink-0" />
+                                      <span className="truncate font-medium">{concert.venues.name}</span>
                                     </div>
+                                  )}
+                                  {concert.venues?.location && (
                                     <div className="flex items-center gap-2">
-                                      <span className="h-4 w-4 flex items-center justify-center text-xs">🌐</span>
+                                      <span className="h-4 w-4 flex items-center justify-center text-primary">🌍</span>
                                       <span className="truncate">{concert.venues.location}</span>
                                     </div>
-                                  </>
-                                )}
-                                <div className="flex items-center gap-2">
-                                  <Calendar className="h-4 w-4 flex-shrink-0" />
-                                  <span>{formatDisplayDate(concert.date)}</span>
+                                  )}
+                                  <div className="flex items-center gap-2">
+                                    <Calendar className="h-4 w-4 text-primary flex-shrink-0" />
+                                    <span>{formatDisplayDate(concert.date)}</span>
+                                  </div>
                                 </div>
                               </div>
                             </CardContent>
@@ -267,13 +276,15 @@ const ArtistDetail = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {news.map((article) => (
                       <Link key={article.id} to={`/blog/${article.slug}`}>
-                        <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300">
-                          <div className="relative h-48 overflow-hidden">
+                        <Card className="group overflow-hidden rounded-2xl hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer">
+                          <div className="relative overflow-hidden">
                             <img
                               src={article.featured_image || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop"}
                               alt={article.title}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                              className="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-500 rounded-t-2xl"
+                              loading="lazy"
                             />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                           </div>
                           <CardContent className="p-6">
                             <div className="text-xs text-muted-foreground mb-2">

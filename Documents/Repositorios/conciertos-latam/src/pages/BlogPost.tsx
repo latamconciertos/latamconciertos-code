@@ -229,7 +229,7 @@ const BlogPost = () => {
 
   return (
     <>
-      <SEO 
+      <SEO
         title={article.title}
         description={article.meta_description || article.content?.substring(0, 160) || ''}
         keywords={`${article.artists?.name || ''}, ${article.categories?.name || ''}, noticias musicales, conciertos`}
@@ -245,23 +245,27 @@ const BlogPost = () => {
       />
       <div className="min-h-screen bg-background">
         <Header />
-      
+
         {/* Hero Image - Full Width */}
-        <div className="relative w-full h-[50vh] md:h-[60vh] lg:h-[70vh] overflow-hidden">
-          <img
-            src={getArticleImage(article)}
-            alt={article.title}
-            className="w-full h-full object-cover"
-          />
-          
-          {/* Photo Credit */}
-          {article.photo_credit && (
-            <div className="absolute bottom-2 right-4 z-10">
-              <span className="text-xs text-white/80 bg-black/50 px-2 py-1 rounded">
-                Foto: {article.photo_credit}
-              </span>
-            </div>
-          )}
+        <div className="relative w-full h-[50vh] md:h-[60vh] lg:h-[70vh] overflow-hidden mt-16">
+          <div className="relative w-full h-full">
+            {/* Image sin overlays */}
+            <div
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${getArticleImage(article)})`,
+              }}
+            />
+
+            {/* Photo Credit */}
+            {article.photo_credit && (
+              <div className="absolute bottom-2 right-4 z-30">
+                <span className="text-xs text-white/80 bg-black/50 px-2 py-1 rounded backdrop-blur-sm">
+                  Foto: {article.photo_credit}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Article Content Section */}
@@ -272,7 +276,7 @@ const BlogPost = () => {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Volver a noticias
             </Link>
-            
+
             {article.categories && (
               <Badge className="ml-4 bg-primary/10 text-primary hover:bg-primary/20">
                 {article.categories.name}
@@ -306,7 +310,7 @@ const BlogPost = () => {
           {/* Social Share */}
           <div className="mb-8">
             <p className="text-sm text-muted-foreground mb-3">Comparte esta noticia:</p>
-            <SocialShare 
+            <SocialShare
               url={`https://www.conciertoslatam.app/blog/${article.slug}`}
               title={article.title}
             />
@@ -322,10 +326,10 @@ const BlogPost = () => {
           {/* Article Content */}
           <div className="prose prose-lg max-w-none">
             {article.content ? (
-              <div 
+              <div
                 className="text-foreground leading-relaxed text-base md:text-lg [&>p]:mb-6 [&>h2]:mt-8 [&>h2]:mb-4 [&>h2]:text-xl [&>h2]:font-bold [&>h3]:mt-6 [&>h3]:mb-3 [&>h3]:text-lg [&>h3]:font-semibold [&>ul]:my-4 [&>ol]:my-4"
-                dangerouslySetInnerHTML={{ 
-                  __html: sanitizeHTML(parseContentWithMedia(article.content, article.media_items || [])) 
+                dangerouslySetInnerHTML={{
+                  __html: sanitizeHTML(parseContentWithMedia(article.content, article.media_items || []))
                 }}
               />
             ) : (
@@ -336,7 +340,7 @@ const BlogPost = () => {
           {/* Share again at bottom */}
           <div className="mt-12 pt-8 border-t">
             <p className="text-base font-semibold mb-4">¿Te gustó esta noticia? ¡Compártela!</p>
-            <SocialShare 
+            <SocialShare
               url={`https://www.conciertoslatam.app/blog/${article.slug}`}
               title={article.title}
             />
@@ -350,7 +354,7 @@ const BlogPost = () => {
               <h2 className="text-xl md:text-2xl font-bold text-foreground mb-8">
                 Te podría interesar
               </h2>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {relatedArticles.map((relatedArticle) => (
                   <Link

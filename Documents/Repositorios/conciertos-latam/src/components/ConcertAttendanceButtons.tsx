@@ -194,8 +194,8 @@ const ConcertAttendanceButtons = ({
         onClick={handleFavoriteToggle}
         disabled={loading}
         className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 shadow-lg ${interaction.isFavorite
-            ? 'bg-red-500 text-white hover:bg-red-600'
-            : 'bg-white/90 text-red-500 hover:bg-white hover:text-red-600'
+          ? 'bg-red-500 text-white hover:bg-red-600'
+          : 'bg-white/90 text-red-500 hover:bg-white hover:text-red-600'
           } ${loading ? 'opacity-50' : ''}`}
         title={interaction.isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
       >
@@ -221,8 +221,8 @@ const ConcertAttendanceButtons = ({
           onClick={handleFavoriteToggle}
           disabled={loading}
           className={`transition-all duration-200 ${interaction.isFavorite
-              ? 'bg-red-500 hover:bg-red-600 border-red-500 text-white'
-              : 'border-red-300 text-red-500 hover:bg-red-50 hover:border-red-400 dark:hover:bg-red-500/10'
+            ? 'bg-red-500 hover:bg-red-600 border-red-500 text-white'
+            : 'border-red-300 text-red-500 hover:bg-red-50 hover:border-red-400 dark:hover:bg-red-500/10'
             }`}
           title="Favorito"
         >
@@ -240,8 +240,8 @@ const ConcertAttendanceButtons = ({
             aria-label="Voy a asistir"
             disabled={loading}
             className={`px-3 py-2 text-sm transition-all duration-200 ${interaction.attendanceType === 'attending'
-                ? 'bg-green-500 text-white data-[state=on]:bg-green-500 data-[state=on]:text-white'
-                : 'text-green-600 hover:bg-green-100 dark:text-green-400 dark:hover:bg-green-500/10'
+              ? 'bg-green-500 text-white data-[state=on]:bg-green-500 data-[state=on]:text-white'
+              : 'text-green-600 hover:bg-green-100 dark:text-green-400 dark:hover:bg-green-500/10'
               }`}
           >
             <CalendarCheck className="h-4 w-4 mr-1" />
@@ -252,8 +252,8 @@ const ConcertAttendanceButtons = ({
             aria-label="Tentativo"
             disabled={loading}
             className={`px-3 py-2 text-sm transition-all duration-200 ${interaction.attendanceType === 'tentative'
-                ? 'bg-yellow-500 text-white data-[state=on]:bg-yellow-500 data-[state=on]:text-white'
-                : 'text-yellow-600 hover:bg-yellow-100 dark:text-yellow-400 dark:hover:bg-yellow-500/10'
+              ? 'bg-yellow-500 text-white data-[state=on]:bg-yellow-500 data-[state=on]:text-white'
+              : 'text-yellow-600 hover:bg-yellow-100 dark:text-yellow-400 dark:hover:bg-yellow-500/10'
               }`}
           >
             <CalendarClock className="h-4 w-4 mr-1" />
@@ -270,15 +270,15 @@ const ConcertAttendanceButtons = ({
       type="single"
       value={interaction.attendanceType || ''}
       onValueChange={(value) => handleAttendanceChange(value as AttendanceType || null)}
-      className="w-full flex flex-col xs:flex-row gap-3"
+      className="w-full flex flex-row gap-2"
     >
       <ToggleGroupItem
         value="attending"
         aria-label="Voy a asistir"
         disabled={loading}
         className={`flex-1 gap-2 py-3.5 px-4 justify-center transition-all duration-200 min-h-[48px] font-medium ${interaction.attendanceType === 'attending'
-            ? 'bg-green-500 text-white border-green-500 data-[state=on]:bg-green-500 data-[state=on]:text-white hover:bg-green-600'
-            : 'bg-white border-2 border-green-300 text-green-600 hover:bg-green-50 hover:border-green-400 dark:bg-background dark:text-green-400 dark:hover:bg-green-500/10 dark:border-green-400'
+          ? 'bg-green-500 text-white border-green-500 data-[state=on]:bg-green-500 data-[state=on]:text-white hover:bg-green-600'
+          : 'bg-white border-2 border-green-300 text-green-600 hover:bg-green-50 hover:border-green-400 dark:bg-background dark:text-green-400 dark:hover:bg-green-500/10 dark:border-green-400'
           }`}
       >
         <CalendarCheck className="h-4 w-4" />
@@ -289,8 +289,8 @@ const ConcertAttendanceButtons = ({
         aria-label="Tentativo"
         disabled={loading}
         className={`flex-1 gap-2 py-3.5 px-4 justify-center transition-all duration-200 min-h-[48px] font-medium ${interaction.attendanceType === 'tentative'
-            ? 'bg-yellow-500 text-white border-yellow-500 data-[state=on]:bg-yellow-500 data-[state=on]:text-white hover:bg-yellow-600'
-            : 'bg-white border-2 border-yellow-300 text-yellow-600 hover:bg-yellow-50 hover:border-yellow-400 dark:bg-background dark:text-yellow-400 dark:hover:bg-yellow-500/10 dark:border-yellow-400'
+          ? 'bg-yellow-500 text-white border-yellow-500 data-[state=on]:bg-yellow-500 data-[state=on]:text-white hover:bg-yellow-600'
+          : 'bg-white border-2 border-yellow-300 text-yellow-600 hover:bg-yellow-50 hover:border-yellow-400 dark:bg-background dark:text-yellow-400 dark:hover:bg-yellow-500/10 dark:border-yellow-400'
           }`}
       >
         <CalendarClock className="h-4 w-4" />

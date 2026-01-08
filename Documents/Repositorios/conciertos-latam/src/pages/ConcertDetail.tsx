@@ -360,15 +360,7 @@ const ConcertDetail = () => {
                 </CardContent>
               </Card>
 
-              {/* 2. ¿Vas a asistir? */}
-              <Card>
-                <CardContent className="p-4">
-                  <h3 className="font-bold text-base mb-3">¿Vas a asistir?</h3>
-                  <ConcertAttendanceButtons concertId={concert.id} />
-                </CardContent>
-              </Card>
-
-              {/* 3. Comunidad */}
+              {/* Comunidad */}
               <ConcertCommunity concertId={concert.id} concertTitle={concert.title} />
 
               {/* 4. Compartir */}
@@ -583,13 +575,7 @@ const ConcertDetail = () => {
                   </CardContent>
                 </Card>
 
-                {/* 2. Attendance */}
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="font-bold text-lg mb-4">¿Vas a asistir?</h3>
-                    <ConcertAttendanceButtons concertId={concert.id} />
-                  </CardContent>
-                </Card>
+
 
                 {/* 3. Share */}
                 <Card>
