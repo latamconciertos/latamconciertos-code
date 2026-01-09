@@ -76,6 +76,7 @@ export interface ConcertPageItem {
   date: string | null;
   image_url: string | null;
   ticket_url: string | null;
+  spotify_embed_url?: string | null;
   description: string | null;
   created_at: string;
   artist_image_url?: string;
@@ -102,11 +103,11 @@ export interface ConcertPageItem {
  */
 export function useConcertsPage(filters: ConcertPageFilters) {
   const { status, search, countryId, cityId, page, itemsPerPage } = filters;
-  
+
   return useQuery({
     queryKey: [
-      ...queryKeys.concerts.all, 
-      'page', 
+      ...queryKeys.concerts.all,
+      'page',
       { status, search, countryId, cityId, page, itemsPerPage }
     ],
     queryFn: async () => {
@@ -115,7 +116,7 @@ export function useConcertsPage(filters: ConcertPageFilters) {
 
       // First, get venue IDs if filtering by city or country
       let venueIds: string[] | null = null;
-      
+
       if (cityId !== 'all') {
         // Get venues in the selected city
         const { data: venues } = await supabase
@@ -129,7 +130,7 @@ export function useConcertsPage(filters: ConcertPageFilters) {
           .from('cities')
           .select('id')
           .eq('country_id', countryId);
-        
+
         if (cities && cities.length > 0) {
           const cityIds = cities.map(c => c.id);
           const { data: venues } = await supabase
@@ -186,15 +187,15 @@ export function useConcertsPage(filters: ConcertPageFilters) {
       const { data, error, count } = await query.range(from, to);
 
       if (error) throw error;
-      
+
       const filteredData = data || [];
-      
+
       // Fetch artist images for each concert
       const concertsWithImages = await Promise.all(
         filteredData.map(async (concert) => {
           if (concert.artists?.name) {
             const artistImage = await spotifyService.getArtistImage(
-              concert.artists.name, 
+              concert.artists.name,
               concert.artists.photo_url
             );
             return { ...concert, artist_image_url: artistImage };
@@ -202,10 +203,10 @@ export function useConcertsPage(filters: ConcertPageFilters) {
           return concert;
         })
       );
-      
-      return { 
-        concerts: concertsWithImages as ConcertPageItem[], 
-        totalCount: count || 0 
+
+      return {
+        concerts: concertsWithImages as ConcertPageItem[],
+        totalCount: count || 0
       };
     },
     placeholderData: keepPreviousData,

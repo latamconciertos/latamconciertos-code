@@ -37,6 +37,7 @@ export interface ConcertFormData {
     image_url: string;
     ticket_url: string;
     ticket_prices_html: string;
+    spotify_embed_url: string;
     artist_id: string;
     venue_id: string;
     promoter_id: string;
@@ -66,6 +67,7 @@ export const ConcertFormDialog = ({
         image_url: '',
         ticket_url: '',
         ticket_prices_html: '',
+        spotify_embed_url: '',
         artist_id: '',
         venue_id: '',
         promoter_id: '',
@@ -83,6 +85,7 @@ export const ConcertFormDialog = ({
                 image_url: concert.image_url || '',
                 ticket_url: concert.ticket_url || '',
                 ticket_prices_html: concert.ticket_prices_html || '',
+                spotify_embed_url: concert.spotify_embed_url || '',
                 artist_id: concert.artist_id || '',
                 venue_id: concert.venue_id || '',
                 promoter_id: concert.promoter_id || '',
@@ -97,6 +100,7 @@ export const ConcertFormDialog = ({
                 image_url: '',
                 ticket_url: '',
                 ticket_prices_html: '',
+                spotify_embed_url: '',
                 artist_id: '',
                 venue_id: '',
                 promoter_id: '',
@@ -355,6 +359,31 @@ export const ConcertFormDialog = ({
                                 value={formData.ticket_url}
                                 onChange={(e) => setFormData({ ...formData, ticket_url: e.target.value })}
                             />
+                        </div>
+                        <div>
+                            <Label htmlFor="spotify_embed_url">
+                                Código de Spotify Embed
+                                <span className="text-xs text-muted-foreground ml-2">
+                                    (Pega el iframe completo)
+                                </span>
+                            </Label>
+                            <Textarea
+                                id="spotify_embed_url"
+                                value={formData.spotify_embed_url}
+                                onChange={(e) => {
+                                    const value = e.target.value.trim();
+                                    // Extract src from iframe if user pastes full iframe code
+                                    const srcMatch = value.match(/src=["']([^"']+)["']/);
+                                    const extractedUrl = srcMatch ? srcMatch[1] : value;
+                                    setFormData({ ...formData, spotify_embed_url: extractedUrl });
+                                }}
+                                placeholder='<iframe src="https://open.spotify.com/embed/playlist/..." ...></iframe>'
+                                rows={3}
+                                className="font-mono text-xs"
+                            />
+                            <p className="text-xs text-muted-foreground mt-1">
+                                💡 Pega el código completo del iframe que Spotify te proporciona. Extraeremos la URL automáticamente.
+                            </p>
                         </div>
                     </div>
 

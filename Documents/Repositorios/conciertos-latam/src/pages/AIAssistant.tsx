@@ -118,74 +118,129 @@ const AIAssistant = () => {
     setIsLoading(true);
 
     try {
+      console.log('[AI Assistant] Starting message submission...');
+      console.log('[AI Assistant] User message:', userMessage);
+
       // 🔧 FIX: Crear conversación automáticamente si no existe
       let currentConversationId = conversationHook.conversationId;
 
       if (!currentConversationId) {
-        currentConversationId = await conversationHook.createConversationWithTitle(userId, userMessage);
+        console.log('[AI Assistant] No active conversation, creating new one...');
+        try {
+          currentConversationId = await conversationHook.createConversationWithTitle(userId, userMessage);
+          console.log('[AI Assistant] Conversation created successfully:', currentConversationId);
+        } catch (convError) {
+          console.error('[AI Assistant] Error creating conversation:', convError);
+          throw new Error('No se pudo crear la conversación');
+        }
+      } else {
+        console.log('[AI Assistant] Using existing conversation:', currentConversationId);
       }
 
       // Guardar mensaje del usuario en la base de datos
-      await supabase.from('ai_messages').insert({
-        conversation_id: currentConversationId,
-        role: 'user',
-        content: userMessage,
-      });
+      console.log('[AI Assistant] Saving user message...');
+      try {
+        const { error: userMsgError } = await supabase.from('ai_messages').insert({
+          conversation_id: currentConversationId,
+          role: 'user',
+          content: userMessage,
+        });
 
-      const response = await fetch(`https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/ai-concert-assistant`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: [...messages, { role: 'user', content: userMessage }],
-          userId,
-          conversationId: currentConversationId,
-        })
-      });
+        if (userMsgError) {
+          console.error('[AI Assistant] Error saving user message:', userMsgError);
+          throw userMsgError;
+        }
+        console.log('[AI Assistant] User message saved successfully');
+      } catch (msgError) {
+        console.error('[AI Assistant] Failed to save user message:', msgError);
+        throw new Error('No se pudo guardar tu mensaje');
+      }
 
-      if (!response.ok) {
-        throw new Error('Error en la respuesta del asistente');
+      // Llamar a la Edge Function
+      console.log('[AI Assistant] Calling Edge Function...');
+      console.log('[AI Assistant] Messages being sent:', messages.length, 'messages');
+      console.log('[AI Assistant] Full messages array:', JSON.stringify(messages, null, 2));
+      let response;
+      try {
+        response = await fetch(`https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/ai-concert-assistant`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messages: [...messages, { role: 'user', content: userMessage }],
+            userId,
+            conversationId: currentConversationId,
+          })
+        });
+
+        console.log('[AI Assistant] Edge Function response status:', response.status);
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('[AI Assistant] Edge Function error response:', errorText);
+          throw new Error(`Error ${response.status}: ${errorText}`);
+        }
+      } catch (fetchError) {
+        console.error('[AI Assistant] Error calling Edge Function:', fetchError);
+        throw new Error('No se pudo contactar con el asistente');
       }
 
       const data = await response.json();
-      console.log('Response from AI assistant:', data);
+      console.log('[AI Assistant] Response from AI assistant:', data);
 
       const assistantMessage = data.response;
+
+      if (!assistantMessage) {
+        console.error('[AI Assistant] No response content received');
+        throw new Error('El asistente no devolvió una respuesta');
+      }
 
       // Actualizar UI con la respuesta del asistente
       setMessages(prev => [...prev, { role: 'bot' as const, content: assistantMessage }]);
 
       // Guardar respuesta del asistente
-      console.log('Saving assistant message to database...');
-      const { error: saveError } = await supabase.from('ai_messages').insert({
-        conversation_id: currentConversationId,
-        role: 'bot',
-        content: assistantMessage,
-      });
-
-      if (saveError) {
-        console.error('Error saving assistant message:', saveError);
-        toast({
-          title: "Advertencia",
-          description: "La respuesta no se pudo guardar en el historial",
+      console.log('[AI Assistant] Saving assistant message to database...');
+      try {
+        const { error: saveError } = await supabase.from('ai_messages').insert({
+          conversation_id: currentConversationId,
+          role: 'bot',
+          content: assistantMessage,
         });
-      } else {
-        console.log('Assistant message saved successfully');
+
+        if (saveError) {
+          console.error('[AI Assistant] Error saving assistant message:', saveError);
+          toast({
+            title: "Advertencia",
+            description: "La respuesta no se pudo guardar en el historial",
+          });
+        } else {
+          console.log('[AI Assistant] Assistant message saved successfully');
+        }
+      } catch (saveError) {
+        console.error('[AI Assistant] Failed to save assistant message:', saveError);
+        // No lanzar error aquí, la respuesta ya se mostró al usuario
       }
 
       // Actualizar timestamp de la conversación
-      await supabase
-        .from('ai_conversations')
-        .update({ updated_at: new Date().toISOString() })
-        .eq('id', currentConversationId);
+      console.log('[AI Assistant] Updating conversation timestamp...');
+      try {
+        await supabase
+          .from('ai_conversations')
+          .update({ updated_at: new Date().toISOString() })
+          .eq('id', currentConversationId);
+      } catch (updateError) {
+        console.error('[AI Assistant] Error updating conversation timestamp:', updateError);
+        // No lanzar error, no es crítico
+      }
 
       conversationHook.loadConversations(userId);
-    } catch (error) {
-      console.error('Error:', error);
+      console.log('[AI Assistant] Message submission completed successfully');
+    } catch (error: any) {
+      console.error('[AI Assistant] Fatal error in handleSubmit:', error);
       toast({
         title: "Error",
-        description: "No se pudo obtener respuesta del asistente. Intenta de nuevo.",
+        description: error.message || "No se pudo obtener respuesta del asistente. Intenta de nuevo.",
         variant: "destructive",
       });
       setMessages(prev => [...prev, {
@@ -409,21 +464,15 @@ const AIAssistant = () => {
           </Sheet>
 
           <div className="flex-1 flex flex-col">
-            <div className="container mx-auto px-4 py-8 flex-1">
+            <div className="container mx-auto px-4 py-4 md:py-8 flex-1">
               <div className="max-w-4xl mx-auto h-full flex flex-col">
-                {/* Botón menú móvil */}
-                <div className="lg:hidden mb-4">
-                  <Button variant="outline" size="icon" onClick={() => setIsSidebarOpen(true)}>
-                    <Menu className="h-5 w-5" />
-                  </Button>
-                </div>
                 {/* Mensaje de autenticación requerida */}
                 {!userId && (
                   <Card className="mb-6 border-primary/50 bg-primary/5">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
+                    <CardContent className="p-4 md:p-6">
+                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                          <LogIn className="h-6 w-6 text-primary" />
+                          <LogIn className="h-6 w-6 text-primary shrink-0" />
                           <div>
                             <h3 className="font-semibold text-foreground">Inicia sesión para continuar</h3>
                             <p className="text-sm text-muted-foreground">
@@ -431,7 +480,7 @@ const AIAssistant = () => {
                             </p>
                           </div>
                         </div>
-                        <Button onClick={() => navigate('/auth')}>
+                        <Button onClick={() => navigate('/auth')} className="w-full sm:w-auto">
                           Iniciar Sesión
                         </Button>
                       </div>
@@ -441,30 +490,54 @@ const AIAssistant = () => {
 
                 {/* Mostrar conversación o pantalla de inicio */}
                 {messages.length === 0 ? (
-                  <div className="flex-1 flex items-center justify-center">
-                    <div className="text-center max-w-2xl">
-                      <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
-                        <MessageCircle className="h-5 w-5 text-primary" />
-                        <span className="text-primary font-semibold">Asistente IA</span>
-                      </div>
-                      <h1 className="text-4xl font-bold text-foreground mb-4">
-                        ¡Hola{userName ? ' ' + userName : ''}!
-                      </h1>
-                      <p className="text-lg text-muted-foreground mb-8">
-                        Soy tu asistente para conciertos. Puedo ayudarte a encontrar el concierto perfecto, recomendarte hoteles cercanos y mucho más.
-                      </p>
-                      <Button
-                        onClick={handleCreateNewConversation}
-                        size="lg"
-                        disabled={!userId}
-                      >
-                        <Plus className="h-5 w-5 mr-2" />
-                        Iniciar conversación
+                  <div className="flex-1 flex flex-col">
+                    {/* Header móvil con botón menú */}
+                    <div className="lg:hidden flex items-center justify-between py-2 mb-4">
+                      <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(true)}>
+                        <Menu className="h-5 w-5" />
                       </Button>
+                      <span className="text-sm text-muted-foreground">Historial</span>
+                      <div className="w-9" /> {/* Spacer para centrar */}
+                    </div>
+
+                    {/* Contenido centrado */}
+                    <div className="flex-1 flex items-center justify-center">
+                      <div className="text-center px-6 max-w-sm mx-auto">
+                        <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-6">
+                          <MessageCircle className="h-5 w-5 text-primary" />
+                          <span className="text-primary font-semibold">Asistente IA</span>
+                        </div>
+
+                        {/* Saludo simple y limpio */}
+                        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+                          ¡Hola{userName ? ` ${userName.includes('@') ? userName.split('@')[0] : userName}` : ''}!
+                        </h1>
+
+                        <p className="text-muted-foreground mb-8 leading-relaxed">
+                          Soy tu asistente para conciertos. Puedo ayudarte a encontrar el concierto perfecto, recomendarte hoteles cercanos y mucho más.
+                        </p>
+
+                        <Button
+                          onClick={handleCreateNewConversation}
+                          size="lg"
+                          disabled={!userId}
+                          className="px-8"
+                        >
+                          <Plus className="h-5 w-5 mr-2" />
+                          Iniciar conversación
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ) : (
                   <>
+                    {/* Botón menú móvil para chat activo */}
+                    <div className="lg:hidden mb-3">
+                      <Button variant="outline" size="icon" onClick={() => setIsSidebarOpen(true)}>
+                        <Menu className="h-5 w-5" />
+                      </Button>
+                    </div>
+
                     {/* Chat Container - Clean design without visible borders */}
                     <div className="flex flex-col overflow-hidden" style={{ maxHeight: 'calc(100vh - 140px)' }}>
                       {/* Messages Area with ScrollArea - Responsive height */}

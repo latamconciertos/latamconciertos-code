@@ -13,6 +13,7 @@ export interface Concert {
     promoter_id: string | null;
     event_type: 'concert' | 'festival';
     is_featured: boolean;
+    spotify_embed_url?: string | null;
     created_at: string;
 }
 

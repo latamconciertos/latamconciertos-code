@@ -120,12 +120,13 @@ export const ConcertsAdmin = () => {
             image_url: validation.data.image_url || null,
             ticket_url: validation.data.ticket_url || null,
             ticket_prices_html: formData.ticket_prices_html || null,
+            spotify_embed_url: formData.spotify_embed_url || null,
             artist_id: validation.data.artist_id || null,
             venue_id: validation.data.venue_id || null,
             promoter_id: validation.data.promoter_id || null,
             event_type: validation.data.event_type,
             is_featured: validation.data.is_featured,
-          }
+          } as any // Temporary: until Supabase types are regenerated
         });
 
         // Update festival artists if it's a festival
@@ -154,12 +155,13 @@ export const ConcertsAdmin = () => {
           image_url: validation.data.image_url || null,
           ticket_url: validation.data.ticket_url || null,
           ticket_prices_html: formData.ticket_prices_html || null,
+          spotify_embed_url: formData.spotify_embed_url || null,
           artist_id: validation.data.artist_id || null,
           venue_id: validation.data.venue_id || null,
           promoter_id: validation.data.promoter_id || null,
           event_type: validation.data.event_type,
           is_featured: validation.data.is_featured,
-        });
+        } as any); // Temporary: until Supabase types are regenerated
 
         // Insert festival artists if it's a festival
         if (formData.event_type === 'festival' && selectedFestivalArtists.length > 0 && result) {

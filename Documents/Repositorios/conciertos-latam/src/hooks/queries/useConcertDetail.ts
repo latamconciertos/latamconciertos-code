@@ -17,6 +17,7 @@ export interface ConcertDetail {
   image_url: string | null;
   ticket_url: string | null;
   ticket_prices_html: string | null;
+  spotify_embed_url?: string | null;
   description: string | null;
   event_type: string;
   artist_id: string | null;

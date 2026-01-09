@@ -363,6 +363,29 @@ const ConcertDetail = () => {
               {/* Comunidad */}
               <ConcertCommunity concertId={concert.id} concertTitle={concert.title} />
 
+              {/* Spotify Embed */}
+              {concert.spotify_embed_url && (
+                <Card>
+                  <CardContent className="p-4">
+                    <h3 className="font-bold text-base mb-3 flex items-center gap-2">
+                      <Music className="h-4 w-4 text-primary" />
+                      Escucha en Spotify
+                    </h3>
+                    <div className="rounded-lg overflow-hidden">
+                      <iframe
+                        src={concert.spotify_embed_url}
+                        width="100%"
+                        height="352"
+                        frameBorder="0"
+                        allowFullScreen
+                        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                        loading="lazy"
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* 4. Compartir */}
               <Card>
                 <CardContent className="p-4">
@@ -503,6 +526,29 @@ const ConcertDetail = () => {
 
                 {/* Community */}
                 <ConcertCommunity concertId={concert.id} concertTitle={concert.title} />
+
+                {/* Spotify Embed */}
+                {concert.spotify_embed_url && (
+                  <Card>
+                    <CardContent className="p-6">
+                      <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
+                        <Music className="h-5 w-5 text-primary" />
+                        Escucha en Spotify
+                      </h2>
+                      <div className="rounded-lg overflow-hidden">
+                        <iframe
+                          src={concert.spotify_embed_url}
+                          width="100%"
+                          height="352"
+                          frameBorder="0"
+                          allowFullScreen
+                          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                          loading="lazy"
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
 
               {/* Sidebar */}

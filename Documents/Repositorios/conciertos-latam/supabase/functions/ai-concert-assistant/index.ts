@@ -15,8 +15,16 @@ serve(async (req: Request) => {
   }
 
   try {
-    const { messages, userId, conversationId } = await req.json();
-    console.log('Received request with', messages?.length || 0, 'messages');
+    console.log('=== AI Concert Assistant Request Started ===');
+    const { messages: rawMessages, userId, conversationId } = await req.json();
+    console.log('[Step 1] Received request with', rawMessages?.length || 0, 'messages');
+
+    // Map 'bot' role to 'assistant' for OpenAI compatibility
+    const messages = (rawMessages || []).map((msg: any) => ({
+      ...msg,
+      role: msg.role === 'bot' ? 'assistant' : msg.role
+    }));
+    console.log('[Step 1.1] Mapped messages roles for OpenAI');
 
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
 
@@ -25,13 +33,14 @@ serve(async (req: Request) => {
       throw new Error('OPENAI_API_KEY is not configured');
     }
 
-    console.log('API key found, proceeding with request');
+    console.log('[Step 2] API key found, proceeding with request');
 
     // Crear cliente de Supabase
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
+    console.log('[Step 3] Supabase client created');
 
     // Obtener información de conciertos próximos
     console.log('Fetching concerts from database...');
@@ -45,7 +54,7 @@ serve(async (req: Request) => {
         description,
         ticket_url,
         artists!inner(name, bio, slug),
-        venues!inner(name, location, country, capacity, cities(name, slug))
+        venues!inner(name, location, capacity, cities(name, slug, countries(name)))
       `)
       .gte('date', new Date().toISOString().split('T')[0])
       .order('date', { ascending: true })
@@ -69,7 +78,7 @@ serve(async (req: Request) => {
         date,
         description,
         artists!inner(name, bio, slug),
-        venues!inner(name, location, country, capacity, cities(name, slug))
+        venues!inner(name, location, capacity, cities(name, slug, countries(name)))
       `)
       .lt('date', new Date().toISOString().split('T')[0])
       .gte('date', pastDate.toISOString().split('T')[0])
@@ -80,18 +89,22 @@ serve(async (req: Request) => {
     const allConcerts = [...(concerts || []), ...(pastConcertsWithSetlists || [])];
     const concertIds = allConcerts.map((c: any) => c.id);
 
-    // Obtener setlists de todos los conciertos
-    const { data: setlists } = await supabase
-      .from('setlist_songs')
-      .select('concert_id, song_name, artist_name, position, notes')
-      .in('concert_id', concertIds)
-      .eq('status', 'approved')
-      .order('position', { ascending: true });
+    // Obtener setlists de todos los conciertos (solo si hay conciertos)
+    let setlists = [];
+    if (concertIds.length > 0) {
+      const { data: setlistData } = await supabase
+        .from('setlist_songs')
+        .select('concert_id, song_name, artist_name, position, notes')
+        .in('concert_id', concertIds)
+        .eq('status', 'approved')
+        .order('position', { ascending: true });
+      setlists = setlistData || [];
+    }
 
-    console.log('Found', setlists?.length || 0, 'setlist songs');
+    console.log('[Step 4] Found', setlists?.length || 0, 'setlist songs');
 
     // Obtener información de festivales próximos
-    console.log('Fetching festivals from database...');
+    console.log('[Step 5] Fetching festivals from database...');
     const { data: festivals, error: festivalsError } = await supabase
       .from('festivals')
       .select(`
@@ -117,19 +130,23 @@ serve(async (req: Request) => {
       console.log('Found', festivals?.length || 0, 'upcoming festivals');
     }
 
-    // Obtener lineup de los festivales
+    // Obtener lineup de los festivales (solo si hay festivales)
     const festivalIds = (festivals || []).map((f: any) => f.id);
-    const { data: festivalLineups } = await supabase
-      .from('festival_lineup')
-      .select(`
-        festival_id,
-        position,
-        stage,
-        performance_date,
-        artists(id, name, slug)
-      `)
-      .in('festival_id', festivalIds)
-      .order('position', { ascending: true });
+    let festivalLineups = [];
+    if (festivalIds.length > 0) {
+      const { data: lineupData } = await supabase
+        .from('festival_lineup')
+        .select(`
+          festival_id,
+          position,
+          stage,
+          performance_date,
+          artists(id, name, slug)
+        `)
+        .in('festival_id', festivalIds)
+        .order('position', { ascending: true });
+      festivalLineups = lineupData || [];
+    }
 
     console.log('Found', festivalLineups?.length || 0, 'festival lineup entries');
 
@@ -147,7 +164,7 @@ serve(async (req: Request) => {
         concertContext += `🎵 ${concert.title}\n`;
         concertContext += `   Artista: ${concert.artists.name}\n`;
         concertContext += `   Fecha: ${new Date(concert.date).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\n`;
-        concertContext += `   Venue: ${concert.venues.name} (${concert.venues.location || concert.venues.cities?.name}, ${concert.venues.country})\n`;
+        concertContext += `   Venue: ${concert.venues.name} (${concert.venues.location || concert.venues.cities?.name}, ${concert.venues.cities?.countries?.name || ''})\n`;
         if (concert.ticket_url) concertContext += `   Entradas: ${concert.ticket_url}\n`;
 
         const concertSetlist = setlists?.filter((s: any) => s.concert_id === concert.id);
@@ -173,7 +190,7 @@ serve(async (req: Request) => {
           concertContext += `🎵 ${concert.title}\n`;
           concertContext += `   Artista: ${concert.artists.name}\n`;
           concertContext += `   Fecha: ${new Date(concert.date).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}\n`;
-          concertContext += `   Venue: ${concert.venues.name} (${concert.venues.location || concert.venues.cities?.name})\n`;
+          concertContext += `   Venue: ${concert.venues.name} (${concert.venues.location || concert.venues.cities?.name}, ${concert.venues.cities?.countries?.name || ''})\n`;
           concertContext += `   SETLIST COMPLETO (${concertSetlist.length} canciones):\n`;
           concertSetlist.forEach((song: any, idx: number) => {
             concertContext += `      ${idx + 1}. ${song.song_name}${song.artist_name ? ` - ${song.artist_name}` : ''}${song.notes ? ` (${song.notes})` : ''}\n`;
@@ -301,7 +318,10 @@ ${concertContext}
 
 RECUERDA: Sé cálido, organiza bien tu respuesta con espacios, NUNCA uses **, y ayuda como un experto amigo. Cada respuesta debe ser fácil de leer y sentirse como una conversación genuina.`;
 
-    console.log('Calling OpenAI API...');
+    console.log('[Step 6] Context built, calling OpenAI API...');
+    console.log('[Step 6] System prompt length:', systemPrompt.length);
+    console.log('[Step 6] Messages to send:', messages.length);
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -319,6 +339,8 @@ RECUERDA: Sé cálido, organiza bien tu respuesta con espacios, NUNCA uses **, y
       }),
     });
 
+    console.log('[Step 7] OpenAI response status:', response.status);
+
     if (!response.ok) {
       const errorText = await response.text();
       console.error('OpenAI API error:', response.status, errorText);
@@ -326,13 +348,13 @@ RECUERDA: Sé cálido, organiza bien tu respuesta con espacios, NUNCA uses **, y
     }
 
     const data = await response.json();
-    console.log('Received response from OpenAI');
+    console.log('[Step 8] Received response from OpenAI');
     const aiResponse = data.choices[0].message.content;
 
     // Note: El frontend se encarga de guardar los mensajes en la BD
     // No guardamos aquí para evitar duplicación y conflictos
 
-    console.log('Request completed successfully');
+    console.log('[Step 9] Request completed successfully');
     return new Response(
       JSON.stringify({ response: aiResponse }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -341,10 +363,14 @@ RECUERDA: Sé cálido, organiza bien tu respuesta con espacios, NUNCA uses **, y
     console.error('Error in ai-concert-assistant:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorStack = error instanceof Error ? error.stack : '';
-    console.error('Error details:', errorMessage, errorStack);
+    console.error('Error details:', errorMessage);
+    console.error('Error stack:', errorStack);
+
+    // Return actual error details for debugging
     return new Response(
       JSON.stringify({
-        error: 'Error procesando tu solicitud. Por favor intenta de nuevo.'
+        error: `Error: ${errorMessage}`,
+        details: errorStack
       }),
       {
         status: 500,

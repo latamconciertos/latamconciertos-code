@@ -32,7 +32,7 @@ import WelcomePopup from '@/components/WelcomePopup';
 
 // React Query hooks
 import { useConcertsPage, useConcertBySlugDirect, type ConcertPageItem } from '@/hooks/queries/useConcertsPage';
-import { useCountries, useCitiesByCountry } from '@/hooks/queries/useGeography';
+import { useCountryOptions, useCitiesByCountry } from '@/hooks/queries/useGeography';
 import { useSetlistByConcert } from '@/hooks/queries/useSetlists';
 import { optimizeUnsplashUrl, getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
 
@@ -54,8 +54,8 @@ const Concerts = () => {
   // Get concert slug from URL for direct loading
   const concertSlugFromUrl = searchParams.get('id');
 
-  // Geography queries
-  const { data: countries = [] } = useCountries();
+  // Geography queries - using CountryOptions for proper typing
+  const { data: countries = [] } = useCountryOptions();
   const { data: cities = [] } = useCitiesByCountry(
     selectedCountry !== 'all' ? selectedCountry : ''
   );
@@ -987,6 +987,27 @@ const Concerts = () => {
                           </div>
                         )}
 
+                        {selectedConcert.spotify_embed_url && (
+                          <div>
+                            <h3 className="text-sm font-semibold text-muted-foreground mb-2">
+                              <Music className="h-4 w-4 inline mr-1" />
+                              Escucha en Spotify
+                            </h3>
+                            <div className="rounded-lg overflow-hidden">
+                              <iframe
+                                src={selectedConcert.spotify_embed_url}
+                                width="100%"
+                                height="352"
+                                frameBorder="0"
+                                allowFullScreen
+                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+                                loading="lazy"
+                                className="rounded-lg"
+                              />
+                            </div>
+                          </div>
+                        )}
+
                         {selectedConcert.ticket_url && (
                           <Button
                             className="w-full"
@@ -1025,11 +1046,14 @@ const Concerts = () => {
                                 concertTitle: selectedConcert.title,
                                 artistName: selectedConcert.artists?.name,
                                 date: selectedConcert.date,
-                                songs: setlist
+                                songs: setlist.map((song: any) => ({
+                                  song_name: song.song_name,
+                                  artist_name: song.artist_name || undefined
+                                }))
                               }}
                             />
                             <div className="space-y-2">
-                              {setlist.map((song, index) => (
+                              {setlist.map((song: any, index) => (
                                 <div key={song.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
                                   <span className="text-sm font-semibold text-muted-foreground w-8">{index + 1}.</span>
                                   <div className="flex-1">
