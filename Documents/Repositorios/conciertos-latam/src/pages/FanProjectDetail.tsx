@@ -43,7 +43,12 @@ const FanProjectDetail = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { saveSequence, isPreloaded } = useFanProjectStorage();
+  const {
+    saveSequence,
+    isPreloaded,
+    preloadProjectSection,
+    loadSequencesFromSupabase
+  } = useFanProjectStorage();
 
   const [project, setProject] = useState<FanProject | null>(null);
   const [songs, setSongs] = useState<Song[]>([]);
@@ -168,6 +173,7 @@ const FanProjectDetail = () => {
     }
   };
 
+
   const handlePreload = async (songId: string) => {
     if (!selectedSection) {
       toast({
@@ -179,23 +185,34 @@ const FanProjectDetail = () => {
     }
 
     try {
-      const { data, error } = await supabase
-        .from('fan_project_color_sequences')
-        .select('sequence, mode')
-        .eq('fan_project_song_id', songId)
-        .eq('venue_section_id', selectedSection)
-        .single();
+      // Try CDN-optimized bulk loading first
+      const cdnSuccess = await preloadProjectSection(projectId!, selectedSection);
 
-      if (error) throw error;
+      if (cdnSuccess) {
+        // CDN load successful - all songs preloaded at once
+        toast({
+          title: '✅ Todas las secuencias descargadas',
+          description: 'Todas las canciones están listas para usar sin conexión (CDN optimizado)',
+        });
+        return;
+      }
+
+      // Fallback to individual Supabase loading (original method)
+      console.info('Using Supabase fallback for individual song');
+      const supabaseData = await loadSequencesFromSupabase(projectId!, songId, selectedSection);
+
+      if (!supabaseData) {
+        throw new Error('No se pudo cargar la secuencia');
+      }
 
       const success = saveSequence(
-        projectId!, 
-        songId, 
+        projectId!,
+        songId,
         selectedSection,
-        data.sequence as any,
-        data.mode as 'fixed' | 'strobe'
+        supabaseData.sequence as any,
+        supabaseData.mode
       );
-      
+
       if (success) {
         toast({
           title: 'Secuencia descargada',
@@ -213,6 +230,7 @@ const FanProjectDetail = () => {
       });
     }
   };
+
 
   const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -235,8 +253,14 @@ const FanProjectDetail = () => {
     return (
       <>
         <Header />
-        <div className="min-h-screen flex items-center justify-center pt-20">
-          <p className="text-muted-foreground">Proyecto no encontrado</p>
+        <div className="min-h-screen flex flex-col items-center justify-center pt-20 px-4">
+          <div className="text-center space-y-3">
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-muted mb-4">
+              <Lightbulb className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/50" />
+            </div>
+            <p className="text-lg sm:text-xl font-semibold text-foreground">Proyecto no encontrado</p>
+            <p className="text-sm text-muted-foreground">El proyecto que buscas no existe o fue eliminado</p>
+          </div>
         </div>
       </>
     );
@@ -244,39 +268,48 @@ const FanProjectDetail = () => {
 
   return (
     <>
-      <SEO 
+      <SEO
         title={`${project.name} - Fan Projects`}
         description={project.description || ''}
       />
-      
+
       <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-background/95">
         <Header />
-        
-        <main className="flex-1 container mx-auto px-4 py-8 pt-24">
-          <div className="max-w-4xl mx-auto space-y-8">
-            <div className="space-y-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="space-y-2">
-                  <h1 className="text-3xl md:text-4xl font-bold">{project.name}</h1>
-                  <p className="text-lg text-muted-foreground">{project.concert.title}</p>
+
+        <main className="flex-1 container mx-auto px-4 py-8 pt-28 sm:pt-32 pb-20 min-h-[calc(100vh-200px)]">
+          <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8">
+            {/* Header Section - Mobile optimized */}
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex items-start justify-between gap-3 sm:gap-4">
+                <div className="space-y-2 min-w-0 flex-1">
+                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight">
+                    {project.name}
+                  </h1>
+                  <p className="text-base sm:text-lg text-primary font-semibold truncate">
+                    {project.concert.title}
+                  </p>
                 </div>
-                <Lightbulb className="h-12 w-12 text-primary shrink-0" />
+                <div className="shrink-0">
+                  <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-primary/10">
+                    <Lightbulb className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
+                  </div>
+                </div>
               </div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Instrucciones</CardTitle>
+              <Card className="border-2 hover:border-primary/20 transition-colors">
+                <CardHeader className="p-4 sm:p-6">
+                  <CardTitle className="text-lg sm:text-xl">Instrucciones</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-muted-foreground whitespace-pre-wrap">
+                <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4">
+                  <p className="text-sm sm:text-base text-muted-foreground whitespace-pre-wrap leading-relaxed">
                     {project.instructions || project.description}
                   </p>
-                  
-                  <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                    <div>
-                      <p className="font-medium">Tu localidad:</p>
-                      <p className="text-sm text-muted-foreground">
-                        {selectedSection 
+
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-br from-primary/5 to-muted rounded-xl border-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm sm:text-base font-semibold text-foreground mb-1">Tu localidad:</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">
+                        {selectedSection
                           ? sections.find(s => s.id === selectedSection)?.name || 'Seleccionada'
                           : 'No seleccionada'
                         }
@@ -285,31 +318,34 @@ const FanProjectDetail = () => {
                     <Button
                       variant="outline"
                       size="sm"
+                      className="shrink-0 ml-3 h-9 sm:h-10"
                       onClick={() => setShowSectionModal(true)}
                     >
-                      <Edit className="h-4 w-4 mr-2" />
-                      Editar
+                      <Edit className="h-4 w-4 mr-1 sm:mr-2" />
+                      <span className="hidden sm:inline">Editar</span>
+                      <span className="sm:hidden">Cambiar</span>
                     </Button>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            <div className="space-y-4">
-              <h2 className="text-2xl font-bold">Canciones</h2>
-              
-              <div className="grid gap-4">
+            {/* Songs Section - Mobile optimized */}
+            <div className="space-y-4 sm:space-y-5">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">Canciones</h2>
+
+              <div className="grid gap-3 sm:gap-4">
                 {songs.map((song) => {
                   const preloaded = isPreloaded(projectId!, song.id, selectedSection);
-                  
+
                   return (
-                    <Card key={song.id}>
-                      <CardContent className="p-6">
-                        <div className="flex items-center gap-4">
+                    <Card key={song.id} className="border-2 hover:border-primary/20 transition-colors">
+                      <CardContent className="p-4 sm:p-6">
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                               <Music className="h-5 w-5 text-primary shrink-0" />
-                              <h3 className="font-semibold text-lg truncate">
+                              <h3 className="font-semibold text-base sm:text-lg truncate">
                                 {song.song_name}
                               </h3>
                             </div>
@@ -323,30 +359,32 @@ const FanProjectDetail = () => {
                             </p>
                           </div>
 
-                          <div className="flex items-center gap-2 shrink-0">
+                          <div className="flex flex-col gap-2 sm:flex-row sm:gap-3 sm:shrink-0">
                             <Button
                               variant={preloaded ? "secondary" : "outline"}
-                              size="sm"
+                              size="lg"
                               onClick={() => handlePreload(song.id)}
                               disabled={!selectedSection}
+                              className="w-full sm:w-auto h-12 font-semibold text-base"
                             >
                               {preloaded ? (
                                 <>
-                                  <Check className="h-4 w-4 mr-2" />
+                                  <Check className="h-5 w-5 mr-2" />
                                   Actualizar
                                 </>
                               ) : (
                                 <>
-                                  <Download className="h-4 w-4 mr-2" />
+                                  <Download className="h-5 w-5 mr-2" />
                                   Precargar
                                 </>
                               )}
                             </Button>
-                            
+
                             <Button
-                              size="sm"
+                              size="lg"
                               onClick={() => navigate(`/fan-projects/${projectId}/song/${song.id}/light`)}
                               disabled={!preloaded}
+                              className="w-full sm:w-auto h-12 font-semibold text-base"
                             >
                               Entrar
                             </Button>
@@ -360,7 +398,7 @@ const FanProjectDetail = () => {
             </div>
           </div>
         </main>
-        
+
         <Footer />
       </div>
 

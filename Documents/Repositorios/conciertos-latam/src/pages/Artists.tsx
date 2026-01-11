@@ -136,71 +136,101 @@ const Artists = () => {
             />
           </div>
 
-          {/* Artists Grid */}
+          {/* Artists Grid/List - Mobile: vertical list, Desktop: grid */}
           {artists.length > 0 ? (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+              {/* Mobile: Vertical List */}
+              <div className="flex flex-col gap-3 lg:hidden">
                 {artists.map((artist: any) => {
                   const validSocialLinks = getValidSocialLinks(artist.social_links);
-                  const hasValidLinks = Object.keys(validSocialLinks).length > 0;
                   return (
                     <Card
                       key={artist.id}
-                      className="group overflow-hidden rounded-2xl hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer"
+                      className="group overflow-hidden hover:shadow-lg transition-all duration-300 border border-border hover:border-primary/30 cursor-pointer bg-card rounded-2xl"
                       onClick={() => navigate(`/artists/${artist.slug}`)}
                     >
-                      <div className="relative overflow-hidden">
-                        <img
-                          src={artist.photo_url || getDefaultImage()}
-                          alt={artist.name}
-                          className="w-full h-80 object-cover group-hover:scale-110 transition-transform duration-500 rounded-t-2xl"
-                          loading="lazy"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                        {/* Social links on hover */}
-                        {hasValidLinks && (
-                          <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                            <div className="flex gap-2 justify-center">
-                              {Object.entries(validSocialLinks).map(([platform, url]) => (
-                                <Button
-                                  key={platform}
-                                  size="sm"
-                                  variant="secondary"
-                                  className="bg-black/70 hover:bg-black/90 text-white border-0 h-8 w-8 p-0"
-                                  onClick={e => {
-                                    e.stopPropagation();
-                                    window.open(url, '_blank');
-                                  }}
-                                >
-                                  {getSocialIcon(platform)}
-                                </Button>
-                              ))}
+                      <CardContent className="p-0">
+                        <div className="flex items-center gap-4 p-4">
+                          {/* Circular Photo */}
+                          <div className="relative shrink-0">
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden bg-muted">
+                              <img
+                                src={artist.photo_url || getDefaultImage()}
+                                alt={artist.name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                loading="lazy"
+                              />
                             </div>
                           </div>
-                        )}
-                      </div>
 
-                      <CardContent className="p-5">
-                        <div className="space-y-3">
-                          <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors line-clamp-1">
-                            {artist.name}
-                          </h3>
+                          {/* Artist Info */}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors truncate">
+                              {artist.name}
+                            </h3>
+                            {artist.genre && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {artist.genre.split(',').slice(0, 2).map((genre: string, index: number) => (
+                                  <Badge
+                                    key={index}
+                                    variant="secondary"
+                                    className="text-xs px-2 py-0.5 bg-primary/10 text-primary dark:bg-primary/20"
+                                  >
+                                    {genre.trim()}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
 
-                          {/* Genre Tags */}
-                          {artist.genre && (
-                            <div className="flex flex-wrap gap-2">
-                              {artist.genre.split(',').slice(0, 3).map((genre: string, index: number) => (
-                                <Badge
-                                  key={index}
-                                  variant="secondary"
-                                  className="text-xs bg-primary/10 text-primary hover:bg-primary/20"
-                                >
-                                  {genre.trim()}
-                                </Badge>
-                              ))}
+              {/* Desktop: Grid with horizontal cards */}
+              <div className="hidden lg:grid lg:grid-cols-3 gap-4">
+                {artists.map((artist: any) => {
+                  return (
+                    <Card
+                      key={artist.id}
+                      className="group overflow-hidden hover:shadow-xl transition-all duration-300 border border-border hover:border-primary/30 cursor-pointer bg-card rounded-2xl"
+                      onClick={() => navigate(`/artists/${artist.slug}`)}
+                    >
+                      <CardContent className="p-0">
+                        <div className="flex items-center gap-4 p-4">
+                          {/* Circular Photo */}
+                          <div className="relative shrink-0">
+                            <div className="w-20 h-20 rounded-full overflow-hidden bg-muted">
+                              <img
+                                src={artist.photo_url || getDefaultImage()}
+                                alt={artist.name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                loading="lazy"
+                              />
                             </div>
-                          )}
+                          </div>
+
+                          {/* Artist Info */}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors truncate">
+                              {artist.name}
+                            </h3>
+                            {artist.genre && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {artist.genre.split(',').slice(0, 2).map((genre: string, index: number) => (
+                                  <Badge
+                                    key={index}
+                                    variant="secondary"
+                                    className="text-xs px-2 py-0.5 bg-primary/10 text-primary dark:bg-primary/20"
+                                  >
+                                    {genre.trim()}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </CardContent>
                     </Card>
