@@ -71,6 +71,29 @@ const FanProjectDetail = () => {
     };
 
     checkAuth();
+
+    // Setup Realtime subscription for song updates
+    const songsSubscription = supabase
+      .channel(`fan_project_songs_${projectId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to INSERT, UPDATE, DELETE
+          schema: 'public',
+          table: 'fan_project_songs',
+          filter: `fan_project_id=eq.${projectId}`,
+        },
+        (payload) => {
+          console.log('Songs changed:', payload);
+          // Reload songs when any change occurs
+          loadProjectSongs();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      songsSubscription.unsubscribe();
+    };
   }, [projectId, navigate]);
 
   const loadProjectData = async (uid: string) => {
@@ -186,20 +209,20 @@ const FanProjectDetail = () => {
     }
 
     try {
-      // Try CDN-optimized bulk loading first
+      // Try bulk loading first (faster)
       const cdnSuccess = await preloadProjectSection(projectId!, selectedSection);
 
       if (cdnSuccess) {
-        // CDN load successful - all songs preloaded at once
+        // Bulk load successful - all songs preloaded at once
         toast({
           title: '✅ Todas las secuencias descargadas',
-          description: 'Todas las canciones están listas para usar sin conexión (CDN optimizado)',
+          description: 'Todas las canciones están listas para usar sin conexión',
         });
         return;
       }
 
-      // Fallback to individual Supabase loading using new method
-      console.info('Using Supabase fallback for individual song');
+      // Fallback to individual loading
+      console.info('Using individual song loading');
       const success = await preloadSongSequence(projectId!, songId, selectedSection);
 
       if (!success) {
@@ -207,14 +230,14 @@ const FanProjectDetail = () => {
       }
 
       toast({
-        title: 'Secuencia descargada',
-        description: 'La secuencia está lista para usar sin conexión',
+        title: '✅ Secuencia descargada',
+        description: 'Esta canción está lista para usar sin conexión',
       });
     } catch (error) {
       console.error('Error preloading sequence:', error);
       toast({
         title: 'Error',
-        description: 'No se pudo descargar la secuencia',
+        description: 'No se pudo descargar la secuencia. Intenta de nuevo',
         variant: 'destructive',
       });
     }
