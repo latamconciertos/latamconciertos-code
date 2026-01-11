@@ -47,6 +47,7 @@ const FanProjectDetail = () => {
     saveSequence,
     isPreloaded,
     preloadProjectSection,
+    preloadSongSequence,
     loadSequencesFromSupabase
   } = useFanProjectStorage();
 
@@ -197,30 +198,18 @@ const FanProjectDetail = () => {
         return;
       }
 
-      // Fallback to individual Supabase loading (original method)
+      // Fallback to individual Supabase loading using new method
       console.info('Using Supabase fallback for individual song');
-      const supabaseData = await loadSequencesFromSupabase(projectId!, songId, selectedSection);
+      const success = await preloadSongSequence(projectId!, songId, selectedSection);
 
-      if (!supabaseData) {
+      if (!success) {
         throw new Error('No se pudo cargar la secuencia');
       }
 
-      const success = saveSequence(
-        projectId!,
-        songId,
-        selectedSection,
-        supabaseData.sequence as any,
-        supabaseData.mode
-      );
-
-      if (success) {
-        toast({
-          title: 'Secuencia descargada',
-          description: 'La secuencia está lista para usar sin conexión',
-        });
-      } else {
-        throw new Error('Error al guardar');
-      }
+      toast({
+        title: 'Secuencia descargada',
+        description: 'La secuencia está lista para usar sin conexión',
+      });
     } catch (error) {
       console.error('Error preloading sequence:', error);
       toast({
