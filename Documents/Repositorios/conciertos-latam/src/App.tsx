@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +7,10 @@ import { useTrafficTracking } from "@/hooks/useTrafficTracking";
 import { FloatingAIChat } from "@/components/FloatingAIChat";
 import { ErrorBoundary } from "@/components/errors/ErrorBoundary";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
+import ProfileCompletionDialog from "@/components/profile/ProfileCompletionDialog";
+import { useProfileCompletion } from "@/hooks/useProfileCompletion";
+import { useUserProfile, useProfileCountries, useProfileCities } from "@/hooks/queries/useProfile";
+import { supabase } from "@/integrations/supabase/client";
 
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
@@ -49,6 +53,31 @@ const NewHome = lazy(() => import("./pages/NewHome"));
 const AppContent = () => {
   useTrafficTracking();
   const location = useLocation();
+  const [userId, setUserId] = useState<string | undefined>();
+
+  // Get current user session
+  useEffect(() => {
+    const getSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUserId(session?.user?.id);
+    };
+    getSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user?.id);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  // Get user profile and related data
+  const { data: profile } = useUserProfile(userId);
+  const { data: countries = [] } = useProfileCountries();
+  const { data: cities = [] } = useProfileCities(profile?.country_id ?? null);
+
+  // Profile completion logic
+  const { showDialog, isSaving, saveProfile } = useProfileCompletion(profile, userId);
 
   // Hide floating AI chat when already on AI assistant page or community chat
   const showFloatingChat = location.pathname !== '/ai-assistant' && !location.pathname.includes('/chat');
@@ -96,6 +125,23 @@ const AppContent = () => {
         </Routes>
       </Suspense>
       {showFloatingChat && <FloatingAIChat />}
+
+      {/* Profile completion dialog for new users */}
+      <ProfileCompletionDialog
+        open={showDialog}
+        initialProfile={{
+          first_name: profile?.first_name || null,
+          last_name: profile?.last_name || null,
+          username: profile?.username || null,
+          country_id: profile?.country_id || null,
+          city_id: profile?.city_id || null,
+          birth_date: profile?.birth_date || null,
+        }}
+        countries={countries}
+        cities={cities}
+        onSave={saveProfile}
+        isSaving={isSaving}
+      />
     </>
   );
 };
