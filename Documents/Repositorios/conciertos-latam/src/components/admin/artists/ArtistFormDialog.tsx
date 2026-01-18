@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Search, Loader2 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Search, Loader2, Music } from 'lucide-react';
 import { toast } from 'sonner';
 import { spotifyService, type SpotifyArtist } from '@/lib/spotify';
 import type { Artist, ArtistFormData } from './types';
@@ -33,6 +34,7 @@ export const ArtistFormDialog = ({
     const [spotifySearch, setSpotifySearch] = useState('');
     const [isSearching, setIsSearching] = useState(false);
     const [searchResults, setSearchResults] = useState<SpotifyArtist[]>([]);
+    const [isExtractingGenres, setIsExtractingGenres] = useState(false);
 
     const generateSlug = (name: string) => {
         return name
@@ -40,6 +42,39 @@ export const ArtistFormDialog = ({
             .replace(/[^\w\s-]/g, '')
             .replace(/[\s_-]+/g, '-')
             .replace(/^-+|-+$/g, '');
+    };
+
+    const handleExtractGenres = async () => {
+        if (!formData.name) {
+            toast.error('El artista debe tener un nombre');
+            return;
+        }
+
+        setIsExtractingGenres(true);
+        try {
+            console.log('Extrayendo géneros para:', formData.name);
+            const artistData = await spotifyService.getArtistData(formData.name);
+            console.log('Datos recibidos de Spotify:', artistData);
+
+            if (artistData && artistData.genres && artistData.genres.length > 0) {
+                onFormDataChange({
+                    ...formData,
+                    genres: artistData.genres,
+                });
+                toast.success(`Se encontraron ${artistData.genres.length} géneros: ${artistData.genres.slice(0, 3).join(', ')}${artistData.genres.length > 3 ? '...' : ''}`);
+            } else if (artistData) {
+                // Artist found but no genres
+                toast.warning(`Artista encontrado en Spotify pero sin géneros asignados`);
+            } else {
+                // Artist not found
+                toast.error(`No se encontró "${formData.name}" en Spotify. Intenta con el nombre exacto del artista.`);
+            }
+        } catch (error) {
+            console.error('Error al extraer géneros:', error);
+            toast.error('Error al conectar con Spotify. Intenta nuevamente.');
+        } finally {
+            setIsExtractingGenres(false);
+        }
     };
 
     const handleSpotifySearch = async () => {
@@ -80,6 +115,7 @@ export const ArtistFormDialog = ({
             name: artist.name,
             slug: generateSlug(artist.name),
             photo_url: imageUrl,
+            genres: artist.genres || [],
         });
 
         setSearchResults([]);
@@ -270,6 +306,52 @@ export const ArtistFormDialog = ({
                                     }}
                                 />
                             </div>
+                        )}
+                    </div>
+
+                    {/* Géneros Musicales */}
+                    <div className="p-4 border rounded-lg">
+                        <div className="flex items-center justify-between mb-3">
+                            <Label className="text-base font-semibold flex items-center gap-2">
+                                <Music className="w-4 h-4 text-primary" />
+                                Géneros Musicales
+                            </Label>
+                            {artist && (
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={handleExtractGenres}
+                                    disabled={isExtractingGenres}
+                                >
+                                    {isExtractingGenres ? (
+                                        <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                    ) : (
+                                        <Music className="w-4 h-4 mr-2" />
+                                    )}
+                                    Extraer de Spotify
+                                </Button>
+                            )}
+                        </div>
+
+                        {formData.genres && formData.genres.length > 0 ? (
+                            <div className="flex flex-wrap gap-2">
+                                {formData.genres.map((genre, idx) => (
+                                    <Badge
+                                        key={idx}
+                                        variant="secondary"
+                                        className="text-sm px-3 py-1 bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                                    >
+                                        {genre}
+                                    </Badge>
+                                ))}
+                            </div>
+                        ) : (
+                            <p className="text-sm text-muted-foreground">
+                                {artist
+                                    ? 'Haz clic en "Extraer de Spotify" para obtener los géneros del artista'
+                                    : 'Los géneros se cargarán automáticamente al seleccionar un artista de Spotify'}
+                            </p>
                         )}
                     </div>
 

@@ -1,22 +1,25 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Music, ExternalLink, Globe, Instagram, Twitter, Search } from 'lucide-react';
+import { Music, ExternalLink, Globe, Instagram, Twitter, Search, ChevronDown } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { useArtists } from '@/hooks/queries';
+import { useArtists, useAllGenres } from '@/hooks/queries';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
 
 const Artists = () => {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
 
@@ -32,9 +35,12 @@ const Artists = () => {
 
   const { data, isLoading } = useArtists({
     search: debouncedSearchTerm || undefined,
+    genre: selectedGenre || undefined,
     limit: itemsPerPage,
     offset: (currentPage - 1) * itemsPerPage,
   });
+
+  const { data: allGenres = [], isLoading: isLoadingGenres } = useAllGenres();
 
   const artists = data?.data || [];
   const totalCount = data?.count || 0;
@@ -65,6 +71,22 @@ const Artists = () => {
       }
     });
     return validLinks;
+  };
+
+  // Extract unique genres from all artists
+  const uniqueGenres = allGenres;
+
+  // Filter artists by selected genre
+  const filteredArtists = useMemo(() => {
+    if (!selectedGenre) return artists;
+    return artists.filter((artist: any) =>
+      artist.genres && Array.isArray(artist.genres) && artist.genres.includes(selectedGenre)
+    );
+  }, [artists, selectedGenre]);
+
+  const handleGenreClick = (genre: string) => {
+    setSelectedGenre(selectedGenre === genre ? null : genre);
+    setCurrentPage(1);
   };
 
   if (isLoading) {
@@ -136,6 +158,65 @@ const Artists = () => {
             />
           </div>
 
+          {/* Genre Filter - Modern Horizontal Design */}
+          {!isLoadingGenres && uniqueGenres.length > 0 && (
+            <div className="max-w-6xl mx-auto mb-10">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4 px-1">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Music className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-semibold text-foreground">Géneros Musicales</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {selectedGenre ? `Filtrando por: ${selectedGenre}` : 'Selecciona un género para filtrar'}
+                    </p>
+                  </div>
+                </div>
+                {selectedGenre && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedGenre(null)}
+                    className="text-xs h-8 hover:bg-destructive/10 hover:text-destructive"
+                  >
+                    Limpiar
+                  </Button>
+                )}
+              </div>
+
+              {/* Scrollable Genre Chips */}
+              <ScrollArea className="w-full">
+                <div className="flex gap-2 pb-4">
+                  {uniqueGenres.map((genre) => {
+                    const isSelected = selectedGenre === genre;
+                    return (
+                      <button
+                        key={genre}
+                        onClick={() => handleGenreClick(genre)}
+                        className={`
+                          relative px-5 py-2.5 rounded-full text-sm font-medium
+                          transition-all duration-200 flex-shrink-0
+                          ${isSelected
+                            ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 scale-105'
+                            : 'bg-card border border-border hover:border-primary/50 hover:bg-primary/5 text-foreground'
+                          }
+                        `}
+                      >
+                        <span className="relative z-10">{genre}</span>
+                        {isSelected && (
+                          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 to-transparent blur-xl" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                <ScrollBar orientation="horizontal" className="h-2" />
+              </ScrollArea>
+            </div>
+          )}
+
           {/* Artists Grid/List - Mobile: vertical list, Desktop: grid */}
           {artists.length > 0 ? (
             <>
@@ -168,15 +249,15 @@ const Artists = () => {
                             <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors truncate">
                               {artist.name}
                             </h3>
-                            {artist.genre && (
+                            {artist.genres && artist.genres.length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-1">
-                                {artist.genre.split(',').slice(0, 2).map((genre: string, index: number) => (
+                                {artist.genres.slice(0, 2).map((genre: string, index: number) => (
                                   <Badge
                                     key={index}
                                     variant="secondary"
                                     className="text-xs px-2 py-0.5 bg-primary/10 text-primary dark:bg-primary/20"
                                   >
-                                    {genre.trim()}
+                                    {genre}
                                   </Badge>
                                 ))}
                               </div>
@@ -217,15 +298,15 @@ const Artists = () => {
                             <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors truncate">
                               {artist.name}
                             </h3>
-                            {artist.genre && (
+                            {artist.genres && artist.genres.length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-1">
-                                {artist.genre.split(',').slice(0, 2).map((genre: string, index: number) => (
+                                {artist.genres.slice(0, 2).map((genre: string, index: number) => (
                                   <Badge
                                     key={index}
                                     variant="secondary"
                                     className="text-xs px-2 py-0.5 bg-primary/10 text-primary dark:bg-primary/20"
                                   >
-                                    {genre.trim()}
+                                    {genre}
                                   </Badge>
                                 ))}
                               </div>

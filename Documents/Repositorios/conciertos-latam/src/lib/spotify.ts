@@ -58,7 +58,7 @@ class SpotifyService {
         this.artistImageCache.set(cacheKey, imageUrl);
         return imageUrl;
       }
-      
+
       return null;
     } catch (error) {
       console.error('Error fetching artist image from Spotify:', error);
@@ -141,18 +141,42 @@ class SpotifyService {
   async getArtistImage(artistName: string, fallbackUrl?: string): Promise<string> {
     console.log(`Getting artist image for: ${artistName}`);
     const spotifyImage = await this.searchArtist(artistName);
-    
+
     if (spotifyImage) {
       return spotifyImage;
     }
-    
+
     if (fallbackUrl) {
       console.log(`Using fallback image for: ${artistName}`);
       return fallbackUrl;
     }
-    
+
     console.log(`Using default image for: ${artistName}`);
     return "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop";
+  }
+
+  async getArtistData(artistName: string): Promise<{
+    id: string;
+    name: string;
+    imageUrl: string | null;
+    genres: string[];
+    popularity?: number;
+  } | null> {
+    try {
+      const { data, error } = await supabase.functions.invoke('spotify-api', {
+        body: { action: 'getArtistByName', artistName }
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        return null;
+      }
+
+      return data?.data || null;
+    } catch (error) {
+      console.error('Error fetching artist data from Spotify:', error);
+      return null;
+    }
   }
 
   getTopArtistsFromTracks(tracks: SpotifyTrack[], limit: number = 10): { id: string; name: string; count: number }[] {

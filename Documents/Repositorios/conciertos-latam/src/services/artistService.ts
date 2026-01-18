@@ -6,7 +6,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
-import type { 
+import type {
   Artist,
   ArtistBasic,
   ArtistWithConcertCount,
@@ -19,6 +19,7 @@ import { handleServiceCall, handleServiceCallArray, getTodayDate, SELECT_QUERIES
 
 export interface ArtistFilterOptions {
   search?: string;
+  genre?: string;
   limit?: number;
   offset?: number;
   withConcertCount?: boolean;
@@ -37,6 +38,10 @@ class ArtistServiceClass {
 
       if (options?.search) {
         query = query.ilike('name', `%${options.search}%`);
+      }
+
+      if (options?.genre) {
+        query = query.contains('genres', [options.genre]);
       }
 
       if (options?.limit) {
@@ -80,7 +85,7 @@ class ArtistServiceClass {
   async getFeaturedByCountry(countryId: string, limit: number = 10): Promise<ServiceResponse<FeaturedArtist[]>> {
     return handleServiceCallArray(async () => {
       const today = getTodayDate();
-      
+
       // First get cities in the country
       const { data: cities } = await supabase
         .from('cities')
@@ -122,7 +127,7 @@ class ArtistServiceClass {
 
       // Deduplicate by artist and count upcoming concerts
       const artistMap = new Map<string, FeaturedArtist>();
-      
+
       concerts?.forEach(concert => {
         if (concert.artists && concert.artist_id) {
           const existing = artistMap.get(concert.artist_id);
@@ -181,7 +186,7 @@ class ArtistServiceClass {
         .insert(data)
         .select(SELECT_QUERIES.artistBasic)
         .single();
-      
+
       return { data: artist, error };
     }, 'ArtistService.create');
   }
@@ -197,7 +202,7 @@ class ArtistServiceClass {
         .eq('id', id)
         .select(SELECT_QUERIES.artistBasic)
         .single();
-      
+
       return { data: artist, error };
     }, 'ArtistService.update');
   }
@@ -211,7 +216,7 @@ class ArtistServiceClass {
         .from('artists')
         .delete()
         .eq('id', id);
-      
+
       return { data: !error, error };
     }, 'ArtistService.delete');
   }
@@ -244,7 +249,7 @@ class ArtistServiceClass {
       const { error } = await supabase
         .from('favorite_artists')
         .insert({ artist_id: artistId, user_id: userId });
-      
+
       return { data: !error, error };
     }, 'ArtistService.addFavorite');
   }
@@ -255,14 +260,39 @@ class ArtistServiceClass {
   async removeFavorite(artistId: string, userId: string): Promise<ServiceResponse<boolean>> {
     return handleServiceCall(async () => {
       const { error } = await supabase
-        .from('favorite_artists')
+        .from('artists')
         .delete()
         .eq('artist_id', artistId)
         .eq('user_id', userId);
-      
+
       return { data: !error, error };
     }, 'ArtistService.removeFavorite');
   }
+
+  /**
+   * Get all unique genres from all artists
+   */
+  async getAllGenres(): Promise<ServiceResponse<string[]>> {
+    return handleServiceCall(async () => {
+      const { data, error } = await supabase
+        .from('artists')
+        .select('genres')
+        .not('genres', 'is', null);
+
+      if (error) return { data: [], error };
+
+      // Extract and flatten all genres
+      const genresSet = new Set<string>();
+      data.forEach((artist: any) => {
+        if (artist.genres && Array.isArray(artist.genres)) {
+          artist.genres.forEach((genre: string) => genresSet.add(genre));
+        }
+      });
+
+      return { data: Array.from(genresSet).sort(), error: null };
+    }, 'ArtistService.getAllGenres');
+  }
 }
+
 
 export const artistService = new ArtistServiceClass();

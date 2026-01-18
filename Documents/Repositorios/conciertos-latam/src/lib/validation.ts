@@ -27,8 +27,8 @@ export const usernameSchema = z
   .trim()
   .min(3, { message: 'El nombre de usuario debe tener al menos 3 caracteres' })
   .max(50, { message: 'El nombre de usuario no puede exceder 50 caracteres' })
-  .regex(/^[a-zA-Z0-9_-]+$/, { 
-    message: 'El nombre de usuario solo puede contener letras, números, guiones y guiones bajos' 
+  .regex(/^[a-zA-Z0-9_-]+$/, {
+    message: 'El nombre de usuario solo puede contener letras, números, guiones y guiones bajos'
   })
   .optional()
   .or(z.literal(''));
@@ -129,8 +129,8 @@ export const advertisingSchema = z.object({
 export const slugSchema = z
   .string()
   .trim()
-  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, { 
-    message: 'El slug solo puede contener letras minúsculas, números y guiones' 
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
+    message: 'El slug solo puede contener letras minúsculas, números y guiones'
   })
   .max(200, { message: 'El slug no puede exceder 200 caracteres' })
   .optional()
@@ -163,15 +163,16 @@ export const artistBioSchema = z
   .optional()
   .or(z.literal(''));
 
-export const socialLinksSchema = z.record(z.string().url().or(z.literal(''))).optional();
+export const socialLinksSchema = z.record(z.string()).optional().nullable();
 
 export const artistSchema = z.object({
   name: artistNameSchema,
   slug: slugSchema,
   bio: artistBioSchema,
   photo_url: urlOptionalSchema,
-  social_links: socialLinksSchema,
-});
+  social_links: z.any().optional().nullable(),
+  genres: z.array(z.string()).optional().nullable(),
+}).passthrough();
 
 /**
  * Venue validation schema

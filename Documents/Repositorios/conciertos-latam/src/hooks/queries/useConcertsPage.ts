@@ -65,6 +65,7 @@ export interface ConcertPageFilters {
   search: string;
   countryId: string;
   cityId: string;
+  genre?: string | null; // Main genre name (e.g., 'Pop', 'Reggaeton')
   page: number;
   itemsPerPage: number;
 }
@@ -102,13 +103,13 @@ export interface ConcertPageItem {
  * Hook to fetch concerts for the listing page with all filters and enrichment
  */
 export function useConcertsPage(filters: ConcertPageFilters) {
-  const { status, search, countryId, cityId, page, itemsPerPage } = filters;
+  const { status, search, countryId, cityId, genre, page, itemsPerPage } = filters;
 
   return useQuery({
     queryKey: [
       ...queryKeys.concerts.all,
       'page',
-      { status, search, countryId, cityId, page, itemsPerPage }
+      { status, search, countryId, cityId, genre, page, itemsPerPage }
     ],
     queryFn: async () => {
       const from = (page - 1) * itemsPerPage;
@@ -143,6 +144,61 @@ export function useConcertsPage(filters: ConcertPageFilters) {
         }
       }
 
+      // Get artist IDs if filtering by genre
+      let artistIds: string[] | null = null;
+
+      if (genre) {
+        // First, get spotify genres that map to this main genre
+        const { data: genreMappings } = await supabase
+          .from('genre_mappings')
+          .select('spotify_genre')
+          .eq('main_genre', genre);
+
+        if (genreMappings && genreMappings.length > 0) {
+          const spotifyGenres = genreMappings.map(g => g.spotify_genre.toLowerCase());
+
+          // Get artists that have any of these genres
+          const { data: artists } = await supabase
+            .from('artists')
+            .select('id, genres')
+            .not('genres', 'is', null);
+
+          if (artists) {
+            artistIds = artists
+              .filter((a: any) => {
+                if (!a.genres) return false;
+
+                // Handle both array and string representations
+                let genresArray: string[] = [];
+                if (Array.isArray(a.genres)) {
+                  genresArray = a.genres;
+                } else if (typeof a.genres === 'string') {
+                  try {
+                    genresArray = JSON.parse(a.genres);
+                  } catch {
+                    genresArray = [];
+                  }
+                }
+
+                // Check if any artist genre matches any mapped spotify genre
+                return genresArray.some((g: string) =>
+                  spotifyGenres.includes(g.toLowerCase())
+                );
+              })
+              .map((a: any) => a.id);
+          } else {
+            artistIds = [];
+          }
+        } else {
+          artistIds = [];
+        }
+
+        // If no artists match the genre, return empty result
+        if (artistIds.length === 0) {
+          return { concerts: [], totalCount: 0 };
+        }
+      }
+
       let query = supabase
         .from('concerts')
         .select(`
@@ -167,6 +223,11 @@ export function useConcertsPage(filters: ConcertPageFilters) {
           return { concerts: [], totalCount: 0 };
         }
         query = query.in('venue_id', venueIds);
+      }
+
+      // Apply artist filter for genre
+      if (artistIds !== null) {
+        query = query.in('artist_id', artistIds);
       }
 
       // Apply date filter

@@ -33,8 +33,10 @@ import WelcomePopup from '@/components/WelcomePopup';
 // React Query hooks
 import { useConcertsPage, useConcertBySlugDirect, type ConcertPageItem } from '@/hooks/queries/useConcertsPage';
 import { useCountryOptions, useCitiesByCountry } from '@/hooks/queries/useGeography';
+import { useMainGenres } from '@/hooks/queries';
 import { useSetlistByConcert } from '@/hooks/queries/useSetlists';
 import { optimizeUnsplashUrl, getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const ITEMS_PER_PAGE = 12;
 const SITE_URL = 'https://www.conciertoslatam.app';
@@ -48,6 +50,7 @@ const Concerts = () => {
   const [selectedConcert, setSelectedConcert] = useState<ConcertPageItem | null>(null);
   const [selectedCountry, setSelectedCountry] = useState<string>('all');
   const [selectedCity, setSelectedCity] = useState<string>('all');
+  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
 
   const isMobile = useIsMobile();
 
@@ -106,9 +109,13 @@ const Concerts = () => {
     search: debouncedSearchTerm,
     countryId: selectedCountry,
     cityId: selectedCity,
+    genre: selectedGenre,
     page: currentPage,
     itemsPerPage: ITEMS_PER_PAGE,
   });
+
+  // Main genres query
+  const { data: mainGenres = [], isLoading: isLoadingGenres } = useMainGenres();
 
   const concerts = concertsData?.concerts || [];
   const totalCount = concertsData?.totalCount || 0;
@@ -137,7 +144,7 @@ const Concerts = () => {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedSearchTerm, filterStatus, selectedCountry, selectedCity]);
+  }, [debouncedSearchTerm, filterStatus, selectedCountry, selectedCity, selectedGenre]);
 
   // Handle URL parameter to open specific concert - uses direct query result
   useEffect(() => {
@@ -573,7 +580,64 @@ const Concerts = () => {
 
           {/* Search and Filters */}
           <div className="max-w-4xl mx-auto mb-12 space-y-4">
-            {/* Search Bar - Always visible */}
+            {/* Genre Filter - Modern Horizontal Design (Above Search) */}
+            {!isLoadingGenres && mainGenres.length > 0 && (
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-3 px-1">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-primary/10">
+                      <Music className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-semibold text-foreground">Géneros Musicales</h3>
+                      <p className="text-xs text-muted-foreground">
+                        {selectedGenre ? `Filtrando: ${selectedGenre}` : 'Filtra por género'}
+                      </p>
+                    </div>
+                  </div>
+                  {selectedGenre && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSelectedGenre(null)}
+                      className="text-xs h-7 hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      Limpiar
+                    </Button>
+                  )}
+                </div>
+
+                <ScrollArea className="w-full">
+                  <div className="flex gap-2 pb-3">
+                    {mainGenres.map((genre) => {
+                      const isSelected = selectedGenre === genre.name;
+                      return (
+                        <button
+                          key={genre.name}
+                          onClick={() => setSelectedGenre(isSelected ? null : genre.name)}
+                          className={`
+                            relative px-4 py-2 rounded-full text-sm font-medium
+                            transition-all duration-200 flex-shrink-0
+                            ${isSelected
+                              ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 scale-105'
+                              : 'bg-card border border-border hover:border-primary/50 hover:bg-primary/5 text-foreground'
+                            }
+                          `}
+                        >
+                          <span className="relative z-10">{genre.name}</span>
+                          {isSelected && (
+                            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 to-transparent blur-xl" />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <ScrollBar orientation="horizontal" className="h-1.5" />
+                </ScrollArea>
+              </div>
+            )}
+
+            {/* Search Bar */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input

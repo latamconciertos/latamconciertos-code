@@ -5,6 +5,7 @@ export interface Artist {
     bio: string | null;
     photo_url: string | null;
     social_links: Record<string, string> | null;
+    genres: string[] | null;
     created_at: string;
 }
 
@@ -14,4 +15,5 @@ export interface ArtistFormData {
     bio: string;
     photo_url: string;
     social_links: Record<string, string>;
+    genres: string[];
 }

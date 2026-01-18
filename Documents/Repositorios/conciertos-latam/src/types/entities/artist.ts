@@ -90,6 +90,7 @@ export interface ArtistFormData {
   bio: string;
   photo_url: string;
   social_links: SocialLinks;
+  genres: string[];
 }
 
 /**
@@ -101,4 +102,5 @@ export const ARTIST_FORM_DEFAULTS: ArtistFormData = {
   bio: '',
   photo_url: '',
   social_links: {},
+  genres: [],
 };

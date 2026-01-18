@@ -18,23 +18,23 @@ export async function handleServiceCall<T>(
 ): Promise<ServiceResponse<T>> {
   try {
     const { data, error } = await operation();
-    
+
     if (error) {
       const { code, message } = mapSupabaseError(error);
-      const appError = new AppError({ 
-        code, 
+      const appError = new AppError({
+        code,
         message: message || error.message,
         context: { service: context, originalError: error },
       });
       console.error(`[${context}]`, appError.toJSON());
-      
+
       return {
         data: null,
         error: appError.message,
         success: false,
       };
     }
-    
+
     return {
       data: data as T,
       error: null,
@@ -43,7 +43,7 @@ export async function handleServiceCall<T>(
   } catch (err) {
     const appError = AppError.from(err, { context: { service: context } });
     console.error(`[${context}] Exception:`, appError.toJSON());
-    
+
     return {
       data: null,
       error: appError.message,
@@ -61,16 +61,16 @@ export async function handleServiceCallArray<T>(
 ): Promise<ServiceResponse<T[]> & { count?: number }> {
   try {
     const { data, error, count } = await operation();
-    
+
     if (error) {
       const { code, message } = mapSupabaseError(error);
-      const appError = new AppError({ 
-        code, 
+      const appError = new AppError({
+        code,
         message: message || error.message,
         context: { service: context, originalError: error },
       });
       console.error(`[${context}]`, appError.toJSON());
-      
+
       return {
         data: [],
         error: appError.message,
@@ -78,7 +78,7 @@ export async function handleServiceCallArray<T>(
         count: 0,
       };
     }
-    
+
     return {
       data: (data || []) as T[],
       error: null,
@@ -88,7 +88,7 @@ export async function handleServiceCallArray<T>(
   } catch (err) {
     const appError = AppError.from(err, { context: { service: context } });
     console.error(`[${context}] Exception:`, appError.toJSON());
-    
+
     return {
       data: [],
       error: appError.message,
@@ -121,7 +121,7 @@ export const SELECT_QUERIES = {
     ),
     promoters (id, name)
   `,
-  
+
   concertBasic: `
     id, title, slug, date, image_url, event_type, is_featured,
     artists (id, name, photo_url, slug),
@@ -130,9 +130,9 @@ export const SELECT_QUERIES = {
       cities (name, countries (name))
     )
   `,
-  
-  artistBasic: `id, name, slug, photo_url, bio, social_links`,
-  
+
+  artistBasic: `id, name, slug, photo_url, bio, social_links, genres`,
+
   venueWithLocation: `
     *,
     cities (
@@ -140,21 +140,21 @@ export const SELECT_QUERIES = {
       countries (id, name, iso_code)
     )
   `,
-  
+
   newsWithRelations: `
     *,
     artists (id, name, photo_url),
     categories (id, name, slug),
     news_media (*)
   `,
-  
+
   newsBasic: `
     id, title, slug, featured_image, meta_description, content,
     published_at, created_at, artist_id,
     artists (name, photo_url),
     categories (name)
   `,
-  
+
   setlistSongWithContributor: `
     *,
     profiles:contributed_by (username)

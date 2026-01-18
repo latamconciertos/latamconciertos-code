@@ -30,6 +30,7 @@ export const ArtistsAdmin = () => {
     bio: '',
     photo_url: '',
     social_links: {},
+    genres: [],
   });
 
   const generateSlug = (name: string) => {
@@ -51,9 +52,11 @@ export const ArtistsAdmin = () => {
 
     // Zod validation
     try {
+      console.log('Validando datos del artista:', artistData);
       artistSchema.parse(artistData);
     } catch (err) {
       if (err instanceof ZodError) {
+        console.error('Errores de validación:', err.errors);
         const errors: Record<string, string> = {};
         err.errors.forEach((error) => {
           if (error.path[0]) {
@@ -108,6 +111,7 @@ export const ArtistsAdmin = () => {
       bio: artist.bio || '',
       photo_url: artist.photo_url || '',
       social_links: artist.social_links || {},
+      genres: artist.genres || [],
     });
     setShowForm(true);
     setValidationErrors({});
@@ -130,6 +134,7 @@ export const ArtistsAdmin = () => {
       bio: '',
       photo_url: '',
       social_links: {},
+      genres: [],
     });
     setEditingArtist(null);
     setShowForm(false);

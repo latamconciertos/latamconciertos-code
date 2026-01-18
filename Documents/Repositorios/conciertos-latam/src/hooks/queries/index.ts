@@ -44,7 +44,11 @@ export {
   useFeaturedArtistsByCountry,
   useArtistSearch,
   useUserFavoriteArtists,
+  useAllGenres,
 } from './useArtists';
+
+// Genre Hooks
+export { useMainGenres, useSpotifyGenresForMainGenre } from './useGenres';
 
 // Setlist Hooks
 export {

@@ -12,6 +12,7 @@ import type { Artist } from '@/types/entities';
 
 interface ArtistFilterOptions {
   search?: string;
+  genre?: string;
   limit?: number;
   offset?: number;
 }
@@ -90,5 +91,20 @@ export function useUserFavoriteArtists(userId: string | undefined) {
       return result.data;
     },
     enabled: !!userId,
+  });
+}
+
+/**
+ * Hook to fetch all unique genres from all artists
+ */
+export function useAllGenres() {
+  return useQuery({
+    queryKey: ['artists', 'all-genres'],
+    queryFn: async () => {
+      const result = await artistService.getAllGenres();
+      if (!result.success) throw new Error(result.error || 'Failed to fetch genres');
+      return result.data as string[];
+    },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 }
