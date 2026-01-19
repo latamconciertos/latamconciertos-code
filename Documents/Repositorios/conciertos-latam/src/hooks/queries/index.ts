@@ -98,6 +98,14 @@ export type { SetlistSong, SetlistConcert } from './useSetlistDetail';
 export { usePromotersPage, usePromoterConcerts } from './usePromotersPage';
 export type { PromoterWithCountry, PromoterConcert } from './usePromotersPage';
 
+// Venues Page Hooks
+export { useVenuesPage, useVenueConcerts, useCitiesByCountryForVenues } from './useVenuesPage';
+export type { VenueWithCity, VenueConcert } from './useVenuesPage';
+
+// Venue Detail Hooks
+export { useVenueDetail, useVenueDetailConcerts } from './useVenueDetail';
+export type { VenueDetail, VenueDetailConcert } from './useVenueDetail';
+
 // Artist Detail Hooks
 export { useArtistDetail, useArtistConcerts, useArtistNews, useArtistSpotifyTracks } from './useArtistDetail';
 export type { ArtistDetail, ArtistConcert, ArtistNewsArticle } from './useArtistDetail';

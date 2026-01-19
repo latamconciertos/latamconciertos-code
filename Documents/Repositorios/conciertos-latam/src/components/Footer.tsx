@@ -1,107 +1,181 @@
-import { Instagram, Twitter, Facebook, Youtube, Mail } from 'lucide-react';
+import { Instagram, Twitter, Facebook, Youtube, MapPin, Mail, Phone } from 'lucide-react';
 import footerLogo from '@/assets/footer-logo.png';
+
 const Footer = () => {
-  return <footer className="bg-gray-900 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Logo y descripción */}
-          <div className="lg:col-span-2 text-center md:text-left">
-            <div className="flex justify-center md:justify-start mb-4">
-              <img src={footerLogo} alt="Conciertos Latam" className="h-20 w-auto" />
+  return (
+    <footer className="relative bg-gradient-to-b from-gray-900 via-gray-900 to-black text-white overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
+      </div>
+
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-12">
+          {/* Logo y descripción - 5 columns */}
+          <div className="lg:col-span-5 text-center lg:text-center">
+            <div className="mb-4 flex justify-center">
+              <img src={footerLogo} alt="Conciertos Latam" className="h-28 w-auto" />
             </div>
-            <p className="text-gray-300 mb-5 max-w-md text-sm mx-auto md:mx-0">
-              Descubre los mejores conciertos, festivales y eventos musicales de América Latina. 
+            <p className="text-gray-400 mb-6 text-sm leading-relaxed max-w-md mx-auto">
+              Descubre los mejores conciertos, festivales y eventos musicales de América Latina.
               Conectamos a los fanáticos con la música en vivo que aman.
             </p>
-            <div className="flex justify-center md:justify-start space-x-4">
-              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
-                <Instagram className="h-5 w-5" />
+
+            {/* Social Media with hover effects */}
+            <div className="flex gap-3 justify-center">
+              <a
+                href="#"
+                className="group relative w-10 h-10 bg-gray-800/50 backdrop-blur-sm rounded-lg flex items-center justify-center hover:bg-primary transition-all duration-300 border border-gray-700/50 hover:border-primary"
+              >
+                <Instagram className="h-5 w-5 text-gray-400 group-hover:text-white transition-colors" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
-                <Twitter className="h-5 w-5" />
+              <a
+                href="#"
+                className="group relative w-10 h-10 bg-gray-800/50 backdrop-blur-sm rounded-lg flex items-center justify-center hover:bg-primary transition-all duration-300 border border-gray-700/50 hover:border-primary"
+              >
+                <Twitter className="h-5 w-5 text-gray-400 group-hover:text-white transition-colors" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
-                <Facebook className="h-5 w-5" />
+              <a
+                href="#"
+                className="group relative w-10 h-10 bg-gray-800/50 backdrop-blur-sm rounded-lg flex items-center justify-center hover:bg-primary transition-all duration-300 border border-gray-700/50 hover:border-primary"
+              >
+                <Facebook className="h-5 w-5 text-gray-400 group-hover:text-white transition-colors" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-primary transition-colors">
-                <Youtube className="h-5 w-5" />
+              <a
+                href="#"
+                className="group relative w-10 h-10 bg-gray-800/50 backdrop-blur-sm rounded-lg flex items-center justify-center hover:bg-primary transition-all duration-300 border border-gray-700/50 hover:border-primary"
+              >
+                <Youtube className="h-5 w-5 text-gray-400 group-hover:text-white transition-colors" />
               </a>
             </div>
           </div>
 
-          {/* Enlaces rápidos - Menú principal */}
-          <div>
-            <h4 className="text-base font-semibold mb-3">Explora</h4>
-            <ul className="space-y-2 text-sm">
-              <li><a href="/concerts" className="text-gray-300 hover:text-primary transition-colors">Conciertos</a></li>
-              <li><a href="/blog" className="text-gray-300 hover:text-primary transition-colors">Noticias</a></li>
-              <li><a href="/artists" className="text-gray-300 hover:text-primary transition-colors">Artistas</a></li>
-              <li><a href="/setlists" className="text-gray-300 hover:text-primary transition-colors">Setlists</a></li>
-              <li><a href="/promoters" className="text-gray-300 hover:text-primary transition-colors">Promotoras</a></li>
-            </ul>
-          </div>
+          {/* Navigation Links - 7 columns split into 2 */}
+          <div className="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-8">
+            {/* Eventos */}
+            <div>
+              <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider relative inline-block">
+                Eventos
+                <span className="absolute -bottom-2 left-0 w-8 h-0.5 bg-gradient-to-r from-primary to-transparent"></span>
+              </h4>
+              <ul className="space-y-3">
+                <li>
+                  <a href="/concerts" className="text-gray-400 hover:text-primary transition-colors text-sm flex items-center group">
+                    <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                    Conciertos
+                  </a>
+                </li>
+                <li>
+                  <a href="/artists" className="text-gray-400 hover:text-primary transition-colors text-sm flex items-center group">
+                    <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                    Artistas
+                  </a>
+                </li>
+                <li>
+                  <a href="/venues" className="text-gray-400 hover:text-primary transition-colors text-sm flex items-center group">
+                    <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                    Venues
+                  </a>
+                </li>
+              </ul>
+            </div>
 
-          {/* Newsletter */}
-          <div>
-            <h4 className="text-base font-semibold mb-3">Newsletter</h4>
-            <p className="text-gray-300 mb-4 text-sm">
-              Recibe las últimas noticias y eventos en tu email.
+            {/* Recursos */}
+            <div>
+              <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider relative inline-block">
+                Recursos
+                <span className="absolute -bottom-2 left-0 w-8 h-0.5 bg-gradient-to-r from-primary to-transparent"></span>
+              </h4>
+              <ul className="space-y-3">
+                <li>
+                  <a href="/blog" className="text-gray-400 hover:text-primary transition-colors text-sm flex items-center group">
+                    <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                    Noticias
+                  </a>
+                </li>
+                <li>
+                  <a href="/setlists" className="text-gray-400 hover:text-primary transition-colors text-sm flex items-center group">
+                    <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                    Setlists
+                  </a>
+                </li>
+                <li>
+                  <a href="/promoters" className="text-gray-400 hover:text-primary transition-colors text-sm flex items-center group">
+                    <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                    Promotoras
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Contacto */}
+            <div>
+              <h4 className="text-white font-bold mb-4 text-sm uppercase tracking-wider relative inline-block">
+                Contacto
+                <span className="absolute -bottom-2 left-0 w-8 h-0.5 bg-gradient-to-r from-primary to-transparent"></span>
+              </h4>
+              <ul className="space-y-3">
+                <li>
+                  <a href="mailto:latamconciertos@gmail.com" className="text-gray-400 hover:text-primary transition-colors text-sm flex items-center gap-2">
+                    <Mail className="h-4 w-4" />
+                    <span className="text-xs">Email</span>
+                  </a>
+                </li>
+                <li>
+                  <a href="/about" className="text-gray-400 hover:text-primary transition-colors text-sm flex items-center group">
+                    <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                    Acerca de
+                  </a>
+                </li>
+                <li>
+                  <a href="/editorial-guidelines" className="text-gray-400 hover:text-primary transition-colors text-sm flex items-center group">
+                    <span className="w-0 group-hover:w-2 h-0.5 bg-primary transition-all duration-300 mr-0 group-hover:mr-2"></span>
+                    Lineamientos
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        {/* Países Section with modern design */}
+        <div className="relative py-8 mb-8">
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-800/30 to-transparent"></div>
+          <div className="relative">
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <MapPin className="h-4 w-4 text-primary" />
+              <h4 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">Países que Cubrimos</h4>
+            </div>
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs">
+              {['México', 'Colombia', 'Argentina', 'Chile', 'Perú', 'Brasil', 'Uruguay', 'Ecuador', 'Costa Rica', 'Guatemala', 'Panamá', 'República Dominicana'].map((country, index) => (
+                <span key={index} className="text-gray-500 hover:text-primary transition-colors cursor-default">
+                  {country}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Bar */}
+        <div className="relative pt-8 border-t border-gray-800/50">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-gray-500 text-xs">
+              &copy; 2025 Conciertos Latam. Todos los derechos reservados.
             </p>
-            <div className="flex">
-              <input type="email" placeholder="Tu email" className="flex-1 px-3 py-2 text-sm bg-gray-800 text-white rounded-l-lg border border-gray-700 focus:outline-none focus:border-primary" />
-              <button className="bg-primary px-4 py-2 rounded-r-lg hover:bg-primary/90 transition-colors">
-                <Mail className="h-4 w-4" />
-              </button>
+            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs text-gray-500">
+              <a href="/privacy" className="hover:text-primary transition-colors">Privacidad</a>
+              <span className="text-gray-700">•</span>
+              <a href="/terms" className="hover:text-primary transition-colors">Términos</a>
+              <span className="text-gray-700">•</span>
+              <a href="mailto:latamconciertos@gmail.com" className="hover:text-primary transition-colors">Contacto</a>
             </div>
-          </div>
-        </div>
-
-        {/* Países */}
-        <div className="mt-10 pt-6 border-t border-gray-800">
-          <h4 className="text-sm font-semibold mb-3 text-center">Países que Cubrimos</h4>
-          <div className="flex flex-wrap justify-center gap-3 text-xs text-gray-400">
-            <span>México</span>
-            <span>•</span>
-            <span>Colombia</span>
-            <span>•</span>
-            <span>Argentina</span>
-            <span>•</span>
-            <span>Chile</span>
-            <span>•</span>
-            <span>Perú</span>
-            <span>•</span>
-            <span>Brasil</span>
-            <span>•</span>
-            <span>Uruguay</span>
-            <span>•</span>
-            <span>Ecuador</span>
-            <span>•</span>
-            <span>Costa Rica</span>
-            <span>•</span>
-            <span>Guatemala</span>
-            <span>•</span>
-            <span>Panamá</span>
-            <span>•</span>
-            <span>República Dominicana</span>
-          </div>
-        </div>
-
-        {/* Copyright */}
-        <div className="mt-6 pt-6 border-t border-gray-800 text-center text-gray-400 text-xs">
-          <p>&copy; 2025 Conciertos Latam. Todos los derechos reservados.</p>
-          <div className="mt-2 space-x-3">
-            <a href="/about" className="hover:text-primary transition-colors">Acerca de</a>
-            <span>•</span>
-            <a href="/privacy" className="hover:text-primary transition-colors">Privacidad</a>
-            <span>•</span>
-            <a href="/terms" className="hover:text-primary transition-colors">Términos</a>
-            <span>•</span>
-            <a href="/editorial-guidelines" className="hover:text-primary transition-colors">Lineamientos</a>
-            <span>•</span>
-            <a href="mailto:latamconciertos@gmail.com" className="hover:text-primary transition-colors">Contacto</a>
           </div>
         </div>
       </div>
-    </footer>;
+    </footer>
+  );
 };
+
 export default Footer;

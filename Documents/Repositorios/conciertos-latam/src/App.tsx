@@ -24,6 +24,8 @@ const ArtistDetail = lazy(() => import("./pages/ArtistDetail"));
 const Concerts = lazy(() => import("./pages/Concerts"));
 const ConcertDetail = lazy(() => import("./pages/ConcertDetail"));
 const Promoters = lazy(() => import("./pages/Promoters"));
+const Venues = lazy(() => import("./pages/Venues"));
+const VenueDetail = lazy(() => import("./pages/VenueDetail"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogPost = lazy(() => import("./pages/BlogPost"));
 const AIAssistant = lazy(() => import("./pages/AIAssistant"));
@@ -100,6 +102,8 @@ const AppContent = () => {
           <Route path="/concerts" element={<Concerts />} />
           <Route path="/concerts/:slug" element={<ConcertDetail />} />
           <Route path="/promoters" element={<Promoters />} />
+          <Route path="/venues" element={<Venues />} />
+          <Route path="/venues/:citySlug/:venueSlug" element={<VenueDetail />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/ai-assistant" element={<AIAssistant />} />
