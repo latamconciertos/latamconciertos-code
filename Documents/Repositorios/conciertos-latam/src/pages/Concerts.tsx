@@ -1051,27 +1051,6 @@ const Concerts = () => {
                           </div>
                         )}
 
-                        {selectedConcert.spotify_embed_url && (
-                          <div>
-                            <h3 className="text-sm font-semibold text-muted-foreground mb-2">
-                              <Music className="h-4 w-4 inline mr-1" />
-                              Escucha en Spotify
-                            </h3>
-                            <div className="rounded-lg overflow-hidden">
-                              <iframe
-                                src={selectedConcert.spotify_embed_url}
-                                width="100%"
-                                height="352"
-                                frameBorder="0"
-                                allowFullScreen
-                                allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                                loading="lazy"
-                                className="rounded-lg"
-                              />
-                            </div>
-                          </div>
-                        )}
-
                         {selectedConcert.ticket_url && (
                           <Button
                             className="w-full"
