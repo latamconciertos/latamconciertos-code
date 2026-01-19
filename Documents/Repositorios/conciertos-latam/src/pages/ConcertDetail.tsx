@@ -127,7 +127,7 @@ const ConcertDetail = () => {
       <div className="min-h-screen bg-background">
         <Header />
 
-        <main className="pt-20 sm:pt-24 pb-12">
+        <main className="pt-24 sm:pt-28 pb-12">
           <div className="container mx-auto px-4">
             <Breadcrumbs items={[
               { label: 'Conciertos', href: '/concerts' },
@@ -227,12 +227,8 @@ const ConcertDetail = () => {
                       />
                     </div>
 
-                    {/* Badge + Share in same row */}
-                    <div className="flex-1 flex items-start justify-between">
-                      <Badge className={isUpcoming ? "bg-green-500 text-white" : "bg-muted text-muted-foreground"}>
-                        {isUpcoming ? 'Próximo' : 'Finalizado'}
-                      </Badge>
-
+                    {/* Share button aligned to the right */}
+                    <div className="flex-1 flex items-start justify-end">
                       <SocialShare
                         url={window.location.href}
                         title={concert.title}
@@ -249,11 +245,16 @@ const ConcertDetail = () => {
                       {concert.title}
                     </h1>
                     {concert.artists && (
-                      <Link to={`/artists/${concert.artists.slug}`}>
-                        <p className="text-base text-primary hover:underline font-medium">
-                          {concert.artists.name}
-                        </p>
-                      </Link>
+                      <div className="space-y-2">
+                        <Link to={`/artists/${concert.artists.slug}`}>
+                          <p className="text-base text-primary hover:underline font-medium">
+                            {concert.artists.name}
+                          </p>
+                        </Link>
+                        <Badge className={isUpcoming ? "bg-green-500 text-white" : "bg-muted text-muted-foreground"}>
+                          {isUpcoming ? 'Próximo' : 'Finalizado'}
+                        </Badge>
+                      </div>
                     )}
                   </div>
 
@@ -363,6 +364,18 @@ const ConcertDetail = () => {
               {/* Comunidad */}
               <ConcertCommunity concertId={concert.id} concertTitle={concert.title} />
 
+              {/* Ticket Prices */}
+              {concert.ticket_prices_html && (
+                <Card>
+                  <CardContent className="p-4">
+                    <div
+                      className="ticket-prices-content prose prose-sm max-w-none dark:prose-invert"
+                      dangerouslySetInnerHTML={{ __html: concert.ticket_prices_html }}
+                    />
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Spotify Embed */}
               {concert.spotify_embed_url && (
                 <Card>
@@ -382,29 +395,6 @@ const ConcertDetail = () => {
                         loading="lazy"
                       />
                     </div>
-                  </CardContent>
-                </Card>
-              )}
-
-              {/* 4. Compartir */}
-              <Card>
-                <CardContent className="p-4">
-                  <h3 className="font-bold text-base mb-3">Compartir</h3>
-                  <SocialShare
-                    title={concert.title}
-                    url={`https://www.conciertoslatam.app/concerts/${concert.slug}`}
-                  />
-                </CardContent>
-              </Card>
-
-              {/* Ticket Prices */}
-              {concert.ticket_prices_html && (
-                <Card>
-                  <CardContent className="p-4">
-                    <div
-                      className="ticket-prices-content prose prose-sm max-w-none dark:prose-invert"
-                      dangerouslySetInnerHTML={{ __html: concert.ticket_prices_html }}
-                    />
                   </CardContent>
                 </Card>
               )}
@@ -623,16 +613,7 @@ const ConcertDetail = () => {
 
 
 
-                {/* 3. Share */}
-                <Card>
-                  <CardContent className="p-6">
-                    <h3 className="font-bold text-lg mb-4">Compartir</h3>
-                    <SocialShare
-                      title={concert.title}
-                      url={`https://www.conciertoslatam.app/concerts/${concert.slug}`}
-                    />
-                  </CardContent>
-                </Card>
+
               </div>
             </div>
           </div>

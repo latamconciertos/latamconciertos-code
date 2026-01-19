@@ -65,7 +65,7 @@ export function SocialShare({ url, title, setlistData }: SocialShareProps) {
 
   const generateSetlistImage = async () => {
     if (!setlistData) return;
-    
+
     setGeneratingImage(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-setlist-image', {
@@ -99,7 +99,7 @@ export function SocialShare({ url, title, setlistData }: SocialShareProps) {
 
   const downloadImage = () => {
     if (!generatedImageUrl) return;
-    
+
     const link = document.createElement('a');
     link.href = generatedImageUrl;
     link.download = `setlist-${Date.now()}.png`;
@@ -111,14 +111,14 @@ export function SocialShare({ url, title, setlistData }: SocialShareProps) {
 
   const shareImageToNetwork = (network: SocialNetwork) => {
     if (!generatedImageUrl) return;
-    
+
     // Primero descargar la imagen automáticamente
     downloadImage();
-    
+
     // Luego abrir la red social para que el usuario la comparta manualmente
     const shareUrl = generateShareUrl(network.url_template);
     window.open(shareUrl, '_blank', 'width=600,height=400');
-    
+
     toast.info(`Imagen descargada. Ahora súbela en ${network.name}`);
   };
 
@@ -126,7 +126,7 @@ export function SocialShare({ url, title, setlistData }: SocialShareProps) {
 
   return (
     <>
-      <div className="flex items-center gap-2 flex-wrap">
+      <div className="flex items-center gap-2">
         {setlistData ? (
           <Button
             onClick={() => generateSetlistImage()}
@@ -147,7 +147,6 @@ export function SocialShare({ url, title, setlistData }: SocialShareProps) {
           </Button>
         ) : (
           <>
-            <span className="text-sm text-muted-foreground">Compartir:</span>
             {networks.map((network) => {
               const IconComponent = socialIconMap[network.icon_name];
               if (!IconComponent) return null;
@@ -159,11 +158,11 @@ export function SocialShare({ url, title, setlistData }: SocialShareProps) {
                   key={network.id}
                   variant="outline"
                   size="icon"
-                  className="h-8 w-8"
+                  className="h-9 w-9 flex-shrink-0"
                   onClick={() => window.open(shareUrl, '_blank', 'width=600,height=400')}
                   title={`Compartir en ${network.name}`}
                 >
-                  <IconComponent size={16} />
+                  <IconComponent size={18} />
                 </Button>
               );
             })}
@@ -179,13 +178,13 @@ export function SocialShare({ url, title, setlistData }: SocialShareProps) {
           </DialogHeader>
           {generatedImageUrl && (
             <div className="space-y-4">
-              <img 
-                src={generatedImageUrl} 
+              <img
+                src={generatedImageUrl}
                 alt="Setlist generado"
                 className="w-full rounded-lg"
               />
               <div className="space-y-3">
-                <Button 
+                <Button
                   onClick={downloadImage}
                   className="w-full"
                   size="lg"
@@ -193,7 +192,7 @@ export function SocialShare({ url, title, setlistData }: SocialShareProps) {
                   <Download className="h-4 w-4 mr-2" />
                   Descargar Imagen
                 </Button>
-                
+
                 {/* Botones de redes sociales */}
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-center">Compartir en:</p>
