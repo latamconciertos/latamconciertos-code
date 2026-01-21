@@ -9,6 +9,196 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// ========================================
+// SEARCH FUNCTIONS
+// ========================================
+
+async function searchConcerts(supabase: any, params: any) {
+  console.log('[searchConcerts] Searching with params:', JSON.stringify(params));
+
+  let query = supabase
+    .from('concerts')
+    .select(`
+      id,
+      title,
+      slug,
+      date,
+      description,
+      ticket_url,
+      artists(name, bio, slug),
+      venues(name, location, capacity, cities(name, slug, countries(name)))
+    `);
+
+  // Apply filters
+  if (params.artist) {
+    query = query.ilike('artists.name', `%${params.artist}%`);
+  }
+
+  if (params.city) {
+    query = query.ilike('venues.cities.name', `%${params.city}%`);
+  }
+
+  if (params.country) {
+    query = query.ilike('venues.cities.countries.name', `%${params.country}%`);
+  }
+
+  if (params.startDate) {
+    query = query.gte('date', params.startDate);
+  }
+
+  if (params.endDate) {
+    query = query.lte('date', params.endDate);
+  }
+
+  // Default: only future concerts if no date filter provided
+  if (!params.startDate && !params.endDate) {
+    query = query.gte('date', new Date().toISOString().split('T')[0]);
+  }
+
+  const { data, error } = await query
+    .order('date', { ascending: true })
+    .limit(50);
+
+  if (error) {
+    console.error('[searchConcerts] Error:', error);
+    return { concerts: [], error: error.message };
+  }
+
+  console.log('[searchConcerts] Found', data?.length || 0, 'concerts');
+  return { concerts: data || [], error: null };
+}
+
+async function searchFestivals(supabase: any, params: any) {
+  console.log('[searchFestivals] Searching with params:', JSON.stringify(params));
+
+  let query = supabase
+    .from('festivals')
+    .select(`
+      id,
+      name,
+      slug,
+      start_date,
+      end_date,
+      edition,
+      description,
+      ticket_url,
+      venues(name, location, cities(name, slug, countries(name))),
+      promoters(name)
+    `);
+
+  if (params.name) {
+    query = query.ilike('name', `%${params.name}%`);
+  }
+
+  if (params.city) {
+    query = query.ilike('venues.cities.name', `%${params.city}%`);
+  }
+
+  if (params.year) {
+    const yearStart = `${params.year}-01-01`;
+    const yearEnd = `${params.year}-12-31`;
+    query = query.gte('start_date', yearStart).lte('start_date', yearEnd);
+  }
+
+  // Default: only future festivals
+  if (!params.year) {
+    query = query.gte('start_date', new Date().toISOString().split('T')[0]);
+  }
+
+  const { data: festivals, error: festivalsError } = await query
+    .order('start_date', { ascending: true })
+    .limit(20);
+
+  if (festivalsError) {
+    console.error('[searchFestivals] Error:', festivalsError);
+    return { festivals: [], lineups: [], error: festivalsError.message };
+  }
+
+  // Get lineups for found festivals
+  const festivalIds = (festivals || []).map((f: any) => f.id);
+  let lineups = [];
+
+  if (festivalIds.length > 0) {
+    const { data: lineupData } = await supabase
+      .from('festival_lineup')
+      .select(`
+        festival_id,
+        position,
+        stage,
+        performance_date,
+        artists(id, name, slug)
+      `)
+      .in('festival_id', festivalIds)
+      .order('position', { ascending: true });
+
+    lineups = lineupData || [];
+  }
+
+  console.log('[searchFestivals] Found', festivals?.length || 0, 'festivals');
+  return { festivals: festivals || [], lineups, error: null };
+}
+
+// ========================================
+// FUNCTION DEFINITIONS FOR OPENAI
+// ========================================
+
+const functions = [
+  {
+    name: "searchConcerts",
+    description: "Busca conciertos en la base de datos por artista, ciudad, país o rango de fechas. Usa esta función cuando el usuario pregunte por conciertos específicos.",
+    parameters: {
+      type: "object",
+      properties: {
+        artist: {
+          type: "string",
+          description: "Nombre del artista o banda (ej: 'Bad Bunny', 'Fito Paez', 'Coldplay')"
+        },
+        city: {
+          type: "string",
+          description: "Ciudad donde buscar conciertos (ej: 'Bogotá', 'Medellín', 'Lima')"
+        },
+        country: {
+          type: "string",
+          description: "País donde buscar conciert os (ej: 'Colombia', 'Perú', 'Argentina')"
+        },
+        startDate: {
+          type: "string",
+          description: "Fecha de inicio para la búsqueda en formato YYYY-MM-DD"
+        },
+        endDate: {
+          type: "string",
+          description: "Fecha final para la búsqueda en formato YYYY-MM-DD"
+        }
+      }
+    }
+  },
+  {
+    name: "searchFestivals",
+    description: "Busca festivales de música en la base de datos por nombre, ciudad o año. Usa esta función cuando el usuario pregunte por festivales.",
+    parameters: {
+      type: "object",
+      properties: {
+        name: {
+          type: "string",
+          description: "Nombre del festival (ej: 'Estéreo Picnic', 'Lollapalooza')"
+        },
+        city: {
+          type: "string",
+          description: "Ciudad del festival"
+        },
+        year: {
+          type: "integer",
+          description: "Año del festival (ej: 2026, 2027)"
+        }
+      }
+    }
+  }
+];
+
+// ========================================
+// MAIN HANDLER
+// ========================================
+
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -24,305 +214,64 @@ serve(async (req: Request) => {
       ...msg,
       role: msg.role === 'bot' ? 'assistant' : msg.role
     }));
-    console.log('[Step 1.1] Mapped messages roles for OpenAI');
 
     const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-
     if (!OPENAI_API_KEY) {
-      console.error('OPENAI_API_KEY is not configured');
       throw new Error('OPENAI_API_KEY is not configured');
     }
 
-    console.log('[Step 2] API key found, proceeding with request');
-
-    // Crear cliente de Supabase
+    // Create Supabase client
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
-    console.log('[Step 3] Supabase client created');
 
-    // Obtener información de conciertos próximos
-    console.log('Fetching concerts from database...');
-    const { data: concerts, error: concertsError } = await supabase
-      .from('concerts')
-      .select(`
-        id,
-        title,
-        slug,
-        date,
-        description,
-        ticket_url,
-        artists!inner(name, bio, slug),
-        venues!inner(name, location, capacity, cities(name, slug, countries(name)))
-      `)
-      .gte('date', new Date().toISOString().split('T')[0])
-      .order('date', { ascending: true })
-      .limit(20);
-
-    if (concertsError) {
-      console.error('Error fetching concerts:', concertsError);
-    } else {
-      console.log('Found', concerts?.length || 0, 'upcoming concerts');
-    }
-
-    // Obtener también conciertos pasados con setlists (últimos 90 días)
-    const pastDate = new Date();
-    pastDate.setDate(pastDate.getDate() - 90);
-    const { data: pastConcertsWithSetlists } = await supabase
-      .from('concerts')
-      .select(`
-        id,
-        title,
-        slug,
-        date,
-        description,
-        artists!inner(name, bio, slug),
-        venues!inner(name, location, capacity, cities(name, slug, countries(name)))
-      `)
-      .lt('date', new Date().toISOString().split('T')[0])
-      .gte('date', pastDate.toISOString().split('T')[0])
-      .order('date', { ascending: false })
-      .limit(30);
-
-    // Combinar conciertos
-    const allConcerts = [...(concerts || []), ...(pastConcertsWithSetlists || [])];
-    const concertIds = allConcerts.map((c: any) => c.id);
-
-    // Obtener setlists de todos los conciertos (solo si hay conciertos)
-    let setlists = [];
-    if (concertIds.length > 0) {
-      const { data: setlistData } = await supabase
-        .from('setlist_songs')
-        .select('concert_id, song_name, artist_name, position, notes')
-        .in('concert_id', concertIds)
-        .eq('status', 'approved')
-        .order('position', { ascending: true });
-      setlists = setlistData || [];
-    }
-
-    console.log('[Step 4] Found', setlists?.length || 0, 'setlist songs');
-
-    // Obtener información de festivales próximos
-    console.log('[Step 5] Fetching festivals from database...');
-    const { data: festivals, error: festivalsError } = await supabase
-      .from('festivals')
-      .select(`
-        id,
-        name,
-        slug,
-        start_date,
-        end_date,
-        edition,
-        description,
-        ticket_url,
-        image_url,
-        venues!inner(name, location, cities(name, slug, countries(name))),
-        promoters(name)
-      `)
-      .gte('start_date', new Date().toISOString().split('T')[0])
-      .order('start_date', { ascending: true })
-      .limit(15);
-
-    if (festivalsError) {
-      console.error('Error fetching festivals:', festivalsError);
-    } else {
-      console.log('Found', festivals?.length || 0, 'upcoming festivals');
-    }
-
-    // Obtener lineup de los festivales (solo si hay festivales)
-    const festivalIds = (festivals || []).map((f: any) => f.id);
-    let festivalLineups = [];
-    if (festivalIds.length > 0) {
-      const { data: lineupData } = await supabase
-        .from('festival_lineup')
-        .select(`
-          festival_id,
-          position,
-          stage,
-          performance_date,
-          artists(id, name, slug)
-        `)
-        .in('festival_id', festivalIds)
-        .order('position', { ascending: true });
-      festivalLineups = lineupData || [];
-    }
-
-    console.log('Found', festivalLineups?.length || 0, 'festival lineup entries');
-
-    // Crear contexto con la información de conciertos
-    let concertContext = '\n\n=== INFORMACIÓN DE CONCIERTOS Y SETLISTS DISPONIBLES ===\n\n';
-
-    // Separar conciertos próximos y pasados
-    const upcomingConcerts = allConcerts.filter((c: any) => new Date(c.date) >= new Date());
-    const pastConcerts = allConcerts.filter((c: any) => new Date(c.date) < new Date());
-
-    // Conciertos próximos
-    if (upcomingConcerts.length > 0) {
-      concertContext += '📅 PRÓXIMOS CONCIERTOS:\n\n';
-      upcomingConcerts.forEach((concert: any) => {
-        concertContext += `🎵 ${concert.title}\n`;
-        concertContext += `   Artista: ${concert.artists.name}\n`;
-        concertContext += `   Fecha: ${new Date(concert.date).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\n`;
-        concertContext += `   Venue: ${concert.venues.name} (${concert.venues.location || concert.venues.cities?.name}, ${concert.venues.cities?.countries?.name || ''})\n`;
-        if (concert.ticket_url) concertContext += `   Entradas: ${concert.ticket_url}\n`;
-
-        const concertSetlist = setlists?.filter((s: any) => s.concert_id === concert.id);
-        if (concertSetlist && concertSetlist.length > 0) {
-          concertContext += `   ✓ SETLIST DISPONIBLE (${concertSetlist.length} canciones):\n`;
-          concertSetlist.slice(0, 10).forEach((song: any, idx: number) => {
-            concertContext += `      ${idx + 1}. ${song.song_name}${song.artist_name ? ` - ${song.artist_name}` : ''}\n`;
-          });
-          if (concertSetlist.length > 10) {
-            concertContext += `      ... y ${concertSetlist.length - 10} canciones más\n`;
-          }
-        }
-        concertContext += '\n';
-      });
-    }
-
-    // Conciertos pasados con setlists
-    if (pastConcerts.length > 0) {
-      concertContext += '\n📝 SETLISTS DE CONCIERTOS PASADOS (últimos 90 días):\n\n';
-      pastConcerts.forEach((concert: any) => {
-        const concertSetlist = setlists?.filter((s: any) => s.concert_id === concert.id);
-        if (concertSetlist && concertSetlist.length > 0) {
-          concertContext += `🎵 ${concert.title}\n`;
-          concertContext += `   Artista: ${concert.artists.name}\n`;
-          concertContext += `   Fecha: ${new Date(concert.date).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' })}\n`;
-          concertContext += `   Venue: ${concert.venues.name} (${concert.venues.location || concert.venues.cities?.name}, ${concert.venues.cities?.countries?.name || ''})\n`;
-          concertContext += `   SETLIST COMPLETO (${concertSetlist.length} canciones):\n`;
-          concertSetlist.forEach((song: any, idx: number) => {
-            concertContext += `      ${idx + 1}. ${song.song_name}${song.artist_name ? ` - ${song.artist_name}` : ''}${song.notes ? ` (${song.notes})` : ''}\n`;
-          });
-          concertContext += '\n';
-        }
-      });
-    }
-
-    // Añadir información de festivales
-    if (festivals && festivals.length > 0) {
-      concertContext += '\n\n=== FESTIVALES PRÓXIMOS ===\n\n';
-      festivals.forEach((festival: any) => {
-        concertContext += `🎪 ${festival.name}${festival.edition ? ` - Edición ${festival.edition}` : ''}\n`;
-
-        // Formato de fechas
-        if (festival.start_date && festival.end_date) {
-          const startDate = new Date(festival.start_date);
-          const endDate = new Date(festival.end_date);
-          if (startDate.toDateString() === endDate.toDateString()) {
-            concertContext += `   Fecha: ${startDate.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\n`;
-          } else {
-            concertContext += `   Fechas: ${startDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })} - ${endDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}\n`;
-          }
-        } else if (festival.start_date) {
-          concertContext += `   Fecha: ${new Date(festival.start_date).toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}\n`;
-        }
-
-        concertContext += `   Venue: ${festival.venues.name} (${festival.venues.cities?.name || 'ubicación'}, ${festival.venues.cities?.countries?.name || 'país'})\n`;
-        concertContext += `   URL: /festivals/${festival.slug}\n`;
-
-        if (festival.ticket_url) {
-          concertContext += `   Entradas: ${festival.ticket_url}\n`;
-        }
-
-        if (festival.promoters) {
-          concertContext += `   Organiza: ${festival.promoters.name}\n`;
-        }
-
-        // Lineup del festival
-        const lineup = festivalLineups?.filter((l: any) => l.festival_id === festival.id);
-        if (lineup && lineup.length > 0) {
-          concertContext += `   🎵 LINEUP CONFIRMADO (${lineup.length} artistas):\n`;
-          lineup.forEach((artist: any, idx: number) => {
-            concertContext += `      ${idx + 1}. ${artist.artists.name}`;
-            if (artist.stage) concertContext += ` (${artist.stage})`;
-            if (artist.performance_date) {
-              const perfDate = new Date(artist.performance_date);
-              concertContext += ` - ${perfDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}`;
-            }
-            concertContext += '\n';
-          });
-        }
-
-        if (festival.description) {
-          concertContext += `   Descripción: ${festival.description.substring(0, 200)}${festival.description.length > 200 ? '...' : ''}\n`;
-        }
-
-        concertContext += '\n';
-      });
-    }
-
-    if (allConcerts.length === 0 && (!festivals || festivals.length === 0)) {
-      concertContext += 'No hay información de conciertos o festivales disponible en este momento.\n';
-    }
-
-    const systemPrompt = `Eres un asistente virtual amigable y experto en conciertos y festivales de música latina en Latinoamérica. 
+    // System prompt
+    const systemPrompt = `Eres un asistente virtual amigable y experto en conciertos y festivales de música latina en Latinoamérica.
 
 🎯 TU PERSONALIDAD:
 - Eres empático, entusiasta y cercano - habla como un amigo que ama la música
-- Siempre saluda con calidez y pregunta cómo puedes ayudar
-- Celebra la pasión del usuario por la música y los conciertos
 - Usa emojis ocasionales para transmitir emoción (🎵 🎸 🎉 ✨ 🙌)
-- Termina tus respuestas invitando al usuario a preguntar más o explorando otros conciertos
+- Termina tus respuestas invitando al usuario a preguntar más
 
-📋 TU TRABAJO ES:
-1. Recomendar conciertos Y festivales basándote en preferencias del usuario
-2. Proporcionar información precisa sobre fechas, venues, artistas, lineups y setlists
-3. Sugerir recomendaciones logísticas (hoteles, transporte, qué llevar)
-4. Ser un guía útil y amigable en la planificación de conciertos
-5. No te involucres en temas políticos, religiosos o personales, solo conciertos y festivales y un guia para su aventura en los conciertos y festivale
+📋 HERRAMIENTAS DISPONIBLES:
+Tienes acceso a funciones para buscar en la base de datos:
+- searchConcerts: Busca conciertos por artista, ciudad, país o fechas
+- searchFestivals: Busca festivales por nombre, ciudad o año
+
+ÚSALAS SIEMPRE que el usuario pregunte por conciertos o festivales específicos.
 
 ✨ FORMATO DE RESPUESTAS (MUY IMPORTANTE):
 - NUNCA uses formato markdown con ** para negritas
 - Usa TEXTO PLANO limpio con buena estructura
-- Separa secciones con LÍNEAS EN BLANCO para mejor legibilidad
+- Separa secciones con LÍNEAS EN BLANCO
 - Usa emojis al inicio de secciones para organizar visualmente
 - Mantén párrafos cortos (máximo 2-3 líneas)
-- Numera listas claramente (1., 2., 3.)
 
 EJEMPLO DE FORMATO CORRECTO:
 
 ¡Hola! 🎵 Te ayudo con mucho gusto.
 
-Aquí te comparto los próximos conciertos en Colombia:
+Aquí están los próximos conciertos en Colombia:
 
-1. Avenged Sevenfold - Life is but a dream
-   📅 Martes, 20 de enero de 2026
-   📍 Movistar Arena, Bogotá
-   🎟️ Entradas disponibles en Tuboleta
+1. Bad Bunny - Debí Tirar Más Fotos World Tour
+   📅 Viernes, 23 de enero de 2026
+   📍 Estadio Atanasio Girardot, Medellín
+   🎟️ Entradas disponibles en Ticketmaster
 
-2. Otro concierto...
-
-¿Te gustaría saber más detalles de alguno de estos conciertos? 🎸
-
-🎪 FESTIVALES:
-- Cuando menciones festivales, resalta que hay múltiples artistas
-- Indica fechas de inicio/fin si dura varios días  
-- Menciona los artistas principales del lineup
-- Proporciona URL del festival: /festivals/[slug]
-
-🎵 SETLISTS:
-- Si tenemos el setlist COMPLETO en la base de datos, compártelo TODO con entusiasmo
-- Di algo como: "¡Genial! Tengo el setlist completo de ese concierto con [X] canciones: 🎶"
-- Lista TODAS las canciones en orden numerado
-- NO incluyas URLs de setlists - el usuario ya está en la interfaz web
-- Si no tenemos el setlist, sé honesto: "Aún no tengo el setlist de ese concierto, pero puedes contribuir si asististe!"
+¿Te gustaría saber más detalles? 🎸
 
 🎟️ INFORMACIÓN PRÁCTICA:
-Para festivales de varios días: ropa cómoda, protector solar, botella reutilizable
-Para conciertos al aire libre: bloqueador, gorra, llegar temprano
-Para venues cerrados: ID, llegar con anticipación
+- Siempre proporciona enlaces de compra de entradas cuando estén disponibles
+- Sugiere hoteles cercanos, transporte, y qué llevar al evento
+- Sé útil y amigable en la planificación
 
-${concertContext}
+RECUERDA: Cuando necesites información específica, USA LAS FUNCIONES para buscar en la base de datos. NO inventes información.`;
 
-RECUERDA: Sé cálido, organiza bien tu respuesta con espacios, NUNCA uses **, y ayuda como un experto amigo. Cada respuesta debe ser fácil de leer y sentirse como una conversación genuina.`;
+    console.log('[Step 2] Making first OpenAI call...');
 
-    console.log('[Step 6] Context built, calling OpenAI API...');
-    console.log('[Step 6] System prompt length:', systemPrompt.length);
-    console.log('[Step 6] Messages to send:', messages.length);
-
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // First OpenAI call with function calling enabled
+    let response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${OPENAI_API_KEY}`,
@@ -334,31 +283,90 @@ RECUERDA: Sé cálido, organiza bien tu respuesta con espacios, NUNCA uses **, y
           { role: 'system', content: systemPrompt },
           ...messages
         ],
+        functions: functions,
+        function_call: "auto",
         temperature: 0.7,
         max_tokens: 1000,
       }),
     });
 
-    console.log('[Step 7] OpenAI response status:', response.status);
-
     if (!response.ok) {
       const errorText = await response.text();
       console.error('OpenAI API error:', response.status, errorText);
-      throw new Error(`OpenAI API error: ${response.status} - ${errorText}`);
+      throw new Error(`OpenAI API error: ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log('[Step 8] Received response from OpenAI');
+    let data = await response.json();
+    console.log('[Step 3] OpenAI response received');
+
+    // Check if OpenAI wants to call a function
+    if (data.choices[0].message.function_call) {
+      const functionCall = data.choices[0].message.function_call;
+      const functionName = functionCall.name;
+      const functionArgs = JSON.parse(functionCall.arguments);
+
+      console.log(`[Step 4] AI wants to call function: ${functionName}`);
+      console.log(`[Step 4] Function arguments:`, functionArgs);
+
+      // Execute the requested function
+      let functionResult;
+      if (functionName === 'searchConcerts') {
+        functionResult = await searchConcerts(supabase, functionArgs);
+      } else if (functionName === 'searchFestivals') {
+        functionResult = await searchFestivals(supabase, functionArgs);
+      } else {
+        functionResult = { error: 'Unknown function' };
+      }
+
+      console.log('[Step 5] Function executed, results:', JSON.stringify(functionResult).substring(0, 200) + '...');
+
+      // Send function result back to OpenAI
+      console.log('[Step 6] Sending function result back to OpenAI...');
+      response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          messages: [
+            { role: 'system', content: systemPrompt },
+            ...messages,
+            data.choices[0].message, // The assistant's function call
+            {
+              role: 'function',
+              name: functionName,
+              content: JSON.stringify(functionResult)
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 1000,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('OpenAI API error (second call):', response.status, errorText);
+        throw new Error(`OpenAI API error: ${response.status}`);
+      }
+
+      data = await response.json();
+      console.log('[Step 7] Final OpenAI response received');
+    }
+
     const aiResponse = data.choices[0].message.content;
 
-    // Note: El frontend se encarga de guardar los mensajes en la BD
-    // No guardamos aquí para evitar duplicación y conflictos
+    if (!aiResponse) {
+      throw new Error('No response content received from OpenAI');
+    }
 
-    console.log('[Step 9] Request completed successfully');
+    console.log('[Step 8] Request completed successfully');
     return new Response(
       JSON.stringify({ response: aiResponse }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
+
   } catch (error: unknown) {
     console.error('Error in ai-concert-assistant:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -366,7 +374,6 @@ RECUERDA: Sé cálido, organiza bien tu respuesta con espacios, NUNCA uses **, y
     console.error('Error details:', errorMessage);
     console.error('Error stack:', errorStack);
 
-    // Return actual error details for debugging
     return new Response(
       JSON.stringify({
         error: `Error: ${errorMessage}`,
