@@ -69,7 +69,7 @@ export class CDNSequenceGenerator {
                 for (const song of songs) {
                     const { data: colorSeq, error: colorSeqError } = await supabase
                         .from('fan_project_color_sequences')
-                        .select('sequence, mode, strobe_color_2')
+                        .select('sequence, mode, strobe_color_2, strobe_speed')
                         .eq('fan_project_song_id', song.id)
                         .eq('venue_section_id', section.id)
                         .single();
@@ -94,6 +94,7 @@ export class CDNSequenceGenerator {
                         artist_name: song.artist_name,
                         duration_seconds: song.duration_seconds,
                         mode: colorSeq.mode as 'fixed' | 'strobe',
+                        strobeSpeed: colorSeq.strobe_speed || 80,
                         sequence: sequenceWithStrobeColor,
                     });
                 }

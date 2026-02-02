@@ -12,6 +12,7 @@ export interface CDNSongSequence {
     artist_name: string | null;
     duration_seconds: number;
     mode: 'fixed' | 'strobe';
+    strobeSpeed?: number; // Speed in milliseconds for strobe effect
     sequence: CDNColorBlock[];
 }
 

@@ -21,6 +21,7 @@ const FanProjectLightMode = () => {
 
   const [sequence, setSequence] = useState<ColorBlock[]>([]);
   const [mode, setMode] = useState<'fixed' | 'strobe'>('fixed');
+  const [strobeSpeed, setStrobeSpeed] = useState<number>(80); // Speed in ms
   const [currentColor, setCurrentColor] = useState<string>('#000000');
   const [isPlaying, setIsPlaying] = useState(false);
   const [showBrightnessWarning, setShowBrightnessWarning] = useState(false);
@@ -57,7 +58,7 @@ const FanProjectLightMode = () => {
 
       setSectionId(participantData.venue_section_id);
 
-      const stored = getSequence(projectId!, songId!, participantData.venue_section_id);
+      const stored = await getSequence(projectId!, songId!, participantData.venue_section_id);
       if (!stored) {
         toast({
           title: 'Secuencia no encontrada',
@@ -69,6 +70,7 @@ const FanProjectLightMode = () => {
       }
       setSequence(stored.sequence);
       setMode(stored.mode);
+      setStrobeSpeed(stored.strobeSpeed || 80); // Use configured speed or default to 80ms
     };
 
     loadSequence();
@@ -132,11 +134,10 @@ const FanProjectLightMode = () => {
 
       if (currentBlock) {
         if (mode === 'strobe') {
-          // Strobe effect: alternate between two colors every 80ms for maximum brightness
-          const strobeInterval = 80; // ms - faster and more dynamic
-          const currentMs = Date.now() % (strobeInterval * 2);
+          // Strobe effect: alternate between two colors using configured speed
+          const currentMs = Date.now() % (strobeSpeed * 2);
           const color2 = currentBlock.strobeColor2 || '#FFFFFF'; // White by default for max brightness
-          setCurrentColor(currentMs < strobeInterval ? currentBlock.color : color2);
+          setCurrentColor(currentMs < strobeSpeed ? currentBlock.color : color2);
         } else {
           setCurrentColor(currentBlock.color);
         }

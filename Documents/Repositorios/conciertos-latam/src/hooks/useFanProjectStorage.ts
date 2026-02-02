@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { CDNSequenceGenerator } from '@/services/cdnSequenceGenerator';
 import type { CDNProjectSequences } from '@/types/cdnSequence';
+import { indexedDBStorage } from '@/utils/indexedDBStorage';
 
 interface ColorBlock {
   start: number;
@@ -16,6 +17,7 @@ interface StoredSequence {
   sectionId: string;
   sequence: ColorBlock[];
   mode: 'fixed' | 'strobe';
+  strobeSpeed?: number; // Speed in milliseconds for strobe effect
   timestamp: number;
 }
 
@@ -133,15 +135,18 @@ export const useFanProjectStorage = () => {
       }
 
       // Also save individual sequences for backward compatibility
-      cdnData.songs.forEach((song) => {
-        saveSequence(
-          projectId,
-          song.song_id,
-          sectionId,
-          song.sequence,
-          song.mode
-        );
-      });
+      await Promise.all(
+        cdnData.songs.map((song) =>
+          saveSequence(
+            projectId,
+            song.song_id,
+            sectionId,
+            song.sequence,
+            song.mode,
+            song.strobeSpeed
+          )
+        )
+      );
 
       return true;
     } catch (error) {
@@ -167,7 +172,7 @@ export const useFanProjectStorage = () => {
         return false;
       }
 
-      const success = saveSequence(
+      const success = await saveSequence(
         projectId,
         songId,
         sectionId,
@@ -183,76 +188,67 @@ export const useFanProjectStorage = () => {
   };
 
   /**
-   * Save individual sequence to localStorage
-   * This is the original method, kept for backward compatibility
+   * Save individual sequence using IndexedDB (with localStorage fallback)
+   * Now async for IndexedDB support
    */
-  const saveSequence = (
+  const saveSequence = async (
     projectId: string,
     songId: string,
     sectionId: string,
     sequence: ColorBlock[],
-    mode: 'fixed' | 'strobe' = 'fixed'
-  ): boolean => {
-    const key = `${STORAGE_KEY_PREFIX}${projectId}_${songId}_${sectionId}`;
+    mode: 'fixed' | 'strobe' = 'fixed',
+    strobeSpeed?: number
+  ): Promise<boolean> => {
     const data: StoredSequence = {
       projectId,
       songId,
       sectionId,
       sequence,
       mode,
+      strobeSpeed,
       timestamp: Date.now(),
     };
 
     try {
-      localStorage.setItem(key, JSON.stringify(data));
-      return true;
+      // Try IndexedDB first (automatic fallback to localStorage inside)
+      const success = await indexedDBStorage.saveSequence(data);
+      return success;
     } catch (error) {
-      console.error('Error saving sequence to localStorage:', error);
+      console.error('Error saving sequence:', error);
       return false;
     }
   };
 
   /**
-   * Get sequence from localStorage
-   * Unchanged from original implementation
+   * Get sequence using IndexedDB (with localStorage fallback)
+   * Now async for IndexedDB support
    */
-  const getSequence = (
+  const getSequence = async (
     projectId: string,
     songId: string,
     sectionId: string
-  ): StoredSequence | null => {
-    const key = `${STORAGE_KEY_PREFIX}${projectId}_${songId}_${sectionId}`;
-
+  ): Promise<StoredSequence | null> => {
     try {
-      const stored = localStorage.getItem(key);
-      if (!stored) return null;
-
-      const data: StoredSequence = JSON.parse(stored);
-
-      // Check if data is expired
-      const daysSinceStored = (Date.now() - data.timestamp) / (1000 * 60 * 60 * 24);
-      if (daysSinceStored > EXPIRY_DAYS) {
-        localStorage.removeItem(key);
-        return null;
-      }
-
+      // Try IndexedDB first (automatic fallback to localStorage inside)
+      const data = await indexedDBStorage.getSequence(projectId, songId, sectionId);
       return data;
     } catch (error) {
-      console.error('Error reading sequence from localStorage:', error);
+      console.error('Error reading sequence:', error);
       return null;
     }
   };
 
   /**
    * Check if sequence is preloaded
-   * Unchanged from original implementation
+   * Now async to support IndexedDB
    */
-  const isPreloaded = (
+  const isPreloaded = async (
     projectId: string,
     songId: string,
     sectionId: string
-  ): boolean => {
-    return getSequence(projectId, songId, sectionId) !== null;
+  ): Promise<boolean> => {
+    const sequence = await getSequence(projectId, songId, sectionId);
+    return sequence !== null;
   };
 
   /**

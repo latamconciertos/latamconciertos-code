@@ -10,6 +10,9 @@ import { SectionSelectModal } from '@/components/SectionSelectModal';
 import { useFanProjectStorage } from '@/hooks/useFanProjectStorage';
 import { useToast } from '@/hooks/use-toast';
 import { Lightbulb, Download, Check, Edit, Music } from 'lucide-react';
+import { OfflineStatusBadge } from '@/components/fan-projects/OfflineStatusBadge';
+import { OfflineReadyDialog } from '@/components/fan-projects/OfflineReadyDialog';
+import { indexedDBStorage } from '@/utils/indexedDBStorage';
 
 interface VenueSection {
   id: string;
@@ -58,6 +61,10 @@ const FanProjectDetail = () => {
   const [showSectionModal, setShowSectionModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string>('');
+  const [showOfflineDialog, setShowOfflineDialog] = useState(false);
+  const [preloadedCount, setPreloadedCount] = useState(0);
+  const [storageType, setStorageType] = useState<'IndexedDB' | 'localStorage'>('IndexedDB');
+  const [preloadedSongs, setPreloadedSongs] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -85,8 +92,10 @@ const FanProjectDetail = () => {
         },
         (payload) => {
           console.log('Songs changed:', payload);
-          // Reload songs when any change occurs
-          loadProjectSongs();
+          // Reload project data when songs change
+          if (userId) {
+            loadProjectData(userId);
+          }
         }
       )
       .subscribe();
@@ -95,6 +104,24 @@ const FanProjectDetail = () => {
       songsSubscription.unsubscribe();
     };
   }, [projectId, navigate]);
+
+  // Check which songs are preloaded
+  useEffect(() => {
+    const checkPreloaded = async () => {
+      if (!selectedSection || songs.length === 0) return;
+
+      const preloaded = new Set<string>();
+      for (const song of songs) {
+        const isLoaded = await isPreloaded(projectId!, song.id, selectedSection);
+        if (isLoaded) {
+          preloaded.add(song.id);
+        }
+      }
+      setPreloadedSongs(preloaded);
+    };
+
+    checkPreloaded();
+  }, [songs, selectedSection, projectId, isPreloaded]);
 
   const loadProjectData = async (uid: string) => {
     try {
@@ -213,11 +240,21 @@ const FanProjectDetail = () => {
       const cdnSuccess = await preloadProjectSection(projectId!, selectedSection);
 
       if (cdnSuccess) {
-        // Bulk load successful - all songs preloaded at once
-        toast({
-          title: '✅ Todas las secuencias descargadas',
-          description: 'Todas las canciones están listas para usar sin conexión',
-        });
+        // Get storage stats
+        const stats = await indexedDBStorage.getStorageStats();
+        setPreloadedCount(stats.totalSequences);
+        setStorageType(stats.isIndexedDB ? 'IndexedDB' : 'localStorage');
+        setShowOfflineDialog(true);
+
+        // Refresh preloaded songs
+        const preloaded = new Set<string>();
+        for (const song of songs) {
+          const isLoaded = await isPreloaded(projectId!, song.id, selectedSection);
+          if (isLoaded) {
+            preloaded.add(song.id);
+          }
+        }
+        setPreloadedSongs(preloaded);
         return;
       }
 
@@ -229,10 +266,17 @@ const FanProjectDetail = () => {
         throw new Error('No se pudo cargar la secuencia');
       }
 
-      toast({
-        title: '✅ Secuencia descargada',
-        description: 'Esta canción está lista para usar sin conexión',
-      });
+      // Get storage stats
+      const stats = await indexedDBStorage.getStorageStats();
+      setPreloadedCount(1);
+      setStorageType(stats.isIndexedDB ? 'IndexedDB' : 'localStorage');
+      setShowOfflineDialog(true);
+
+      // Refresh preloaded songs
+      const isLoaded = await isPreloaded(projectId!, songId, selectedSection);
+      if (isLoaded) {
+        setPreloadedSongs(prev => new Set(prev).add(songId));
+      }
     } catch (error) {
       console.error('Error preloading sequence:', error);
       toast({
@@ -348,7 +392,7 @@ const FanProjectDetail = () => {
 
               <div className="grid gap-3 sm:gap-4">
                 {songs.map((song) => {
-                  const preloaded = isPreloaded(projectId!, song.id, selectedSection);
+                  const preloaded = preloadedSongs.has(song.id);
 
                   return (
                     <Card key={song.id} className="border-2 hover:border-primary/20 transition-colors">
@@ -420,6 +464,13 @@ const FanProjectDetail = () => {
         sections={sections}
         onSelect={handleSectionSelect}
         defaultValue={selectedSection}
+      />
+
+      <OfflineReadyDialog
+        open={showOfflineDialog}
+        onOpenChange={setShowOfflineDialog}
+        sequenceCount={preloadedCount}
+        storageType={storageType}
       />
     </>
   );
