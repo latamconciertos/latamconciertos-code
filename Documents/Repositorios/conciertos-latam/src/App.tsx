@@ -81,8 +81,10 @@ const AppContent = () => {
   // Profile completion logic
   const { showDialog, isSaving, saveProfile } = useProfileCompletion(profile, userId);
 
-  // Hide floating AI chat when already on AI assistant page or community chat
-  const showFloatingChat = location.pathname !== '/ai-assistant' && !location.pathname.includes('/chat');
+  // Hide floating AI chat when already on AI assistant page, community chat, or light mode
+  const showFloatingChat = location.pathname !== '/ai-assistant'
+    && !location.pathname.includes('/chat')
+    && !location.pathname.includes('/light');
 
   return (
     <>

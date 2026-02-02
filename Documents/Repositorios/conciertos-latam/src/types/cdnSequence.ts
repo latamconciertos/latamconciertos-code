@@ -3,6 +3,7 @@ export interface CDNColorBlock {
     start: number;
     end: number;
     color: string;
+    strobeColor2?: string; // Second color for strobe effect
 }
 
 export interface CDNSongSequence {

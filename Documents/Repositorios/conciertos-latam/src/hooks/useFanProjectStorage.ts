@@ -7,6 +7,7 @@ interface ColorBlock {
   start: number;
   end: number;
   color: string;
+  strobeColor2?: string; // Second color for strobe effect
 }
 
 interface StoredSequence {

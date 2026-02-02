@@ -3,13 +3,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useFanProjectStorage } from '@/hooks/useFanProjectStorage';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { X, Play } from 'lucide-react';
+import { X, Play, Sun, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ColorBlock {
   start: number;
   end: number;
   color: string;
+  strobeColor2?: string; // Second color for strobe effect
 }
 
 const FanProjectLightMode = () => {
@@ -17,11 +18,12 @@ const FanProjectLightMode = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { getSequence } = useFanProjectStorage();
-  
+
   const [sequence, setSequence] = useState<ColorBlock[]>([]);
   const [mode, setMode] = useState<'fixed' | 'strobe'>('fixed');
   const [currentColor, setCurrentColor] = useState<string>('#000000');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showBrightnessWarning, setShowBrightnessWarning] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [sectionId, setSectionId] = useState<string>('');
   const animationFrameRef = useRef<number>();
@@ -54,7 +56,7 @@ const FanProjectLightMode = () => {
       }
 
       setSectionId(participantData.venue_section_id);
-      
+
       const stored = getSequence(projectId!, songId!, participantData.venue_section_id);
       if (!stored) {
         toast({
@@ -93,7 +95,13 @@ const FanProjectLightMode = () => {
     };
   }, []);
 
-  const handlePlay = async () => {
+  const handlePlay = () => {
+    setShowBrightnessWarning(true);
+  };
+
+  const handleConfirmPlay = async () => {
+    setShowBrightnessWarning(false);
+
     try {
       await document.documentElement.requestFullscreen();
     } catch (error) {
@@ -117,17 +125,18 @@ const FanProjectLightMode = () => {
 
     const updateColor = () => {
       const elapsed = (Date.now() - startTime) / 1000; // seconds
-      
+
       const currentBlock = sequence.find(
         block => elapsed >= block.start && elapsed < block.end
       );
 
       if (currentBlock) {
         if (mode === 'strobe') {
-          // Strobe effect: alternate between color and black every 100ms
-          const strobeInterval = 100; // ms
+          // Strobe effect: alternate between two colors every 80ms for maximum brightness
+          const strobeInterval = 80; // ms - faster and more dynamic
           const currentMs = Date.now() % (strobeInterval * 2);
-          setCurrentColor(currentMs < strobeInterval ? currentBlock.color : '#000000');
+          const color2 = currentBlock.strobeColor2 || '#FFFFFF'; // White by default for max brightness
+          setCurrentColor(currentMs < strobeInterval ? currentBlock.color : color2);
         } else {
           setCurrentColor(currentBlock.color);
         }
@@ -152,10 +161,10 @@ const FanProjectLightMode = () => {
 
   return (
     <div
-      className="fixed inset-0 w-screen h-screen transition-colors duration-300"
+      className="fixed inset-0 w-screen h-screen"
       style={{ backgroundColor: currentColor }}
     >
-      {!isPlaying ? (
+      {!isPlaying && !showBrightnessWarning ? (
         <div className="absolute inset-0 flex items-center justify-center">
           <Button
             size="lg"
@@ -167,6 +176,54 @@ const FanProjectLightMode = () => {
           </Button>
         </div>
       ) : null}
+
+      {showBrightnessWarning && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/90 backdrop-blur-sm p-6">
+          <div className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 border-2 border-yellow-500/50 rounded-2xl p-8 max-w-md w-full shadow-2xl">
+            <div className="flex items-center justify-center mb-6">
+              <div className="relative">
+                <Sun className="h-16 w-16 text-yellow-400 animate-pulse" />
+                <AlertTriangle className="h-8 w-8 text-orange-500 absolute -top-2 -right-2" />
+              </div>
+            </div>
+
+            <h2 className="text-2xl font-bold text-white text-center mb-4">
+              ⚡ Ajusta el Brillo al Máximo
+            </h2>
+
+            <div className="space-y-3 mb-6 text-white/90">
+              <p className="flex items-start gap-2">
+                <Sun className="h-5 w-5 text-yellow-400 mt-0.5 flex-shrink-0" />
+                <span>Sube el brillo de tu pantalla al <strong>100%</strong></span>
+              </p>
+              <p className="flex items-start gap-2">
+                <AlertTriangle className="h-5 w-5 text-orange-400 mt-0.5 flex-shrink-0" />
+                <span>Esto garantiza el <strong>máximo impacto visual</strong></span>
+              </p>
+              <p className="text-sm text-white/70 mt-4 p-3 bg-black/30 rounded-lg">
+                💡 Los efectos de luz funcionan mejor con brillo máximo
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                className="flex-1 bg-white/10 hover:bg-white/20 text-white border-white/30"
+                onClick={() => setShowBrightnessWarning(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-bold shadow-lg"
+                onClick={handleConfirmPlay}
+              >
+                <Play className="h-5 w-5 mr-2" />
+                ¡Listo, Iniciar!
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <button
         onClick={handleExit}

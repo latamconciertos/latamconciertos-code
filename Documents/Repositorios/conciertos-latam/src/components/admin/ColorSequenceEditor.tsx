@@ -19,6 +19,7 @@ interface ColorBlock {
   start: number;
   end: number;
   color: string;
+  strobeColor2?: string; // Second color for strobe effect
 }
 
 interface VenueSection {
@@ -68,7 +69,7 @@ export const ColorSequenceEditor = ({
 
       if (error) throw error;
       setSections(data || []);
-      
+
       if (data && data.length > 0) {
         setSelectedSection(data[0].id);
       }
@@ -88,7 +89,7 @@ export const ColorSequenceEditor = ({
     try {
       const { data, error } = await supabase
         .from('fan_project_color_sequences')
-        .select('sequence, mode')
+        .select('sequence, mode, strobe_color_2')
         .eq('fan_project_song_id', songId)
         .eq('venue_section_id', selectedSection)
         .single();
@@ -96,7 +97,16 @@ export const ColorSequenceEditor = ({
       if (error && error.code !== 'PGRST116') throw error;
 
       if (data) {
-        setSequence(data.sequence as any);
+        const loadedSequence = data.sequence as ColorBlock[];
+        // Add strobe_color_2 from database to each block if it exists
+        if (data.strobe_color_2) {
+          loadedSequence.forEach(block => {
+            if (!block.strobeColor2) {
+              block.strobeColor2 = data.strobe_color_2;
+            }
+          });
+        }
+        setSequence(loadedSequence);
         setMode(data.mode as 'fixed' | 'strobe');
       } else {
         setSequence([]);
@@ -108,8 +118,8 @@ export const ColorSequenceEditor = ({
   };
 
   const addBlock = () => {
-    const lastEnd = sequence.length > 0 
-      ? sequence[sequence.length - 1].end 
+    const lastEnd = sequence.length > 0
+      ? sequence[sequence.length - 1].end
       : 0;
 
     setSequence([
@@ -118,6 +128,7 @@ export const ColorSequenceEditor = ({
         start: lastEnd,
         end: lastEnd + 10,
         color: '#FF0000',
+        strobeColor2: '#FFFFFF', // Default to white for strobe
       },
     ]);
   };
@@ -156,6 +167,9 @@ export const ColorSequenceEditor = ({
 
     setSaving(true);
     try {
+      // Get strobe_color_2 from first block (all blocks should have same strobe color)
+      const strobeColor2 = sequence[0]?.strobeColor2 || '#FFFFFF';
+
       const { error } = await supabase
         .from('fan_project_color_sequences')
         .upsert({
@@ -163,6 +177,7 @@ export const ColorSequenceEditor = ({
           venue_section_id: selectedSection,
           sequence: sequence as any,
           mode: mode,
+          strobe_color_2: strobeColor2,
         }, {
           onConflict: 'fan_project_song_id,venue_section_id'
         });
@@ -265,11 +280,47 @@ export const ColorSequenceEditor = ({
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">
-              {mode === 'fixed' 
+              {mode === 'fixed'
                 ? 'Los colores se mostrarán de forma constante durante cada bloque'
-                : 'Los colores parpadearán creando un efecto strobe durante cada bloque'
+                : 'El strobe alternará entre dos colores brillantes para máximo impacto visual'
               }
             </p>
+
+            {mode === 'strobe' && (
+              <div className="mt-4 space-y-2">
+                <Label>Color Alternativo del Strobe</Label>
+                <div className="flex gap-2">
+                  <Input
+                    type="color"
+                    value={sequence[0]?.strobeColor2 || '#FFFFFF'}
+                    onChange={(e) => {
+                      const newColor = e.target.value;
+                      setSequence(sequence.map(block => ({
+                        ...block,
+                        strobeColor2: newColor
+                      })));
+                    }}
+                    className="w-16 h-10 p-1 cursor-pointer"
+                  />
+                  <Input
+                    type="text"
+                    value={sequence[0]?.strobeColor2 || '#FFFFFF'}
+                    onChange={(e) => {
+                      const newColor = e.target.value;
+                      setSequence(sequence.map(block => ({
+                        ...block,
+                        strobeColor2: newColor
+                      })));
+                    }}
+                    className="flex-1"
+                    placeholder="#FFFFFF"
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Este color se alternará con el color principal de cada bloque. Usa colores brillantes para máximo impacto.
+                </p>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -302,7 +353,7 @@ export const ColorSequenceEditor = ({
                   <div className="flex items-center justify-center w-8 h-8 rounded bg-muted font-semibold">
                     {index + 1}
                   </div>
-                  
+
                   <div className="flex-1 grid grid-cols-3 gap-4">
                     <div className="space-y-1">
                       <Label className="text-xs">Inicio (seg)</Label>
@@ -314,7 +365,7 @@ export const ColorSequenceEditor = ({
                         onChange={(e) => updateBlock(index, 'start', e.target.value)}
                       />
                     </div>
-                    
+
                     <div className="space-y-1">
                       <Label className="text-xs">Fin (seg)</Label>
                       <Input
@@ -325,7 +376,7 @@ export const ColorSequenceEditor = ({
                         onChange={(e) => updateBlock(index, 'end', e.target.value)}
                       />
                     </div>
-                    
+
                     <div className="space-y-1">
                       <Label className="text-xs">Color</Label>
                       <div className="flex gap-2 mb-2">
@@ -391,7 +442,7 @@ export const ColorSequenceEditor = ({
                 const duration = block.end - block.start;
                 const totalDuration = sequence[sequence.length - 1].end;
                 const percentage = (duration / totalDuration) * 100;
-                
+
                 return (
                   <div
                     key={index}
