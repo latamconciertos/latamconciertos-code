@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Button } from './ui/button';
 import logo from '@/assets/logo.png';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { supabase } from '@/integrations/supabase/client';
 interface HeroLandingProps {
   onScrollPastHero: (isPast: boolean) => void;
 }
@@ -13,6 +14,8 @@ const HeroLanding = ({
 }: HeroLandingProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [windowHeight, setWindowHeight] = useState(0);
+  const [user, setUser] = useState<any>(null);
+  const [userName, setUserName] = useState<string>('');
   const isMobile = useIsMobile(); // Detect mobile for performance optimizations
 
   const {
@@ -31,6 +34,55 @@ const HeroLanding = ({
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // Check auth status
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('first_name, last_name, username')
+          .eq('id', session.user.id)
+          .single();
+
+        if (profile) {
+          const displayName = profile.first_name && profile.last_name
+            ? `${profile.first_name} ${profile.last_name}`
+            : profile.username || session.user.email?.split('@')[0] || 'Usuario';
+          setUserName(displayName);
+        }
+      }
+    };
+
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user) {
+        supabase
+          .from('profiles')
+          .select('first_name, last_name, username')
+          .eq('id', session.user.id)
+          .single()
+          .then(({ data: profile }) => {
+            if (profile) {
+              const displayName = profile.first_name && profile.last_name
+                ? `${profile.first_name} ${profile.last_name}`
+                : profile.username || session.user.email?.split('@')[0] || 'Usuario';
+              setUserName(displayName);
+            }
+          });
+      } else {
+        setUserName('');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   useEffect(() => {
     const unsubscribe = scrollY.on('change', latest => {
       const threshold = windowHeight * 0.6;
@@ -137,11 +189,19 @@ const HeroLanding = ({
         duration: animDuration,
         delay: 0.6
       }} className="mt-12">
-        <Link to="/auth">
-          <Button variant="ghost" className="text-white/90 hover:text-white hover:bg-white/10 text-lg font-fira font-medium px-8 py-3 h-auto border border-white/20 rounded-full transition-all hover:border-white/40">
-            Únete ahora <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </Link>
+        {user ? (
+          <div className="text-center">
+            <p className="text-white/90 text-2xl sm:text-3xl font-fira font-medium">
+              Bienvenido, <span className="text-[hsl(120,45%,55%)] font-bold">{userName}</span>
+            </p>
+          </div>
+        ) : (
+          <Link to="/auth">
+            <Button variant="ghost" className="text-white/90 hover:text-white hover:bg-white/10 text-lg font-fira font-medium px-8 py-3 h-auto border border-white/20 rounded-full transition-all hover:border-white/40">
+              Únete ahora <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          </Link>
+        )}
       </motion.div>
     </motion.div>
 
