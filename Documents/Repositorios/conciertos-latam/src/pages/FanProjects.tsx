@@ -4,11 +4,12 @@ import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { SEO } from '@/components/SEO';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Lightbulb, Calendar, MapPin } from 'lucide-react';
+import { Lightbulb, Calendar, MapPin, Music, Users, Zap } from 'lucide-react';
 import { formatDisplayDate } from '@/lib/timezone';
+import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
 
 interface FanProject {
   id: string;
@@ -95,125 +96,209 @@ const FanProjects = () => {
     }
   };
 
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return { day: '', month: '', year: '' };
+
+    const [year, month, day] = dateString.split('-').map(Number);
+    const date = new Date(year, month - 1, day);
+
+    return {
+      day: date.getDate().toString(),
+      month: date.toLocaleDateString('es', { month: 'short' }),
+      year: date.getFullYear().toString(),
+    };
+  };
+
+  const getDefaultImage = () => {
+    return 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&h=600&fit=crop';
+  };
+
   if (!isAuthenticated) {
     return null;
   }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Header />
+        <main className="flex-1 container mx-auto px-4 py-16">
+          <LoadingSpinnerInline message="Cargando proyectos..." />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Calculate stats
+  const totalSongs = projects.reduce((acc, p) => acc + p.songs_count, 0);
 
   return (
     <>
       <SEO
         title="Fan Projects - Conciertos LATAM"
-        description="Únete a los proyectos de fans y sé parte del espectáculo de luces en los conciertos"
+        description="Únete a los proyectos de fans y sé parte del espectáculo de luces en los conciertos. Descarga secuencias y participa sin consumir datos."
+        keywords="fan projects, proyectos de fans, luces concierto, secuencias, participación fans, conciertos interactivos"
       />
 
-      <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-background/95">
+      <div className="min-h-screen bg-background">
         <Header />
 
-        <main className="flex-1 container mx-auto px-4 py-8 pt-28 sm:pt-32 pb-20 min-h-[calc(100vh-200px)]">
-          <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
-            {/* Hero Section - Mobile optimized */}
-            <div className="text-center space-y-3 sm:space-y-4 px-2">
-              <div className="flex items-center justify-center gap-2 sm:gap-3">
-                <Lightbulb className="h-8 w-8 sm:h-10 sm:w-10 text-primary animate-pulse" />
-                <h1 className="text-3xl md:text-5xl font-bold text-foreground">
-                  Fan Projects
-                </h1>
-              </div>
-              <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-4">
-                Únete a los proyectos de luces y sé parte del espectáculo. Descarga las secuencias antes del concierto y participa sin consumir datos.
-              </p>
+        <main className="container mx-auto px-4 py-16" itemScope itemType="https://schema.org/CollectionPage">
+          {/* Hero Section */}
+          <header className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
+              <Lightbulb className="h-5 w-5 text-primary" aria-hidden="true" />
+              <span className="text-primary font-semibold">Fan Projects</span>
             </div>
 
-            {loading ? (
-              <div className="text-center py-16 sm:py-20">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-4 border-primary border-t-transparent mb-4"></div>
-                <p className="text-sm sm:text-base text-muted-foreground">Cargando proyectos...</p>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4" itemProp="name">
+              Proyectos de Fans
+            </h1>
+
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-6" itemProp="description">
+              Únete a los proyectos de luces y sé parte del espectáculo. Descarga las secuencias antes del concierto y participa sin consumir datos.
+            </p>
+
+            {/* Stats */}
+            <div className="flex flex-wrap justify-center gap-6 mt-6 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4 text-primary" aria-hidden="true" />
+                <span><strong className="text-foreground">{projects.length}</strong> Proyectos Activos</span>
               </div>
-            ) : projects.length === 0 ? (
-              <div className="text-center py-16 sm:py-20 px-4">
-                <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-muted mb-4 sm:mb-6">
-                  <Lightbulb className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/50" />
-                </div>
-                <p className="text-base sm:text-lg text-muted-foreground font-medium">
-                  No hay proyectos activos en este momento
-                </p>
-                <p className="text-sm text-muted-foreground/70 mt-2">
-                  Vuelve pronto para ver los próximos eventos
-                </p>
+              <div className="flex items-center gap-2">
+                <Music className="h-4 w-4 text-primary" aria-hidden="true" />
+                <span><strong className="text-foreground">{totalSongs}+</strong> Canciones</span>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-                {projects.map((project) => (
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-primary" aria-hidden="true" />
+                <span><strong className="text-foreground">Miles</strong> de fans participando</span>
+              </div>
+            </div>
+          </header>
+
+          {/* Projects Grid */}
+          {projects.length === 0 ? (
+            <div className="text-center py-20 px-4">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-muted mb-6">
+                <Lightbulb className="h-10 w-10 text-muted-foreground/50" />
+              </div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">
+                No hay proyectos activos
+              </h2>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                Vuelve pronto para ver los próximos eventos con proyectos de fans
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+              {projects.map((project) => {
+                const dateInfo = formatDate(project.concert.date);
+                const imageUrl = project.concert.image_url || getDefaultImage();
+
+                return (
                   <Card
                     key={project.id}
-                    className="overflow-hidden hover:shadow-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] border-2 hover:border-primary/20"
+                    className="group overflow-hidden rounded-2xl hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer"
+                    onClick={() => navigate(`/fan-projects/${project.id}`)}
                   >
-                    {project.concert.image_url && (
-                      <div className="aspect-video w-full overflow-hidden bg-gradient-to-br from-primary/5 to-muted relative group">
-                        <img
-                          src={project.concert.image_url}
-                          alt={project.concert.title}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      </div>
-                    )}
+                    {/* Image Section */}
+                    <div className="relative overflow-hidden">
+                      <img
+                        src={imageUrl}
+                        alt={`${project.concert.artist?.name || 'Artista'} - ${project.concert.title}`}
+                        className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500 rounded-t-2xl"
+                        loading="lazy"
+                        decoding="async"
+                      />
 
-                    <CardHeader className="p-4 sm:p-6">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <CardTitle className="text-lg sm:text-xl line-clamp-2 leading-tight">
-                          {project.concert.title}
-                        </CardTitle>
-                        <Badge variant="secondary" className="shrink-0 text-xs">
-                          {project.songs_count}
+                      {/* Badge */}
+                      <div className="absolute top-4 left-4">
+                        <Badge className="bg-green-500 text-white font-bold px-3 py-1">
+                          Activo
                         </Badge>
                       </div>
-                      {project.concert.artist && (
-                        <p className="text-sm font-semibold text-primary mb-1">
-                          {project.concert.artist.name}
-                        </p>
-                      )}
-                      <CardDescription className="line-clamp-2 text-sm leading-relaxed">
-                        {project.description}
-                      </CardDescription>
-                    </CardHeader>
 
-                    <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-4">
-                      <div className="space-y-2 text-sm">
-                        {project.concert.date && (
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <Calendar className="h-4 w-4 shrink-0" />
-                            <span className="font-medium">
-                              {formatDisplayDate(project.concert.date)}
+                      {/* Date Circle */}
+                      {project.concert.date && (
+                        <time
+                          dateTime={project.concert.date}
+                          className="absolute bottom-4 right-4 bg-primary text-primary-foreground rounded-full w-16 h-16 flex flex-col items-center justify-center text-center shadow-lg"
+                        >
+                          <span className="text-xs font-medium">{dateInfo.month}</span>
+                          <span className="text-lg font-bold leading-none">{dateInfo.day}</span>
+                        </time>
+                      )}
+
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+
+                    {/* Content */}
+                    <CardContent className="p-6 flex flex-col h-[280px]">
+                      <div className="flex-1 space-y-3">
+                        <div>
+                          <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
+                            {project.concert.title}
+                          </h3>
+                          {project.concert.artist && (
+                            <p className="text-primary font-semibold text-lg mb-1">
+                              {project.concert.artist.name}
+                            </p>
+                          )}
+                          <p className="text-muted-foreground text-sm line-clamp-2 mb-2">
+                            {project.description}
+                          </p>
+                        </div>
+
+                        <div className="space-y-2">
+                          {project.concert.venue && (
+                            <div className="flex items-center text-muted-foreground text-sm">
+                              <MapPin className="h-4 w-4 mr-2 text-primary flex-shrink-0" aria-hidden="true" />
+                              <span className="font-medium line-clamp-1">
+                                {project.concert.venue.name}
+                              </span>
+                            </div>
+                          )}
+
+                          {project.concert.date && (
+                            <div className="flex items-center text-muted-foreground text-sm">
+                              <Calendar className="h-4 w-4 mr-2 text-primary flex-shrink-0" aria-hidden="true" />
+                              <span className="line-clamp-1">
+                                {formatDisplayDate(project.concert.date)}
+                              </span>
+                            </div>
+                          )}
+
+                          <div className="flex items-center text-muted-foreground text-sm">
+                            <Music className="h-4 w-4 mr-2 text-primary flex-shrink-0" aria-hidden="true" />
+                            <span>
+                              <strong className="text-foreground">{project.songs_count}</strong> canciones disponibles
                             </span>
                           </div>
-                        )}
-                        {project.concert.venue && (
-                          <div className="flex items-center gap-2 text-muted-foreground">
-                            <MapPin className="h-4 w-4 shrink-0" />
-                            <span className="line-clamp-1 text-xs sm:text-sm">
-                              {project.concert.venue.name} - {project.concert.venue.location}
-                            </span>
-                          </div>
-                        )}
+                        </div>
                       </div>
 
                       <Button
-                        className="w-full h-11 sm:h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all"
-                        onClick={() => navigate(`/fan-projects/${project.id}`)}
+                        className="w-full group/btn mt-4"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/fan-projects/${project.id}`);
+                        }}
+                        aria-label={`Ver proyecto ${project.concert.title}`}
                       >
+                        <Lightbulb className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" aria-hidden="true" />
                         Ver Proyecto
                       </Button>
                     </CardContent>
                   </Card>
-                ))}
-              </div>
-            )}
-          </div>
-        </main>
+                );
+              })}
+            </div>
+          )}
+        </main >
 
         <Footer />
-      </div>
+      </div >
     </>
   );
 };
