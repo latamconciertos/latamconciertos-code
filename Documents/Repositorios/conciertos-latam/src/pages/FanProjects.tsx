@@ -65,7 +65,7 @@ const FanProjects = () => {
             title,
             date,
             image_url,
-            artist:artists (name, image_url),
+            artist_id,
             venue:venues (name, location)
           )
         `)
@@ -73,6 +73,24 @@ const FanProjects = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+
+      // Get artist data separately
+      const artistIds = [...new Set((data || []).map((p: any) => p.concert?.artist_id).filter(Boolean))];
+
+      let artistsMap: Record<string, any> = {};
+      if (artistIds.length > 0) {
+        const { data: artistsData } = await supabase
+          .from('artists')
+          .select('id, name, image_url')
+          .in('id', artistIds);
+
+        if (artistsData) {
+          artistsMap = artistsData.reduce((acc: any, artist: any) => {
+            acc[artist.id] = artist;
+            return acc;
+          }, {});
+        }
+      }
 
       // Get song counts for each project
       const projectsWithCounts = await Promise.all(
@@ -82,13 +100,28 @@ const FanProjects = () => {
             .select('*', { count: 'exact', head: true })
             .eq('fan_project_id', project.id);
 
+          // Attach artist data to concert
+          const artist = project.concert?.artist_id ? artistsMap[project.concert.artist_id] : null;
+
           return {
             ...project,
+            concert: {
+              ...project.concert,
+              artist: artist
+            },
             songs_count: count || 0,
           };
         })
       );
 
+      console.log('Fan Projects loaded:', projectsWithCounts);
+      projectsWithCounts.forEach((p: any) => {
+        console.log(`Project: ${p.name}`, {
+          artist_image: p.concert?.artist?.image_url,
+          concert_image: p.concert?.image_url,
+          artist_name: p.concert?.artist?.name
+        });
+      });
       setProjects(projectsWithCounts);
     } catch (error) {
       console.error('Error loading fan projects:', error);
