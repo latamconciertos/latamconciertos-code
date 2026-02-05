@@ -22,7 +22,7 @@ interface FanProject {
     image_url: string;
     artist: {
       name: string;
-      image_url: string | null;
+      photo_url: string | null;
     } | null;
     venue: {
       name: string;
@@ -81,7 +81,7 @@ const FanProjects = () => {
       if (artistIds.length > 0) {
         const { data: artistsData } = await supabase
           .from('artists')
-          .select('id, name, image_url')
+          .select('id, name, photo_url')
           .in('id', artistIds);
 
         if (artistsData) {
@@ -117,7 +117,7 @@ const FanProjects = () => {
       console.log('Fan Projects loaded:', projectsWithCounts);
       projectsWithCounts.forEach((p: any) => {
         console.log(`Project: ${p.name}`, {
-          artist_image: p.concert?.artist?.image_url,
+          artist_image: p.concert?.artist?.photo_url,
           concert_image: p.concert?.image_url,
           artist_name: p.concert?.artist?.name
         });
@@ -227,7 +227,7 @@ const FanProjects = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
               {projects.map((project) => {
                 const dateInfo = formatDate(project.concert.date);
-                const imageUrl = project.concert.artist?.image_url || project.concert.image_url || getDefaultImage();
+                const imageUrl = project.concert.artist?.photo_url || project.concert.image_url || getDefaultImage();
 
                 return (
                   <Card
