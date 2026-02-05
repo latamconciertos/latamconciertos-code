@@ -22,6 +22,7 @@ interface FanProject {
     image_url: string;
     artist: {
       name: string;
+      image_url: string | null;
     } | null;
     venue: {
       name: string;
@@ -64,7 +65,7 @@ const FanProjects = () => {
             title,
             date,
             image_url,
-            artist:artists (name),
+            artist:artists (name, image_url),
             venue:venues (name, location)
           )
         `)
@@ -143,7 +144,7 @@ const FanProjects = () => {
       <div className="min-h-screen bg-background">
         <Header />
 
-        <main className="container mx-auto px-4 py-16" itemScope itemType="https://schema.org/CollectionPage">
+        <main className="container mx-auto px-4 pt-24 pb-16" itemScope itemType="https://schema.org/CollectionPage">
           {/* Hero Section */}
           <header className="text-center mb-12">
             <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
@@ -151,11 +152,11 @@ const FanProjects = () => {
               <span className="text-primary font-semibold">Fan Projects</span>
             </div>
 
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4" itemProp="name">
+            <h1 className="page-title mb-4" itemProp="name">
               Proyectos de Fans
             </h1>
 
-            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mb-6" itemProp="description">
+            <p className="page-subtitle max-w-3xl mx-auto" itemProp="description">
               Únete a los proyectos de luces y sé parte del espectáculo. Descarga las secuencias antes del concierto y participa sin consumir datos.
             </p>
 
@@ -193,7 +194,7 @@ const FanProjects = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
               {projects.map((project) => {
                 const dateInfo = formatDate(project.concert.date);
-                const imageUrl = project.concert.image_url || getDefaultImage();
+                const imageUrl = project.concert.artist?.image_url || project.concert.image_url || getDefaultImage();
 
                 return (
                   <Card
