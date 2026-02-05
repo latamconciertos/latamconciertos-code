@@ -151,11 +151,11 @@ const FanProjects = () => {
               <span className="text-primary font-semibold">Fan Projects</span>
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4" itemProp="name">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4" itemProp="name">
               Proyectos de Fans
             </h1>
 
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto mb-6" itemProp="description">
+            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto mb-6" itemProp="description">
               Únete a los proyectos de luces y sé parte del espectáculo. Descarga las secuencias antes del concierto y participa sin consumir datos.
             </p>
 
