@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Lightbulb, Download, Check, Edit, Music } from 'lucide-react';
 import { OfflineStatusBadge } from '@/components/fan-projects/OfflineStatusBadge';
 import { OfflineReadyDialog } from '@/components/fan-projects/OfflineReadyDialog';
+import { PostDownloadSharePrompt } from '@/components/fan-projects/PostDownloadSharePrompt';
 import { indexedDBStorage } from '@/utils/indexedDBStorage';
 
 interface VenueSection {
@@ -33,7 +34,10 @@ interface FanProject {
   description: string;
   instructions: string;
   concert: {
+    id: string;
     title: string;
+    artist_name: string;
+    artist_image_url: string | null;
     date: string;
     venue: {
       name: string;
@@ -62,9 +66,11 @@ const FanProjectDetail = () => {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string>('');
   const [showOfflineDialog, setShowOfflineDialog] = useState(false);
+  const [showSharePrompt, setShowSharePrompt] = useState(false);
   const [preloadedCount, setPreloadedCount] = useState(0);
   const [storageType, setStorageType] = useState<'IndexedDB' | 'localStorage'>('IndexedDB');
   const [preloadedSongs, setPreloadedSongs] = useState<Set<string>>(new Set());
+  const [gradientColors, setGradientColors] = useState<string[]>([]);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -134,8 +140,10 @@ const FanProjectDetail = () => {
           description,
           instructions,
           concert:concerts (
+            id,
             title,
             date,
+            artist_id,
             venue:venues (id, name)
           )
         `)
@@ -144,7 +152,43 @@ const FanProjectDetail = () => {
         .single();
 
       if (projectError) throw projectError;
-      setProject(projectData);
+
+      // Get artist data if artist_id exists
+      let artistData = null;
+      if (projectData.concert?.artist_id) {
+        const { data: artist } = await supabase
+          .from('artists')
+          .select('name, photo_url')
+          .eq('id', projectData.concert.artist_id)
+          .single();
+
+        artistData = artist;
+      }
+
+      // Combine data
+      const enrichedProject = {
+        ...projectData,
+        concert: {
+          ...projectData.concert,
+          artist_name: artistData?.name || projectData.concert.title.split(' - ')[0] || 'Artista',
+          artist_image_url: artistData?.photo_url || null,
+        }
+      };
+
+      setProject(enrichedProject);
+
+      // Load gradient colors from first song's sequence
+      const { data: colorSeqData } = await supabase
+        .from('fan_project_color_sequences')
+        .select('sequence')
+        .eq('fan_project_id', projectId)
+        .limit(1)
+        .single();
+
+      if (colorSeqData?.sequence && Array.isArray(colorSeqData.sequence)) {
+        const colors = colorSeqData.sequence.map((block: any) => block.color).filter(Boolean);
+        setGradientColors(colors.slice(0, 3)); // Use first 3 colors
+      }
 
       // Load venue sections for this project
       const { data: sectionsData, error: sectionsError } = await supabase
@@ -468,10 +512,35 @@ const FanProjectDetail = () => {
 
       <OfflineReadyDialog
         open={showOfflineDialog}
-        onOpenChange={setShowOfflineDialog}
+        onOpenChange={(open) => {
+          setShowOfflineDialog(open);
+          // Show share prompt after closing offline dialog
+          if (!open && preloadedCount > 0) {
+            setTimeout(() => setShowSharePrompt(true), 300);
+          }
+        }}
         sequenceCount={preloadedCount}
         storageType={storageType}
       />
+
+      {project && (
+        <PostDownloadSharePrompt
+          open={showSharePrompt}
+          onOpenChange={setShowSharePrompt}
+          fanProject={{
+            id: project.id,
+            name: project.name,
+            concert: {
+              artist_name: project.concert.title.split(' - ')[0] || project.concert.artist_name || 'Artista',
+              artist_image_url: project.concert.artist_image_url,
+              date: project.concert.date,
+              venue_name: project.concert.venue?.name || 'Venue',
+            },
+          }}
+          sequenceCount={preloadedCount}
+          gradientColors={gradientColors}
+        />
+      )}
     </>
   );
 };

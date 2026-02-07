@@ -23,7 +23,7 @@ export const OfflineReadyDialog = ({
 }: OfflineReadyDialogProps) => {
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            <AlertDialogContent className="max-w-md mx-4 sm:mx-auto">
+            <AlertDialogContent className="max-w-md mx-auto">
                 <AlertDialogHeader className="space-y-3">
                     <div className="flex items-center gap-3">
                         <CheckCircle2 className="h-7 w-7 text-green-500 flex-shrink-0" />
