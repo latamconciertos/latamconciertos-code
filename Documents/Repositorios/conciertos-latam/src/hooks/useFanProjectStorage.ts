@@ -9,6 +9,7 @@ interface ColorBlock {
   end: number;
   color: string;
   strobeColor2?: string; // Second color for strobe effect
+  strobeColor3?: string; // Third color for strobe effect (fire simulation)
 }
 
 interface StoredSequence {

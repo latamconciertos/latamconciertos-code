@@ -11,6 +11,7 @@ interface ColorBlock {
   end: number;
   color: string;
   strobeColor2?: string; // Second color for strobe effect
+  strobeColor3?: string; // Third color for strobe effect (fire simulation)
 }
 
 const FanProjectLightMode = () => {
@@ -134,10 +135,27 @@ const FanProjectLightMode = () => {
 
       if (currentBlock) {
         if (mode === 'strobe') {
-          // Strobe effect: alternate between two colors using configured speed
-          const currentMs = Date.now() % (strobeSpeed * 2);
+          // Strobe effect: alternate between 2 or 3 colors using configured speed
           const color2 = currentBlock.strobeColor2 || '#FFFFFF'; // White by default for max brightness
-          setCurrentColor(currentMs < strobeSpeed ? currentBlock.color : color2);
+          const color3 = currentBlock.strobeColor3;
+
+          if (color3) {
+            // 3-color rotation: Color1 -> Color2 -> Color3 -> Color1
+            const cycleTime = strobeSpeed * 3;
+            const currentMs = Date.now() % cycleTime;
+
+            if (currentMs < strobeSpeed) {
+              setCurrentColor(currentBlock.color);
+            } else if (currentMs < strobeSpeed * 2) {
+              setCurrentColor(color2);
+            } else {
+              setCurrentColor(color3);
+            }
+          } else {
+            // 2-color rotation (original behavior)
+            const currentMs = Date.now() % (strobeSpeed * 2);
+            setCurrentColor(currentMs < strobeSpeed ? currentBlock.color : color2);
+          }
         } else {
           setCurrentColor(currentBlock.color);
         }

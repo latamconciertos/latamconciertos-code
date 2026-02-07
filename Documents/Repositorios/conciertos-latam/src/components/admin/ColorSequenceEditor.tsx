@@ -20,6 +20,7 @@ interface ColorBlock {
   end: number;
   color: string;
   strobeColor2?: string; // Second color for strobe effect
+  strobeColor3?: string; // Third color for strobe effect (fire simulation)
 }
 
 interface VenueSection {
@@ -45,6 +46,7 @@ export const ColorSequenceEditor = ({
   const [selectedSection, setSelectedSection] = useState<string>('');
   const [sequence, setSequence] = useState<ColorBlock[]>([]);
   const [mode, setMode] = useState<'fixed' | 'strobe'>('fixed');
+  const [strobeSpeed, setStrobeSpeed] = useState<number>(80); // Speed in milliseconds
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
@@ -89,7 +91,7 @@ export const ColorSequenceEditor = ({
     try {
       const { data, error } = await supabase
         .from('fan_project_color_sequences')
-        .select('sequence, mode, strobe_color_2')
+        .select('sequence, mode, strobe_color_2, strobe_color_3, strobe_speed')
         .eq('fan_project_song_id', songId)
         .eq('venue_section_id', selectedSection)
         .single();
@@ -98,7 +100,7 @@ export const ColorSequenceEditor = ({
 
       if (data) {
         const loadedSequence = data.sequence as ColorBlock[];
-        // Add strobe_color_2 from database to each block if it exists
+        // Add strobe_color_2 and strobe_color_3 from database to each block if they exist
         if (data.strobe_color_2) {
           loadedSequence.forEach(block => {
             if (!block.strobeColor2) {
@@ -106,11 +108,20 @@ export const ColorSequenceEditor = ({
             }
           });
         }
+        if (data.strobe_color_3) {
+          loadedSequence.forEach(block => {
+            if (!block.strobeColor3) {
+              block.strobeColor3 = data.strobe_color_3;
+            }
+          });
+        }
         setSequence(loadedSequence);
         setMode(data.mode as 'fixed' | 'strobe');
+        setStrobeSpeed(data.strobe_speed || 80); // Load strobe speed or default to 80ms
       } else {
         setSequence([]);
         setMode('fixed');
+        setStrobeSpeed(80);
       }
     } catch (error) {
       console.error('Error loading sequence:', error);
@@ -129,6 +140,7 @@ export const ColorSequenceEditor = ({
         end: lastEnd + 10,
         color: '#FF0000',
         strobeColor2: '#FFFFFF', // Default to white for strobe
+        strobeColor3: undefined, // Optional third color
       },
     ]);
   };
@@ -167,8 +179,9 @@ export const ColorSequenceEditor = ({
 
     setSaving(true);
     try {
-      // Get strobe_color_2 from first block (all blocks should have same strobe color)
+      // Get strobe colors from first block (all blocks should have same strobe colors)
       const strobeColor2 = sequence[0]?.strobeColor2 || '#FFFFFF';
+      const strobeColor3 = sequence[0]?.strobeColor3 || undefined;
 
       const { error } = await supabase
         .from('fan_project_color_sequences')
@@ -178,6 +191,8 @@ export const ColorSequenceEditor = ({
           sequence: sequence as any,
           mode: mode,
           strobe_color_2: strobeColor2,
+          strobe_color_3: strobeColor3,
+          strobe_speed: strobeSpeed,
         }, {
           onConflict: 'fan_project_song_id,venue_section_id'
         });
@@ -282,7 +297,7 @@ export const ColorSequenceEditor = ({
             <p className="text-xs text-muted-foreground">
               {mode === 'fixed'
                 ? 'Los colores se mostrarán de forma constante durante cada bloque'
-                : 'El strobe alternará entre dos colores brillantes para máximo impacto visual'
+                : 'El strobe alternará entre 2 o 3 colores brillantes para máximo impacto visual'
               }
             </p>
 
@@ -319,6 +334,121 @@ export const ColorSequenceEditor = ({
                 <p className="text-xs text-muted-foreground">
                   Este color se alternará con el color principal de cada bloque. Usa colores brillantes para máximo impacto.
                 </p>
+
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label>Tercer Color (Opcional) 🔥</Label>
+                    {sequence[0]?.strobeColor3 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setSequence(sequence.map(block => ({
+                            ...block,
+                            strobeColor3: undefined
+                          })));
+                        }}
+                        className="h-6 text-xs"
+                      >
+                        Quitar
+                      </Button>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Input
+                      type="color"
+                      value={sequence[0]?.strobeColor3 || '#FFD700'}
+                      onChange={(e) => {
+                        const newColor = e.target.value;
+                        setSequence(sequence.map(block => ({
+                          ...block,
+                          strobeColor3: newColor
+                        })));
+                      }}
+                      className="w-16 h-10 p-1 cursor-pointer"
+                    />
+                    <Input
+                      type="text"
+                      value={sequence[0]?.strobeColor3 || ''}
+                      onChange={(e) => {
+                        const newColor = e.target.value;
+                        setSequence(sequence.map(block => ({
+                          ...block,
+                          strobeColor3: newColor || undefined
+                        })));
+                      }}
+                      className="flex-1"
+                      placeholder="Opcional - Deja vacío para 2 colores"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Agrega un tercer color para efectos más dinámicos como fuego 🔥. Deja vacío para usar solo 2 colores.
+                  </p>
+
+                  <div className="mt-3 p-3 bg-muted/50 rounded-lg space-y-2">
+                    <p className="text-xs font-semibold">Presets de Fuego 🔥:</p>
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSequence(sequence.map(block => ({
+                            ...block,
+                            color: '#FF4500',
+                            strobeColor2: '#FF8C00',
+                            strobeColor3: '#FFD700'
+                          })));
+                        }}
+                        className="flex-1 text-xs"
+                      >
+                        🔥 Fuego Clásico
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSequence(sequence.map(block => ({
+                            ...block,
+                            color: '#DC143C',
+                            strobeColor2: '#FF6347',
+                            strobeColor3: '#FFA500'
+                          })));
+                        }}
+                        className="flex-1 text-xs"
+                      >
+                        🔥 Fuego Intenso
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  <Label>Velocidad del Strobe (ms)</Label>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="range"
+                      min="40"
+                      max="200"
+                      step="10"
+                      value={strobeSpeed}
+                      onChange={(e) => setStrobeSpeed(Number(e.target.value))}
+                      className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                    />
+                    <Input
+                      type="number"
+                      min="40"
+                      max="200"
+                      value={strobeSpeed}
+                      onChange={(e) => setStrobeSpeed(Number(e.target.value))}
+                      className="w-20"
+                    />
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Controla qué tan rápido parpadea el strobe. Menor = más rápido. Recomendado: 40-200ms.
+                  </p>
+                </div>
               </div>
             )}
           </div>

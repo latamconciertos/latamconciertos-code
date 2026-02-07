@@ -69,7 +69,7 @@ export class CDNSequenceGenerator {
                 for (const song of songs) {
                     const { data: colorSeq, error: colorSeqError } = await supabase
                         .from('fan_project_color_sequences')
-                        .select('sequence, mode, strobe_color_2, strobe_speed')
+                        .select('sequence, mode, strobe_color_2, strobe_color_3, strobe_speed')
                         .eq('fan_project_song_id', song.id)
                         .eq('venue_section_id', section.id)
                         .single();
@@ -82,10 +82,11 @@ export class CDNSequenceGenerator {
                         continue;
                     }
 
-                    // Add strobeColor2 to each block in the sequence
-                    const sequenceWithStrobeColor = (colorSeq.sequence as any[]).map(block => ({
+                    // Add strobeColor2 and strobeColor3 to each block in the sequence
+                    const sequenceWithStrobeColors = (colorSeq.sequence as any[]).map(block => ({
                         ...block,
-                        strobeColor2: block.strobeColor2 || colorSeq.strobe_color_2 || '#FFFFFF'
+                        strobeColor2: block.strobeColor2 || colorSeq.strobe_color_2 || '#FFFFFF',
+                        strobeColor3: block.strobeColor3 || colorSeq.strobe_color_3 || undefined
                     }));
 
                     songSequences.push({
@@ -95,7 +96,7 @@ export class CDNSequenceGenerator {
                         duration_seconds: song.duration_seconds,
                         mode: colorSeq.mode as 'fixed' | 'strobe',
                         strobeSpeed: colorSeq.strobe_speed || 80,
-                        sequence: sequenceWithStrobeColor,
+                        sequence: sequenceWithStrobeColors,
                     });
                 }
 
