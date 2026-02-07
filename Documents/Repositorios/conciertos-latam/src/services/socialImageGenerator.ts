@@ -170,27 +170,27 @@ export class SocialImageGenerator {
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 4;
 
-        // "LISTO PARA" text
-        ctx.font = 'bold 56px system-ui, -apple-system, sans-serif';
+        // "LISTO PARA" text - Fira Sans Bold (reduced from 56px to 48px)
+        ctx.font = 'bold 48px "Fira Sans", system-ui, -apple-system, sans-serif';
         ctx.fillText('✅ LISTO PARA', this.CANVAS_WIDTH / 2, 800);
 
-        // Artist name
-        ctx.font = 'bold 64px system-ui, -apple-system, sans-serif';
+        // Artist name - Fira Sans Bold (reduced from 64px to 58px)
+        ctx.font = 'bold 58px "Fira Sans", system-ui, -apple-system, sans-serif';
         const artistName = params.artistName.toUpperCase();
-        this.wrapText(ctx, artistName, this.CANVAS_WIDTH / 2, 900, 900, 80);
+        this.wrapText(ctx, artistName, this.CANVAS_WIDTH / 2, 900, 900, 75);
 
-        // Date and venue
-        ctx.font = '36px system-ui, -apple-system, sans-serif';
+        // Date and venue - Roboto (increased from 36px to 32px for better proportion)
+        ctx.font = '32px "Roboto", system-ui, -apple-system, sans-serif';
         const dateStr = this.formatDate(params.concertDate);
         ctx.fillText(`📅 ${dateStr}`, this.CANVAS_WIDTH / 2, 1100);
         ctx.fillText(`📍 ${params.venueName}`, this.CANVAS_WIDTH / 2, 1160);
 
-        // "Modo Luz Activado"
-        ctx.font = 'bold 32px system-ui, -apple-system, sans-serif';
-        ctx.fillText('🔥 Modo Luz Activado', this.CANVAS_WIDTH / 2, 1280);
+        // "Fan Project Activado" - Fira Sans Bold (increased from 32px to 28px)
+        ctx.font = 'bold 28px "Fira Sans", system-ui, -apple-system, sans-serif';
+        ctx.fillText('🔥 Fan Project Activado', this.CANVAS_WIDTH / 2, 1280);
 
-        // @conciertos.latam (moved down to avoid overlap with logo)
-        ctx.font = 'bold 42px system-ui, -apple-system, sans-serif';
+        // @conciertos.latam - Roboto Bold (reduced from 42px to 38px)
+        ctx.font = 'bold 38px "Roboto", system-ui, -apple-system, sans-serif';
         ctx.fillStyle = '#00d4ff'; // Accent color
         ctx.fillText('@conciertos.latam', this.CANVAS_WIDTH / 2, 1840);
 
