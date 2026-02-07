@@ -22,7 +22,7 @@ const FanProjectLightMode = () => {
 
   const [sequence, setSequence] = useState<ColorBlock[]>([]);
   const [mode, setMode] = useState<'fixed' | 'strobe'>('fixed');
-  const [strobeSpeed, setStrobeSpeed] = useState<number>(80); // Speed in ms
+  const [strobeSpeed, setStrobeSpeed] = useState<number>(150); // Speed in ms
   const [currentColor, setCurrentColor] = useState<string>('#000000');
   const [isPlaying, setIsPlaying] = useState(false);
   const [showBrightnessWarning, setShowBrightnessWarning] = useState(false);
@@ -71,7 +71,7 @@ const FanProjectLightMode = () => {
       }
       setSequence(stored.sequence);
       setMode(stored.mode);
-      setStrobeSpeed(stored.strobeSpeed || 80); // Use configured speed or default to 80ms
+      setStrobeSpeed(stored.strobeSpeed || 150); // Use configured speed or default to 150ms
     };
 
     loadSequence();

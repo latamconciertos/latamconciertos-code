@@ -46,7 +46,7 @@ export const ColorSequenceEditor = ({
   const [selectedSection, setSelectedSection] = useState<string>('');
   const [sequence, setSequence] = useState<ColorBlock[]>([]);
   const [mode, setMode] = useState<'fixed' | 'strobe'>('fixed');
-  const [strobeSpeed, setStrobeSpeed] = useState<number>(80); // Speed in milliseconds
+  const [strobeSpeed, setStrobeSpeed] = useState<number>(150); // Speed in milliseconds
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
@@ -117,11 +117,11 @@ export const ColorSequenceEditor = ({
         }
         setSequence(loadedSequence);
         setMode(data.mode as 'fixed' | 'strobe');
-        setStrobeSpeed(data.strobe_speed || 80); // Load strobe speed or default to 80ms
+        setStrobeSpeed(data.strobe_speed || 150); // Load strobe speed or default to 150ms
       } else {
         setSequence([]);
         setMode('fixed');
-        setStrobeSpeed(80);
+        setStrobeSpeed(150);
       }
     } catch (error) {
       console.error('Error loading sequence:', error);
@@ -429,8 +429,8 @@ export const ColorSequenceEditor = ({
                   <div className="flex items-center gap-4">
                     <input
                       type="range"
-                      min="40"
-                      max="200"
+                      min="50"
+                      max="1000"
                       step="10"
                       value={strobeSpeed}
                       onChange={(e) => setStrobeSpeed(Number(e.target.value))}
@@ -438,15 +438,15 @@ export const ColorSequenceEditor = ({
                     />
                     <Input
                       type="number"
-                      min="40"
-                      max="200"
+                      min="50"
+                      max="1000"
                       value={strobeSpeed}
                       onChange={(e) => setStrobeSpeed(Number(e.target.value))}
                       className="w-20"
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Controla qué tan rápido parpadea el strobe. Menor = más rápido. Recomendado: 40-200ms.
+                    Controla qué tan rápido parpadea el strobe. Menor = más rápido. Recomendado: 100-300ms para fuego.
                   </p>
                 </div>
               </div>
