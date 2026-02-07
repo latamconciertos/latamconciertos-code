@@ -47,7 +47,7 @@ export default defineConfig(({ mode }) => ({
       includeAssets: ['favicon.ico', 'robots.txt', 'pwa-icon-192.png', 'pwa-icon-512.png', 'apple-touch-icon.png'],
       manifest: {
         name: 'Conciertos LATAM',
-        short_name: 'Conciertos',
+        short_name: 'Conciertos Latam',
         description: 'Plataforma de conciertos en América Latina',
         theme_color: '#1e3a8a',
         background_color: '#0f172a',
