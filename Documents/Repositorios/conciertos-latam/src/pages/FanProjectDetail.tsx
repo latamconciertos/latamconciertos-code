@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
@@ -14,6 +14,7 @@ import { OfflineStatusBadge } from '@/components/fan-projects/OfflineStatusBadge
 import { OfflineReadyDialog } from '@/components/fan-projects/OfflineReadyDialog';
 import { PostDownloadSharePrompt } from '@/components/fan-projects/PostDownloadSharePrompt';
 import { indexedDBStorage } from '@/utils/indexedDBStorage';
+import { rateLimit } from '@/utils/rateLimit';
 
 interface VenueSection {
   id: string;
@@ -235,34 +236,45 @@ const FanProjectDetail = () => {
     }
   };
 
+  // Rate-limited section selection (10 changes per minute - generous for normal use)
+  const handleSectionSelectRateLimited = useMemo(
+    () => rateLimit(
+      async (sectionId: string) => {
+        const { error } = await supabase
+          .from('fan_project_participants')
+          .upsert(
+            {
+              fan_project_id: projectId!,
+              user_id: userId,
+              venue_section_id: sectionId,
+            },
+            {
+              onConflict: 'user_id,fan_project_id',
+            }
+          );
+
+        if (error) throw error;
+
+        setSelectedSection(sectionId);
+        setShowSectionModal(false);
+        toast({
+          title: 'Localidad guardada',
+          description: 'Tu localidad ha sido guardada exitosamente',
+        });
+      },
+      { maxCalls: 10, windowMs: 60000 } // 10 calls per minute
+    ),
+    [projectId, userId]
+  );
+
   const handleSectionSelect = async (sectionId: string) => {
     try {
-      const { error } = await supabase
-        .from('fan_project_participants')
-        .upsert(
-          {
-            fan_project_id: projectId!,
-            user_id: userId,
-            venue_section_id: sectionId,
-          },
-          {
-            onConflict: 'user_id,fan_project_id',
-          }
-        );
-
-      if (error) throw error;
-
-      setSelectedSection(sectionId);
-      setShowSectionModal(false);
-      toast({
-        title: 'Localidad guardada',
-        description: 'Tu localidad ha sido guardada exitosamente',
-      });
+      await handleSectionSelectRateLimited(sectionId);
     } catch (error) {
       console.error('Error saving section:', error);
       toast({
         title: 'Error',
-        description: 'No se pudo guardar tu localidad',
+        description: (error as Error).message || 'No se pudo guardar tu localidad',
         variant: 'destructive',
       });
     }

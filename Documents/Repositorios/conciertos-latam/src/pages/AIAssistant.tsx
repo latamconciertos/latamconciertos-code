@@ -43,6 +43,9 @@ const AIAssistant = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Rate limiting: track message timestamps (8 messages per minute - controls OpenAI costs)
+  const messageSendTimestamps = useRef<number[]>([]);
+
   // Use conversation management hook
   const conversationHook = useAIConversations({ userId, userName });
 
@@ -111,6 +114,23 @@ const AIAssistant = () => {
       navigate('/auth');
       return;
     }
+
+    // Rate limiting check (8 messages per minute - controls OpenAI costs)
+    const now = Date.now();
+    const oneMinuteAgo = now - 60000;
+    messageSendTimestamps.current = messageSendTimestamps.current.filter(t => t > oneMinuteAgo);
+
+    if (messageSendTimestamps.current.length >= 8) {
+      const oldestTimestamp = Math.min(...messageSendTimestamps.current);
+      const waitSeconds = Math.ceil((60000 - (now - oldestTimestamp)) / 1000);
+      toast({
+        title: "Espera un momento",
+        description: `Por favor espera ${waitSeconds} segundos antes de enviar otro mensaje.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    messageSendTimestamps.current.push(now);
 
     const userMessage = input.trim();
     setInput('');

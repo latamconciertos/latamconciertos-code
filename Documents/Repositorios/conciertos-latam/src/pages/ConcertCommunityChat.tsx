@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Separator } from '@/components/ui/separator';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { rateLimit } from '@/utils/rateLimit';
 
 interface Message {
   id: string;
@@ -52,6 +53,9 @@ export default function ConcertCommunityChat() {
   const [infoOpen, setInfoOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Rate limiting: track message timestamps (15 messages per minute)
+  const messageSendTimestamps = useRef<number[]>([]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -319,6 +323,23 @@ export default function ConcertCommunityChat() {
 
   const sendMessage = async () => {
     if (!input.trim() || !communityId || !currentUserId) return;
+
+    // Rate limiting check (15 messages per minute)
+    const now = Date.now();
+    const oneMinuteAgo = now - 60000;
+    messageSendTimestamps.current = messageSendTimestamps.current.filter(t => t > oneMinuteAgo);
+
+    if (messageSendTimestamps.current.length >= 15) {
+      const oldestTimestamp = Math.min(...messageSendTimestamps.current);
+      const waitSeconds = Math.ceil((60000 - (now - oldestTimestamp)) / 1000);
+      toast({
+        title: "Espera un momento",
+        description: `Por favor espera ${waitSeconds} segundos antes de enviar otro mensaje.`,
+        variant: "destructive",
+      });
+      return;
+    }
+    messageSendTimestamps.current.push(now);
 
     setIsSending(true);
     const messageText = input.trim();
