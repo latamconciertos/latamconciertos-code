@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Lightbulb, Calendar, MapPin, Music, Users, Zap } from 'lucide-react';
 import { formatDisplayDate } from '@/lib/timezone';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
+import { useFanProjects } from '@/hooks/queries/useFanProjects';
 
 interface FanProject {
   id: string;
@@ -33,10 +34,10 @@ interface FanProject {
 }
 
 const FanProjects = () => {
-  const [projects, setProjects] = useState<FanProject[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const navigate = useNavigate();
+
+  // Use React Query for automatic caching and data fetching
+  const { data: projects = [], isLoading } = useFanProjects();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -45,90 +46,11 @@ const FanProjects = () => {
         navigate('/auth');
         return;
       }
-      setIsAuthenticated(true);
-      loadProjects();
+      // Data fetching handled by React Query hook
     };
 
     checkAuth();
   }, [navigate]);
-
-  const loadProjects = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('fan_projects')
-        .select(`
-          id,
-          name,
-          description,
-          concert:concerts (
-            id,
-            title,
-            date,
-            image_url,
-            artist_id,
-            venue:venues (name, location)
-          )
-        `)
-        .eq('status', 'active')
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      // Get artist data separately
-      const artistIds = [...new Set((data || []).map((p: any) => p.concert?.artist_id).filter(Boolean))];
-
-      let artistsMap: Record<string, any> = {};
-      if (artistIds.length > 0) {
-        const { data: artistsData } = await supabase
-          .from('artists')
-          .select('id, name, photo_url')
-          .in('id', artistIds);
-
-        if (artistsData) {
-          artistsMap = artistsData.reduce((acc: any, artist: any) => {
-            acc[artist.id] = artist;
-            return acc;
-          }, {});
-        }
-      }
-
-      // Get song counts for each project
-      const projectsWithCounts = await Promise.all(
-        (data || []).map(async (project: any) => {
-          const { count } = await supabase
-            .from('fan_project_songs')
-            .select('*', { count: 'exact', head: true })
-            .eq('fan_project_id', project.id);
-
-          // Attach artist data to concert
-          const artist = project.concert?.artist_id ? artistsMap[project.concert.artist_id] : null;
-
-          return {
-            ...project,
-            concert: {
-              ...project.concert,
-              artist: artist
-            },
-            songs_count: count || 0,
-          };
-        })
-      );
-
-      console.log('Fan Projects loaded:', projectsWithCounts);
-      projectsWithCounts.forEach((p: any) => {
-        console.log(`Project: ${p.name}`, {
-          artist_image: p.concert?.artist?.photo_url,
-          concert_image: p.concert?.image_url,
-          artist_name: p.concert?.artist?.name
-        });
-      });
-      setProjects(projectsWithCounts);
-    } catch (error) {
-      console.error('Error loading fan projects:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return { day: '', month: '', year: '' };
@@ -147,11 +69,7 @@ const FanProjects = () => {
     return 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&h=600&fit=crop';
   };
 
-  if (!isAuthenticated) {
-    return null;
-  }
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
