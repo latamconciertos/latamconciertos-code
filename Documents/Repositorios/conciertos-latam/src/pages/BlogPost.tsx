@@ -30,6 +30,7 @@ interface Article {
   slug: string;
   content?: string | null;
   featured_image: string | null;
+  featured_image_mobile?: string | null;
   photo_credit: string | null;
   published_at: string;
   meta_description: string | null;
@@ -246,70 +247,84 @@ const BlogPost = () => {
       <div className="min-h-screen bg-background">
         <Header />
 
-        {/* Hero Image - Full Width */}
-        <div className="relative w-full h-[50vh] md:h-[60vh] lg:h-[70vh] overflow-hidden mt-16">
-          <div className="relative w-full h-full">
-            {/* Image sin overlays */}
-            <div
-              className="absolute inset-0 bg-cover bg-center"
-              style={{
-                backgroundImage: `url(${getArticleImage(article)})`,
-              }}
-            />
-
-            {/* Photo Credit */}
-            {article.photo_credit && (
-              <div className="absolute bottom-2 right-4 z-30">
-                <span className="text-xs text-white/80 bg-black/50 px-2 py-1 rounded backdrop-blur-sm">
-                  Foto: {article.photo_credit}
-                </span>
-              </div>
+        {/* Hero - Editorial full-screen with overlay */}
+        <div className="relative w-full h-[70vh] md:h-[80vh] overflow-hidden">
+          {/* Background image */}
+          <picture className="absolute inset-0 w-full h-full">
+            {article.featured_image_mobile && (
+              <source media="(max-width: 767px)" srcSet={article.featured_image_mobile} />
             )}
+            <img
+              src={getArticleImage(article)}
+              alt={article.title}
+              className="w-full h-full object-cover object-center scale-[1.02] transition-transform duration-700"
+            />
+          </picture>
+
+          {/* Gradient: transparent top → heavy black bottom */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20" />
+
+          {/* Back button — top left */}
+          <div className="absolute top-20 left-4 md:left-8 z-20">
+            <Link
+              to="/blog"
+              className="inline-flex items-center gap-2 text-white/90 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              <span>Noticias</span>
+            </Link>
+          </div>
+
+          {/* Photo credit — bottom right */}
+          {article.photo_credit && (
+            <div className="absolute bottom-4 right-4 z-20">
+              <span className="text-xs text-white/60 bg-black/30 px-2 py-0.5 rounded backdrop-blur-sm">
+                {article.photo_credit}
+              </span>
+            </div>
+          )}
+
+          {/* Editorial overlay — title + meta at bottom */}
+          <div className="absolute bottom-0 left-0 right-0 z-10 px-4 md:px-8 lg:px-16 pb-8 md:pb-12">
+            <div className="max-w-4xl mx-auto">
+              {article.categories && (
+                <div className="mb-3">
+                  <Badge className="bg-primary text-white text-xs font-semibold tracking-wide uppercase px-3 py-1">
+                    {article.categories.name}
+                  </Badge>
+                </div>
+              )}
+              <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4 drop-shadow-lg">
+                {article.title}
+              </h1>
+              <div className="flex flex-wrap items-center gap-3 md:gap-5 text-sm text-white/75">
+                <div className="flex items-center gap-1.5">
+                  <User className="h-3.5 w-3.5" />
+                  <span>Conciertos Latam</span>
+                </div>
+                <span className="text-white/30">·</span>
+                <div className="flex items-center gap-1.5">
+                  <Calendar className="h-3.5 w-3.5" />
+                  <span>{formatDate(article.published_at)}</span>
+                </div>
+                {article.content && (
+                  <>
+                    <span className="text-white/30">·</span>
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>{getReadingTime(article.content)} min de lectura</span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Article Content Section */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-          {/* Back link and Category */}
-          <div className="mb-6">
-            <Link to="/blog" className="inline-flex items-center text-muted-foreground hover:text-primary mb-4 transition-colors text-sm">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Volver a noticias
-            </Link>
-
-            {article.categories && (
-              <Badge className="ml-4 bg-primary/10 text-primary hover:bg-primary/20">
-                {article.categories.name}
-              </Badge>
-            )}
-          </div>
-
-          {/* Title */}
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-6 leading-tight">
-            {article.title}
-          </h1>
-
-          {/* Meta Info: Author, Date, Reading Time */}
-          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6 pb-6 border-b">
-            <div className="flex items-center gap-2">
-              <User className="h-4 w-4" />
-              <span>Conciertos Latam</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Calendar className="h-4 w-4" />
-              <span>{formatDate(article.published_at)}</span>
-            </div>
-            {article.content && (
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                <span>{getReadingTime(article.content)} min de lectura</span>
-              </div>
-            )}
-          </div>
-
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
           {/* Social Share */}
-          <div className="mb-8">
-            <p className="text-sm text-muted-foreground mb-3">Comparte esta noticia:</p>
+          <div className="flex items-center justify-between mb-8 pb-6 border-b">
             <SocialShare
               url={`https://www.conciertoslatam.app/blog/${article.slug}`}
               title={article.title}

@@ -13,6 +13,7 @@ interface NewsArticle {
     title: string;
     slug: string;
     featured_image: string | null;
+    featured_image_mobile: string | null;
     published_at: string;
     meta_description: string | null;
     categories: {
@@ -99,11 +100,19 @@ export const HeroCarousel = () => {
                 >
                     {articles[currentSlide].featured_image ? (
                         <>
-                            <img
-                                src={articles[currentSlide].featured_image}
-                                alt={articles[currentSlide].title}
-                                className="w-full h-full object-cover"
-                            />
+                            <picture>
+                                {articles[currentSlide].featured_image_mobile && (
+                                    <source
+                                        media="(max-width: 767px)"
+                                        srcSet={articles[currentSlide].featured_image_mobile}
+                                    />
+                                )}
+                                <img
+                                    src={articles[currentSlide].featured_image}
+                                    alt={articles[currentSlide].title}
+                                    className="w-full h-full object-cover"
+                                />
+                            </picture>
                             {/* Dark overlay across entire image for text readability */}
                             <div className="absolute inset-0 bg-black/50" />
                             {/* Additional gradient at bottom for extra emphasis */}

@@ -65,6 +65,7 @@ export const NewsAdminNew = () => {
     meta_description: '',
     keywords: '',
     featured_image: '',
+    featured_image_mobile: '',
     photo_credit: '',
     status: 'draft',
     category_id: '',
@@ -208,6 +209,7 @@ export const NewsAdminNew = () => {
       meta_description: formData.meta_description || null,
       keywords: formData.keywords || null,
       featured_image: formData.featured_image || null,
+      featured_image_mobile: formData.featured_image_mobile || null,
       photo_credit: formData.photo_credit || null,
       published_at: publishedAt || null,
       status: formData.status as 'draft' | 'published' | 'archived',
@@ -268,6 +270,7 @@ export const NewsAdminNew = () => {
       meta_description: article.meta_description || '',
       keywords: article.keywords || '',
       featured_image: article.featured_image || '',
+      featured_image_mobile: (article as any).featured_image_mobile || '',
       photo_credit: article.photo_credit || '',
       status: article.status,
       category_id: article.category_id || '',
@@ -305,6 +308,7 @@ export const NewsAdminNew = () => {
       meta_description: '',
       keywords: '',
       featured_image: '',
+      featured_image_mobile: '',
       photo_credit: '',
       status: 'draft',
       category_id: '',
@@ -431,14 +435,35 @@ export const NewsAdminNew = () => {
               </p>
             </div>
 
-            <ImageUpload 
-              currentImageUrl={formData.featured_image} 
-              onImageUploaded={url => setFormData({
-                ...formData,
-                featured_image: url
-              })} 
-              enableCrop={true}
-            />
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <ImageUpload
+                    label="Imagen Desktop (16:9)"
+                    currentImageUrl={formData.featured_image}
+                    onImageUploaded={url => setFormData({ ...formData, featured_image: url })}
+                    enableCrop={true}
+                    aspectRatio={16 / 9}
+                    cropTitle="Encuadre Desktop (16:9)"
+                    cropDescription="Selecciona el área para pantallas grandes — hero banner y cards"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <ImageUpload
+                    label="Imagen Mobile (4:5)"
+                    currentImageUrl={formData.featured_image_mobile}
+                    onImageUploaded={url => setFormData({ ...formData, featured_image_mobile: url })}
+                    enableCrop={true}
+                    aspectRatio={4 / 5}
+                    cropTitle="Encuadre Mobile (4:5)"
+                    cropDescription="Selecciona el área para pantallas de teléfono — portrait optimizado"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Opcional — si no se sube, se usará la imagen desktop en mobile
+                  </p>
+                </div>
+              </div>
+            </div>
 
             <div>
               <Label htmlFor="photo_credit">Crédito de Foto</Label>
@@ -517,7 +542,7 @@ export const NewsAdminNew = () => {
                 <Input 
                   id="published_at" 
                   type="datetime-local"
-                  value={formData.published_at ? new Date(formData.published_at).toISOString().slice(0, 16) : ''} 
+                  value={formData.published_at ? (() => { const d = new Date(formData.published_at); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16); })() : ''}
                   onChange={e => setFormData({
                     ...formData,
                     published_at: e.target.value ? new Date(e.target.value).toISOString() : ''

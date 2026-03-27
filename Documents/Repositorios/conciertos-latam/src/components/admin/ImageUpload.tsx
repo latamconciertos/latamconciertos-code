@@ -12,9 +12,22 @@ interface ImageUploadProps {
   currentImageUrl?: string;
   bucket?: string;
   enableCrop?: boolean;
+  aspectRatio?: number;
+  cropTitle?: string;
+  cropDescription?: string;
+  label?: string;
 }
 
-export const ImageUpload = ({ onImageUploaded, currentImageUrl, bucket = 'articles', enableCrop = false }: ImageUploadProps) => {
+export const ImageUpload = ({
+  onImageUploaded,
+  currentImageUrl,
+  bucket = 'articles',
+  enableCrop = false,
+  aspectRatio = 16 / 9,
+  cropTitle,
+  cropDescription,
+  label,
+}: ImageUploadProps) => {
   const [uploading, setUploading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(currentImageUrl || null);
   const [tempImageUrl, setTempImageUrl] = useState<string | null>(null);
@@ -27,17 +40,16 @@ export const ImageUpload = ({ onImageUploaded, currentImageUrl, bucket = 'articl
 
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-      const filePath = `${fileName}`;
 
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from(bucket)
-        .upload(filePath, file);
+        .upload(fileName, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
         .from(bucket)
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
       setPreviewUrl(publicUrl);
       onImageUploaded(publicUrl);
@@ -80,24 +92,22 @@ export const ImageUpload = ({ onImageUploaded, currentImageUrl, bucket = 'articl
       return;
     }
 
-    // If crop is enabled, upload temp image first
     if (enableCrop) {
       try {
         setUploading(true);
-        
+
         const fileExt = file.name.split('.').pop();
         const fileName = `temp-${Math.random().toString(36).substring(2)}-${Date.now()}.${fileExt}`;
-        const filePath = `${fileName}`;
 
         const { error: uploadError } = await supabase.storage
           .from(bucket)
-          .upload(filePath, file);
+          .upload(fileName, file);
 
         if (uploadError) throw uploadError;
 
         const { data: { publicUrl } } = supabase.storage
           .from(bucket)
-          .getPublicUrl(filePath);
+          .getPublicUrl(fileName);
 
         setTempImageUrl(publicUrl);
         setShowCropDialog(true);
@@ -122,16 +132,30 @@ export const ImageUpload = ({ onImageUploaded, currentImageUrl, bucket = 'articl
     setShowCropDialog(false);
   };
 
+  // Compute preview aspect ratio style for the thumbnail preview
+  const previewStyle = aspectRatio >= 1
+    ? 'w-full h-40'      // landscape: fixed height
+    : 'w-32 h-40';       // portrait: fixed width+height
+
+  const inputId = `image-upload-${Math.random().toString(36).substring(2, 7)}`;
+
   return (
     <>
-      <div className="space-y-4">
-        <Label>Imagen {enableCrop && <span className="text-muted-foreground text-xs">(con encuadre)</span>}</Label>
-        
+      <div className="space-y-3">
+        {label && (
+          <Label>
+            {label}
+            {enableCrop && (
+              <span className="text-muted-foreground text-xs ml-1">(con encuadre)</span>
+            )}
+          </Label>
+        )}
+
         {previewUrl && (
-          <div className="relative w-full h-48 rounded-lg overflow-hidden border">
-            <img 
-              src={previewUrl} 
-              alt="Preview" 
+          <div className={`relative ${previewStyle} rounded-lg overflow-hidden border`}>
+            <img
+              src={previewUrl}
+              alt="Preview"
               className="w-full h-full object-cover"
             />
           </div>
@@ -142,32 +166,28 @@ export const ImageUpload = ({ onImageUploaded, currentImageUrl, bucket = 'articl
             type="button"
             variant="outline"
             disabled={uploading}
-            onClick={() => document.getElementById('image-upload')?.click()}
+            onClick={() => document.getElementById(inputId)?.click()}
           >
             {uploading ? (
               <>
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Subiendo...
               </>
+            ) : enableCrop ? (
+              <>
+                <Crop className="w-4 h-4 mr-2" />
+                Subir y Encuadrar
+              </>
             ) : (
               <>
-                {enableCrop ? (
-                  <>
-                    <Crop className="w-4 h-4 mr-2" />
-                    Subir y Encuadrar
-                  </>
-                ) : (
-                  <>
-                    <Upload className="w-4 h-4 mr-2" />
-                    Subir Imagen
-                  </>
-                )}
+                <Upload className="w-4 h-4 mr-2" />
+                Subir Imagen
               </>
             )}
           </Button>
-          
+
           <Input
-            id="image-upload"
+            id={inputId}
             type="file"
             accept="image/*"
             onChange={handleFileChange}
@@ -183,6 +203,9 @@ export const ImageUpload = ({ onImageUploaded, currentImageUrl, bucket = 'articl
           imageUrl={tempImageUrl}
           onCropComplete={handleCropComplete}
           bucket={bucket}
+          aspectRatio={aspectRatio}
+          title={cropTitle}
+          description={cropDescription}
         />
       )}
     </>

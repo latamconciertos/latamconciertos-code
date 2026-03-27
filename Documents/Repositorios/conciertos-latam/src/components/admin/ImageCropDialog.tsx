@@ -12,6 +12,21 @@ interface ImageCropDialogProps {
   imageUrl: string;
   onCropComplete: (croppedImageUrl: string) => void;
   bucket?: string;
+  aspectRatio?: number;
+  title?: string;
+  description?: string;
+}
+
+function getInitialCrop(aspectRatio: number): Crop {
+  if (aspectRatio >= 1) {
+    // Landscape or square: full width, height derived from ratio
+    const height = 100 / aspectRatio;
+    return { unit: '%', width: 100, height, x: 0, y: (100 - height) / 2 };
+  } else {
+    // Portrait: full height, width derived from ratio
+    const width = 100 * aspectRatio;
+    return { unit: '%', width, height: 100, x: (100 - width) / 2, y: 0 };
+  }
 }
 
 export const ImageCropDialog = ({
@@ -20,25 +35,28 @@ export const ImageCropDialog = ({
   imageUrl,
   onCropComplete,
   bucket = 'articles',
+  aspectRatio = 16 / 9,
+  title = 'Encuadrar miniatura',
+  description = 'Desplaza el rectángulo para seleccionar el área que deseas usar como miniatura',
 }: ImageCropDialogProps) => {
-  const [crop, setCrop] = useState<Crop>({
-    unit: '%',
-    width: 100,
-    height: 56.25, // 16:9 aspect ratio
-    x: 0,
-    y: 21.875, // Center vertically
-  });
+  const [crop, setCrop] = useState<Crop>(() => getInitialCrop(aspectRatio));
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
   const [processing, setProcessing] = useState(false);
   const [imageSrc, setImageSrc] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const imgRef = useRef<HTMLImageElement | null>(null);
 
+  // Reset crop when aspect ratio changes
+  useEffect(() => {
+    setCrop(getInitialCrop(aspectRatio));
+    setCompletedCrop(null);
+  }, [aspectRatio]);
+
   // Load image with CORS-safe method
   useEffect(() => {
     const loadImage = async () => {
       if (!imageUrl || !open) return;
-      
+
       setLoading(true);
       try {
         const response = await fetch(imageUrl);
@@ -55,7 +73,6 @@ export const ImageCropDialog = ({
 
     loadImage();
 
-    // Cleanup
     return () => {
       if (imageSrc && imageSrc.startsWith('blob:')) {
         URL.revokeObjectURL(imageSrc);
@@ -107,9 +124,8 @@ export const ImageCropDialog = ({
         throw new Error('Error al recortar la imagen');
       }
 
-      // Upload to Supabase
       const fileName = `cropped-${Date.now()}.jpg`;
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from(bucket)
         .upload(fileName, croppedBlob, {
           contentType: 'image/jpeg',
@@ -137,10 +153,8 @@ export const ImageCropDialog = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>Encuadrar miniatura</DialogTitle>
-          <p className="text-sm text-muted-foreground">
-            Desplaza el rectángulo para seleccionar el área que deseas usar como miniatura
-          </p>
+          <DialogTitle>{title}</DialogTitle>
+          <p className="text-sm text-muted-foreground">{description}</p>
         </DialogHeader>
 
         <div className="flex-1 overflow-auto flex items-center justify-center bg-muted/20 rounded-lg p-4">
@@ -154,7 +168,7 @@ export const ImageCropDialog = ({
               crop={crop}
               onChange={(c) => setCrop(c)}
               onComplete={(c) => setCompletedCrop(c)}
-              aspect={16 / 9}
+              aspect={aspectRatio}
             >
               <img
                 ref={imgRef}
@@ -180,7 +194,7 @@ export const ImageCropDialog = ({
             onClick={handleSave}
             disabled={processing || !completedCrop || loading}
           >
-            {processing ? 'Procesando...' : 'Guardar miniatura'}
+            {processing ? 'Procesando...' : 'Guardar encuadre'}
           </Button>
         </DialogFooter>
       </DialogContent>

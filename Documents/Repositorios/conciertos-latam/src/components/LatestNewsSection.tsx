@@ -62,11 +62,19 @@ const LatestNewsSection = () => {
               <Link key={article.id} to={`/blog/${article.slug}`}>
                 <Card className="overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer group">
                   <div className="relative overflow-hidden">
-                    <img 
-                      src={getArticleImage(article)} 
-                      alt={article.title}
-                      className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+                    <picture>
+                      {article.featured_image_mobile && (
+                        <source
+                          media="(max-width: 767px)"
+                          srcSet={article.featured_image_mobile}
+                        />
+                      )}
+                      <img
+                        src={getArticleImage(article)}
+                        alt={article.title}
+                        className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </picture>
                   </div>
                   
                   <CardContent className="p-4">

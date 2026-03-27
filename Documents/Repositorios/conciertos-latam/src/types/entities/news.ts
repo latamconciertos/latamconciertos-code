@@ -46,6 +46,7 @@ export interface NewsArticleForList {
   title: string;
   slug: string;
   featured_image: string | null;
+  featured_image_mobile?: string | null;
   meta_description: string | null;
   content: string | null;
   published_at: string | null;
@@ -71,6 +72,7 @@ export interface NewsArticleForHome {
   title: string;
   slug: string;
   featured_image: string | null;
+  featured_image_mobile?: string | null;
   meta_description: string | null;
   content: string | null;
   published_at: string | null;
@@ -150,6 +152,7 @@ export interface NewsArticleFormData {
   meta_description: string;
   keywords: string;
   featured_image: string;
+  featured_image_mobile: string;
   photo_credit: string;
   artist_id: string;
   concert_id: string;
@@ -169,6 +172,7 @@ export const NEWS_ARTICLE_FORM_DEFAULTS: NewsArticleFormData = {
   meta_description: '',
   keywords: '',
   featured_image: '',
+  featured_image_mobile: '',
   photo_credit: '',
   artist_id: '',
   concert_id: '',
