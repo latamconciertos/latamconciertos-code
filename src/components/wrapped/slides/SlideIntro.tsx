@@ -41,7 +41,7 @@ const SlideIntro = ({ year, userName, logoSrc }: SlideIntroProps) => {
   }, [year]);
 
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-violet-950 px-6">
+    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-violet-950 px-6 pb-24">
       {/* Particles */}
       {particles.map((p) => (
         <motion.div
