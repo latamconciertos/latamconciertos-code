@@ -60,16 +60,17 @@ export function useSpotifyAuth() {
   const connectSpotify = async () => {
     setIsConnecting(true);
     try {
-      const { data, error } = await supabase.functions.invoke('spotify-auth', {
+      const response = await supabase.functions.invoke('spotify-auth', {
         body: { action: 'getAuthUrl' },
       });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
-      if (data?.authUrl) {
-        window.location.href = data.authUrl;
+      console.warn('spotify-auth response:', JSON.stringify(response.data), 'error:', response.error);
+      if (response.error) throw response.error;
+      if (response.data?.error) throw new Error(response.data.error);
+      if (response.data?.authUrl) {
+        window.location.href = response.data.authUrl;
         return;
       }
-      throw new Error('No auth URL received');
+      throw new Error('No auth URL received. Response: ' + JSON.stringify(response.data));
     } catch (err) {
       console.error('Spotify connect error:', err);
       setIsConnecting(false);
