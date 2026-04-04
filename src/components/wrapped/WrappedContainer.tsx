@@ -15,6 +15,8 @@ import SlideSummary from './slides/SlideSummary';
 interface WrappedContainerProps {
   data: WrappedData;
   onClose: () => void;
+  userName?: string;
+  logoSrc?: string;
 }
 
 const AUTO_ADVANCE_MS = 6000;
@@ -62,7 +64,7 @@ const slideVariants = {
   }),
 };
 
-const WrappedContainer = ({ data, onClose }: WrappedContainerProps) => {
+const WrappedContainer = ({ data, onClose, userName, logoSrc }: WrappedContainerProps) => {
   const activeSlides = getActiveSlides(data);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -143,7 +145,7 @@ const WrappedContainer = ({ data, onClose }: WrappedContainerProps) => {
   const renderSlide = (slideType: WrappedSlideType) => {
     switch (slideType) {
       case 'intro':
-        return <SlideIntro year={data.year} />;
+        return <SlideIntro year={data.year} userName={userName} logoSrc={logoSrc} />;
       case 'attendance':
         return (
           <SlideAttendance
@@ -181,7 +183,7 @@ const WrappedContainer = ({ data, onClose }: WrappedContainerProps) => {
           />
         );
       case 'summary':
-        return <SlideSummary data={data} />;
+        return <SlideSummary data={data} userName={userName} logoSrc={logoSrc} />;
       default:
         return null;
     }

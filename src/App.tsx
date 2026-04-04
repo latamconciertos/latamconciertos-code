@@ -84,6 +84,7 @@ const AppContent = () => {
 
   // Hide floating AI chat when already on AI assistant page, community chat, or light mode
   const showFloatingChat = location.pathname !== '/ai-assistant'
+    && location.pathname !== '/wrapped'
     && !location.pathname.includes('/chat')
     && !location.pathname.includes('/light');
 

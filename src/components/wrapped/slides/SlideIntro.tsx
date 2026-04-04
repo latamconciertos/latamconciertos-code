@@ -3,6 +3,8 @@ import { useEffect, useState } from 'react';
 
 interface SlideIntroProps {
   year: number;
+  userName?: string;
+  logoSrc?: string;
 }
 
 const particles = Array.from({ length: 30 }).map((_, i) => ({
@@ -14,7 +16,7 @@ const particles = Array.from({ length: 30 }).map((_, i) => ({
   delay: Math.random() * 2,
 }));
 
-const SlideIntro = ({ year }: SlideIntroProps) => {
+const SlideIntro = ({ year, userName, logoSrc }: SlideIntroProps) => {
   const [displayYear, setDisplayYear] = useState(2000);
 
   useEffect(() => {
@@ -70,18 +72,34 @@ const SlideIntro = ({ year }: SlideIntroProps) => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.6 }}
-        className="mb-8"
+        className="mb-6"
       >
-        <span className="text-lg font-semibold tracking-wide text-white/70">
-          Conciertos Latam
-        </span>
+        {logoSrc ? (
+          <img src={logoSrc} alt="Conciertos Latam" className="h-12 w-auto" />
+        ) : (
+          <span className="text-lg font-semibold tracking-wide text-white/70">
+            Conciertos Latam
+          </span>
+        )}
       </motion.div>
+
+      {/* Greeting */}
+      {userName && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="mb-4 text-lg text-white/70"
+        >
+          Hola, <span className="font-semibold text-white">{userName}</span>
+        </motion.p>
+      )}
 
       {/* Title */}
       <motion.h1
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.4, duration: 0.8, type: 'spring' }}
+        transition={{ delay: 0.4, duration: 0.8, type: 'spring' as const }}
         className="mb-4 text-center text-3xl font-bold text-white sm:text-4xl"
       >
         Tu
@@ -90,7 +108,7 @@ const SlideIntro = ({ year }: SlideIntroProps) => {
       <motion.div
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.6, duration: 0.8, type: 'spring' }}
+        transition={{ delay: 0.6, duration: 0.8, type: 'spring' as const }}
         className="mb-4"
       >
         <span className="bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 bg-clip-text text-8xl font-black tabular-nums text-transparent sm:text-9xl">

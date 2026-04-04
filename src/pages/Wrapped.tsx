@@ -7,6 +7,7 @@ import { useSpotifyAuth } from '@/hooks/useSpotifyAuth';
 import SpotifyConnectPrompt from '@/components/wrapped/SpotifyConnectPrompt';
 import WrappedContainer from '@/components/wrapped/WrappedContainer';
 import { Music } from 'lucide-react';
+import logo from '@/assets/logo.png';
 
 type WrappedStep = 'auth-check' | 'spotify-prompt' | 'loading' | 'ready';
 
@@ -17,6 +18,7 @@ const Wrapped = () => {
   const [step, setStep] = useState<WrappedStep>('auth-check');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [generateEnabled, setGenerateEnabled] = useState(false);
+  const [userName, setUserName] = useState('');
 
   const { connection, isConnecting, connectSpotify } = useSpotifyAuth();
   const { data: wrappedData, isLoading, error } = useWrappedData(WRAPPED_YEAR, generateEnabled);
@@ -30,6 +32,20 @@ const Wrapped = () => {
         return;
       }
       setIsAuthenticated(true);
+
+      // Get user display name
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('first_name, last_name, username')
+        .eq('id', session.user.id)
+        .single();
+
+      if (profile) {
+        const name = profile.first_name
+          ? `${profile.first_name}${profile.last_name ? ' ' + profile.last_name : ''}`
+          : profile.username || session.user.email?.split('@')[0] || 'Usuario';
+        setUserName(name);
+      }
 
       // If Spotify already connected, skip prompt
       if (connection.connected) {
@@ -134,7 +150,7 @@ const Wrapped = () => {
   }
 
   if (step === 'ready' && wrappedData) {
-    return <WrappedContainer data={wrappedData} onClose={handleClose} />;
+    return <WrappedContainer data={wrappedData} onClose={handleClose} userName={userName} logoSrc={logo} />;
   }
 
   return null;

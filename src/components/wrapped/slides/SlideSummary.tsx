@@ -5,6 +5,8 @@ import WrappedShareButton from '../WrappedShareButton';
 
 interface SlideSummaryProps {
   data: WrappedData;
+  userName?: string;
+  logoSrc?: string;
 }
 
 const statVariants = {
@@ -25,7 +27,7 @@ const badgeVariants = {
   }),
 };
 
-const SlideSummary = ({ data }: SlideSummaryProps) => {
+const SlideSummary = ({ data, userName, logoSrc }: SlideSummaryProps) => {
   const stats = [
     { icon: Music, value: data.totalConcerts, label: 'Conciertos' },
     { icon: Users, value: data.totalArtistsSeen, label: 'Artistas' },
@@ -35,13 +37,25 @@ const SlideSummary = ({ data }: SlideSummaryProps) => {
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-blue-900 via-indigo-900 to-purple-900 px-6">
+      {/* Logo */}
+      {logoSrc && (
+        <motion.img
+          src={logoSrc}
+          alt="Conciertos Latam"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="mb-4 h-10 w-auto"
+        />
+      )}
+
       <motion.p
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
         className="mb-6 text-lg font-medium text-indigo-200"
       >
-        Tu resumen {data.year}
+        {userName ? `${userName}, tu resumen ${data.year}` : `Tu resumen ${data.year}`}
       </motion.p>
 
       {/* Stats grid */}
@@ -98,14 +112,15 @@ const SlideSummary = ({ data }: SlideSummaryProps) => {
       </motion.div>
 
       {/* Branding */}
-      <motion.p
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.0 }}
-        className="mt-6 text-xs text-indigo-300/60"
+        className="mt-6 flex items-center gap-2 text-xs text-indigo-300/60"
       >
-        Conciertos Latam &middot; conciertoslatam.app
-      </motion.p>
+        {logoSrc && <img src={logoSrc} alt="" className="h-4 w-auto opacity-50" />}
+        <span>conciertoslatam.app</span>
+      </motion.div>
     </div>
   );
 };
