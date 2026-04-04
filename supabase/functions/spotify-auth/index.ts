@@ -13,38 +13,23 @@ const corsHeaders = {
 };
 
 function getServiceClient() {
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('Supabase credentials not configured');
-  }
-  return createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  return createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
 }
 
-async function getUserIdFromRequest(req: Request): Promise<string> {
-  const authHeader = req.headers.get('Authorization');
-  if (!authHeader) {
-    throw new Error('Missing Authorization header');
+function getUserIdFromJwt(authHeader: string): string {
+  try {
+    const token = authHeader.replace('Bearer ', '');
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    if (!payload.sub) throw new Error('No sub in token');
+    return payload.sub;
+  } catch {
+    throw new Error('Invalid token');
   }
-
-  const token = authHeader.replace('Bearer ', '');
-
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
-    throw new Error('Supabase credentials not configured');
-  }
-
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-  const { data: { user }, error } = await supabase.auth.getUser(token);
-
-  if (error || !user) {
-    console.error('Auth error:', error?.message);
-    throw new Error('Invalid or expired token');
-  }
-
-  return user.id;
 }
 
 async function getAuthUrl(userId: string): Promise<{ authUrl: string }> {
   if (!SPOTIFY_CLIENT_ID || !SPOTIFY_REDIRECT_URI) {
-    throw new Error('Spotify OAuth credentials not configured');
+    throw new Error('Spotify OAuth credentials not configured. SPOTIFY_CLIENT_ID=' + (SPOTIFY_CLIENT_ID ? 'set' : 'missing') + ' SPOTIFY_REDIRECT_URI=' + (SPOTIFY_REDIRECT_URI ? 'set' : 'missing'));
   }
 
   const randomBytes = new Uint8Array(16);
@@ -62,17 +47,14 @@ async function getAuthUrl(userId: string): Promise<{ authUrl: string }> {
     state: state,
   });
 
-  const authUrl = `https://accounts.spotify.com/authorize?${params.toString()}`;
-
-  return { authUrl };
+  return { authUrl: `https://accounts.spotify.com/authorize?${params.toString()}` };
 }
 
-async function callback(code: string, userId: string): Promise<{ success: boolean; displayName: string }> {
+async function handleCallback(code: string, userId: string): Promise<{ success: boolean; displayName: string }> {
   if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET || !SPOTIFY_REDIRECT_URI) {
     throw new Error('Spotify OAuth credentials not configured');
   }
 
-  // Exchange authorization code for tokens
   const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: {
@@ -81,160 +63,70 @@ async function callback(code: string, userId: string): Promise<{ success: boolea
     },
     body: new URLSearchParams({
       grant_type: 'authorization_code',
-      code: code,
+      code,
       redirect_uri: SPOTIFY_REDIRECT_URI,
     }).toString(),
   });
 
   if (!tokenResponse.ok) {
     const error = await tokenResponse.text();
-    console.error('Failed to exchange code for tokens:', tokenResponse.status, error);
-    throw new Error('Failed to exchange authorization code for tokens');
+    console.error('Token exchange failed:', tokenResponse.status, error);
+    throw new Error('Failed to exchange authorization code');
   }
 
   const tokenData = await tokenResponse.json();
 
-  // Get user's Spotify profile
   const profileResponse = await fetch('https://api.spotify.com/v1/me', {
     headers: { 'Authorization': `Bearer ${tokenData.access_token}` },
   });
 
   if (!profileResponse.ok) {
-    console.error('Failed to fetch Spotify profile:', profileResponse.status);
-    throw new Error('Failed to fetch Spotify user profile');
+    throw new Error('Failed to fetch Spotify profile');
   }
 
   const profile = await profileResponse.json();
-
-  // Calculate token expiry timestamp
   const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
 
-  // Store tokens in spotify_user_connections
   const supabase = getServiceClient();
-
   const { error: upsertError } = await supabase
     .from('spotify_user_connections')
-    .upsert(
-      {
-        user_id: userId,
-        spotify_user_id: profile.id,
-        display_name: profile.display_name || profile.id,
-        access_token: tokenData.access_token,
-        refresh_token: tokenData.refresh_token,
-        expires_at: expiresAt,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: 'user_id' }
-    );
+    .upsert({
+      user_id: userId,
+      spotify_user_id: profile.id,
+      access_token: tokenData.access_token,
+      refresh_token: tokenData.refresh_token,
+      token_expires_at: expiresAt,
+      scopes: 'user-top-read user-read-recently-played',
+      display_name: profile.display_name || profile.id,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'user_id' });
 
   if (upsertError) {
-    console.error('Failed to store Spotify connection:', upsertError.message);
+    console.error('Failed to store connection:', upsertError.message);
     throw new Error('Failed to save Spotify connection');
   }
-
-  console.log(`Spotify connected for user ${userId} (${profile.display_name})`);
 
   return { success: true, displayName: profile.display_name || profile.id };
 }
 
-async function refresh(userId: string): Promise<{ accessToken: string; expiresAt: string }> {
-  if (!SPOTIFY_CLIENT_ID || !SPOTIFY_CLIENT_SECRET) {
-    throw new Error('Spotify OAuth credentials not configured');
-  }
-
+async function status(userId: string): Promise<{ connected: boolean; displayName: string | null }> {
   const supabase = getServiceClient();
-
-  // Read user's refresh token
-  const { data: connection, error: readError } = await supabase
+  const { data, error } = await supabase
     .from('spotify_user_connections')
-    .select('refresh_token')
+    .select('display_name')
     .eq('user_id', userId)
-    .single();
+    .maybeSingle();
 
-  if (readError || !connection) {
-    throw new Error('No Spotify connection found for this user');
+  if (error || !data) {
+    return { connected: false, displayName: null };
   }
-
-  // Request new access token
-  const tokenResponse = await fetch('https://accounts.spotify.com/api/token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Authorization': `Basic ${btoa(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`)}`,
-    },
-    body: new URLSearchParams({
-      grant_type: 'refresh_token',
-      refresh_token: connection.refresh_token,
-    }).toString(),
-  });
-
-  if (!tokenResponse.ok) {
-    const error = await tokenResponse.text();
-    console.error('Failed to refresh Spotify token:', tokenResponse.status, error);
-    throw new Error('Failed to refresh Spotify access token');
-  }
-
-  const tokenData = await tokenResponse.json();
-  const expiresAt = new Date(Date.now() + tokenData.expires_in * 1000).toISOString();
-
-  // Update stored tokens (Spotify may or may not return a new refresh_token)
-  const updatePayload: Record<string, string> = {
-    access_token: tokenData.access_token,
-    expires_at: expiresAt,
-    updated_at: new Date().toISOString(),
-  };
-
-  if (tokenData.refresh_token) {
-    updatePayload.refresh_token = tokenData.refresh_token;
-  }
-
-  const { error: updateError } = await supabase
-    .from('spotify_user_connections')
-    .update(updatePayload)
-    .eq('user_id', userId);
-
-  if (updateError) {
-    console.error('Failed to update stored tokens:', updateError.message);
-    throw new Error('Failed to update stored tokens');
-  }
-
-  console.log(`Spotify token refreshed for user ${userId}`);
-
-  return { accessToken: tokenData.access_token, expiresAt };
+  return { connected: true, displayName: data.display_name };
 }
 
 async function disconnect(userId: string): Promise<{ success: boolean }> {
   const supabase = getServiceClient();
-
-  const { error } = await supabase
-    .from('spotify_user_connections')
-    .delete()
-    .eq('user_id', userId);
-
-  if (error) {
-    console.error('Failed to disconnect Spotify:', error.message);
-    throw new Error('Failed to disconnect Spotify');
-  }
-
-  console.log(`Spotify disconnected for user ${userId}`);
-
+  await supabase.from('spotify_user_connections').delete().eq('user_id', userId);
   return { success: true };
-}
-
-async function status(userId: string): Promise<{ connected: boolean; displayName: string | null }> {
-  const supabase = getServiceClient();
-
-  const { data: connection, error } = await supabase
-    .from('spotify_user_connections')
-    .select('display_name')
-    .eq('user_id', userId)
-    .single();
-
-  if (error || !connection) {
-    return { connected: false, displayName: null };
-  }
-
-  return { connected: true, displayName: connection.display_name };
 }
 
 serve(async (req: Request) => {
@@ -243,35 +135,30 @@ serve(async (req: Request) => {
   }
 
   try {
-    const userId = await getUserIdFromRequest(req);
-    const { action, code } = await req.json();
+    const body = await req.json();
+    const { action, code } = body;
 
     console.log(`Spotify Auth action: ${action}`);
 
-    let result;
+    const authHeader = req.headers.get('Authorization') || '';
+    const userId = getUserIdFromJwt(authHeader);
+
+    let result: unknown;
 
     switch (action) {
       case 'getAuthUrl':
         result = await getAuthUrl(userId);
         break;
-
       case 'callback':
         if (!code) throw new Error('code is required');
-        result = await callback(code, userId);
+        result = await handleCallback(code, userId);
         break;
-
-      case 'refresh':
-        result = await refresh(userId);
-        break;
-
-      case 'disconnect':
-        result = await disconnect(userId);
-        break;
-
       case 'status':
         result = await status(userId);
         break;
-
+      case 'disconnect':
+        result = await disconnect(userId);
+        break;
       default:
         throw new Error(`Unknown action: ${action}`);
     }
@@ -281,14 +168,8 @@ serve(async (req: Request) => {
     });
   } catch (error: any) {
     console.error('Spotify Auth error:', error.message);
-
-    const statusCode = error.message === 'Missing Authorization header' ||
-      error.message === 'Invalid or expired token'
-      ? 401
-      : 500;
-
     return new Response(JSON.stringify({ error: error.message }), {
-      status: statusCode,
+      status: error.message === 'Invalid token' ? 401 : 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
