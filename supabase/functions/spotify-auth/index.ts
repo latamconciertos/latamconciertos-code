@@ -25,17 +25,17 @@ async function getUserIdFromRequest(req: Request): Promise<string> {
     throw new Error('Missing Authorization header');
   }
 
+  const token = authHeader.replace('Bearer ', '');
+
   if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error('Supabase credentials not configured');
   }
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-    global: { headers: { Authorization: authHeader } },
-  });
-
-  const { data: { user }, error } = await supabase.auth.getUser();
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  const { data: { user }, error } = await supabase.auth.getUser(token);
 
   if (error || !user) {
+    console.error('Auth error:', error?.message);
     throw new Error('Invalid or expired token');
   }
 

@@ -64,10 +64,14 @@ export function useSpotifyAuth() {
         body: { action: 'getAuthUrl' },
       });
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
       if (data?.authUrl) {
         window.location.href = data.authUrl;
+        return;
       }
-    } catch {
+      throw new Error('No auth URL received');
+    } catch (err) {
+      console.error('Spotify connect error:', err);
       setIsConnecting(false);
     }
   };
