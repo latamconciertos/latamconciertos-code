@@ -13,9 +13,10 @@ export function useSpotifyAuth() {
         body: { action: 'status' },
       });
       if (error) throw error;
+      const result = data?.data ?? data;
       setConnection({
-        connected: data?.connected ?? false,
-        displayName: data?.displayName ?? null,
+        connected: result?.connected ?? false,
+        displayName: result?.displayName ?? null,
       });
     } catch {
       setConnection({ connected: false, displayName: null });
@@ -41,8 +42,9 @@ export function useSpotifyAuth() {
           body: { action: 'callback', code },
         })
         .then(({ data, error }) => {
-          if (!error && data?.success) {
-            setConnection({ connected: true, displayName: data.displayName });
+          const result = data?.data ?? data;
+          if (!error && result?.success) {
+            setConnection({ connected: true, displayName: result.displayName });
           }
         })
         .finally(() => {
@@ -60,17 +62,18 @@ export function useSpotifyAuth() {
   const connectSpotify = async () => {
     setIsConnecting(true);
     try {
-      const response = await supabase.functions.invoke('spotify-auth', {
+      const { data, error } = await supabase.functions.invoke('spotify-auth', {
         body: { action: 'getAuthUrl' },
       });
-      console.warn('spotify-auth response:', JSON.stringify(response.data), 'error:', response.error);
-      if (response.error) throw response.error;
-      if (response.data?.error) throw new Error(response.data.error);
-      if (response.data?.authUrl) {
-        window.location.href = response.data.authUrl;
+      if (error) throw error;
+      const result = data?.data ?? data;
+      if (result?.error) throw new Error(result.error);
+      const authUrl = result?.authUrl;
+      if (authUrl) {
+        window.location.href = authUrl;
         return;
       }
-      throw new Error('No auth URL received. Response: ' + JSON.stringify(response.data));
+      throw new Error('No auth URL received');
     } catch (err) {
       console.error('Spotify connect error:', err);
       setIsConnecting(false);
