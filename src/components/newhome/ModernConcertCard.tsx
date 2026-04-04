@@ -140,7 +140,7 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
         const shareTitle = concert.title;
         const shareText = `${artistName} - ${concert.title} | ${location}`;
 
-        // Mobile: use native share
+        // Mobile: use native share exclusively
         if (canShareNatively()) {
             try {
                 await navigator.share({
@@ -148,10 +148,10 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
                     text: shareText,
                     url: shareUrl,
                 });
-                return;
             } catch {
-                // User cancelled or error, fall through to popover
+                // User cancelled — do nothing
             }
+            return;
         }
 
         // Desktop: show popover with options
