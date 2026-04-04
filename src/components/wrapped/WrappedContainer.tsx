@@ -194,17 +194,17 @@ const WrappedContainer = ({ data, onClose, userName, logoSrc }: WrappedContainer
       {/* Progress bar */}
       <WrappedProgressBar currentSlide={currentIndex} totalSlides={totalSlides} />
 
-      {/* Logo - persistent on all slides except intro and summary (they have their own) */}
+      {/* Logo - top right on middle slides (not intro/summary) */}
       {logoSrc && activeSlides[currentIndex] !== 'intro' && activeSlides[currentIndex] !== 'summary' && (
-        <div className="fixed left-4 top-7 z-50">
-          <img src={logoSrc} alt="Conciertos Latam" className="h-8 w-auto opacity-80" />
+        <div className="fixed right-16 top-6 z-50">
+          <img src={logoSrc} alt="Conciertos Latam" className="h-12 w-auto" />
         </div>
       )}
 
       {/* Close button */}
       <button
         onClick={onClose}
-        className="fixed right-4 top-8 z-50 rounded-full bg-black/30 p-2 text-white backdrop-blur transition-colors hover:bg-black/50"
+        className="fixed left-4 top-7 z-50 rounded-full bg-black/30 p-2 text-white backdrop-blur transition-colors hover:bg-black/50"
         aria-label="Cerrar"
       >
         <X className="h-5 w-5" />
