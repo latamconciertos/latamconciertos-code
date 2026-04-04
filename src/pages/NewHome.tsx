@@ -11,6 +11,7 @@ import { NewHomeFeaturedArtists } from '@/components/newhome/NewHomeFeaturedArti
 import { NewHomeFeaturedImages } from '@/components/newhome/NewHomeFeaturedImages';
 import { NewHomeSpotifyCharts } from '@/components/newhome/NewHomeSpotifyCharts';
 import FeaturedVideosSection from '@/components/FeaturedVideosSection';
+import { WrappedBanner } from '@/components/wrapped/WrappedBanner';
 import { HomeSEOContent } from '@/components/newhome/HomeSEOContent';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
@@ -80,6 +81,16 @@ const NewHome = () => {
                         transition={{ duration: 0.8, ease: "easeOut" }}
                     >
                         <NewHomeUpcomingConcerts />
+                    </motion.div>
+
+                    {/* Wrapped Banner CTA */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 40 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-50px" }}
+                        transition={{ duration: 0.6, ease: "easeOut" }}
+                    >
+                        <WrappedBanner />
                     </motion.div>
 
                     {/* Featured Festivals Section with modern design and parallax scroll reveal */}

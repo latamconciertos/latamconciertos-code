@@ -79,6 +79,7 @@ const menuGroups: MenuGroup[] = [
     label: 'Configuración',
     icon: Settings,
     items: [
+      { title: 'Banners', tab: 'banners', icon: Megaphone },
       { title: 'Tráfico', tab: 'traffic', icon: BarChart3 },
       { title: 'PWA', tab: 'pwa', icon: Smartphone },
     ]

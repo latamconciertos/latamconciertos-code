@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Search, User, Settings, Moon, Sun, Calendar, LogOut, Home, Mic2, Music2, BookOpen, ListMusic, Lightbulb, Users, ChevronDown, Bot } from "lucide-react";
+import { Menu, X, Search, User, Settings, Moon, Sun, Calendar, LogOut, Home, Mic2, Music2, BookOpen, ListMusic, Lightbulb, Users, ChevronDown, Bot, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -121,6 +121,7 @@ const Header = ({ visible = true }: HeaderProps) => {
     { name: "Perfil", path: "/profile", icon: User },
     { name: "Mis Conciertos", path: "/my-calendar", icon: Calendar },
     { name: "Conexiones", path: "/friends", icon: Users, showBadge: true },
+    { name: "Mi Wrapped", path: "/wrapped", icon: Sparkles },
   ];
 
   return (

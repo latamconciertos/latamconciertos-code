@@ -28,6 +28,7 @@ const SocialNetworksAdmin = lazy(() => import('@/components/admin/SocialNetworks
 const SetlistContributionsAdmin = lazy(() => import('@/components/admin/SetlistContributionsAdmin').then(m => ({ default: m.SetlistContributionsAdmin })));
 const FanProjectsAdmin = lazy(() => import('@/components/admin/FanProjectsAdmin').then(m => ({ default: m.FanProjectsAdmin })));
 const FestivalsAdmin = lazy(() => import('@/components/admin/FestivalsAdmin').then(m => ({ default: m.FestivalsAdmin })));
+const BannersAdmin = lazy(() => import('@/components/admin/BannersAdmin').then(m => ({ default: m.BannersAdmin })));
 
 const Admin = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -126,6 +127,7 @@ const Admin = () => {
         case 'traffic': return <TrafficAdmin />;
         case 'pwa': return <PWAAdmin />;
         case 'fan-projects': return <FanProjectsAdmin />;
+        case 'banners': return <BannersAdmin />;
         default: return <NewsAdminNew />;
       }
     })();
