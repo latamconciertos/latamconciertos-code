@@ -5,11 +5,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { useWrappedData } from '@/hooks/queries/useWrapped';
 import { useSpotifyAuth } from '@/hooks/useSpotifyAuth';
 import SpotifyConnectPrompt from '@/components/wrapped/SpotifyConnectPrompt';
+import ConcertSelectionStep from '@/components/wrapped/ConcertSelectionStep';
 import WrappedContainer from '@/components/wrapped/WrappedContainer';
 import { Music } from 'lucide-react';
 import logo from '@/assets/logo.png';
 
-type WrappedStep = 'auth-check' | 'spotify-prompt' | 'loading' | 'ready';
+type WrappedStep = 'auth-check' | 'spotify-prompt' | 'concert-selection' | 'loading' | 'ready';
 
 const WRAPPED_YEAR = 2026;
 
@@ -47,10 +48,23 @@ const Wrapped = () => {
         setUserName(name);
       }
 
+      // Check if user already has attended concerts for the year
+      const { count: attendedCount } = await supabase
+        .from('favorite_concerts')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', session.user.id)
+        .eq('attendance_type', 'attending');
+
+      const hasAttendedConcerts = (attendedCount ?? 0) > 0;
+
       // If Spotify already connected, skip prompt
       if (connection.connected) {
-        setStep('loading');
-        setGenerateEnabled(true);
+        if (hasAttendedConcerts) {
+          setStep('loading');
+          setGenerateEnabled(true);
+        } else {
+          setStep('concert-selection');
+        }
       } else {
         setStep('spotify-prompt');
       }
@@ -61,11 +75,10 @@ const Wrapped = () => {
     }
   }, [navigate, step, connection.connected]);
 
-  // When Spotify connects while on the prompt, advance to loading
+  // When Spotify connects while on the prompt, advance to concert-selection
   useEffect(() => {
     if (connection.connected && step === 'spotify-prompt') {
-      setStep('loading');
-      setGenerateEnabled(true);
+      setStep('concert-selection');
     }
   }, [connection.connected, step]);
 
@@ -77,6 +90,10 @@ const Wrapped = () => {
   }, [wrappedData, step]);
 
   const handleSpotifySkip = () => {
+    setStep('concert-selection');
+  };
+
+  const handleConcertSelectionDone = () => {
     setStep('loading');
     setGenerateEnabled(true);
   };
@@ -95,6 +112,16 @@ const Wrapped = () => {
         onConnect={connectSpotify}
         onSkip={handleSpotifySkip}
         isConnecting={isConnecting}
+      />
+    );
+  }
+
+  if (step === 'concert-selection') {
+    return (
+      <ConcertSelectionStep
+        year={WRAPPED_YEAR}
+        onComplete={handleConcertSelectionDone}
+        onSkip={handleConcertSelectionDone}
       />
     );
   }
