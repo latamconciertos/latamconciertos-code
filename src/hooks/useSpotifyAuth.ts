@@ -33,9 +33,9 @@ export function useSpotifyAuth() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get('code');
-    const spotifyCallback = params.get('spotify_callback');
+    const state = params.get('state');
 
-    if (code && spotifyCallback) {
+    if (code && state) {
       setIsConnecting(true);
       supabase.functions
         .invoke('spotify-auth', {
@@ -51,7 +51,6 @@ export function useSpotifyAuth() {
           // Clean URL params
           const url = new URL(window.location.href);
           url.searchParams.delete('code');
-          url.searchParams.delete('spotify_callback');
           url.searchParams.delete('state');
           window.history.replaceState({}, '', url.pathname);
           setIsConnecting(false);
