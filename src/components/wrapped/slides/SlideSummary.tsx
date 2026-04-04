@@ -45,7 +45,7 @@ const SlideSummary = ({ data, userName, logoSrc }: SlideSummaryProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="mb-5 h-12 w-auto"
+          className="mb-5 h-20 w-auto"
         />
       )}
 
