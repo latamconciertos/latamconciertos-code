@@ -45,6 +45,14 @@ const Wrapped = () => {
     }
   }, [navigate, step, connection.connected]);
 
+  // When Spotify connects while on the prompt, advance to loading
+  useEffect(() => {
+    if (connection.connected && step === 'spotify-prompt') {
+      setStep('loading');
+      setGenerateEnabled(true);
+    }
+  }, [connection.connected, step]);
+
   // Transition to ready when data arrives
   useEffect(() => {
     if (wrappedData && step === 'loading') {
