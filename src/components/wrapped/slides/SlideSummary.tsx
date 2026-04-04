@@ -45,15 +45,16 @@ const SlideSummary = ({ data, userName, logoSrc }: SlideSummaryProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1 }}
-          className="mb-4 h-10 w-auto"
+          className="mb-5 h-12 w-auto"
         />
       )}
 
+      {/* Title */}
       <motion.p
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="mb-6 text-lg font-medium text-indigo-200"
+        className="mb-8 text-base font-medium text-indigo-200/80"
       >
         {userName ? `${userName}, tu resumen ${data.year}` : `Tu resumen ${data.year}`}
       </motion.p>
@@ -69,13 +70,13 @@ const SlideSummary = ({ data, userName, logoSrc }: SlideSummaryProps) => {
               variants={statVariants}
               initial="hidden"
               animate="visible"
-              className="flex flex-col items-center rounded-2xl bg-white/10 p-4 backdrop-blur"
+              className="flex flex-col items-center rounded-2xl bg-white/[0.08] p-4 backdrop-blur-sm"
             >
-              <Icon className="mb-1 h-5 w-5 text-indigo-300" />
+              <Icon className="mb-1.5 h-4 w-4 text-indigo-300/70" />
               <span className="text-3xl font-black tabular-nums text-white">
                 {stat.value}
               </span>
-              <span className="text-xs text-indigo-200">{stat.label}</span>
+              <span className="mt-0.5 text-[11px] text-indigo-200/60">{stat.label}</span>
             </motion.div>
           );
         })}
@@ -91,10 +92,10 @@ const SlideSummary = ({ data, userName, logoSrc }: SlideSummaryProps) => {
               variants={badgeVariants}
               initial="hidden"
               animate="visible"
-              className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/20 to-orange-500/20 px-3 py-1.5 backdrop-blur"
+              className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-500/15 to-orange-500/15 px-3 py-1.5 backdrop-blur-sm"
             >
               <span className="text-base">{badge.icon}</span>
-              <span className="text-xs font-semibold text-yellow-200">
+              <span className="text-xs font-semibold text-yellow-200/80">
                 {badge.name}
               </span>
             </motion.div>
@@ -102,7 +103,7 @@ const SlideSummary = ({ data, userName, logoSrc }: SlideSummaryProps) => {
         </div>
       )}
 
-      {/* Share button */}
+      {/* Share button - prominent */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -116,10 +117,10 @@ const SlideSummary = ({ data, userName, logoSrc }: SlideSummaryProps) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2.0 }}
-        className="mt-6 flex items-center gap-2 text-xs text-indigo-300/60"
+        className="mt-8 flex items-center gap-2"
       >
-        {logoSrc && <img src={logoSrc} alt="" className="h-4 w-auto opacity-50" />}
-        <span>conciertoslatam.app</span>
+        {logoSrc && <img src={logoSrc} alt="" className="h-4 w-auto opacity-30" />}
+        <span className="text-[10px] tracking-wider text-indigo-300/30">conciertoslatam.app</span>
       </motion.div>
     </div>
   );

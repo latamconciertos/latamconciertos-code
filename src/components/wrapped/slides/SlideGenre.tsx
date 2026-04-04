@@ -30,34 +30,38 @@ const SlideGenre = ({ topGenre, genreBreakdown }: SlideGenreProps) => {
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-pink-900 via-fuchsia-800 to-purple-900 px-6">
+      {/* Label */}
       <motion.p
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="mb-4 text-lg text-pink-200"
+        className="mb-4 text-base font-medium text-pink-200/80"
       >
         Tu genero favorito
       </motion.p>
 
+      {/* Emoji */}
       <motion.div
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.4, type: 'spring' }}
-        className="mb-2 text-6xl"
+        className="mb-3 text-5xl"
       >
         {emoji}
       </motion.div>
 
+      {/* Genre name - big and bold */}
       <motion.h2
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.6, type: 'spring' }}
-        className="mb-10 text-center text-4xl font-black capitalize text-white sm:text-5xl"
+        className="mb-12 text-center text-5xl font-black capitalize text-white sm:text-6xl"
       >
         {topGenre}
       </motion.h2>
 
-      <div className="w-full max-w-xs space-y-3">
+      {/* Bar chart - clean with proper spacing */}
+      <div className="w-full max-w-xs space-y-4">
         {genreBreakdown.slice(0, 5).map((item, i) => (
           <motion.div
             key={item.genre}
@@ -65,15 +69,15 @@ const SlideGenre = ({ topGenre, genreBreakdown }: SlideGenreProps) => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.9 + i * 0.15 }}
           >
-            <div className="mb-1 flex items-center justify-between">
-              <span className="text-sm font-medium capitalize text-white">
+            <div className="mb-1.5 flex items-center justify-between">
+              <span className="text-sm font-medium capitalize text-white/90">
                 {item.genre}
               </span>
-              <span className="text-sm tabular-nums text-pink-200">
+              <span className="text-xs tabular-nums text-pink-200/60">
                 {item.count}
               </span>
             </div>
-            <div className="h-2.5 overflow-hidden rounded-full bg-white/10">
+            <div className="h-2 overflow-hidden rounded-full bg-white/[0.08]">
               <motion.div
                 className="h-full rounded-full bg-gradient-to-r from-pink-400 to-fuchsia-400"
                 initial={{ width: 0 }}

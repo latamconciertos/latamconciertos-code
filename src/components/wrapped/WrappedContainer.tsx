@@ -64,6 +64,9 @@ const slideVariants = {
   }),
 };
 
+/** Slides that handle their own branding (no bottom logo overlay) */
+const SELF_BRANDED_SLIDES: WrappedSlideType[] = ['intro', 'summary'];
+
 const WrappedContainer = ({ data, onClose, userName, logoSrc }: WrappedContainerProps) => {
   const activeSlides = getActiveSlides(data);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -73,6 +76,8 @@ const WrappedContainer = ({ data, onClose, userName, logoSrc }: WrappedContainer
 
   const totalSlides = activeSlides.length;
   const isLastSlide = currentIndex === totalSlides - 1;
+  const currentSlideType = activeSlides[currentIndex];
+  const showBottomBranding = !SELF_BRANDED_SLIDES.includes(currentSlideType);
 
   const resetAutoAdvance = useCallback(() => {
     if (autoTimerRef.current) {
@@ -191,23 +196,16 @@ const WrappedContainer = ({ data, onClose, userName, logoSrc }: WrappedContainer
 
   return (
     <div className="fixed inset-0 z-40 overflow-hidden bg-black">
-      {/* Progress bar */}
+      {/* Progress bar - thin elegant segments */}
       <WrappedProgressBar currentSlide={currentIndex} totalSlides={totalSlides} />
 
-      {/* Logo - top right on middle slides (not intro/summary) */}
-      {logoSrc && activeSlides[currentIndex] !== 'intro' && activeSlides[currentIndex] !== 'summary' && (
-        <div className="fixed right-16 top-6 z-50">
-          <img src={logoSrc} alt="Conciertos Latam" className="h-12 w-auto" />
-        </div>
-      )}
-
-      {/* Close button */}
+      {/* Close button - top right, subtle circle */}
       <button
         onClick={onClose}
-        className="fixed left-4 top-7 z-50 rounded-full bg-black/30 p-2 text-white backdrop-blur transition-colors hover:bg-black/50"
+        className="fixed right-3 top-7 z-50 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/70 backdrop-blur-sm transition-colors hover:bg-white/20 hover:text-white"
         aria-label="Cerrar"
       >
-        <X className="h-5 w-5" />
+        <X className="h-4 w-4" />
       </button>
 
       {/* Slide area */}
@@ -234,6 +232,16 @@ const WrappedContainer = ({ data, onClose, userName, logoSrc }: WrappedContainer
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {/* Bottom branding - small centered logo on non-intro/summary slides */}
+      {showBottomBranding && logoSrc && (
+        <div className="fixed bottom-6 left-0 right-0 z-50 flex flex-col items-center gap-1 pointer-events-none">
+          <img src={logoSrc} alt="" className="h-5 w-auto opacity-30" />
+          <span className="text-[10px] tracking-wider text-white/20">
+            conciertoslatam.app
+          </span>
+        </div>
+      )}
     </div>
   );
 };

@@ -41,7 +41,7 @@ const SlideIntro = ({ year, userName, logoSrc }: SlideIntroProps) => {
   }, [year]);
 
   return (
-    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-violet-950 px-6 pb-24">
+    <div className="relative flex h-full w-full flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-indigo-900 via-purple-900 to-violet-950 px-6">
       {/* Particles */}
       {particles.map((p) => (
         <motion.div
@@ -67,70 +67,75 @@ const SlideIntro = ({ year, userName, logoSrc }: SlideIntroProps) => {
         />
       ))}
 
-      {/* Logo */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.6 }}
-        className="mb-4"
-      >
-        {logoSrc ? (
-          <img src={logoSrc} alt="Conciertos Latam" className="h-24 w-auto sm:h-28" />
-        ) : (
-          <span className="text-lg font-semibold tracking-wide text-white/70">
-            Conciertos Latam
-          </span>
-        )}
-      </motion.div>
-
-      {/* Greeting */}
-      {userName && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="mb-2 text-lg text-white/70"
+      {/* Centered content block */}
+      <div className="flex flex-col items-center">
+        {/* Logo */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="mb-8"
         >
-          Hola, <span className="font-semibold text-white">{userName}</span>
-        </motion.p>
-      )}
+          {logoSrc ? (
+            <img src={logoSrc} alt="Conciertos Latam" className="h-20 w-auto sm:h-24" />
+          ) : (
+            <span className="text-lg font-semibold tracking-wide text-white/70">
+              Conciertos Latam
+            </span>
+          )}
+        </motion.div>
 
-      {/* Title */}
-      <motion.h1
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.4, duration: 0.8, type: 'spring' as const }}
-        className="mb-2 text-center text-3xl font-bold text-white sm:text-4xl"
-      >
-        Tu
-      </motion.h1>
+        {/* Greeting */}
+        {userName && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="mb-6 text-lg text-white/60"
+          >
+            Hola, <span className="font-semibold text-white/90">{userName}</span>
+          </motion.p>
+        )}
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.6, duration: 0.8, type: 'spring' as const }}
-        className="mb-2"
-      >
-        <span className="bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 bg-clip-text text-8xl font-black tabular-nums text-transparent sm:text-9xl">
-          {displayYear}
-        </span>
-      </motion.div>
+        {/* Title: Tu */}
+        <motion.h1
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.4, duration: 0.8, type: 'spring' as const }}
+          className="mb-1 text-center text-2xl font-bold text-white/90 sm:text-3xl"
+        >
+          Tu
+        </motion.h1>
 
-      <motion.h2
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.0, duration: 0.6 }}
-        className="text-center text-3xl font-bold text-white sm:text-4xl"
-      >
-        en Conciertos
-      </motion.h2>
+        {/* Year - hero element */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.6, duration: 0.8, type: 'spring' as const }}
+          className="mb-1"
+        >
+          <span className="bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 bg-clip-text text-8xl font-black tabular-nums text-transparent sm:text-9xl">
+            {displayYear}
+          </span>
+        </motion.div>
 
-      {/* Hint */}
+        {/* en Conciertos */}
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.0, duration: 0.6 }}
+          className="text-center text-2xl font-bold text-white/90 sm:text-3xl"
+        >
+          en Conciertos
+        </motion.h2>
+      </div>
+
+      {/* Hint - anchored to bottom */}
       <motion.p
         initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 0.7, 0.4, 0.7] }}
+        animate={{ opacity: [0, 0.5, 0.3, 0.5] }}
         transition={{ delay: 2, duration: 2, repeat: Infinity }}
-        className="absolute bottom-12 text-sm text-white/60"
+        className="absolute bottom-10 text-xs tracking-wide text-white/40"
       >
         Toca para continuar
       </motion.p>

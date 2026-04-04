@@ -42,20 +42,22 @@ const SlideAttendance = ({ totalConcerts, totalFestivals, estimatedHours }: Slid
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-blue-900 via-blue-800 to-sky-900 px-6">
+      {/* Label */}
       <motion.p
         initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
-        className="mb-2 text-lg text-blue-200"
+        className="mb-3 text-base font-medium text-blue-200/80"
       >
         Este ano fuiste a
       </motion.p>
 
+      {/* Hero number */}
       <motion.div
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.4, type: 'spring', stiffness: 100 }}
-        className="mb-2"
+        className="mb-1"
       >
         <span className="text-8xl font-black tabular-nums text-white sm:text-9xl">
           {concertCount}
@@ -66,22 +68,23 @@ const SlideAttendance = ({ totalConcerts, totalFestivals, estimatedHours }: Slid
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
-        className="mb-12 text-2xl font-semibold text-blue-100"
+        className="mb-14 text-xl font-semibold text-blue-100/90"
       >
         {totalConcerts === 1 ? 'concierto' : 'conciertos'}
       </motion.p>
 
-      <div className="flex w-full max-w-xs flex-col gap-4">
+      {/* Secondary stats */}
+      <div className="flex w-full max-w-xs flex-col gap-3">
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.8 }}
-          className="flex items-center gap-4 rounded-2xl bg-white/10 px-5 py-4 backdrop-blur"
+          className="flex items-center gap-4 rounded-2xl bg-white/[0.08] px-5 py-4 backdrop-blur-sm"
         >
-          <Music className="h-6 w-6 text-blue-300" />
+          <Music className="h-5 w-5 text-blue-300/80" />
           <div>
-            <span className="text-2xl font-bold tabular-nums text-white">{festivalCount}</span>
-            <p className="text-sm text-blue-200">festivales</p>
+            <span className="text-xl font-bold tabular-nums text-white">{festivalCount}</span>
+            <p className="text-xs text-blue-200/70">festivales</p>
           </div>
         </motion.div>
 
@@ -89,12 +92,12 @@ const SlideAttendance = ({ totalConcerts, totalFestivals, estimatedHours }: Slid
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 1.0 }}
-          className="flex items-center gap-4 rounded-2xl bg-white/10 px-5 py-4 backdrop-blur"
+          className="flex items-center gap-4 rounded-2xl bg-white/[0.08] px-5 py-4 backdrop-blur-sm"
         >
-          <Clock className="h-6 w-6 text-blue-300" />
+          <Clock className="h-5 w-5 text-blue-300/80" />
           <div>
-            <span className="text-2xl font-bold tabular-nums text-white">{hourCount}</span>
-            <p className="text-sm text-blue-200">horas estimadas en shows</p>
+            <span className="text-xl font-bold tabular-nums text-white">{hourCount}</span>
+            <p className="text-xs text-blue-200/70">horas estimadas en shows</p>
           </div>
         </motion.div>
 
@@ -102,12 +105,12 @@ const SlideAttendance = ({ totalConcerts, totalFestivals, estimatedHours }: Slid
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 1.2 }}
-          className="flex items-center gap-4 rounded-2xl bg-white/10 px-5 py-4 backdrop-blur"
+          className="flex items-center gap-4 rounded-2xl bg-white/[0.08] px-5 py-4 backdrop-blur-sm"
         >
-          <Calendar className="h-6 w-6 text-blue-300" />
+          <Calendar className="h-5 w-5 text-blue-300/80" />
           <div>
-            <span className="text-2xl font-bold tabular-nums text-white">{totalConcerts}</span>
-            <p className="text-sm text-blue-200">dias con musica en vivo</p>
+            <span className="text-xl font-bold tabular-nums text-white">{totalConcerts}</span>
+            <p className="text-xs text-blue-200/70">dias con musica en vivo</p>
           </div>
         </motion.div>
       </div>
