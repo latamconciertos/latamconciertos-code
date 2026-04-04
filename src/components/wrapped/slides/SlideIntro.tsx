@@ -75,7 +75,7 @@ const SlideIntro = ({ year, userName, logoSrc }: SlideIntroProps) => {
         className="mb-6"
       >
         {logoSrc ? (
-          <img src={logoSrc} alt="Conciertos Latam" className="h-20 w-auto" />
+          <img src={logoSrc} alt="Conciertos Latam" className="h-28 w-auto" />
         ) : (
           <span className="text-lg font-semibold tracking-wide text-white/70">
             Conciertos Latam

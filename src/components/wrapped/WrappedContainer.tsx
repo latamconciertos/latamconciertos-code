@@ -194,6 +194,13 @@ const WrappedContainer = ({ data, onClose, userName, logoSrc }: WrappedContainer
       {/* Progress bar */}
       <WrappedProgressBar currentSlide={currentIndex} totalSlides={totalSlides} />
 
+      {/* Logo - persistent on all slides */}
+      {logoSrc && (
+        <div className="fixed left-4 top-7 z-50">
+          <img src={logoSrc} alt="Conciertos Latam" className="h-8 w-auto opacity-80" />
+        </div>
+      )}
+
       {/* Close button */}
       <button
         onClick={onClose}
