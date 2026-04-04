@@ -72,10 +72,10 @@ const SlideIntro = ({ year, userName, logoSrc }: SlideIntroProps) => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.6 }}
-        className="mb-6"
+        className="mb-4"
       >
         {logoSrc ? (
-          <img src={logoSrc} alt="Conciertos Latam" className="h-28 w-auto" />
+          <img src={logoSrc} alt="Conciertos Latam" className="h-24 w-auto sm:h-28" />
         ) : (
           <span className="text-lg font-semibold tracking-wide text-white/70">
             Conciertos Latam
@@ -89,7 +89,7 @@ const SlideIntro = ({ year, userName, logoSrc }: SlideIntroProps) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="mb-4 text-lg text-white/70"
+          className="mb-2 text-lg text-white/70"
         >
           Hola, <span className="font-semibold text-white">{userName}</span>
         </motion.p>
@@ -100,7 +100,7 @@ const SlideIntro = ({ year, userName, logoSrc }: SlideIntroProps) => {
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.4, duration: 0.8, type: 'spring' as const }}
-        className="mb-4 text-center text-3xl font-bold text-white sm:text-4xl"
+        className="mb-2 text-center text-3xl font-bold text-white sm:text-4xl"
       >
         Tu
       </motion.h1>
@@ -109,7 +109,7 @@ const SlideIntro = ({ year, userName, logoSrc }: SlideIntroProps) => {
         initial={{ opacity: 0, scale: 0.5 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.6, duration: 0.8, type: 'spring' as const }}
-        className="mb-4"
+        className="mb-2"
       >
         <span className="bg-gradient-to-r from-yellow-300 via-pink-400 to-purple-400 bg-clip-text text-8xl font-black tabular-nums text-transparent sm:text-9xl">
           {displayYear}
