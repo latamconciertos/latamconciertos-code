@@ -209,7 +209,7 @@ const Friends = () => {
                     <ConcertInvitationCard
                       key={invitation.id}
                       invitation={invitation}
-                      onAccept={(invitationId, concertId) => respondInvitation.mutate({ invitationId, accept: true })}
+                      onAccept={(invitationId, _concertId) => respondInvitation.mutate({ invitationId, accept: true })}
                       onDecline={(invitationId) => respondInvitation.mutate({ invitationId, accept: false })}
                       isLoading={respondInvitation.isPending}
                     />

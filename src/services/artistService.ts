@@ -9,7 +9,6 @@ import { supabase } from '@/integrations/supabase/client';
 import type {
   Artist,
   ArtistBasic,
-  ArtistWithConcertCount,
   FeaturedArtist,
   ArtistInsert,
   ArtistUpdate,
@@ -236,7 +235,7 @@ class ArtistServiceClass {
 
       if (error) return { data: null, error };
 
-      const artists = data?.map(f => f.artists).filter(Boolean) as Artist[];
+      const artists = data?.map(f => f.artists).filter(Boolean) as unknown as Artist[];
       return { data: artists, error: null };
     }, 'ArtistService.getUserFavorites');
   }

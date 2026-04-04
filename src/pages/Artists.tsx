@@ -1,11 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Music, ExternalLink, Globe, Instagram, Twitter, Search, ChevronDown } from 'lucide-react';
+import { Music, Search } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
@@ -47,19 +46,6 @@ const Artists = () => {
 
   const getDefaultImage = () => "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop";
 
-  const getSocialIcon = (platform: string) => {
-    switch (platform.toLowerCase()) {
-      case 'instagram':
-        return <Instagram className="h-4 w-4" />;
-      case 'twitter':
-        return <Twitter className="h-4 w-4" />;
-      case 'website':
-        return <Globe className="h-4 w-4" />;
-      default:
-        return <ExternalLink className="h-4 w-4" />;
-    }
-  };
-
   const getValidSocialLinks = (socialLinks: any): Record<string, string> => {
     if (!socialLinks || typeof socialLinks !== 'object') return {};
 
@@ -75,14 +61,6 @@ const Artists = () => {
 
   // Extract unique genres from all artists
   const uniqueGenres = allGenres;
-
-  // Filter artists by selected genre
-  const filteredArtists = useMemo(() => {
-    if (!selectedGenre) return artists;
-    return artists.filter((artist: any) =>
-      artist.genres && Array.isArray(artist.genres) && artist.genres.includes(selectedGenre)
-    );
-  }, [artists, selectedGenre]);
 
   const handleGenreClick = (genre: string) => {
     setSelectedGenre(selectedGenre === genre ? null : genre);
@@ -223,7 +201,6 @@ const Artists = () => {
               {/* Mobile: Vertical List */}
               <div className="flex flex-col gap-3 lg:hidden">
                 {artists.map((artist: any) => {
-                  const validSocialLinks = getValidSocialLinks(artist.social_links);
                   return (
                     <Card
                       key={artist.id}

@@ -19,10 +19,10 @@ class GenreServiceClass {
      */
     async getMainGenres(): Promise<ServiceResponse<MainGenre[]>> {
         return handleServiceCall(async () => {
-            const { data, error } = await supabase
+            const { data, error } = await (supabase as any)
                 .from('genre_mappings')
                 .select('main_genre')
-                .order('main_genre');
+                .order('main_genre') as any;
 
             if (error) return { data: [], error };
 
@@ -41,10 +41,10 @@ class GenreServiceClass {
      */
     async getSpotifyGenresForMainGenre(mainGenre: string): Promise<ServiceResponse<string[]>> {
         return handleServiceCall(async () => {
-            const { data, error } = await supabase
+            const { data, error } = await (supabase as any)
                 .from('genre_mappings')
                 .select('spotify_genre')
-                .eq('main_genre', mainGenre);
+                .eq('main_genre', mainGenre) as any;
 
             if (error) return { data: [], error };
 

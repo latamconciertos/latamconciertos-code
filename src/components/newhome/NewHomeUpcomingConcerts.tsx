@@ -42,7 +42,8 @@ export const NewHomeUpcomingConcerts = () => {
     const [concertsWithImages, setConcertsWithImages] = useState<ConcertWithImage[]>([]);
     const [selectedConcert, setSelectedConcert] = useState<ConcertWithImage | null>(null);
 
-    const { data: concerts = [], isLoading } = useUpcomingConcerts(6);
+    const { data: concertsData, isLoading } = useUpcomingConcerts(6);
+    const concerts = concertsData ?? [];
 
     useEffect(() => {
         const fetchArtistImages = async () => {
@@ -82,7 +83,7 @@ export const NewHomeUpcomingConcerts = () => {
         };
 
         fetchArtistImages();
-    }, [concerts]);
+    }, [concertsData]);
 
     const formatDate = (dateString: string) => {
         const [year, month, day] = dateString.split('-').map(Number);

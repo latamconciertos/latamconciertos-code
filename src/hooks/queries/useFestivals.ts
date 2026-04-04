@@ -7,7 +7,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { festivalService } from '@/services/festivalService';
 import type { FestivalFilterOptions } from '@/types/entities/festival';
-import { queryKeys } from './queryKeys';
+
 
 /**
  * Query keys for festivals

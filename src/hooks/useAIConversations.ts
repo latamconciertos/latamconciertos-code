@@ -43,7 +43,7 @@ interface UseAIConversationsReturn {
     createConversationWithTitle: (uid: string, firstMessage: string) => Promise<string>;
 }
 
-export function useAIConversations({ userId, userName }: UseAIConversationsProps): UseAIConversationsReturn {
+export function useAIConversations({ userId, userName: _userName }: UseAIConversationsProps): UseAIConversationsReturn {
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [conversationId, setConversationId] = useState<string | null>(null);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);

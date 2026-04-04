@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Send, Calendar, MapPin, Music2, X } from 'lucide-react';
+import { Send, Calendar, MapPin, Music2 } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -99,10 +99,13 @@ export function InviteToConcertModal({
                     
                     <div className="flex gap-3 flex-1 min-w-0">
                       {concert.image_url ? (
-                        <img 
-                          src={concert.image_url} 
+                        <img
+                          src={concert.image_url}
                           alt={concert.title}
                           className="h-12 w-12 rounded object-cover shrink-0"
+                          decoding="async"
+                          width={48}
+                          height={48}
                         />
                       ) : (
                         <div className="h-12 w-12 rounded bg-primary/10 flex items-center justify-center shrink-0">

@@ -8,7 +8,7 @@ import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { useBlogArticles, useBlogCategories, type BlogArticle, type BlogCategory } from '@/hooks/queries';
+import { useBlogArticles, useBlogCategories, type BlogArticle } from '@/hooks/queries';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
 import { MobileFiltersSheet, ActiveFiltersChips, FilterLabel, type ActiveFilter } from '@/components/filters';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -291,10 +291,14 @@ const Blog = () => {
               >
                 <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group border h-full">
                   <div className="relative overflow-hidden">
-                    <img 
-                      src={getArticleImage(article)} 
+                    <img
+                      src={getArticleImage(article)}
                       alt={article.title}
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                      decoding="async"
+                      width={400}
+                      height={192}
                     />
                     {getCategoryById(article.category_id) && (
                       <Badge className="absolute top-3 left-3 text-xs">

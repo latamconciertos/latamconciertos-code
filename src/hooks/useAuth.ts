@@ -28,8 +28,6 @@ export const useAuth = () => {
         isLoggingOutRef.current = true;
 
         try {
-            console.log('[useAuth] Iniciando logout:', reason);
-
             // 1. Cancelar timer de inactividad si existe
             if (inactivityTimerRef.current) {
                 clearTimeout(inactivityTimerRef.current);
@@ -63,7 +61,6 @@ export const useAuth = () => {
             }
 
             // 5. Redirigir a la página principal con replace para evitar volver atrás
-            console.log('[useAuth] Logout completado, redirigiendo a /');
             navigate('/', { replace: true });
         } catch (error) {
             console.error('[useAuth] Error durante logout:', error);
@@ -86,7 +83,6 @@ export const useAuth = () => {
 
         // Crear nuevo timer
         inactivityTimerRef.current = setTimeout(() => {
-            console.log('[useAuth] Timeout de inactividad alcanzado');
             logout('inactivity');
         }, INACTIVITY_TIMEOUT);
     }, [logout]);
@@ -104,8 +100,6 @@ export const useAuth = () => {
             if (!session?.user || !mounted) {
                 return;
             }
-
-            console.log('[useAuth] Configurando tracking de inactividad para:', session.user.email);
 
             // Eventos que indican actividad del usuario
             const activityEvents = ['mousemove', 'keypress', 'click', 'touchstart', 'scroll'];

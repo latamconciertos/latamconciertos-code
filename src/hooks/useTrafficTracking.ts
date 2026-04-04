@@ -47,7 +47,6 @@ const getOSName = () => {
 
 export const useTrafficTracking = () => {
   const location = useLocation();
-  const sessionStartTime = useRef<number>(Date.now());
   const lastPagePath = useRef<string>(location.pathname);
   const sessionId = useRef<string>(getSessionId());
   const [isInitialized, setIsInitialized] = useState(false);

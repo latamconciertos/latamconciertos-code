@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { sanitizeEmbedCode } from '@/lib/sanitize';
 import { Plus, Edit, Trash2, Video, Image as ImageIcon, Crop, Youtube } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -296,7 +297,7 @@ export const MediaAdmin = () => {
                             <Label>Preview</Label>
                             <div
                               className="aspect-video w-full rounded-lg overflow-hidden border bg-black"
-                              dangerouslySetInnerHTML={{ __html: formData.embed_code }}
+                              dangerouslySetInnerHTML={{ __html: sanitizeEmbedCode(formData.embed_code) }}
                             />
                           </div>
                         )}
@@ -443,7 +444,7 @@ export const MediaAdmin = () => {
                   {item.type === 'video' ? (
                     <video src={item.media_url} className="w-full h-full object-cover" />
                   ) : (
-                    <img src={item.media_url} alt={item.title} className="w-full h-full object-cover" />
+                    <img src={item.media_url} alt={item.title} className="w-full h-full object-cover" loading="lazy" decoding="async" />
                   )}
                 </div>
               )}

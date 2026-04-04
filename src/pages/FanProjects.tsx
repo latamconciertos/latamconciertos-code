@@ -12,27 +12,6 @@ import { formatDisplayDate } from '@/lib/timezone';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
 import { useFanProjects } from '@/hooks/queries/useFanProjects';
 
-interface FanProject {
-  id: string;
-  name: string;
-  description: string;
-  concert: {
-    id: string;
-    title: string;
-    date: string;
-    image_url: string;
-    artist: {
-      name: string;
-      photo_url: string | null;
-    } | null;
-    venue: {
-      name: string;
-      location: string;
-    } | null;
-  };
-  songs_count: number;
-}
-
 const FanProjects = () => {
   const navigate = useNavigate();
 

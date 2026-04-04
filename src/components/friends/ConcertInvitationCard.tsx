@@ -2,7 +2,7 @@ import { Check, X, Calendar, MapPin, Music2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { formatDistanceToNow, format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import type { ConcertInvitationWithDetails } from '@/types/entities/friendship';
@@ -59,10 +59,14 @@ export function ConcertInvitationCard({ invitation, onAccept, onDecline, isLoadi
             <div className="mt-2 p-2 sm:p-3 bg-muted/50 rounded-lg">
               <div className="flex gap-3">
                 {concerts?.image_url ? (
-                  <img 
-                    src={concerts.image_url} 
+                  <img
+                    src={concerts.image_url}
                     alt={concerts.title}
                     className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg object-cover shrink-0"
+                    loading="lazy"
+                    decoding="async"
+                    width={64}
+                    height={64}
                   />
                 ) : (
                   <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">

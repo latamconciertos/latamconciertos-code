@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trash2, Plus, GripVertical } from 'lucide-react';
+import { Trash2, GripVertical } from 'lucide-react';
 import {
   Table,
   TableBody,

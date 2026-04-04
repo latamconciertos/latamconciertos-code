@@ -51,15 +51,6 @@ const VenueDetail = () => {
     const upcomingConcerts = concerts.filter(c => new Date(c.date) >= new Date());
     const pastConcerts = concerts.filter(c => new Date(c.date) < new Date());
 
-    console.log('VenueDetail render:', {
-        venueId: venue.id,
-        venueName: venue.name,
-        totalConcerts: concerts.length,
-        upcomingCount: upcomingConcerts.length,
-        pastCount: pastConcerts.length,
-        concerts
-    });
-
     const structuredData = {
         "@context": "https://schema.org",
         "@type": "MusicVenue",

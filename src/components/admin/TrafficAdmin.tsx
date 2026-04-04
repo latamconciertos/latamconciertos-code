@@ -3,30 +3,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Activity, Users, Clock, Globe, Monitor, TrendingUp, Eye } from 'lucide-react';
+import { Activity, Users, Clock, Eye } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { startOfDay, startOfWeek, startOfMonth, subDays, format } from 'date-fns';
+import { subDays, format } from 'date-fns';
 import { es } from 'date-fns/locale';
-
-interface PageView {
-  page_path: string;
-  page_title: string | null;
-  country: string | null;
-  city: string | null;
-  device_type: string | null;
-  browser: string | null;
-  referrer: string | null;
-  created_at: string;
-}
-
-interface Session {
-  duration_seconds: number | null;
-  pages_visited: number;
-  country: string | null;
-  device_type: string | null;
-  referrer: string | null;
-  started_at: string;
-}
 
 interface Stats {
   totalVisits: number;
@@ -346,7 +326,7 @@ export function TrafficAdmin() {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {stats.topCountries.map((entry, index) => (
+                    {stats.topCountries.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
@@ -376,7 +356,7 @@ export function TrafficAdmin() {
                     fill="#8884d8"
                     dataKey="value"
                   >
-                    {stats.deviceStats.map((entry, index) => (
+                    {stats.deviceStats.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>

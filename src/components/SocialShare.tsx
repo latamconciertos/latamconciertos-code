@@ -88,15 +88,6 @@ export function SocialShare({ url, title, setlistData }: SocialShareProps) {
     }
   };
 
-  const handleShare = (shareUrl: string) => {
-    // Si hay datos de setlist, generar imagen primero
-    if (setlistData) {
-      generateSetlistImage();
-    } else {
-      window.open(shareUrl, '_blank', 'width=600,height=400');
-    }
-  };
-
   const downloadImage = () => {
     if (!generatedImageUrl) return;
 

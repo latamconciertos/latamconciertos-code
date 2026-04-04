@@ -16,7 +16,6 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
 // Lazy loaded routes
 
-const Index = lazy(() => import("./pages/Index"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Artists = lazy(() => import("./pages/Artists"));
@@ -147,7 +146,7 @@ const AppContent = () => {
         }}
         countries={countries}
         cities={cities}
-        onSave={saveProfile}
+        onSave={saveProfile as any}
         isSaving={isSaving}
       />
     </>

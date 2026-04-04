@@ -95,7 +95,7 @@ export function useConcertDetail(slug: string | undefined) {
       if (data.artists?.name) {
         artistImage = await spotifyService.getArtistImage(
           data.artists.name,
-          data.artists.photo_url
+          data.artists.photo_url ?? undefined
         );
       }
 

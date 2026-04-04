@@ -138,21 +138,6 @@ export const TicketPriceExtractor = ({
     reader.readAsDataURL(file);
   };
 
-  const getAvailabilityBadge = (availability?: string) => {
-    const status = availability?.toLowerCase() || '';
-
-    if (status.includes('agotado') || status.includes('sold')) {
-      return <Badge variant="destructive">🔴 Agotado</Badge>;
-    }
-    if (status.includes('poca') || status.includes('few') || status.includes('última')) {
-      return <Badge className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100">🟡 Pocas unidades</Badge>;
-    }
-    if (status.includes('próxima') || status.includes('soon')) {
-      return <Badge variant="secondary">⏳ Próximamente</Badge>;
-    }
-    return <Badge className="bg-green-100 text-green-800 hover:bg-green-100">🟢 Disponible</Badge>;
-  };
-
   const generatePriceTableHtml = (prices: TicketPrice[], title: string): string => {
     if (!prices || prices.length === 0) return '';
 
@@ -210,7 +195,7 @@ export const TicketPriceExtractor = ({
 
     let sourceDomain = '';
     try {
-      sourceDomain = new URL(extractedData.source_url).hostname.replace('www.', '');
+      sourceDomain = new URL(extractedData.source_url || '').hostname.replace('www.', '');
     } catch {
       sourceDomain = 'fuente oficial';
     }

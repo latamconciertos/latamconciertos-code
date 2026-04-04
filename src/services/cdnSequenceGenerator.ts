@@ -83,10 +83,11 @@ export class CDNSequenceGenerator {
                     }
 
                     // Add strobeColor2 and strobeColor3 to each block in the sequence
-                    const sequenceWithStrobeColors = (colorSeq.sequence as any[]).map(block => ({
+                    const colorSeqAny = colorSeq as any;
+                    const sequenceWithStrobeColors = (colorSeqAny.sequence as any[]).map((block: any) => ({
                         ...block,
-                        strobeColor2: block.strobeColor2 || colorSeq.strobe_color_2 || '#FFFFFF',
-                        strobeColor3: block.strobeColor3 || colorSeq.strobe_color_3 || undefined
+                        strobeColor2: block.strobeColor2 || colorSeqAny.strobe_color_2 || '#FFFFFF',
+                        strobeColor3: block.strobeColor3 || colorSeqAny.strobe_color_3 || undefined
                     }));
 
                     songSequences.push({
@@ -94,8 +95,8 @@ export class CDNSequenceGenerator {
                         song_name: song.song_name,
                         artist_name: song.artist_name,
                         duration_seconds: song.duration_seconds,
-                        mode: colorSeq.mode as 'fixed' | 'strobe',
-                        strobeSpeed: colorSeq.strobe_speed || 80,
+                        mode: colorSeqAny.mode as 'fixed' | 'strobe',
+                        strobeSpeed: colorSeqAny.strobe_speed || 80,
                         sequence: sequenceWithStrobeColors,
                     });
                 }
@@ -136,8 +137,6 @@ export class CDNSequenceGenerator {
 
             // Upload to Supabase Storage
             const uploadedUrls = await CDNStorageUploader.uploadProjectSequences(sequences);
-
-            console.log(`✅ Generated and uploaded ${sequences.length} sections for project ${projectId}`);
 
             return uploadedUrls;
         } catch (error) {

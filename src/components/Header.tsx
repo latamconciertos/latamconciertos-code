@@ -24,27 +24,23 @@ const Header = ({ visible = true }: HeaderProps) => {
   const [user, setUser] = useState<SupabaseUser | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [userName, setUserName] = useState<string>("");
-  const [pendingNotifications, setPendingNotifications] = useState(0);
+  const [pendingNotifications] = useState(0);
   const [experienciasOpen, setExperienciasOpen] = useState(false);
   const [miCuentaOpen, setMiCuentaOpen] = useState(false);
   const { theme, setTheme } = useTheme() || { theme: 'system', setTheme: () => { } };
   const { logout } = useAuth();
 
   useEffect(() => {
-    console.log('[Header] Initializing auth check');
-
     const checkAuth = async () => {
       try {
         const {
           data: { session },
         } = await supabase.auth.getSession();
-        console.log('[Header] Session check:', session?.user?.email || 'No user');
         setUser(session?.user ?? null);
 
         if (session?.user) {
           const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", session.user.id);
           const isAdminUser = roles?.some((r) => r.role === "admin") || false;
-          console.log('[Header] Admin status:', isAdminUser);
           setIsAdmin(isAdminUser);
 
           // Obtener nombre del usuario
@@ -70,9 +66,7 @@ const Header = ({ visible = true }: HeaderProps) => {
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('[Header] Auth state changed:', event, session?.user?.email || 'No user');
-
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
 
       if (session?.user) {
@@ -80,7 +74,6 @@ const Header = ({ visible = true }: HeaderProps) => {
           try {
             const { data: roles } = await supabase.from("user_roles").select("role").eq("user_id", session.user.id);
             const isAdminUser = roles?.some((r) => r.role === "admin") || false;
-            console.log('[Header] Admin status updated:', isAdminUser);
             setIsAdmin(isAdminUser);
 
             const { data: profile } = await supabase
@@ -107,7 +100,6 @@ const Header = ({ visible = true }: HeaderProps) => {
     });
 
     return () => {
-      console.log('[Header] Cleaning up auth subscription');
       subscription.unsubscribe();
     };
   }, []);

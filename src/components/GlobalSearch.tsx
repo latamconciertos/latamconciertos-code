@@ -11,13 +11,13 @@ interface SearchResults {
     id: string;
     name: string;
     slug: string;
-    photo_url?: string;
+    photo_url?: string | null;
   }>;
   concerts: Array<{
     id: string;
     title: string;
     slug: string;
-    date: string;
+    date: string | null;
     venue_name?: string;
     artist_name?: string;
   }>;
@@ -25,7 +25,7 @@ interface SearchResults {
     id: string;
     title: string;
     slug: string;
-    published_at: string;
+    published_at: string | null;
   }>;
 }
 
@@ -93,13 +93,13 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
 
         setResults({
           artists: artistsData || [],
-          concerts: concertsData?.map(c => ({
+          concerts: concertsData?.map((c: any) => ({
             id: c.id,
             title: c.title,
             slug: c.slug,
             date: c.date,
-            venue_name: c.venues?.name,
-            artist_name: c.artists?.name,
+            venue_name: c.venues?.name ?? undefined,
+            artist_name: c.artists?.name ?? undefined,
           })) || [],
           news: newsData || [],
         });
@@ -225,7 +225,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
                       <div className="flex flex-wrap gap-x-2 text-xs text-muted-foreground">
                         {concert.artist_name && <span>{concert.artist_name}</span>}
                         {concert.venue_name && <span>• {concert.venue_name}</span>}
-                        <span>• {formatDisplayDate(concert.date)}</span>
+                        {concert.date && <span>• {formatDisplayDate(concert.date)}</span>}
                       </div>
                     </div>
                   </Link>
@@ -255,7 +255,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
                     <div className="flex-1 min-w-0">
                       <p className="font-medium line-clamp-2">{article.title}</p>
                       <p className="text-xs text-muted-foreground">
-                        {formatDisplayDate(article.published_at)}
+                        {article.published_at ? formatDisplayDate(article.published_at) : ''}
                       </p>
                     </div>
                   </Link>

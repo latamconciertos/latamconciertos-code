@@ -11,7 +11,6 @@ import { spotifyService, SpotifyTrack } from '@/lib/spotify';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface SetlistSong {
   id: string;
@@ -542,7 +541,7 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
                   <CardContent className="p-4">
                     <div className="flex items-center gap-4">
                       {track.album.images[0] && (
-                        <img src={track.album.images[0].url} alt={track.album.name} className="w-12 h-12 rounded" />
+                        <img src={track.album.images[0].url} alt={track.album.name} className="w-12 h-12 rounded" loading="lazy" decoding="async" width={48} height={48} />
                       )}
                       <div className="flex-1">
                         <h4 className="font-semibold">{track.name}</h4>

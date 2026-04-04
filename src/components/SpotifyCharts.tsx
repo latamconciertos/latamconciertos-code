@@ -43,10 +43,10 @@ export const SpotifyCharts = () => {
         }
 
         // Convert database tracks to ChartTrack format
-        const chartTracks: ChartTrack[] = tracksData.map(track => ({
+        const chartTracks: ChartTrack[] = (tracksData as any[]).map(track => ({
           id: track.track_id,
           name: track.track_name,
-          artists: track.artist_names.split(', ').map(name => ({
+          artists: track.artist_names.split(', ').map((name: string) => ({
             name
           })),
           album: {

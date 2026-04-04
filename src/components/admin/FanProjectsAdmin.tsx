@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Lightbulb, Plus, Edit, Trash2, Music, Eye } from 'lucide-react';
+import { Lightbulb, Plus, Edit, Trash2, Eye } from 'lucide-react';
 import { FanProjectDetailView } from './FanProjectDetailView';
 
 interface Concert {
@@ -79,7 +79,7 @@ export const FanProjectsAdmin = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setProjects(data || []);
+      setProjects((data || []) as FanProject[]);
     } catch (error) {
       console.error('Error loading projects:', error);
       toast({
@@ -106,7 +106,7 @@ export const FanProjectsAdmin = () => {
         .limit(50);
 
       if (error) throw error;
-      setConcerts(data || []);
+      setConcerts((data || []) as Concert[]);
     } catch (error) {
       console.error('Error loading concerts:', error);
     }

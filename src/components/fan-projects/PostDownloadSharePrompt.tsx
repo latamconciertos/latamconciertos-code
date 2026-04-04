@@ -2,13 +2,8 @@ import { useState, useEffect } from 'react';
 import {
     AlertDialog,
     AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { Sparkles, Instagram, Music2, Heart, X } from 'lucide-react';
+import { Sparkles, Instagram, Heart, X } from 'lucide-react';
 import { SocialImageGenerator } from '@/services/socialImageGenerator';
 import {
     shareToInstagramStories,

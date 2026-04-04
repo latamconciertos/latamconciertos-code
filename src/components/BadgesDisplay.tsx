@@ -41,7 +41,7 @@ const BadgesDisplay = ({ userId }: BadgesDisplayProps) => {
         .order('criteria_value->count', { ascending: true });
 
       if (badgesError) throw badgesError;
-      setAllBadges(badges || []);
+      setAllBadges((badges as Badge[]) || []);
 
       // Obtener insignias del usuario
       const { data: userBadgesData, error: userBadgesError } = await supabase
@@ -53,7 +53,7 @@ const BadgesDisplay = ({ userId }: BadgesDisplayProps) => {
         .eq('user_id', userId);
 
       if (userBadgesError) throw userBadgesError;
-      setUserBadges(userBadgesData || []);
+      setUserBadges((userBadgesData as unknown as UserBadge[]) || []);
     } catch (error) {
       console.error('Error fetching badges:', error);
     } finally {

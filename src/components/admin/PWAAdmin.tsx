@@ -54,7 +54,7 @@ export function PWAAdmin() {
         .single();
 
       if (error) throw error;
-      setSettings(data);
+      setSettings(data as any);
     } catch (error) {
       console.error('Error loading PWA settings:', error);
     } finally {
@@ -127,7 +127,7 @@ export function PWAAdmin() {
       const { error: updateError } = await supabase
         .from('pwa_settings')
         .update({ [updateField]: publicUrl })
-        .eq('id', settings?.id);
+        .eq('id', settings?.id ?? '');
 
       if (updateError) throw updateError;
 
@@ -163,7 +163,7 @@ export function PWAAdmin() {
           theme_color: formData.get('theme_color') as string,
           background_color: formData.get('background_color') as string,
         })
-        .eq('id', settings?.id);
+        .eq('id', settings?.id ?? '');
 
       if (error) throw error;
 
@@ -340,14 +340,17 @@ export function PWAAdmin() {
               <div className="border rounded-lg p-4 bg-muted/20">
                 <div className="flex items-center justify-center h-48 mb-4">
                   {settings?.icon_192_url ? (
-                    <img 
-                      src={settings.icon_192_url} 
-                      alt="PWA Icon 192x192" 
+                    <img
+                      src={settings.icon_192_url}
+                      alt="PWA Icon 192x192"
                       className="max-h-full max-w-full object-contain"
+                      decoding="async"
+                      width={192}
+                      height={192}
                     />
                   ) : (
                     <div className="flex items-center justify-center h-full w-full">
-                      <img src="/pwa-icon-192.png" alt="Current PWA Icon" className="max-h-full" />
+                      <img src="/pwa-icon-192.png" alt="Current PWA Icon" className="max-h-full" decoding="async" width={192} height={192} />
                     </div>
                   )}
                 </div>
@@ -378,14 +381,17 @@ export function PWAAdmin() {
               <div className="border rounded-lg p-4 bg-muted/20">
                 <div className="flex items-center justify-center h-48 mb-4">
                   {settings?.icon_512_url ? (
-                    <img 
-                      src={settings.icon_512_url} 
-                      alt="PWA Icon 512x512" 
+                    <img
+                      src={settings.icon_512_url}
+                      alt="PWA Icon 512x512"
                       className="max-h-full max-w-full object-contain"
+                      decoding="async"
+                      width={512}
+                      height={512}
                     />
                   ) : (
                     <div className="flex items-center justify-center h-full w-full">
-                      <img src="/pwa-icon-512.png" alt="Current PWA Icon" className="max-h-full" />
+                      <img src="/pwa-icon-512.png" alt="Current PWA Icon" className="max-h-full" decoding="async" width={512} height={512} />
                     </div>
                   )}
                 </div>

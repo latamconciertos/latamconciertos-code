@@ -50,7 +50,7 @@ export function useConcertBySlugDirect(slug: string | null) {
       if (data.artists?.name) {
         artistImage = await spotifyService.getArtistImage(
           data.artists.name,
-          data.artists.photo_url
+          data.artists.photo_url ?? undefined
         );
       }
 
@@ -149,13 +149,13 @@ export function useConcertsPage(filters: ConcertPageFilters) {
 
       if (genre) {
         // First, get spotify genres that map to this main genre
-        const { data: genreMappings } = await supabase
+        const { data: genreMappings } = await (supabase as any)
           .from('genre_mappings')
           .select('spotify_genre')
-          .eq('main_genre', genre);
+          .eq('main_genre', genre) as any;
 
         if (genreMappings && genreMappings.length > 0) {
-          const spotifyGenres = genreMappings.map(g => g.spotify_genre.toLowerCase());
+          const spotifyGenres = genreMappings.map((g: any) => g.spotify_genre.toLowerCase());
 
           // Get artists that have any of these genres
           const { data: artists } = await supabase
@@ -257,7 +257,7 @@ export function useConcertsPage(filters: ConcertPageFilters) {
           if (concert.artists?.name) {
             const artistImage = await spotifyService.getArtistImage(
               concert.artists.name,
-              concert.artists.photo_url
+              concert.artists.photo_url ?? undefined
             );
             return { ...concert, artist_image_url: artistImage };
           }

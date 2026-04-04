@@ -11,7 +11,7 @@ interface UserSearchCardProps {
   isLoading?: boolean;
 }
 
-export function UserSearchCard({ user, onSendRequest, onCancelRequest, isLoading }: UserSearchCardProps) {
+export function UserSearchCard({ user, onSendRequest, onCancelRequest: _onCancelRequest, isLoading }: UserSearchCardProps) {
   const displayName = user.first_name && user.last_name 
     ? `${user.first_name} ${user.last_name}`
     : user.username || 'Usuario';

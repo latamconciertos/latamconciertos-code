@@ -48,12 +48,12 @@ const FestivalAttendanceButtons = ({
 
             setUser(session.user);
 
-            const { data, error } = await supabase
+            const { data, error } = await (supabase as any)
                 .from('favorite_festivals')
                 .select('is_favorite, attendance_type')
                 .eq('user_id', session.user.id)
                 .eq('festival_id', festivalId)
-                .maybeSingle();
+                .maybeSingle() as { data: any; error: any };
 
             if (error && error.code !== 'PGRST116') {
                 throw error;
@@ -83,7 +83,7 @@ const FestivalAttendanceButtons = ({
         try {
             const newIsFavorite = !interaction.isFavorite;
 
-            const { data: existing } = await supabase
+            const { data: existing } = await (supabase as any)
                 .from('favorite_festivals')
                 .select('id')
                 .eq('user_id', user.id)
@@ -92,20 +92,20 @@ const FestivalAttendanceButtons = ({
 
             if (existing) {
                 if (!newIsFavorite && !interaction.attendanceType) {
-                    await supabase
+                    await (supabase as any)
                         .from('favorite_festivals')
                         .delete()
                         .eq('user_id', user.id)
                         .eq('festival_id', festivalId);
                 } else {
-                    await supabase
+                    await (supabase as any)
                         .from('favorite_festivals')
                         .update({ is_favorite: newIsFavorite })
                         .eq('user_id', user.id)
                         .eq('festival_id', festivalId);
                 }
             } else {
-                await supabase
+                await (supabase as any)
                     .from('favorite_festivals')
                     .insert({
                         user_id: user.id,
@@ -136,7 +136,7 @@ const FestivalAttendanceButtons = ({
         try {
             const newType = interaction.attendanceType === type ? null : type;
 
-            const { data: existing } = await supabase
+            const { data: existing } = await (supabase as any)
                 .from('favorite_festivals')
                 .select('id')
                 .eq('user_id', user.id)
@@ -145,20 +145,20 @@ const FestivalAttendanceButtons = ({
 
             if (existing) {
                 if (!interaction.isFavorite && !newType) {
-                    await supabase
+                    await (supabase as any)
                         .from('favorite_festivals')
                         .delete()
                         .eq('user_id', user.id)
                         .eq('festival_id', festivalId);
                 } else {
-                    await supabase
+                    await (supabase as any)
                         .from('favorite_festivals')
                         .update({ attendance_type: newType })
                         .eq('user_id', user.id)
                         .eq('festival_id', festivalId);
                 }
             } else if (newType) {
-                await supabase
+                await (supabase as any)
                     .from('favorite_festivals')
                     .insert({
                         user_id: user.id,

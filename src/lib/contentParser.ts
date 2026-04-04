@@ -33,11 +33,12 @@ export const parseContentWithMedia = (content: string, mediaItems: MediaItem[]):
     if (item.media_type === 'image') {
       replacement = `
         <figure class="my-8">
-          <img 
-            src="${safeMediaUrl}" 
-            alt="${safeCaption || 'Imagen del artículo'}" 
+          <img
+            src="${safeMediaUrl}"
+            alt="${safeCaption || 'Imagen del artículo'}"
             class="w-full rounded-lg shadow-lg"
             loading="lazy"
+            decoding="async"
           />
           ${safeCaption ? `<figcaption class="text-center text-sm text-muted-foreground mt-2">${safeCaption}</figcaption>` : ''}
         </figure>

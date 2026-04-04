@@ -41,7 +41,7 @@ export const FloatingAIChat = () => {
     };
     initAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUserId(session?.user?.id ?? null);
       if (!session?.user) {
         setIsOpen(false);

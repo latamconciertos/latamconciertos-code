@@ -27,7 +27,7 @@ const FanProjectLightMode = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [showBrightnessWarning, setShowBrightnessWarning] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
-  const [sectionId, setSectionId] = useState<string>('');
+  const [_sectionId, setSectionId] = useState<string>('');
   const animationFrameRef = useRef<number>();
   const wakeLockRef = useRef<any>(null);
 
@@ -82,7 +82,6 @@ const FanProjectLightMode = () => {
       try {
         if ('wakeLock' in navigator) {
           wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
-          console.log('Wake Lock activated');
         }
       } catch (error) {
         console.error('Wake Lock error:', error);

@@ -8,8 +8,7 @@ import { AlertTriangle, RefreshCw, Home, LogIn } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
 import { AppError } from '@/lib/errors/AppError';
-import { ErrorCode } from '@/lib/errors/errorCodes';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 export interface ErrorFallbackProps {
   error: AppError;

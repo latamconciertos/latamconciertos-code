@@ -52,9 +52,7 @@ export const ArtistFormDialog = ({
 
         setIsExtractingGenres(true);
         try {
-            console.log('Extrayendo géneros para:', formData.name);
             const artistData = await spotifyService.getArtistData(formData.name);
-            console.log('Datos recibidos de Spotify:', artistData);
 
             if (artistData && artistData.genres && artistData.genres.length > 0) {
                 onFormDataChange({

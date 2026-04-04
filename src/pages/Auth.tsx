@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { User } from '@supabase/supabase-js';
 import logo from '@/assets/logo-principal.png';
 import { authSchema } from '@/lib/validation';
 import { z } from 'zod';
@@ -19,7 +18,6 @@ const Auth = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -41,8 +39,7 @@ const Auth = () => {
   useEffect(() => {
     // Check if user is already logged in
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setUser(session?.user ?? null);
+      (_event, session) => {
         if (session?.user) {
           checkRoleAndRedirect(session.user.id);
         }
@@ -51,7 +48,6 @@ const Auth = () => {
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
       if (session?.user) {
         checkRoleAndRedirect(session.user.id);
       }
@@ -147,7 +143,7 @@ const Auth = () => {
         <Card className="w-full max-w-md bg-card/80 backdrop-blur-sm border-border/50">
           <CardHeader className="space-y-4">
             <div className="flex justify-center">
-              <img src={logo} alt="Conciertos LATAM" className="h-40 w-auto" />
+              <img src={logo} alt="Conciertos LATAM" className="h-40 w-auto" decoding="async" width={160} height={160} />
             </div>
             <CardTitle className="text-2xl text-center">
               {isLogin ? 'Iniciar Sesión' : 'Registrarse'}

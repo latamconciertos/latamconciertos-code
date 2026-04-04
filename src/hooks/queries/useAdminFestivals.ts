@@ -183,7 +183,7 @@ export function useUpdateLineupItem() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, festivalId, data }: { id: string; festivalId: string; data: Partial<FestivalLineupInsert> }) => {
+    mutationFn: async ({ id, festivalId: _festivalId, data }: { id: string; festivalId: string; data: Partial<FestivalLineupInsert> }) => {
       const result = await festivalService.updateLineupItem(id, data);
       if (!result.success) throw new Error(result.error || 'Error updating lineup item');
       return result.data;
@@ -205,7 +205,7 @@ export function useRemoveFromLineup() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, festivalId }: { id: string; festivalId: string }) => {
+    mutationFn: async ({ id, festivalId: _festivalId }: { id: string; festivalId: string }) => {
       const result = await festivalService.removeFromLineup(id);
       if (!result.success) throw new Error(result.error || 'Error removing from lineup');
       return result.data;

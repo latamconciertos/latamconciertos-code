@@ -65,7 +65,7 @@ export const NewsAdmin = () => {
         variant: "destructive",
       });
     } else {
-      setArticles(data || []);
+      setArticles((data || []) as NewsArticle[]);
     }
   };
 

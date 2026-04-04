@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Home, Newspaper, Music, MapPin, Calendar, Users, Smartphone,
   Video, Megaphone, TrendingUp, BarChart3, Building2, FileText,
@@ -96,10 +96,6 @@ export function AdminSidebar({ activeTab, onTabChange }: AdminSidebarProps) {
   const isCollapsed = state === 'collapsed';
 
   // Find which group contains the active tab
-  const activeGroupIndex = menuGroups.findIndex(group =>
-    group.items.some(item => item.tab === activeTab)
-  );
-
   // Initialize all groups as collapsed - no localStorage persistence for initial state
   // This ensures a clean, organized sidebar on every page load
   const [expandedGroups, setExpandedGroups] = useState<Record<number, boolean>>({});

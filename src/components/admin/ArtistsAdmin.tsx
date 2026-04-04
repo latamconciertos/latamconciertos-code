@@ -52,7 +52,6 @@ export const ArtistsAdmin = () => {
 
     // Zod validation
     try {
-      console.log('Validando datos del artista:', artistData);
       artistSchema.parse(artistData);
     } catch (err) {
       if (err instanceof ZodError) {
@@ -161,7 +160,7 @@ export const ArtistsAdmin = () => {
         </div>
       ) : (
         <ArtistsTable
-          artists={artists}
+          artists={(artists ?? []) as any}
           onEdit={handleEdit}
           onDelete={handleDelete}
         />

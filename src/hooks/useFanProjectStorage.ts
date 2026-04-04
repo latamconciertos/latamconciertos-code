@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { CDNSequenceGenerator } from '@/services/cdnSequenceGenerator';
 import type { CDNProjectSequences } from '@/types/cdnSequence';
@@ -81,7 +81,7 @@ export const useFanProjectStorage = () => {
    * This is the original implementation, kept for backward compatibility
    */
   const loadSequencesFromSupabase = async (
-    projectId: string,
+    _projectId: string,
     songId: string,
     sectionId: string
   ): Promise<{ sequence: ColorBlock[]; mode: 'fixed' | 'strobe' } | null> => {
@@ -96,7 +96,7 @@ export const useFanProjectStorage = () => {
       if (error) throw error;
 
       return {
-        sequence: data.sequence as ColorBlock[],
+        sequence: data.sequence as unknown as ColorBlock[],
         mode: data.mode as 'fixed' | 'strobe',
       };
     } catch (error) {

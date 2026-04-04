@@ -64,8 +64,7 @@ export function useVenueDetail(slug: string | undefined) {
                 .single();
 
             if (error) throw error;
-            console.log('Venue detail loaded:', { slug, venueId: data?.id, venueName: data?.name });
-            return data as VenueDetail;
+            return data as unknown as VenueDetail;
         },
         enabled: !!slug,
     });
@@ -100,13 +99,6 @@ export function useVenueDetailConcerts(venueId: string | undefined) {
                 .order('date', { ascending: true });
 
 
-            console.log('Venue detail concerts query:', {
-                venueId,
-                dataLength: data?.length || 0,
-                data,
-                error,
-                query: `SELECT * FROM concerts WHERE venue_id = '${venueId}'`
-            });
             if (error) throw error;
             return (data || []) as VenueDetailConcert[];
         },

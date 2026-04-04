@@ -7,7 +7,7 @@
 
 import type { Database } from '@/integrations/supabase/types';
 import type { ArtistForConcert, ArtistBasic } from './artist';
-import type { VenueForConcert, VenueBasic } from './venue';
+import type { VenueForConcert } from './venue';
 import type { PromoterBasic } from './common';
 
 // =============================================================================

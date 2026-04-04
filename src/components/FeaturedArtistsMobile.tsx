@@ -34,10 +34,13 @@ const FeaturedArtistsMobile = () => {
             >
               <div className="relative">
                 <div className="w-16 h-16 rounded-full overflow-hidden ring-2 ring-primary p-0.5">
-                  <img 
-                    src={artist.photo_url || getDefaultImage()} 
+                  <img
+                    src={artist.photo_url || getDefaultImage()}
                     alt={artist.name}
                     className="w-full h-full object-cover rounded-full"
+                    decoding="async"
+                    width={64}
+                    height={64}
                   />
                 </div>
               </div>

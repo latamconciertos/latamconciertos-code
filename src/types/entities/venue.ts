@@ -6,7 +6,6 @@
  */
 
 import type { Database } from '@/integrations/supabase/types';
-import type { City, Country } from './common';
 
 // =============================================================================
 // Database Row Types (direct from Supabase)

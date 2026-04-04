@@ -34,16 +34,6 @@ const MyCalendar = () => {
 
   const { data: concerts = [], isLoading } = useMyCalendarConcerts(userId ?? undefined, activeTab);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-      weekday: 'short',
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
-  };
-
   const formatShortDate = (dateString: string) => {
     const date = new Date(dateString);
     return {

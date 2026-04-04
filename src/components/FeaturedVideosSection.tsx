@@ -3,7 +3,7 @@ import { Play, X, Video } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useFeaturedVideos } from '@/hooks/queries';
 import { Badge } from '@/components/ui/badge';
-import DOMPurify from 'dompurify';
+import { sanitizeEmbedCode } from '@/lib/sanitize';
 
 interface MediaItem {
   id: string;
@@ -39,13 +39,7 @@ const FeaturedVideosSection = () => {
 
   // Sanitize and prepare embed code for safe rendering
   const getSafeEmbedCode = (embedCode: string): string => {
-    // Sanitize the embed code
-    const sanitized = DOMPurify.sanitize(embedCode, {
-      ALLOWED_TAGS: ['iframe'],
-      ALLOWED_ATTR: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen', 'title', 'loading']
-    });
-
-    // Ensure iframe has proper attributes for responsive and lazy loading
+    const sanitized = sanitizeEmbedCode(embedCode);
     return sanitized
       .replace('<iframe', '<iframe loading="lazy" class="w-full h-full"')
       .replace(/width="[^"]*"/, '')

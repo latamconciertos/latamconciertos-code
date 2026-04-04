@@ -6,11 +6,10 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { Send, ArrowLeft, Users, ChevronRight, Calendar } from 'lucide-react';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Separator } from '@/components/ui/separator';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { rateLimit } from '@/utils/rateLimit';
 
 interface Message {
   id: string;
@@ -88,7 +87,7 @@ export default function ConcertCommunityChat() {
         const { data: concertData } = await supabase
           .from('concerts')
           .select('title, date, image_url')
-          .eq('id', concertId)
+          .eq('id', concertId!)
           .single();
 
         if (concertData) {
@@ -103,14 +102,14 @@ export default function ConcertCommunityChat() {
         let { data: community } = await supabase
           .from('concert_communities')
           .select('id')
-          .eq('concert_id', concertId)
+          .eq('concert_id', concertId!)
           .single();
 
         if (!community) {
           const { data: newCommunity, error: createError } = await supabase
             .from('concert_communities')
             .insert([{
-              concert_id: concertId,
+              concert_id: concertId!,
               name: `Comunidad ${concertData?.title || 'Concierto'}`,
               description: 'Chat de la comunidad'
             }])
@@ -204,7 +203,7 @@ export default function ConcertCommunityChat() {
         })
       );
 
-      setMessages(messagesWithProfiles);
+      setMessages(messagesWithProfiles as any);
     }
   };
 
@@ -240,8 +239,6 @@ export default function ConcertCommunityChat() {
   };
 
   const subscribeToMessages = (communityId: string) => {
-    console.log('[Realtime] Subscribing to messages for community:', communityId);
-
     const channel = supabase
       .channel(`community-messages-${communityId}`)
       .on(
@@ -253,8 +250,6 @@ export default function ConcertCommunityChat() {
           filter: `community_id=eq.${communityId}`
         },
         async (payload) => {
-          console.log('[Realtime] New message received:', payload.new);
-
           const { data: profileData } = await supabase
             .from('profiles')
             .select('username, first_name, last_name')
@@ -269,24 +264,17 @@ export default function ConcertCommunityChat() {
             sender: profileData || { username: null, first_name: null, last_name: null }
           };
 
-          console.log('[Realtime] Adding message to state:', newMessage);
-
           setMessages((prev) => {
             // Evitar duplicados
             if (prev.some(msg => msg.id === newMessage.id)) {
-              console.log('[Realtime] Message already exists, skipping');
               return prev;
             }
-            console.log('[Realtime] Message added to chat');
             return [...prev, newMessage];
           });
         }
       )
       .subscribe((status) => {
-        console.log('[Realtime] Subscription status:', status);
-        if (status === 'SUBSCRIBED') {
-          console.log('[Realtime] ✅ Successfully subscribed to messages');
-        } else if (status === 'CHANNEL_ERROR') {
+        if (status === 'CHANNEL_ERROR') {
           console.error('[Realtime] ❌ Channel error - check RLS policies');
         } else if (status === 'TIMED_OUT') {
           console.error('[Realtime] ❌ Connection timed out');
@@ -294,7 +282,6 @@ export default function ConcertCommunityChat() {
       });
 
     return () => {
-      console.log('[Realtime] Unsubscribing from messages');
       supabase.removeChannel(channel);
     };
   };
@@ -377,7 +364,7 @@ export default function ConcertCommunityChat() {
           created_at: inserted.created_at,
           user_id: inserted.user_id,
           sender: { username: null, first_name: null, last_name: null }
-        } : m));
+        } as Message : m));
       }
     } catch (error) {
       console.error('Error sending message:', error);

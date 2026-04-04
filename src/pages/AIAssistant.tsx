@@ -1,35 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, Loader2, MessageCircle, LogIn, Plus, Menu, X, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { LogIn, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { linkifyText } from '@/lib/sanitize';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { generateConversationTitle } from '@/lib/ai/conversationUtils';
-import type { Message, Conversation } from '@/types/aiAssistant';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
+import type { Message } from '@/types/aiAssistant';
 import { useAIConversations } from '@/hooks/useAIConversations';
+import ConversationSidebar from '@/components/ai/ConversationSidebar';
+import ChatMessageList from '@/components/ai/ChatMessageList';
+import ChatInput from '@/components/ai/ChatInput';
+import WelcomeScreen from '@/components/ai/WelcomeScreen';
+import DeleteConversationDialog from '@/components/ai/DeleteConversationDialog';
 
 const AIAssistant = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -100,6 +85,21 @@ const AIAssistant = () => {
     }
   };
 
+  const handleDeleteRequest = (convId: string) => {
+    conversationHook.setConversationToDelete(convId);
+    conversationHook.setDeleteDialogOpen(true);
+  };
+
+  const handleRenameStart = (convId: string, title: string) => {
+    conversationHook.setRenamingConversation(convId);
+    conversationHook.setRenameValue(title);
+  };
+
+  const handleRenameCancel = () => {
+    conversationHook.setRenamingConversation(null);
+    conversationHook.setRenameValue('');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -138,27 +138,19 @@ const AIAssistant = () => {
     setIsLoading(true);
 
     try {
-      console.log('[AI Assistant] Starting message submission...');
-      console.log('[AI Assistant] User message:', userMessage);
-
       // 🔧 FIX: Crear conversación automáticamente si no existe
       let currentConversationId = conversationHook.conversationId;
 
       if (!currentConversationId) {
-        console.log('[AI Assistant] No active conversation, creating new one...');
         try {
           currentConversationId = await conversationHook.createConversationWithTitle(userId, userMessage);
-          console.log('[AI Assistant] Conversation created successfully:', currentConversationId);
         } catch (convError) {
           console.error('[AI Assistant] Error creating conversation:', convError);
           throw new Error('No se pudo crear la conversación');
         }
-      } else {
-        console.log('[AI Assistant] Using existing conversation:', currentConversationId);
       }
 
       // Guardar mensaje del usuario en la base de datos
-      console.log('[AI Assistant] Saving user message...');
       try {
         const { error: userMsgError } = await supabase.from('ai_messages').insert({
           conversation_id: currentConversationId,
@@ -170,16 +162,12 @@ const AIAssistant = () => {
           console.error('[AI Assistant] Error saving user message:', userMsgError);
           throw userMsgError;
         }
-        console.log('[AI Assistant] User message saved successfully');
       } catch (msgError) {
         console.error('[AI Assistant] Failed to save user message:', msgError);
         throw new Error('No se pudo guardar tu mensaje');
       }
 
       // Llamar a la Edge Function
-      console.log('[AI Assistant] Calling Edge Function...');
-      console.log('[AI Assistant] Messages being sent:', messages.length, 'messages');
-      console.log('[AI Assistant] Full messages array:', JSON.stringify(messages, null, 2));
       let response;
       try {
         response = await fetch(`https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/ai-concert-assistant`, {
@@ -194,8 +182,6 @@ const AIAssistant = () => {
           })
         });
 
-        console.log('[AI Assistant] Edge Function response status:', response.status);
-
         if (!response.ok) {
           const errorText = await response.text();
           console.error('[AI Assistant] Edge Function error response:', errorText);
@@ -207,7 +193,6 @@ const AIAssistant = () => {
       }
 
       const data = await response.json();
-      console.log('[AI Assistant] Response from AI assistant:', data);
 
       const assistantMessage = data.response;
 
@@ -220,7 +205,6 @@ const AIAssistant = () => {
       setMessages(prev => [...prev, { role: 'bot' as const, content: assistantMessage }]);
 
       // Guardar respuesta del asistente
-      console.log('[AI Assistant] Saving assistant message to database...');
       try {
         const { error: saveError } = await supabase.from('ai_messages').insert({
           conversation_id: currentConversationId,
@@ -234,8 +218,6 @@ const AIAssistant = () => {
             title: "Advertencia",
             description: "La respuesta no se pudo guardar en el historial",
           });
-        } else {
-          console.log('[AI Assistant] Assistant message saved successfully');
         }
       } catch (saveError) {
         console.error('[AI Assistant] Failed to save assistant message:', saveError);
@@ -243,7 +225,6 @@ const AIAssistant = () => {
       }
 
       // Actualizar timestamp de la conversación
-      console.log('[AI Assistant] Updating conversation timestamp...');
       try {
         await supabase
           .from('ai_conversations')
@@ -255,7 +236,6 @@ const AIAssistant = () => {
       }
 
       conversationHook.loadConversations(userId);
-      console.log('[AI Assistant] Message submission completed successfully');
     } catch (error: any) {
       console.error('[AI Assistant] Fatal error in handleSubmit:', error);
       toast({
@@ -272,6 +252,21 @@ const AIAssistant = () => {
     }
   };
 
+  const sidebarProps = {
+    conversations: conversationHook.conversations,
+    activeConversationId: conversationHook.conversationId,
+    onCreateNew: handleCreateNewConversation,
+    onLoadConversation: handleLoadConversation,
+    renamingConversation: conversationHook.renamingConversation,
+    renameValue: conversationHook.renameValue,
+    onRenameValueChange: conversationHook.setRenameValue,
+    onRenameSubmit: conversationHook.handleRenameConversation,
+    onRenameStart: handleRenameStart,
+    onRenameCancel: handleRenameCancel,
+    onDeleteRequest: handleDeleteRequest,
+    isDisabled: !userId,
+  };
+
   return (
     <>
       <SEO
@@ -286,200 +281,18 @@ const AIAssistant = () => {
         <main className="flex-1 flex pt-20 md:pt-24 overflow-hidden">
           {/* Sidebar para desktop */}
           <aside className="hidden lg:flex w-64 border-r border-border bg-card/50 flex-col h-full">
-            <div className="p-4 border-b border-border">
-              <Button
-                onClick={handleCreateNewConversation}
-                className="w-full"
-                disabled={!userId}
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Nueva conversación
-              </Button>
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <ScrollArea className="h-full">
-                <div className="p-4 space-y-2">
-                  {conversationHook.conversations.map((conv) => (
-                    <div
-                      key={conv.id}
-                      className={`relative group p-3 rounded-lg hover:bg-accent transition-colors ${conversationHook.conversationId === conv.id ? 'bg-accent' : ''}`}
-                    >
-                      {conversationHook.renamingConversation === conv.id ? (
-                        <div className="flex gap-2">
-                          <Input
-                            value={conversationHook.renameValue}
-                            onChange={(e) => conversationHook.setRenameValue(e.target.value)}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') conversationHook.handleRenameConversation(conv.id);
-                              if (e.key === 'Escape') {
-                                conversationHook.setRenamingConversation(null);
-                                conversationHook.setRenameValue('');
-                              }
-                            }}
-                            className="h-8 text-sm"
-                            autoFocus
-                          />
-                          <Button
-                            size="sm"
-                            onClick={() => conversationHook.handleRenameConversation(conv.id)}
-                          >
-                            <Pencil className="h-3 w-3" />
-                          </Button>
-                        </div>
-                      ) : (
-                        <div
-                          onClick={() => handleLoadConversation(conv.id)}
-                          className="cursor-pointer pr-8"
-                        >
-                          <p className="text-sm font-medium truncate">{conv.title}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {new Date(conv.updated_at).toLocaleDateString()}
-                          </p>
-                        </div>
-                      )}
-
-                      {conversationHook.renamingConversation !== conv.id && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="absolute right-2 top-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => {
-                                conversationHook.setRenamingConversation(conv.id);
-                                conversationHook.setRenameValue(conv.title);
-                              }}
-                            >
-                              <Pencil className="h-4 w-4 mr-2" />
-                              Renombrar
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => {
-                                conversationHook.setConversationToDelete(conv.id);
-                                conversationHook.setDeleteDialogOpen(true);
-                              }}
-                              className="text-destructive focus:text-destructive"
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Eliminar
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </div>
+            <ConversationSidebar {...sidebarProps} variant="desktop" />
           </aside>
 
           {/* Sidebar móvil */}
           <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
             <SheetContent side="left" className="w-[280px] p-0 flex flex-col">
-              <div className="p-4 border-b border-border shrink-0">
-                <Button
-                  onClick={handleCreateNewConversation}
-                  className="w-full"
-                  disabled={!userId}
-                >
-                  <Plus className="h-4 w-4 mr-2" />
-                  Nueva conversación
-                </Button>
-              </div>
-              <div className="flex-1 overflow-hidden">
-                <ScrollArea className="h-full">
-                  <div className="p-4 space-y-2">
-                    {conversationHook.conversations.map((conv) => (
-                      <div
-                        key={conv.id}
-                        className={`relative group p-3 rounded-lg hover:bg-accent transition-colors ${conversationHook.conversationId === conv.id ? 'bg-accent' : ''}`}
-                        onTouchStart={() => conversationHook.handleLongPressStart(conv.id, conv.title)}
-                        onTouchEnd={conversationHook.handleLongPressEnd}
-                        onMouseDown={() => conversationHook.handleLongPressStart(conv.id, conv.title)}
-                        onMouseUp={conversationHook.handleLongPressEnd}
-                        onMouseLeave={conversationHook.handleLongPressEnd}
-                      >
-                        {conversationHook.renamingConversation === conv.id ? (
-                          <div className="flex gap-2">
-                            <Input
-                              value={conversationHook.renameValue}
-                              onChange={(e) => conversationHook.setRenameValue(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') conversationHook.handleRenameConversation(conv.id);
-                                if (e.key === 'Escape') {
-                                  conversationHook.setRenamingConversation(null);
-                                  conversationHook.setRenameValue('');
-                                }
-                              }}
-                              className="h-8 text-sm"
-                              autoFocus
-                            />
-                            <Button
-                              size="sm"
-                              onClick={() => conversationHook.handleRenameConversation(conv.id)}
-                            >
-                              <Pencil className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <div
-                            onClick={() => handleLoadConversation(conv.id)}
-                            className="cursor-pointer pr-8"
-                          >
-                            <p className="text-sm font-medium truncate">{conv.title}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {new Date(conv.updated_at).toLocaleDateString()}
-                            </p>
-                          </div>
-                        )}
-
-                        {conversationHook.renamingConversation !== conv.id && (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="absolute right-2 top-2 h-7 w-7"
-                                onClick={(e) => e.stopPropagation()}
-                              >
-                                <MoreVertical className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  conversationHook.setRenamingConversation(conv.id);
-                                  conversationHook.setRenameValue(conv.title);
-                                }}
-                              >
-                                <Pencil className="h-4 w-4 mr-2" />
-                                Renombrar
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onClick={() => {
-                                  conversationHook.setConversationToDelete(conv.id);
-                                  conversationHook.setDeleteDialogOpen(true);
-                                }}
-                                className="text-destructive focus:text-destructive"
-                              >
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Eliminar
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </ScrollArea>
-              </div>
+              <ConversationSidebar
+                {...sidebarProps}
+                variant="mobile"
+                onLongPressStart={conversationHook.handleLongPressStart}
+                onLongPressEnd={conversationHook.handleLongPressEnd}
+              />
             </SheetContent>
           </Sheet>
 
@@ -510,45 +323,12 @@ const AIAssistant = () => {
 
                 {/* Mostrar conversación o pantalla de inicio */}
                 {messages.length === 0 ? (
-                  <div className="flex-1 flex flex-col">
-                    {/* Header móvil con botón menú */}
-                    <div className="lg:hidden flex items-center justify-between py-2 mb-4">
-                      <Button variant="ghost" size="icon" onClick={() => setIsSidebarOpen(true)}>
-                        <Menu className="h-5 w-5" />
-                      </Button>
-                      <span className="text-sm text-muted-foreground">Historial</span>
-                      <div className="w-9" /> {/* Spacer para centrar */}
-                    </div>
-
-                    {/* Contenido centrado */}
-                    <div className="flex-1 flex items-center justify-center">
-                      <div className="text-center px-6 max-w-sm mx-auto">
-                        <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-6">
-                          <MessageCircle className="h-5 w-5 text-primary" />
-                          <span className="text-primary font-semibold">Asistente IA</span>
-                        </div>
-
-                        {/* Saludo simple y limpio */}
-                        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-                          ¡Hola{userName ? ` ${userName.includes('@') ? userName.split('@')[0] : userName}` : ''}!
-                        </h1>
-
-                        <p className="text-muted-foreground mb-8 leading-relaxed">
-                          Soy tu asistente para conciertos. Puedo ayudarte a encontrar el concierto perfecto, recomendarte hoteles cercanos y mucho más.
-                        </p>
-
-                        <Button
-                          onClick={handleCreateNewConversation}
-                          size="lg"
-                          disabled={!userId}
-                          className="px-8"
-                        >
-                          <Plus className="h-5 w-5 mr-2" />
-                          Iniciar conversación
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
+                  <WelcomeScreen
+                    userName={userName}
+                    onCreateConversation={handleCreateNewConversation}
+                    isDisabled={!userId}
+                    onOpenSidebar={() => setIsSidebarOpen(true)}
+                  />
                 ) : (
                   <>
                     {/* Botón menú móvil para chat activo */}
@@ -561,111 +341,21 @@ const AIAssistant = () => {
                     {/* Chat Container - Clean design without visible borders */}
                     <div className="flex flex-col overflow-hidden" style={{ maxHeight: 'calc(100vh - 140px)' }}>
                       {/* Messages Area with ScrollArea - Responsive height */}
-                      <div
-                        className="overflow-hidden"
-                        style={{
-                          height: window.innerWidth < 768 ? 'calc(100vh - 240px)' : 'calc(100vh - 180px)'
-                        }}
-                      >
-                        <ScrollArea className="h-full">
-                          <div className="max-w-3xl mx-auto px-6 py-4 space-y-4 min-h-full flex flex-col">
-                            {messages.length === 0 ? (
-                              <div className="flex-1 flex items-center justify-center">
-                                <div className="w-full max-w-2xl space-y-6">
-                                  <div className="text-center space-y-2">
-                                    <h3 className="text-lg font-semibold">¿En qué puedo ayudarte?</h3>
-                                    <p className="text-sm text-muted-foreground">Selecciona una pregunta o escribe la tuya</p>
-                                  </div>
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                    {[
-                                      '¿Qué conciertos hay próximamente?',
-                                      'Recomiéndame hoteles cerca del venue',
-                                      '¿Qué debo llevar a un concierto?',
-                                      '¿Cuándo es el próximo concierto de [artista]?'
-                                    ].map((suggestion, index) => (
-                                      <Button
-                                        key={index}
-                                        variant="outline"
-                                        className="text-left justify-start h-auto py-3 px-4 hover:bg-accent"
-                                        onClick={() => setInput(suggestion)}
-                                        disabled={isLoading}
-                                      >
-                                        <span className="text-sm text-muted-foreground">{suggestion}</span>
-                                      </Button>
-                                    ))}
-                                  </div>
-                                </div>
-                              </div>
-                            ) : (
-                              <>
-                                {messages.map((message, index) => (
-                                  <div
-                                    key={index}
-                                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                                  >
-                                    <div
-                                      className={`max-w-[80%] rounded-2xl px-4 py-3 ${message.role === 'user'
-                                        ? 'bg-primary text-primary-foreground'
-                                        : 'bg-card border border-border'
-                                        }`}
-                                    >
-                                      {message.role === 'bot' ? (
-                                        <div
-                                          className="text-sm whitespace-pre-wrap prose prose-sm max-w-none"
-                                          dangerouslySetInnerHTML={{
-                                            __html: linkifyText(message.content.replace(/\*\*/g, ''))
-                                          }}
-                                        />
-                                      ) : (
-                                        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                                      )}
-                                    </div>
-                                  </div>
-                                ))}
-                                {isLoading && (
-                                  <div className="flex justify-start">
-                                    <div className="bg-card border border-border rounded-2xl px-4 py-3">
-                                      <Loader2 className="h-5 w-5 animate-spin text-primary" />
-                                    </div>
-                                  </div>
-                                )}
-                                <div ref={messagesEndRef} />
-                              </>
-                            )}
-                          </div>
-                        </ScrollArea>
-                      </div>
-
+                      <ChatMessageList
+                        messages={messages}
+                        isLoading={isLoading}
+                        onSuggestionClick={setInput}
+                        messagesEndRef={messagesEndRef}
+                      />
 
                       {/* Input Area - ChatGPT style, fixed at bottom */}
-                      <div className="p-4 shrink-0">
-                        <div className="max-w-3xl mx-auto">
-                          <form onSubmit={handleSubmit} className="relative">
-                            <Input
-                              value={input}
-                              onChange={(e) => setInput(e.target.value)}
-                              placeholder="Escribe tu pregunta aquí..."
-                              disabled={isLoading}
-                              className="flex-1 pr-12 py-6 text-base rounded-3xl border-2 focus-visible:ring-1"
-                            />
-                            <Button
-                              type="submit"
-                              disabled={isLoading || !input.trim()}
-                              size="icon"
-                              className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full"
-                            >
-                              {isLoading ? (
-                                <Loader2 className="h-5 w-5 animate-spin" />
-                              ) : (
-                                <Send className="h-5 w-5" />
-                              )}
-                            </Button>
-                          </form>
-                        </div>
-                      </div>
+                      <ChatInput
+                        input={input}
+                        onInputChange={setInput}
+                        onSubmit={handleSubmit}
+                        isLoading={isLoading}
+                      />
                     </div>
-
-
                   </>
                 )}
               </div>
@@ -675,25 +365,11 @@ const AIAssistant = () => {
       </div>
 
       {/* Alert Dialog para confirmar eliminación */}
-      <AlertDialog open={conversationHook.deleteDialogOpen} onOpenChange={conversationHook.setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar conversación?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta acción no se puede deshacer. La conversación y todos sus mensajes serán eliminados permanentemente.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            >
-              Eliminar
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteConversationDialog
+        open={conversationHook.deleteDialogOpen}
+        onOpenChange={conversationHook.setDeleteDialogOpen}
+        onConfirm={handleDelete}
+      />
     </>
   );
 };

@@ -14,7 +14,6 @@ import type {
   SetlistWithConcert,
   PendingSetlistContribution,
   ServiceResponse,
-  SetlistContributionStatus,
 } from '@/types/entities';
 import { handleServiceCall, handleServiceCallArray, SELECT_QUERIES } from './base';
 

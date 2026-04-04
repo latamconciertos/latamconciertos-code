@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Trash2, Eye, Search, Loader2 } from 'lucide-react';
+import { Trash2, Eye, Search } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ImageUpload } from './ImageUpload';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -23,7 +23,6 @@ import {
   useUpdateNewsArticle, 
   useDeleteNewsArticle 
 } from '@/hooks/queries/useAdminNews';
-import { newsArticleSchema } from '@/lib/validation';
 import type { NewsArticle } from '@/types/entities';
 
 interface Category {
@@ -44,7 +43,7 @@ interface Author {
 
 export const NewsAdminNew = () => {
   // React Query hooks for articles
-  const { data: articles = [], isLoading: articlesLoading } = useAdminNews();
+  const { data: articles = [] } = useAdminNews();
   const createArticle = useCreateNewsArticle();
   const updateArticle = useUpdateNewsArticle();
   const deleteArticle = useDeleteNewsArticle();
@@ -98,7 +97,7 @@ export const NewsAdminNew = () => {
       .from('profiles')
       .select('id, username, first_name, last_name')
       .order('username');
-    if (data) setAuthors(data);
+    if (data) setAuthors(data as Author[]);
   };
 
   const [concerts, setConcerts] = useState<any[]>([]);
@@ -221,9 +220,9 @@ export const NewsAdminNew = () => {
 
     try {
       if (editingArticle) {
-        await updateArticle.mutateAsync({ 
-          id: editingArticle.id, 
-          data: articleData
+        await updateArticle.mutateAsync({
+          id: editingArticle.id,
+          data: articleData as any
         });
 
         // Eliminar media anterior y guardar nuevo
@@ -241,7 +240,7 @@ export const NewsAdminNew = () => {
         }
         resetForm();
       } else {
-        const result = await createArticle.mutateAsync(articleData);
+        const result = await createArticle.mutateAsync(articleData as any);
 
         // Guardar media
         if (mediaItems.length > 0 && result) {
@@ -275,7 +274,7 @@ export const NewsAdminNew = () => {
       status: article.status,
       category_id: article.category_id || '',
       artist_id: article.artist_id || 'none',
-      author_id: article.author_id || '',
+      author_id: article.author_id ?? '',
       concert_id: (article as any).concert_id || 'none',
       published_at: article.published_at || ''
     });
@@ -321,8 +320,8 @@ export const NewsAdminNew = () => {
     setEditingArticle(null);
     setShowForm(false);
   };
-  const filteredArticles = articles.filter(article => article.title.toLowerCase().includes(searchTerm.toLowerCase()) || article.slug.toLowerCase().includes(searchTerm.toLowerCase()));
-  const getCategoryName = (categoryId: string) => {
+  const filteredArticles = (articles ?? []).filter(article => article.title.toLowerCase().includes(searchTerm.toLowerCase()) || article.slug.toLowerCase().includes(searchTerm.toLowerCase()));
+  const getCategoryName = (categoryId: string | null) => {
     const category = categories.find(c => c.id === categoryId);
     return category?.name || 'Sin categoría';
   };
@@ -358,7 +357,7 @@ export const NewsAdminNew = () => {
         <div className="divide-y">
           {filteredArticles.map(article => <div key={article.id} className="grid grid-cols-12 gap-4 p-4 items-center hover:bg-muted/50 transition-colors">
               <div className="col-span-1">
-                {article.featured_image ? <img src={article.featured_image} alt={article.title} className="w-12 h-12 rounded object-cover" /> : <div className="w-12 h-12 rounded bg-muted flex items-center justify-center">
+                {article.featured_image ? <img src={article.featured_image} alt={article.title} className="w-12 h-12 rounded object-cover" loading="lazy" decoding="async" width={48} height={48} /> : <div className="w-12 h-12 rounded bg-muted flex items-center justify-center">
                     <span className="text-xs text-muted-foreground">Sin img</span>
                   </div>}
               </div>

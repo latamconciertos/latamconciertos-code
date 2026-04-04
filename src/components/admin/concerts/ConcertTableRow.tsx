@@ -10,7 +10,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { MoreVertical, Edit, Trash2, Star, Music, Eye } from 'lucide-react';
+import { MoreVertical, Edit, Trash2, Star, Music } from 'lucide-react';
 import { SetlistManager } from '../SetlistManager';
 import type { Concert, Artist, Venue } from './types';
 

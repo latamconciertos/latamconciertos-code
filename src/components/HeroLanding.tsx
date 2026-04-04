@@ -59,7 +59,7 @@ const HeroLanding = ({
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         supabase
@@ -99,7 +99,6 @@ const HeroLanding = ({
 
   // Reduce animation duration on mobile for snappier feel
   const animDuration = isMobile ? 0.4 : 0.8;
-  const auroraOpacity = isMobile ? 0.4 : 0.7;
 
   return <motion.div ref={containerRef} className="fixed top-0 left-0 right-0 h-screen w-full overflow-hidden z-0" style={{
     y

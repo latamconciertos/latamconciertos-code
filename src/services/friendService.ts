@@ -4,10 +4,9 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
-import type { 
-  Friendship, 
-  FriendshipWithProfile, 
-  Friend, 
+import type {
+  Friendship,
+  Friend,
   FriendRequest,
   ConcertInvitation,
   ConcertInvitationWithDetails,

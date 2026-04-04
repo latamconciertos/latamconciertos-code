@@ -6,7 +6,7 @@
 
 import { toast } from 'sonner';
 import { AppError } from './AppError';
-import { ErrorCode, type ErrorCodeType } from './errorCodes';
+import { ErrorCode } from './errorCodes';
 import { mapSupabaseError, type SupabaseErrorLike } from './supabaseErrors';
 
 export interface HandleErrorOptions {

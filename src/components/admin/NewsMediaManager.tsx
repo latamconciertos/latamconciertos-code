@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Upload, X, Image as ImageIcon, Video, GripVertical, Copy } from 'lucide-react';
+import { X, Image as ImageIcon, Video, GripVertical, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,7 +21,7 @@ interface NewsMediaManagerProps {
   onChange: (media: MediaItem[]) => void;
 }
 
-export const NewsMediaManager = ({ articleId, initialMedia = [], onChange }: NewsMediaManagerProps) => {
+export const NewsMediaManager = ({ initialMedia = [], onChange }: NewsMediaManagerProps) => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>(initialMedia);
   const [uploading, setUploading] = useState(false);
 
@@ -42,7 +42,7 @@ export const NewsMediaManager = ({ articleId, initialMedia = [], onChange }: New
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `articles/${fileName}`;
 
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('articles')
         .upload(filePath, file);
 

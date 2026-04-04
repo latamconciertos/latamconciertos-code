@@ -28,7 +28,7 @@ export class CDNStorageUploader {
             const blob = new Blob([fileContent], { type: 'application/json' });
 
             // Upload to Supabase Storage (upsert = overwrite if exists)
-            const { data: uploadData, error: uploadError } = await supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from(this.BUCKET_NAME)
                 .upload(filePath, blob, {
                     contentType: 'application/json',

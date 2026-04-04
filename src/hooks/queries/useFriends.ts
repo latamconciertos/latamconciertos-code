@@ -118,7 +118,7 @@ export function useSendFriendRequest() {
   return useMutation({
     mutationFn: ({ requesterId, addresseeId }: { requesterId: string; addresseeId: string }) =>
       friendService.sendFriendRequest(requesterId, addresseeId),
-    onSuccess: (_, { requesterId }) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: friendQueryKeys.all });
       toast.success('Solicitud de amistad enviada');
     },

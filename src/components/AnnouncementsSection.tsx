@@ -33,10 +33,14 @@ const AnnouncementsSection = () => {
                   <CardContent className="p-4">
                     <div className="flex gap-4">
                       <div className="flex-shrink-0">
-                        <img 
-                          src={it.featured_image || 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop'} 
+                        <img
+                          src={it.featured_image || 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop'}
                           alt={it.title}
                           className="w-20 h-20 object-cover rounded-md"
+                          loading="lazy"
+                          decoding="async"
+                          width={80}
+                          height={80}
                         />
                       </div>
                       

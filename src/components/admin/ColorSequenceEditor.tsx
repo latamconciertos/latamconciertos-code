@@ -89,7 +89,7 @@ export const ColorSequenceEditor = ({
 
   const loadSequence = async () => {
     try {
-      const { data, error } = await supabase
+      const { data: rawData, error } = await supabase
         .from('fan_project_color_sequences')
         .select('sequence, mode, strobe_color_2, strobe_color_3, strobe_speed')
         .eq('fan_project_song_id', songId)
@@ -98,9 +98,10 @@ export const ColorSequenceEditor = ({
 
       if (error && error.code !== 'PGRST116') throw error;
 
+      const data = rawData as any;
+
       if (data) {
         const loadedSequence = data.sequence as ColorBlock[];
-        // Add strobe_color_2 and strobe_color_3 from database to each block if they exist
         if (data.strobe_color_2) {
           loadedSequence.forEach(block => {
             if (!block.strobeColor2) {
@@ -117,7 +118,7 @@ export const ColorSequenceEditor = ({
         }
         setSequence(loadedSequence);
         setMode(data.mode as 'fixed' | 'strobe');
-        setStrobeSpeed(data.strobe_speed || 150); // Load strobe speed or default to 150ms
+        setStrobeSpeed(data.strobe_speed || 150);
       } else {
         setSequence([]);
         setMode('fixed');
@@ -193,7 +194,7 @@ export const ColorSequenceEditor = ({
           strobe_color_2: strobeColor2,
           strobe_color_3: strobeColor3,
           strobe_speed: strobeSpeed,
-        }, {
+        } as any, {
           onConflict: 'fan_project_song_id,venue_section_id'
         });
 

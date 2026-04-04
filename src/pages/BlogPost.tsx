@@ -9,8 +9,6 @@ import { formatDisplayDate } from '@/lib/timezone';
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { AdSpace } from '@/components/AdSpace';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { parseContentWithMedia } from '@/lib/contentParser';
 import { SocialShare } from '@/components/SocialShare';
 import { sanitizeHTML } from '@/lib/sanitize';
@@ -82,7 +80,7 @@ const BlogPost = () => {
             slug
           )
         `)
-        .eq('slug', slug)
+        .eq('slug', slug!)
         .eq('status', 'published')
         .single();
 
@@ -96,7 +94,7 @@ const BlogPost = () => {
         .order('position', { ascending: true });
 
       setArticle({
-        ...articleData,
+        ...articleData as any,
         media_items: (mediaData || []).map(item => ({
           id: item.id,
           media_type: item.media_type as 'image' | 'video',
@@ -132,7 +130,7 @@ const BlogPost = () => {
           .limit(3);
 
         if (relatedData) {
-          setRelatedArticles(relatedData);
+          setRelatedArticles(relatedData as any);
         }
       }
     } catch (error) {

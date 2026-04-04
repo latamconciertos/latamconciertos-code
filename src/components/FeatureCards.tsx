@@ -23,10 +23,6 @@ interface Category {
     slug: string;
 }
 
-interface CategoryWithArticles extends Category {
-    articles: NewsArticle[];
-}
-
 export const FeatureCards = () => {
     // State for mobile accordion - track expanded state for each category
     const [expandedCards, setExpandedCards] = useState<Record<string, boolean>>({});

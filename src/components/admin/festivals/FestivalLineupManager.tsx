@@ -90,7 +90,7 @@ export function FestivalLineupManager({ festival, open, onClose }: FestivalLineu
     if (!festival || !selectedArtist) return;
 
     const stage = selectedStage === 'custom' ? customStage : selectedStage;
-    const maxPosition = lineup.length > 0 ? Math.max(...lineup.map(l => l.position)) + 1 : 0;
+    const maxPosition = lineup && lineup.length > 0 ? Math.max(...lineup.map(l => l.position)) + 1 : 0;
 
     await addToLineup.mutateAsync({
       festival_id: festival.id,
@@ -117,14 +117,14 @@ export function FestivalLineupManager({ festival, open, onClose }: FestivalLineu
   };
 
   const getAvailableArtists = () => {
-    const lineupArtistIds = lineup.map(l => l.artist_id);
+    const lineupArtistIds = (lineup ?? []).map(l => l.artist_id);
     return artists.filter(a => !lineupArtistIds.includes(a.id));
   };
 
   const festivalDays = getFestivalDays();
 
   // Group lineup by date
-  const lineupByDate = lineup.reduce<Record<string, FestivalLineupItem[]>>((acc, item) => {
+  const lineupByDate = (lineup ?? []).reduce<Record<string, FestivalLineupItem[]>>((acc, item) => {
     const date = item.performance_date || 'sin-fecha';
     if (!acc[date]) acc[date] = [];
     acc[date].push(item);
@@ -233,7 +233,7 @@ export function FestivalLineupManager({ festival, open, onClose }: FestivalLineu
             <div className="flex justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
-          ) : lineup.length === 0 ? (
+          ) : !lineup || lineup.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <Music className="h-12 w-12 mx-auto mb-2 opacity-50" />
               <p>No hay artistas en el lineup</p>
@@ -313,19 +313,19 @@ export function FestivalLineupManager({ festival, open, onClose }: FestivalLineu
               })}
 
               {/* Artists without date */}
-              {lineupByDate['sin-fecha']?.length > 0 && (
+              {(lineupByDate['sin-fecha']?.length ?? 0) > 0 && (
                 <Card>
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium text-muted-foreground">
                       Sin fecha asignada
                       <Badge variant="outline" className="ml-2">
-                        {lineupByDate['sin-fecha'].length} artistas
+                        {lineupByDate['sin-fecha']?.length ?? 0} artistas
                       </Badge>
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
-                      {lineupByDate['sin-fecha'].map((item) => (
+                      {(lineupByDate['sin-fecha'] ?? []).map((item) => (
                         <div 
                           key={item.id} 
                           className="flex items-center gap-3 p-2 rounded-lg bg-muted/50"

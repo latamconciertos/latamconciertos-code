@@ -75,10 +75,10 @@ export const UsersAdmin = () => {
 
       if (rolesError) throw rolesError;
 
-      const usersWithRoles = profiles?.map(user => ({
+      const usersWithRoles = (profiles ?? []).map(user => ({
         ...user,
-        roles: userRoles?.filter(role => role.user_id === user.id).map(r => ({ role: r.role })) || []
-      })) || [];
+        roles: (userRoles ?? []).filter(role => role.user_id === user.id).map(r => ({ role: r.role }))
+      })) as UserProfile[];
 
       setUsers(usersWithRoles);
     } catch (error: any) {

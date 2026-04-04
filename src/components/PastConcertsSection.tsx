@@ -107,10 +107,14 @@ const PastConcertsSection = () => {
             {displayConcerts.map((concert) => (
               <Card key={concert.id} className="overflow-hidden hover:shadow-md transition-all duration-300 cursor-pointer group">
                 <div className="relative overflow-hidden">
-                  <img 
-                    src={(concert as ConcertWithImage).artist_image_url || getDefaultImage()} 
+                  <img
+                    src={(concert as ConcertWithImage).artist_image_url || getDefaultImage()}
                     alt={concert.artists?.name || concert.title}
                     className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300 grayscale-0 group-hover:grayscale-0"
+                    loading="lazy"
+                    decoding="async"
+                    width={400}
+                    height={176}
                   />
                   
                   <Badge className="absolute top-2 left-2 bg-muted text-muted-foreground text-xs">

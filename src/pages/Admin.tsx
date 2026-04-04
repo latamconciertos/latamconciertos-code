@@ -80,7 +80,7 @@ const Admin = () => {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      (_event, session) => {
         if (!session?.user) {
           navigate('/auth');
         }

@@ -87,7 +87,7 @@ export class SocialImageGenerator {
         ctx: CanvasRenderingContext2D,
         imageUrl: string
     ): Promise<void> {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve, _reject) => {
             const img = new Image();
             img.crossOrigin = 'anonymous';
 

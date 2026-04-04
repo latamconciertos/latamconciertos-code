@@ -2,7 +2,6 @@ import { Music } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useFeaturedArtists } from '@/hooks/useFeaturedArtists';
 import { Badge } from '@/components/ui/badge';
-import { motion } from 'framer-motion';
 
 /**
  * NewHomeFeaturedArtists Component

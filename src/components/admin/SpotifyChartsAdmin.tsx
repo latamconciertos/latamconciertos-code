@@ -3,17 +3,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Music2, TrendingUp, RefreshCw, Plus, Trash2, Save, Search, GripVertical } from "lucide-react";
+import { Loader2, Music2, TrendingUp, RefreshCw, Plus, Trash2, Save, Search } from "lucide-react";
 import { LATIN_AMERICAN_COUNTRIES } from "@/types/spotify";
 import { spotifyService } from "@/lib/spotify";
 import type { SpotifyTrack, SpotifyArtist } from "@/lib/spotify";
 
 export const SpotifyChartsAdmin = () => {
-  const [selectedCountry, setSelectedCountry] = useState(LATIN_AMERICAN_COUNTRIES[0]);
+  const [selectedCountry, setSelectedCountry] = useState(LATIN_AMERICAN_COUNTRIES[0]!);
   const [loading, setLoading] = useState(false);
   const [tracks, setTracks] = useState<any[]>([]);
   const [artists, setArtists] = useState<any[]>([]);
@@ -131,7 +130,7 @@ export const SpotifyChartsAdmin = () => {
       artist_id: artist.id,
       artist_name: artist.name,
       artist_image_url: artist.images[0]?.url || '',
-      spotify_url: artist.external_urls.spotify,
+      spotify_url: artist.external_urls?.spotify ?? '',
       popularity: artist.popularity,
       genres: artist.genres?.join(', ') || '',
     };

@@ -111,7 +111,7 @@ export function useFestivalDetail(slug: string | undefined) {
                 (lineupData || []).map(async (item) => {
                     const artistImage = await spotifyService.getArtistImage(
                         item.artists.name,
-                        item.artists.photo_url
+                        item.artists.photo_url ?? undefined
                     );
                     return {
                         ...item,

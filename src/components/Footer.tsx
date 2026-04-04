@@ -1,4 +1,4 @@
-import { Instagram, Twitter, Facebook, Youtube, MapPin, Mail, Phone } from 'lucide-react';
+import { Instagram, Twitter, Facebook, Youtube, MapPin, Mail } from 'lucide-react';
 import footerLogo from '@/assets/footer-logo.png';
 
 const Footer = () => {
@@ -16,7 +16,7 @@ const Footer = () => {
           {/* Logo y descripción - 5 columns */}
           <div className="lg:col-span-5 text-center lg:text-center">
             <div className="mb-4 flex justify-center">
-              <img src={footerLogo} alt="Conciertos Latam" className="h-28 w-auto" />
+              <img src={footerLogo} alt="Conciertos Latam" className="h-28 w-auto" loading="lazy" decoding="async" width={112} height={112} />
             </div>
             <p className="text-gray-400 mb-6 text-sm leading-relaxed max-w-md mx-auto">
               Descubre los mejores conciertos, festivales y eventos musicales de América Latina.

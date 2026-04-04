@@ -23,7 +23,7 @@ import {
   DEFAULT_FILTERS,
 } from './festivals';
 import type { FestivalFiltersState } from './festivals';
-import type { Festival, FestivalWithRelations, FestivalFormData } from '@/types/entities/festival';
+import type { FestivalWithRelations, FestivalFormData } from '@/types/entities/festival';
 import { festivalSchema } from '@/lib/validation';
 import { toast } from 'sonner';
 
@@ -77,7 +77,7 @@ export function FestivalsAdmin() {
 
   // Filter festivals
   const filteredFestivals = useMemo(() => {
-    return festivals.filter((festival) => {
+    return (festivals ?? []).filter((festival) => {
       // Search filter
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
@@ -210,7 +210,7 @@ export function FestivalsAdmin() {
           filters={filters}
           venues={venues}
           promoters={promoters}
-          totalCount={festivals.length}
+          totalCount={(festivals ?? []).length}
           filteredCount={filteredFestivals.length}
           onFiltersChange={setFilters}
           onReset={() => setFilters(DEFAULT_FILTERS)}
@@ -228,7 +228,7 @@ export function FestivalsAdmin() {
             <div className="text-center py-12 text-muted-foreground">
               <Sparkles className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>No se encontraron festivales</p>
-              {festivals.length === 0 && (
+              {(festivals ?? []).length === 0 && (
                 <Button
                   className="mt-4"
                   onClick={() => setShowForm(true)}

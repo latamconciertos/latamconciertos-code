@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Calendar, MapPin } from 'lucide-react';
 import { FanProjectSongsManager } from './FanProjectSongsManager';
@@ -67,7 +67,7 @@ export const FanProjectDetailView = ({ projectId, onBack }: FanProjectDetailView
         .single();
 
       if (error) throw error;
-      setProject(data);
+      setProject(data as FanProject);
     } catch (error) {
       console.error('Error loading project:', error);
     } finally {

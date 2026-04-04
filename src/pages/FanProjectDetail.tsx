@@ -4,13 +4,12 @@ import { supabase } from '@/integrations/supabase/client';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { SEO } from '@/components/SEO';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { SectionSelectModal } from '@/components/SectionSelectModal';
 import { useFanProjectStorage } from '@/hooks/useFanProjectStorage';
 import { useToast } from '@/hooks/use-toast';
 import { Lightbulb, Download, Check, Edit, Music } from 'lucide-react';
-import { OfflineStatusBadge } from '@/components/fan-projects/OfflineStatusBadge';
 import { OfflineReadyDialog } from '@/components/fan-projects/OfflineReadyDialog';
 import { PostDownloadSharePrompt } from '@/components/fan-projects/PostDownloadSharePrompt';
 import { indexedDBStorage } from '@/utils/indexedDBStorage';
@@ -52,11 +51,9 @@ const FanProjectDetail = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const {
-    saveSequence,
     isPreloaded,
     preloadProjectSection,
     preloadSongSequence,
-    loadSequencesFromSupabase
   } = useFanProjectStorage();
 
   const [project, setProject] = useState<FanProject | null>(null);
@@ -97,8 +94,7 @@ const FanProjectDetail = () => {
           table: 'fan_project_songs',
           filter: `fan_project_id=eq.${projectId}`,
         },
-        (payload) => {
-          console.log('Songs changed:', payload);
+        () => {
           // Reload project data when songs change
           if (userId) {
             loadProjectData(userId);
@@ -148,7 +144,7 @@ const FanProjectDetail = () => {
             venue:venues (id, name)
           )
         `)
-        .eq('id', projectId)
+        .eq('id', projectId!)
         .eq('status', 'active')
         .single();
 
@@ -176,13 +172,13 @@ const FanProjectDetail = () => {
         }
       };
 
-      setProject(enrichedProject);
+      setProject(enrichedProject as any);
 
       // Load gradient colors from first song's sequence
       const { data: colorSeqData } = await supabase
         .from('fan_project_color_sequences')
         .select('sequence')
-        .eq('fan_project_id', projectId)
+        .eq('fan_project_id', projectId!)
         .limit(1)
         .single();
 
@@ -195,7 +191,7 @@ const FanProjectDetail = () => {
       const { data: sectionsData, error: sectionsError } = await supabase
         .from('venue_sections')
         .select('*')
-        .eq('fan_project_id', projectId)
+        .eq('fan_project_id', projectId!)
         .order('display_order');
 
       if (sectionsError) throw sectionsError;
@@ -205,7 +201,7 @@ const FanProjectDetail = () => {
       const { data: songsData, error: songsError } = await supabase
         .from('fan_project_songs')
         .select('*')
-        .eq('fan_project_id', projectId)
+        .eq('fan_project_id', projectId!)
         .order('position');
 
       if (songsError) throw songsError;
@@ -215,7 +211,7 @@ const FanProjectDetail = () => {
       const { data: participantData } = await supabase
         .from('fan_project_participants')
         .select('venue_section_id')
-        .eq('fan_project_id', projectId)
+        .eq('fan_project_id', projectId!)
         .eq('user_id', uid)
         .single();
 

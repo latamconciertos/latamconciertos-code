@@ -113,11 +113,10 @@ class IndexedDBStorage {
                 timestamp: Date.now(),
             };
 
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve, _reject) => {
                 const request = store.put(record);
 
                 request.onsuccess = () => {
-                    console.log(`✅ Sequence saved to IndexedDB: ${key}`);
                     resolve(true);
                 };
 
@@ -151,7 +150,7 @@ class IndexedDBStorage {
             const store = transaction.objectStore(STORE_NAME);
             const key = this.getKey(projectId, songId, sectionId);
 
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve, _reject) => {
                 const request = store.get(key);
 
                 request.onsuccess = () => {
@@ -293,7 +292,6 @@ class IndexedDBStorage {
                         }
                     });
 
-                    console.log(`🗑️ Cleared ${deleted} expired sequences`);
                     resolve(deleted);
                 };
 
@@ -366,7 +364,6 @@ class IndexedDBStorage {
         try {
             const key = `fan_project_${this.getKey(data.projectId, data.songId, data.sectionId)}`;
             localStorage.setItem(key, JSON.stringify(data));
-            console.log(`✅ Sequence saved to localStorage: ${key}`);
             return true;
         } catch (error) {
             console.error('localStorage save error:', error);

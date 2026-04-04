@@ -37,11 +37,8 @@ class SpotifyService {
     try {
       const cacheKey = artistName.toLowerCase().trim();
       if (this.artistImageCache.has(cacheKey)) {
-        console.log(`Using cached image for: ${artistName}`);
         return this.artistImageCache.get(cacheKey)!;
       }
-
-      console.log(`Searching Spotify for artist: ${artistName}`);
 
       const { data, error } = await supabase.functions.invoke('spotify-api', {
         body: { action: 'searchArtist', artistName }
@@ -54,7 +51,6 @@ class SpotifyService {
 
       if (data?.data?.imageUrl) {
         const imageUrl = data.data.imageUrl;
-        console.log(`Found image for ${artistName}: ${imageUrl}`);
         this.artistImageCache.set(cacheKey, imageUrl);
         return imageUrl;
       }
@@ -139,7 +135,6 @@ class SpotifyService {
   }
 
   async getArtistImage(artistName: string, fallbackUrl?: string): Promise<string> {
-    console.log(`Getting artist image for: ${artistName}`);
     const spotifyImage = await this.searchArtist(artistName);
 
     if (spotifyImage) {
@@ -147,11 +142,9 @@ class SpotifyService {
     }
 
     if (fallbackUrl) {
-      console.log(`Using fallback image for: ${artistName}`);
       return fallbackUrl;
     }
 
-    console.log(`Using default image for: ${artistName}`);
     return "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop";
   }
 

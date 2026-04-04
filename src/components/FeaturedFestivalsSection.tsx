@@ -1,8 +1,8 @@
-import { PartyPopper, MapPin, ArrowRight, Music, Calendar, Globe, Ticket, Info, Users } from 'lucide-react';
+import { PartyPopper, MapPin, ArrowRight, Calendar, Globe, Ticket, Info, Users } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { festivalService } from '@/services/festivalService';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
@@ -18,7 +18,6 @@ import { cardVariants, cardStyles } from '@/lib/styles/cardStyles';
 import { AnimatedCard } from '@/components/ui/animated';
 
 const FeaturedFestivalsSection = () => {
-  const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [selectedFestival, setSelectedFestival] = useState<any>(null);
 

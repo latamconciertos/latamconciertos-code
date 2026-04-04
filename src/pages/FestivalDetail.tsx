@@ -10,7 +10,6 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import FestivalAttendanceButtons from '@/components/FestivalAttendanceButtons';
 import { SocialShare } from '@/components/SocialShare';
-import { formatInBogota } from '@/lib/timezone';
 import { useFestivalDetail } from '@/hooks/queries/useFestivalDetail';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';

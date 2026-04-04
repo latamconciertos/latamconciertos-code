@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Calendar, TrendingUp, Music2, ArrowRight, Music } from 'lucide-react';
+import { TrendingUp, Music2, ArrowRight, Music } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { formatDisplayDate, formatShortDate } from '@/lib/timezone';
@@ -231,7 +231,7 @@ const Hero = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
-              {sideArticles.map((article, index) => (
+              {sideArticles.map((article) => (
                 <Link
                   key={article.id}
                   to={`/blog/${article.slug}`}

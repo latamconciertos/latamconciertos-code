@@ -64,7 +64,7 @@ export const ConcertsAdmin = () => {
       .from('venues')
       .select('id, name, cities(name)')
       .order('name');
-    if (data) setVenues(data);
+    if (data) setVenues(data as Venue[]);
   };
 
   const fetchPromoters = async () => {
@@ -245,7 +245,7 @@ export const ConcertsAdmin = () => {
   };
 
   // Filter concerts
-  const filteredConcerts = concerts.filter(concert => {
+  const filteredConcerts = (concerts ?? []).filter(concert => {
     // Search
     const matchesSearch = concert.title.toLowerCase().includes(filters.search.toLowerCase()) ||
       concert.slug.toLowerCase().includes(filters.search.toLowerCase()) ||
@@ -314,7 +314,7 @@ export const ConcertsAdmin = () => {
         artists={artists}
         venues={venues}
         promoters={promoters}
-        totalConcerts={concerts.length}
+        totalConcerts={(concerts ?? []).length}
         filteredCount={filteredConcerts.length}
         onFilterChange={handleFilterChange}
         onResetFilters={resetFilters}

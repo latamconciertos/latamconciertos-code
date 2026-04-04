@@ -111,10 +111,12 @@ export const AdSpace = ({ position, page }: AdSpaceProps) => {
         className={`${sizeClass} ${aspectRatio} rounded overflow-hidden cursor-pointer hover:opacity-90 transition-opacity`}
         onClick={handleClick}
       >
-        <img 
-          src={ad.image_url} 
+        <img
+          src={ad.image_url}
           alt={ad.name}
           className="w-full h-full object-cover"
+          loading="lazy"
+          decoding="async"
         />
       </div>
     </div>

@@ -22,7 +22,7 @@ export const NewHomeFeaturedFestivals = () => {
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
 
-    const handleFestivalClick = (festival: any) => {
+    const handleFestivalClick = (_festival: any) => {
         // Navigate to festivals page - in future could open modal
         navigate('/festivals');
     };

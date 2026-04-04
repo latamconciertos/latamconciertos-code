@@ -1,4 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
+import { sanitizeHTML } from '@/lib/sanitize';
 import { Calendar, MapPin, Ticket, Music, Globe, ListMusic, Users, ArrowLeft } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -11,7 +12,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import ConcertAttendanceButtons from '@/components/ConcertAttendanceButtons';
 import ConcertCommunity from '@/components/ConcertCommunity';
 import { SocialShare } from '@/components/SocialShare';
-import { formatInBogota, isPastDate } from '@/lib/timezone';
+import { formatInBogota } from '@/lib/timezone';
 import { useConcertDetail } from '@/hooks/queries/useConcertDetail';
 
 const ConcertDetail = () => {
@@ -370,7 +371,7 @@ const ConcertDetail = () => {
                   <CardContent className="p-4">
                     <div
                       className="ticket-prices-content prose prose-sm max-w-none dark:prose-invert"
-                      dangerouslySetInnerHTML={{ __html: concert.ticket_prices_html }}
+                      dangerouslySetInnerHTML={{ __html: sanitizeHTML(concert.ticket_prices_html) }}
                     />
                   </CardContent>
                 </Card>
@@ -459,7 +460,7 @@ const ConcertDetail = () => {
                     <CardContent className="p-6">
                       <div
                         className="ticket-prices-content prose max-w-none dark:prose-invert"
-                        dangerouslySetInnerHTML={{ __html: concert.ticket_prices_html }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHTML(concert.ticket_prices_html) }}
                       />
                     </CardContent>
                   </Card>

@@ -253,7 +253,7 @@ export function useDeleteSetlistSong() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async ({ id, concertId }: { id: string; concertId: string }) => {
+    mutationFn: async ({ id, concertId: _concertId }: { id: string; concertId: string }) => {
       const result = await setlistService.deleteSong(id);
       if (!result.success) throw new Error(result.error || 'Failed to delete song');
       return result.data;

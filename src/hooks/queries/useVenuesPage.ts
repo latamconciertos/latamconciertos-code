@@ -82,9 +82,8 @@ export function useVenuesPage(selectedCountry: string = 'all', selectedCity: str
             }
 
             const { data, error } = await query;
-            console.log('Venues query result:', { data, error, selectedCountry, selectedCity });
             if (error) throw error;
-            return (data || []) as VenueWithCity[];
+            return (data || []) as unknown as VenueWithCity[];
         },
     });
 }
@@ -115,9 +114,8 @@ export function useVenueConcerts(venueId: string | null) {
                 .eq('venue_id', venueId)
                 .order('date', { ascending: true });
 
-            console.log('Venue concerts query result:', { venueId, data, error });
             if (error) throw error;
-            return (data || []) as VenueConcert[];
+            return (data || []) as unknown as VenueConcert[];
         },
         enabled: !!venueId,
     });

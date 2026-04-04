@@ -95,12 +95,6 @@ export function generateConcertMetadata(concert: any): PageMetadata {
 export function generateFestivalMetadata(festival: any): PageMetadata {
     const venue = festival.venues?.name || 'Venue';
     const city = festival.venues?.cities?.name || 'Ciudad';
-    const startDate = new Date(festival.start_date).toLocaleDateString('es', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-    });
-
     const description = festival.description
         ? festival.description.substring(0, 155)
         : `${festival.name} en ${venue}, ${city}. Festival de música con los mejores artistas. Compra tus tickets ahora.`;

@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trash2, Edit, Plus, Search, Loader2 } from 'lucide-react';
+import { Trash2, Edit, Plus, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { 
   useAdminPromoters, 
@@ -17,7 +17,7 @@ import type { Promoter } from '@/types/entities';
 
 export const PromotersAdmin = () => {
   // React Query hooks
-  const { data: promoters = [], isLoading } = useAdminPromoters();
+  const { data: promoters = [] } = useAdminPromoters();
   const createPromoter = useCreatePromoter();
   const updatePromoter = useUpdatePromoter();
   const deletePromoter = useDeletePromoter();
@@ -97,7 +97,7 @@ export const PromotersAdmin = () => {
     setShowForm(false);
   };
 
-  const filteredPromoters = promoters.filter(promoter =>
+  const filteredPromoters = (promoters ?? []).filter(promoter =>
     promoter.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (promoter.description && promoter.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );

@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { Calendar, MapPin, Clock, Ticket, Music, ArrowRight, Users } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Calendar, MapPin, Ticket, Music, ArrowRight, Users } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -8,15 +8,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import { spotifyService } from '@/lib/spotify';
-import { format, parseISO } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { optimizeUnsplashUrl, getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
-import { SocialShare } from './SocialShare';
+import { getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
 import ConcertAttendanceButtons from '@/components/ConcertAttendanceButtons';
 import ConcertCommunity from '@/components/ConcertCommunity';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useUpcomingConcerts } from '@/hooks/queries';
-import { LoadingSpinnerInline, LoadingSpinnerMini } from '@/components/ui/loading-spinner';
+import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
 
 interface ConcertWithImage {
   id: string;
@@ -57,8 +54,8 @@ const UpcomingConcertsSection = () => {
   const { data: concerts = [], isLoading } = useUpcomingConcerts(6);
   const [concertsWithImages, setConcertsWithImages] = useState<ConcertWithImage[]>([]);
   const [selectedConcert, setSelectedConcert] = useState<ConcertWithImage | null>(null);
-  const [setlist, setSetlist] = useState<SetlistSong[]>([]);
-  const [loadingSetlist, setLoadingSetlist] = useState(false);
+  const [, setSetlist] = useState<SetlistSong[]>([]);
+  const [, setLoadingSetlist] = useState(false);
   const isMobile = useIsMobile();
 
   // Fetch artist images in parallel batches for better performance
@@ -114,7 +111,7 @@ const UpcomingConcertsSection = () => {
         .order('position');
 
       if (error) throw error;
-      setSetlist(data || []);
+      setSetlist((data as SetlistSong[]) || []);
     } catch (error) {
       console.error('Error fetching setlist:', error);
       setSetlist([]);
@@ -131,13 +128,6 @@ const UpcomingConcertsSection = () => {
       month: date.toLocaleDateString('es', { month: 'short' }),
       year: date.getFullYear()
     };
-  };
-
-  const formatDuration = (seconds: number | null) => {
-    if (!seconds) return '';
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
   // Use optimized default image

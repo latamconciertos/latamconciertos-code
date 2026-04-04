@@ -75,7 +75,7 @@ export function getYouTubeThumbnail(videoIdOrUrl: string, quality: 'default' | '
 /**
  * Get Vimeo thumbnail URL (requires API call, returns placeholder)
  */
-export function getVimeoThumbnail(videoIdOrUrl: string): string {
+export function getVimeoThumbnail(_videoIdOrUrl: string): string {
     // Vimeo thumbnails require API call, return placeholder
     // In production, you'd want to fetch this from Vimeo's API
     return `https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=800&h=450&fit=crop`;

@@ -79,10 +79,13 @@ const WelcomePopup = () => {
         <div className="p-6 pt-8 text-center space-y-6">
           {/* Header */}
           <div className="space-y-2">
-            <img 
-              src={popupLogo} 
-              alt="Conciertos Latam" 
+            <img
+              src={popupLogo}
+              alt="Conciertos Latam"
               className="mx-auto h-28 w-auto mb-4"
+              decoding="async"
+              width={112}
+              height={112}
             />
             <h2 className="text-xl font-bold text-foreground">
               ¡Bienvenido a Conciertos Latam!

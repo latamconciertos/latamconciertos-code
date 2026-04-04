@@ -70,10 +70,14 @@ export function FestivalCard({
         {/* Image */}
         <div className="w-full md:w-48 h-32 md:h-auto bg-muted flex-shrink-0">
           {festival.image_url ? (
-            <img 
-              src={festival.image_url} 
+            <img
+              src={festival.image_url}
               alt={festival.name}
               className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
+              width={192}
+              height={128}
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-muted-foreground">

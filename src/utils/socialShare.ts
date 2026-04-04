@@ -25,7 +25,7 @@ export const shareToInstagramStories = async (imageBlob: Blob): Promise<void> =>
             });
             return;
         } catch (error) {
-            console.log('Native share cancelled or failed, trying deep link');
+            // silently ignore
         }
     }
 
@@ -59,7 +59,6 @@ export const shareToTikTok = async (imageBlob: Blob): Promise<void> => {
                 text: '#ConciertosLatam',
             });
         } catch (error) {
-            console.log('Share cancelled or failed');
             // Fallback: Download image
             downloadImage(imageBlob, 'concierto-tiktok.png');
         }
@@ -112,7 +111,6 @@ export const trackShareEvent = (
     properties?: Record<string, any>
 ): void => {
     // TODO: Integrate with analytics service (e.g., Mixpanel, GA4)
-    console.log('Analytics Event:', eventName, properties);
 
     // Example: Send to analytics
     if (typeof window !== 'undefined' && (window as any).gtag) {

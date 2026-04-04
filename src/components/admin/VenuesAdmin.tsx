@@ -88,9 +88,9 @@ export const VenuesAdmin = () => {
           id: editingVenue.id,
           data: {
             name: validation.data.name,
-            slug: validation.data.slug,
+            slug: validation.data.slug || '',
             location: validation.data.location || null,
-            capacity: validation.data.capacity,
+            capacity: validation.data.capacity ?? null,
             website: validation.data.website || null,
             city_id: validation.data.city_id || null,
             country: validation.data.country || null,
@@ -99,9 +99,9 @@ export const VenuesAdmin = () => {
       } else {
         await createVenue.mutateAsync({
           name: validation.data.name,
-          slug: validation.data.slug,
+          slug: validation.data.slug || '',
           location: validation.data.location || null,
-          capacity: validation.data.capacity,
+          capacity: validation.data.capacity ?? null,
           website: validation.data.website || null,
           city_id: validation.data.city_id || null,
           country: validation.data.country || null,
@@ -177,7 +177,7 @@ export const VenuesAdmin = () => {
         </div>
         <div className="flex gap-2">
           <Badge variant="secondary" className="text-sm">
-            {venues.length} venues
+            {(venues ?? []).length} venues
           </Badge>
           <Badge variant="secondary" className="text-sm">
             {countries.length} países
@@ -206,10 +206,10 @@ export const VenuesAdmin = () => {
           </div>
 
           <VenuesTable
-            venues={venues}
+            venues={venues as any}
             cities={cities}
             countries={countries}
-            onEdit={handleEditVenue}
+            onEdit={handleEditVenue as any}
             onDelete={handleDeleteVenue}
           />
         </TabsContent>
@@ -226,7 +226,7 @@ export const VenuesAdmin = () => {
           <CitiesTable
             cities={cities}
             countries={countries}
-            venues={venues}
+            venues={venues as any}
             onCreateCity={handleCreateCity}
           />
         </TabsContent>
@@ -236,7 +236,7 @@ export const VenuesAdmin = () => {
       <VenueFormDialog
         open={showVenueForm}
         onClose={resetVenueForm}
-        venue={editingVenue}
+        venue={editingVenue as any}
         cities={cities}
         onSubmit={handleVenueSubmit}
       />

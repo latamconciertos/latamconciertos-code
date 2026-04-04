@@ -4,7 +4,7 @@
  * Centralizes all date/time formatting with Bogota, Colombia timezone (America/Bogota)
  */
 
-import { format as dateFnsFormat, parseISO } from 'date-fns';
+import { parseISO } from 'date-fns';
 import { toZonedTime, formatInTimeZone } from 'date-fns-tz';
 import { es } from 'date-fns/locale';
 

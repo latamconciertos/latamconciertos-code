@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Upload, Loader2, Video, Image as ImageIcon } from 'lucide-react';
+import { Loader2, Video, Image as ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -94,10 +94,13 @@ export const MediaUpload = ({ onMediaUploaded, currentMediaUrl, type }: MediaUpl
               className="w-full h-auto max-h-96"
             />
           ) : (
-            <img 
-              src={previewUrl} 
-              alt="Preview" 
+            <img
+              src={previewUrl}
+              alt="Preview"
               className="w-full h-48 object-cover"
+              decoding="async"
+              width={400}
+              height={192}
             />
           )}
         </div>
