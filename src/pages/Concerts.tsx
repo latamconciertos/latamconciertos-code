@@ -155,7 +155,7 @@ const Concerts = () => {
       <div className="min-h-screen bg-background">
         <Header />
 
-        <main className="container mx-auto px-4 py-16" itemScope itemType="https://schema.org/CollectionPage">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16" itemScope itemType="https://schema.org/CollectionPage">
           <Breadcrumbs items={[
             { label: 'Conciertos', href: '/concerts' },
             ...(selectedCountryName ? [{ label: selectedCountryName }] : []),
@@ -391,7 +391,7 @@ const Concerts = () => {
               <h2 className="sr-only">
                 {filterStatus === 'upcoming' ? 'Próximos conciertos' : filterStatus === 'past' ? 'Conciertos pasados' : 'Todos los conciertos'}
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" itemScope itemType="https://schema.org/ItemList">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" itemScope itemType="https://schema.org/ItemList">
                 {concerts.map((concert, index) => (
                   <article
                     key={concert.id}

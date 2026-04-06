@@ -27,6 +27,7 @@ const Header = ({ visible = true }: HeaderProps) => {
   const [pendingNotifications] = useState(0);
   const [experienciasOpen, setExperienciasOpen] = useState(false);
   const [miCuentaOpen, setMiCuentaOpen] = useState(false);
+  const [wrappedActive, setWrappedActive] = useState(false);
   const { theme, setTheme } = useTheme() || { theme: 'system', setTheme: () => { } };
   const { logout } = useAuth();
 
@@ -63,6 +64,16 @@ const Header = ({ visible = true }: HeaderProps) => {
     };
 
     checkAuth();
+
+    // Check if wrapped banner is active
+    (supabase as any)
+      .from('site_banners')
+      .select('active')
+      .eq('slug', 'wrapped-2026')
+      .maybeSingle()
+      .then(({ data }: { data: { active: boolean } | null }) => {
+        setWrappedActive(data?.active ?? false);
+      });
 
     const {
       data: { subscription },
@@ -119,9 +130,7 @@ const Header = ({ visible = true }: HeaderProps) => {
 
   const miCuentaItems = [
     { name: "Perfil", path: "/profile", icon: User },
-    { name: "Mis Conciertos", path: "/my-calendar", icon: Calendar },
-    { name: "Conexiones", path: "/friends", icon: Users, showBadge: true },
-    { name: "Mi Wrapped", path: "/wrapped", icon: Sparkles },
+    ...(wrappedActive ? [{ name: "Mi Wrapped", path: "/wrapped", icon: Sparkles }] : []),
   ];
 
   return (

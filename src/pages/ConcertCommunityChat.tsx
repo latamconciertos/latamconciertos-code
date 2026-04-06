@@ -2,12 +2,10 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { Send, ArrowLeft, Users, ChevronRight, Calendar } from 'lucide-react';
+import { Send, ArrowLeft, Users, ChevronRight, Calendar, Music } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Separator } from '@/components/ui/separator';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -35,7 +33,47 @@ interface ConcertInfo {
   title: string;
   date: string | null;
   image_url: string | null;
+  artist_name: string | null;
 }
+
+// Generate a consistent color from a string
+const getAvatarColor = (name: string) => {
+  const colors = [
+    'bg-blue-500', 'bg-emerald-500', 'bg-violet-500', 'bg-amber-500',
+    'bg-rose-500', 'bg-cyan-500', 'bg-pink-500', 'bg-indigo-500',
+    'bg-teal-500', 'bg-orange-500', 'bg-lime-500', 'bg-fuchsia-500',
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return colors[Math.abs(hash) % colors.length];
+};
+
+const getNameColor = (name: string) => {
+  const colors = [
+    'text-blue-400', 'text-emerald-400', 'text-violet-400', 'text-amber-400',
+    'text-rose-400', 'text-cyan-400', 'text-pink-400', 'text-indigo-400',
+    'text-teal-400', 'text-orange-400', 'text-lime-400', 'text-fuchsia-400',
+  ];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  return colors[Math.abs(hash) % colors.length];
+};
+
+// Check if two dates are different days
+const isDifferentDay = (d1: string, d2: string) => {
+  return new Date(d1).toDateString() !== new Date(d2).toDateString();
+};
+
+const formatDateSeparator = (dateStr: string) => {
+  const date = new Date(dateStr);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  if (date.toDateString() === today.toDateString()) return 'Hoy';
+  if (date.toDateString() === yesterday.toDateString()) return 'Ayer';
+  return format(date, "d 'de' MMMM, yyyy", { locale: es });
+};
 
 export default function ConcertCommunityChat() {
   const { concertId } = useParams();
@@ -48,21 +86,17 @@ export default function ConcertCommunityChat() {
   const [isSending, setIsSending] = useState(false);
   const [communityId, setCommunityId] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [concertInfo, setConcertInfo] = useState<ConcertInfo>({ title: '', date: null, image_url: null });
+  const [concertInfo, setConcertInfo] = useState<ConcertInfo>({ title: '', date: null, image_url: null, artist_name: null });
   const [infoOpen, setInfoOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Rate limiting: track message timestamps (15 messages per minute)
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const messageSendTimestamps = useRef<number[]>([]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  useEffect(() => { scrollToBottom(); }, [messages]);
 
   useEffect(() => {
     let messageChannel: any;
@@ -72,21 +106,16 @@ export default function ConcertCommunityChat() {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session?.user) {
-          toast({
-            title: "Debes iniciar sesión",
-            description: "Inicia sesión para ver el chat de la comunidad",
-            variant: "destructive",
-          });
+          toast({ title: "Debes iniciar sesión", variant: "destructive" });
           navigate('/auth');
           return;
         }
 
         setCurrentUserId(session.user.id);
 
-        // Get concert info
         const { data: concertData } = await supabase
           .from('concerts')
-          .select('title, date, image_url')
+          .select('title, date, image_url, artists(name)')
           .eq('id', concertId!)
           .single();
 
@@ -94,11 +123,11 @@ export default function ConcertCommunityChat() {
           setConcertInfo({
             title: concertData.title,
             date: concertData.date,
-            image_url: concertData.image_url
+            image_url: concertData.image_url,
+            artist_name: (concertData.artists as any)?.name || null,
           });
         }
 
-        // Get or create community
         let { data: community } = await supabase
           .from('concert_communities')
           .select('id')
@@ -108,21 +137,14 @@ export default function ConcertCommunityChat() {
         if (!community) {
           const { data: newCommunity, error: createError } = await supabase
             .from('concert_communities')
-            .insert([{
-              concert_id: concertId!,
-              name: `Comunidad ${concertData?.title || 'Concierto'}`,
-              description: 'Chat de la comunidad'
-            }])
-            .select()
-            .single();
-
+            .insert([{ concert_id: concertId!, name: `Comunidad ${concertData?.title || 'Concierto'}`, description: 'Chat de la comunidad' }])
+            .select().single();
           if (createError) throw createError;
           community = newCommunity;
         }
 
         setCommunityId(community.id);
 
-        // Check membership
         const { data: membership } = await supabase
           .from('community_members')
           .select('id')
@@ -131,24 +153,13 @@ export default function ConcertCommunityChat() {
           .single();
 
         if (!membership) {
-          await supabase
-            .from('community_members')
-            .insert([{
-              community_id: community.id,
-              user_id: session.user.id
-            }]);
+          await supabase.from('community_members').insert([{ community_id: community.id, user_id: session.user.id }]);
         }
 
-        // Load messages
         await loadMessages(community.id);
-        // Load members
         await loadMembers(community.id);
-
-        // Subscribe to new messages (with cleanup reference)
         messageChannel = subscribeToMessages(community.id);
-        // Subscribe to member changes (with cleanup reference)
         memberChannel = subscribeToMembers(community.id);
-
       } catch (error) {
         console.error('Error initializing community:', error);
       } finally {
@@ -157,437 +168,290 @@ export default function ConcertCommunityChat() {
     };
 
     initializeCommunity();
-
-    // Cleanup function to unsubscribe when component unmounts
-    return () => {
-      if (messageChannel) {
-        messageChannel();
-      }
-      if (memberChannel) {
-        memberChannel();
-      }
-    };
+    return () => { messageChannel?.(); memberChannel?.(); };
   }, [concertId]);
 
-  const loadMessages = async (communityId: string) => {
-    const { data, error } = await supabase
+  const loadMessages = async (cid: string) => {
+    const { data } = await supabase
       .from('community_messages')
-      .select(`
-        id,
-        message,
-        created_at,
-        user_id
-      `)
-      .eq('community_id', communityId)
+      .select('id, message, created_at, user_id')
+      .eq('community_id', cid)
       .order('created_at', { ascending: true })
       .limit(100);
 
-    if (error) {
-      console.error('Error loading messages:', error);
-      return;
-    }
-
     if (data) {
-      const messagesWithProfiles = await Promise.all(
+      const withProfiles = await Promise.all(
         data.map(async (msg) => {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('username, first_name, last_name')
-            .eq('id', msg.user_id)
-            .single();
-
-          return {
-            ...msg,
-            sender: profile || { username: null, first_name: null, last_name: null }
-          };
+          const { data: profile } = await supabase.from('profiles').select('username, first_name, last_name').eq('id', msg.user_id).single();
+          return { ...msg, sender: profile || { username: null, first_name: null, last_name: null } };
         })
       );
-
-      setMessages(messagesWithProfiles as any);
+      setMessages(withProfiles as any);
     }
   };
 
-  const loadMembers = async (communityId: string) => {
-    const { data, error } = await supabase
+  const loadMembers = async (cid: string) => {
+    const { data } = await supabase
       .from('community_members')
-      .select(`
-        id,
-        user_id,
-        profiles:user_id (
-          username,
-          first_name,
-          last_name
-        )
-      `)
-      .eq('community_id', communityId);
-
-    if (error) {
-      console.error('Error loading members:', error);
-      return;
-    }
+      .select('id, user_id, profiles:user_id(username, first_name, last_name)')
+      .eq('community_id', cid);
 
     if (data) {
-      const membersData = data.map(member => ({
-        id: member.id,
-        user_id: member.user_id,
-        username: (member.profiles as any)?.username || null,
-        first_name: (member.profiles as any)?.first_name || null,
-        last_name: (member.profiles as any)?.last_name || null,
-      }));
-      setMembers(membersData);
+      setMembers(data.map(m => ({
+        id: m.id, user_id: m.user_id,
+        username: (m.profiles as any)?.username || null,
+        first_name: (m.profiles as any)?.first_name || null,
+        last_name: (m.profiles as any)?.last_name || null,
+      })));
     }
   };
 
-  const subscribeToMessages = (communityId: string) => {
-    const channel = supabase
-      .channel(`community-messages-${communityId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'community_messages',
-          filter: `community_id=eq.${communityId}`
-        },
+  const subscribeToMessages = (cid: string) => {
+    const channel = supabase.channel(`community-messages-${cid}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'community_messages', filter: `community_id=eq.${cid}` },
         async (payload) => {
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('username, first_name, last_name')
-            .eq('id', payload.new.user_id)
-            .single();
-
-          const newMessage: Message = {
-            id: payload.new.id,
-            message: payload.new.message,
-            created_at: payload.new.created_at,
-            user_id: payload.new.user_id,
-            sender: profileData || { username: null, first_name: null, last_name: null }
-          };
-
-          setMessages((prev) => {
-            // Evitar duplicados
-            if (prev.some(msg => msg.id === newMessage.id)) {
-              return prev;
-            }
-            return [...prev, newMessage];
-          });
+          const { data: profileData } = await supabase.from('profiles').select('username, first_name, last_name').eq('id', payload.new.user_id).single();
+          const newMsg: Message = { id: payload.new.id, message: payload.new.message, created_at: payload.new.created_at, user_id: payload.new.user_id, sender: profileData || { username: null, first_name: null, last_name: null } };
+          setMessages(prev => prev.some(m => m.id === newMsg.id) ? prev : [...prev, newMsg]);
         }
-      )
-      .subscribe((status) => {
-        if (status === 'CHANNEL_ERROR') {
-          console.error('[Realtime] ❌ Channel error - check RLS policies');
-        } else if (status === 'TIMED_OUT') {
-          console.error('[Realtime] ❌ Connection timed out');
-        }
-      });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+      ).subscribe();
+    return () => { supabase.removeChannel(channel); };
   };
 
-  const subscribeToMembers = (communityId: string) => {
-    const channel = supabase
-      .channel(`community-members-${communityId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'community_members',
-          filter: `community_id=eq.${communityId}`
-        },
-        () => {
-          loadMembers(communityId);
-        }
-      )
+  const subscribeToMembers = (cid: string) => {
+    const channel = supabase.channel(`community-members-${cid}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'community_members', filter: `community_id=eq.${cid}` }, () => { loadMembers(cid); })
       .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   };
 
   const sendMessage = async () => {
     if (!input.trim() || !communityId || !currentUserId) return;
-
-    // Rate limiting check (15 messages per minute)
     const now = Date.now();
-    const oneMinuteAgo = now - 60000;
-    messageSendTimestamps.current = messageSendTimestamps.current.filter(t => t > oneMinuteAgo);
-
+    messageSendTimestamps.current = messageSendTimestamps.current.filter(t => t > now - 60000);
     if (messageSendTimestamps.current.length >= 15) {
-      const oldestTimestamp = Math.min(...messageSendTimestamps.current);
-      const waitSeconds = Math.ceil((60000 - (now - oldestTimestamp)) / 1000);
-      toast({
-        title: "Espera un momento",
-        description: `Por favor espera ${waitSeconds} segundos antes de enviar otro mensaje.`,
-        variant: "destructive",
-      });
+      toast({ title: "Espera un momento", description: "Demasiados mensajes, intenta en unos segundos.", variant: "destructive" });
       return;
     }
     messageSendTimestamps.current.push(now);
 
     setIsSending(true);
-    const messageText = input.trim();
+    const text = input.trim();
     setInput('');
 
-    // Mensaje optimista
     const tempId = `opt-${Date.now()}`;
-    const optimisticMsg: Message = {
-      id: tempId,
-      message: messageText,
-      created_at: new Date().toISOString(),
-      user_id: currentUserId,
-      sender: { username: null, first_name: null, last_name: null }
-    };
-    setMessages(prev => [...prev, optimisticMsg]);
+    const optimistic: Message = { id: tempId, message: text, created_at: new Date().toISOString(), user_id: currentUserId, sender: { username: null, first_name: null, last_name: null } };
+    setMessages(prev => [...prev, optimistic]);
 
     try {
       const { data: inserted, error } = await supabase
         .from('community_messages')
-        .insert([{
-          community_id: communityId,
-          user_id: currentUserId,
-          message: messageText
-        }])
-        .select('id, message, created_at, user_id')
-        .single();
-
+        .insert([{ community_id: communityId, user_id: currentUserId, message: text }])
+        .select('id, message, created_at, user_id').single();
       if (error) throw error;
-
-      // Reemplazar el mensaje optimista con el definitivo
       if (inserted) {
-        setMessages(prev => prev.map(m => m.id === tempId ? {
-          id: inserted.id,
-          message: inserted.message,
-          created_at: inserted.created_at,
-          user_id: inserted.user_id,
-          sender: { username: null, first_name: null, last_name: null }
-        } as Message : m));
+        setMessages(prev => prev.map(m => m.id === tempId ? { ...inserted, sender: optimistic.sender } as Message : m));
       }
-    } catch (error) {
-      console.error('Error sending message:', error);
-      // Revertir mensaje optimista y restaurar input
+    } catch {
       setMessages(prev => prev.filter(m => m.id !== tempId));
-      setInput(messageText);
-      toast({
-        title: "Error",
-        description: "No se pudo enviar el mensaje",
-        variant: "destructive",
-      });
+      setInput(text);
+      toast({ title: "Error", description: "No se pudo enviar el mensaje", variant: "destructive" });
     } finally {
       setIsSending(false);
+      // Reset textarea height
+      if (inputRef.current) inputRef.current.style.height = 'auto';
     }
   };
 
-  const getUserDisplayName = (sender: Message['sender']) => {
-    if (sender.username) return sender.username;
-    if (sender.first_name) return `${sender.first_name} ${sender.last_name || ''}`.trim();
+  const getName = (s: { username: string | null; first_name: string | null; last_name: string | null }) => {
+    if (s.first_name) return `${s.first_name} ${s.last_name || ''}`.trim();
+    if (s.username) return s.username;
     return 'Usuario';
   };
 
-  const getMemberDisplayName = (member: Member) => {
-    if (member.username) return member.username;
-    if (member.first_name) return `${member.first_name} ${member.last_name || ''}`.trim();
-    return 'Usuario';
-  };
-
-  const formatConcertDate = (dateStr: string | null) => {
-    if (!dateStr) return '';
-    try {
-      return format(new Date(dateStr), "d 'de' MMMM, yyyy", { locale: es });
-    } catch {
-      return '';
-    }
-  };
-
-  const getMembersPreview = () => {
-    return members.slice(0, 3).map(m => getMemberDisplayName(m)).join(', ') +
-      (members.length > 3 ? '...' : '');
-  };
+  const formatTime = (d: string) => new Date(d).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
 
   if (loading) {
     return (
-      <div className="h-screen flex flex-col bg-background">
-        {/* Header skeleton */}
-        <div className="h-14 bg-primary flex items-center px-4 gap-3">
-          <div className="w-8 h-8 rounded-full bg-primary-foreground/20 animate-pulse" />
-          <div className="flex-1">
-            <div className="h-4 w-32 bg-primary-foreground/20 rounded animate-pulse" />
-            <div className="h-3 w-24 bg-primary-foreground/20 rounded mt-1 animate-pulse" />
-          </div>
-        </div>
-        {/* Loading content */}
+      <div className="h-[100dvh] flex flex-col bg-background">
+        <div className="h-14 bg-primary/95 backdrop-blur-lg" />
         <div className="flex-1 flex items-center justify-center">
-          <p className="text-muted-foreground">Cargando chat...</p>
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm text-muted-foreground">Cargando chat...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="h-screen flex flex-col bg-background">
-      {/* WhatsApp-style Header */}
-      <header className="bg-primary text-primary-foreground px-2 py-2 flex items-center gap-2 safe-area-top shrink-0">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => {
-            // Try to go back, or navigate to concert detail if no history
-            if (window.history.length > 1) {
-              navigate(-1);
-            } else {
-              navigate(`/concerts/${concertId}`);
-            }
-          }}
-          className="text-primary-foreground hover:bg-primary-foreground/10 shrink-0"
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
+    <div className="h-[100dvh] flex flex-col bg-background">
+      {/* ── Header ── */}
+      <header className="bg-primary/95 backdrop-blur-lg text-primary-foreground shrink-0 safe-area-top">
+        <div className="flex items-center gap-1 h-14 px-1">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => window.history.length > 1 ? navigate(-1) : navigate(`/concerts/${concertId}`)}
+            className="text-primary-foreground hover:bg-white/10 shrink-0"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
 
-        <Sheet open={infoOpen} onOpenChange={setInfoOpen}>
-          <SheetTrigger asChild>
-            <button className="flex items-center gap-3 flex-1 min-w-0 text-left hover:bg-primary-foreground/10 rounded-lg px-2 py-1 transition-colors">
-              {/* Group Avatar */}
-              <div className="w-10 h-10 rounded-full bg-primary-foreground/20 shrink-0 overflow-hidden">
+          <Sheet open={infoOpen} onOpenChange={setInfoOpen}>
+            <SheetTrigger asChild>
+              <button className="flex items-center gap-3 flex-1 min-w-0 text-left rounded-lg px-2 py-1.5 hover:bg-white/10 transition-colors">
                 {concertInfo.image_url ? (
-                  <img
-                    src={concertInfo.image_url}
-                    alt={concertInfo.title}
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={concertInfo.image_url} alt="" className="w-10 h-10 rounded-full object-cover shrink-0" />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Users className="h-5 w-5 text-primary-foreground/70" />
+                  <div className="w-10 h-10 rounded-full bg-white/15 flex items-center justify-center shrink-0">
+                    <Music className="h-5 w-5 text-white/70" />
                   </div>
                 )}
-              </div>
-
-              {/* Group Info */}
-              <div className="flex-1 min-w-0">
-                <h1 className="font-semibold text-sm truncate">{concertInfo.title}</h1>
-                <p className="text-xs text-primary-foreground/70 truncate">
-                  {getMembersPreview()}
-                </p>
-              </div>
-
-              <ChevronRight className="h-4 w-4 text-primary-foreground/50 shrink-0" />
-            </button>
-          </SheetTrigger>
-
-          {/* Group Info Sheet */}
-          <SheetContent side="right" className="w-full sm:max-w-md p-0">
-            <div className="flex flex-col h-full">
-              {/* Header Image */}
-              <div className="relative h-48 bg-gradient-to-b from-primary/20 to-background">
-                {concertInfo.image_url ? (
-                  <img
-                    src={concertInfo.image_url}
-                    alt={concertInfo.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-muted">
-                    <Users className="h-16 w-16 text-muted-foreground" />
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
-              </div>
-
-              {/* Concert Info */}
-              <div className="px-4 -mt-8 relative z-10">
-                <h2 className="text-xl font-bold">{concertInfo.title}</h2>
-                <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
-                  <span>Grupo</span>
-                  <span>·</span>
-                  <span className="text-primary">{members.length} miembros</span>
-                </p>
-                {concertInfo.date && (
-                  <p className="text-sm text-muted-foreground flex items-center gap-2 mt-2">
-                    <Calendar className="h-4 w-4" />
-                    {formatConcertDate(concertInfo.date)}
+                <div className="flex-1 min-w-0">
+                  <h1 className="font-semibold text-sm truncate">{concertInfo.title}</h1>
+                  <p className="text-[11px] text-white/60 truncate">
+                    {members.length} miembro{members.length !== 1 ? 's' : ''}
                   </p>
-                )}
-              </div>
-
-              <Separator className="my-4" />
-
-              {/* Members List */}
-              <div className="flex-1 overflow-hidden">
-                <div className="px-4 mb-2">
-                  <h3 className="text-sm font-semibold text-muted-foreground">
-                    {members.length} miembros
-                  </h3>
                 </div>
-                <ScrollArea className="h-[calc(100%-2rem)]">
-                  <div className="px-4 space-y-1 pb-4">
-                    {members.map((member) => (
-                      <div
-                        key={member.id}
-                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
-                      >
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                          <span className="text-sm font-semibold text-primary">
-                            {getMemberDisplayName(member).charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium truncate">
-                            {getMemberDisplayName(member)}
-                            {member.user_id === currentUserId && (
-                              <span className="text-xs text-muted-foreground ml-1">(tú)</span>
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                <ChevronRight className="h-4 w-4 text-white/40 shrink-0" />
+              </button>
+            </SheetTrigger>
+
+            {/* ── Group Info Sheet ── */}
+            <SheetContent side="right" className="w-full sm:max-w-sm p-0">
+              <div className="flex flex-col h-full">
+                {/* Cover */}
+                <div className="relative h-44 bg-muted">
+                  {concertInfo.image_url ? (
+                    <img src={concertInfo.image_url} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Music className="h-12 w-12 text-muted-foreground/30" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+                </div>
+
+                <div className="px-5 -mt-6 relative z-10">
+                  <h2 className="text-lg font-bold">{concertInfo.title}</h2>
+                  {concertInfo.artist_name && (
+                    <p className="text-sm text-primary font-medium">{concertInfo.artist_name}</p>
+                  )}
+                  <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1">
+                      <Users className="h-3.5 w-3.5" />
+                      {members.length} miembros
+                    </span>
+                    {concertInfo.date && (
+                      <span className="flex items-center gap-1">
+                        <Calendar className="h-3.5 w-3.5" />
+                        {format(new Date(concertInfo.date), "d MMM yyyy", { locale: es })}
+                      </span>
+                    )}
                   </div>
-                </ScrollArea>
+                </div>
+
+                {/* Members */}
+                <div className="mt-5 flex-1 overflow-hidden">
+                  <p className="px-5 text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                    Miembros
+                  </p>
+                  <ScrollArea className="h-full">
+                    <div className="px-5 pb-6 space-y-0.5">
+                      {members.map((m) => {
+                        const name = getName(m);
+                        return (
+                          <div key={m.id} className="flex items-center gap-3 py-2 px-2 rounded-lg hover:bg-muted/50 transition-colors">
+                            <div className={`w-9 h-9 rounded-full ${getAvatarColor(name)} flex items-center justify-center shrink-0`}>
+                              <span className="text-xs font-bold text-white">{name.charAt(0).toUpperCase()}</span>
+                            </div>
+                            <p className="text-sm font-medium truncate flex-1">
+                              {name}
+                              {m.user_id === currentUserId && <span className="text-xs text-muted-foreground ml-1">(tú)</span>}
+                            </p>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </ScrollArea>
+                </div>
               </div>
-            </div>
-          </SheetContent>
-        </Sheet>
+            </SheetContent>
+          </Sheet>
+        </div>
       </header>
 
-      {/* Messages Area */}
-      <div className="flex-1 overflow-hidden bg-muted/30">
+      {/* ── Messages ── */}
+      <div className="flex-1 overflow-hidden">
         <ScrollArea className="h-full">
-          <div className="px-3 py-4 space-y-3 min-h-full">
+          <div className="px-3 sm:px-4 py-3 min-h-full flex flex-col justify-end">
             {messages.length === 0 && (
-              <div className="text-center py-8">
-                <Users className="h-12 w-12 mx-auto text-muted-foreground/50 mb-3" />
-                <p className="text-sm text-muted-foreground">
-                  ¡Sé el primero en enviar un mensaje!
+              <div className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                  <Music className="h-8 w-8 text-primary/50" />
+                </div>
+                <p className="text-sm font-medium text-foreground mb-1">Chat de la comunidad</p>
+                <p className="text-xs text-muted-foreground max-w-[240px]">
+                  Habla con otros fans que van a este concierto
                 </p>
               </div>
             )}
-            {messages.map((msg) => {
+
+            {messages.map((msg, i) => {
               const isOwn = msg.user_id === currentUserId;
+              const senderName = getName(msg.sender);
+              const showDateSep = i === 0 || isDifferentDay(messages[i - 1].created_at, msg.created_at);
+              // Show sender name if: not own, and (first msg or different sender or different day from prev)
+              const showName = !isOwn && (i === 0 || messages[i - 1].user_id !== msg.user_id || showDateSep);
+              // Group with previous: same sender, same day, within 2 min
+              const isGrouped = i > 0 && messages[i - 1].user_id === msg.user_id && !showDateSep &&
+                (new Date(msg.created_at).getTime() - new Date(messages[i - 1].created_at).getTime()) < 120000;
+
               return (
-                <div
-                  key={msg.id}
-                  className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-3 py-2 shadow-sm ${isOwn
-                      ? 'bg-primary text-primary-foreground rounded-br-md'
-                      : 'bg-card text-card-foreground rounded-bl-md'
-                      }`}
-                  >
+                <div key={msg.id}>
+                  {/* Date separator */}
+                  {showDateSep && (
+                    <div className="flex justify-center my-4">
+                      <span className="text-[11px] font-medium text-muted-foreground bg-muted px-3 py-1 rounded-full">
+                        {formatDateSeparator(msg.created_at)}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'} ${isGrouped ? 'mt-0.5' : 'mt-3'}`}>
+                    {/* Avatar for others */}
                     {!isOwn && (
-                      <p className="text-xs font-semibold mb-0.5 text-primary">
-                        {getUserDisplayName(msg.sender)}
-                      </p>
+                      <div className="w-8 mr-1.5 flex-shrink-0 flex items-end">
+                        {showName ? (
+                          <div className={`w-7 h-7 rounded-full ${getAvatarColor(senderName)} flex items-center justify-center`}>
+                            <span className="text-[10px] font-bold text-white">{senderName.charAt(0).toUpperCase()}</span>
+                          </div>
+                        ) : null}
+                      </div>
                     )}
-                    <p className="text-sm break-words whitespace-pre-wrap">{msg.message}</p>
-                    <p className={`text-[10px] mt-1 text-right ${isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'
-                      }`}>
-                      {new Date(msg.created_at).toLocaleTimeString('es-ES', {
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </p>
+
+                    {/* Bubble */}
+                    <div
+                      className={`max-w-[78%] sm:max-w-[65%] px-3 py-1.5 ${
+                        isOwn
+                          ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-md'
+                          : 'bg-card border border-border/50 text-card-foreground rounded-2xl rounded-bl-md'
+                      }`}
+                    >
+                      {showName && (
+                        <p className={`text-[11px] font-semibold mb-0.5 ${getNameColor(senderName)}`}>
+                          {senderName}
+                        </p>
+                      )}
+                      <div className="flex items-end gap-2">
+                        <p className="text-[14px] leading-[1.4] break-words whitespace-pre-wrap flex-1">{msg.message}</p>
+                        <span className={`text-[10px] shrink-0 translate-y-0.5 ${isOwn ? 'text-primary-foreground/60' : 'text-muted-foreground/70'}`}>
+                          {formatTime(msg.created_at)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
                 </div>
               );
@@ -597,22 +461,31 @@ export default function ConcertCommunityChat() {
         </ScrollArea>
       </div>
 
-      {/* Input Area - WhatsApp style */}
-      <div className="bg-background border-t px-2 py-2 safe-area-bottom shrink-0">
+      {/* ── Input ── */}
+      <div className="bg-background border-t border-border px-3 py-2 safe-area-bottom shrink-0">
         <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            sendMessage();
-          }}
-          className="flex items-center gap-2"
+          onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
+          className="flex items-end gap-2"
         >
-          <Input
+          <textarea
             ref={inputRef}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={(e) => {
+              setInput(e.target.value);
+              // Auto-resize
+              e.target.style.height = 'auto';
+              e.target.style.height = Math.min(e.target.scrollHeight, 120) + 'px';
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
             placeholder="Mensaje"
             disabled={isSending}
-            className="flex-1 rounded-full bg-muted border-0 focus-visible:ring-1 focus-visible:ring-primary"
+            rows={1}
+            className="flex-1 resize-none rounded-2xl bg-muted border-0 px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground/50 max-h-[120px]"
           />
           <Button
             type="submit"

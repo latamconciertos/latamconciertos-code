@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Music, Search } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { SEO } from '@/components/SEO';
@@ -109,191 +106,100 @@ const Artists = () => {
       <div className="min-h-screen bg-background">
         <Header />
 
-        <main className="container mx-auto px-4 py-16">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <Breadcrumbs items={[{ label: 'Artistas' }]} />
 
           {/* Header Section */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
-              <Music className="h-5 w-5 text-primary" />
-              <span className="text-primary font-semibold">Talentos Latinos</span>
-            </div>
-            <h1 className="page-title mb-4">Artistas</h1>
-            <p className="page-subtitle max-w-3xl mx-auto">
-              Descubre los mejores exponentes de la música latina que están conquistando el mundo
+            <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">Artistas</h1>
+            <p className="text-muted-foreground max-w-xl mx-auto">
+              Descubre los mejores exponentes de la música latina
             </p>
           </div>
 
           {/* Search Bar */}
-          <div className="max-w-2xl mx-auto mb-12 relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+          <div className="max-w-md mx-auto mb-8 relative">
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Buscar artistas por nombre..."
+              placeholder="Buscar artistas..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full h-12 text-sm md:text-base pl-12"
+              className="w-full h-10 text-sm pl-10 rounded-xl"
             />
           </div>
 
-          {/* Genre Filter - Modern Horizontal Design */}
+          {/* Genre Filter */}
           {!isLoadingGenres && uniqueGenres.length > 0 && (
-            <div className="max-w-6xl mx-auto mb-10">
-              {/* Header */}
-              <div className="flex items-center justify-between mb-4 px-1">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Music className="h-4 w-4 text-primary" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold text-foreground">Géneros Musicales</h3>
-                    <p className="text-xs text-muted-foreground">
-                      {selectedGenre ? `Filtrando por: ${selectedGenre}` : 'Selecciona un género para filtrar'}
-                    </p>
-                  </div>
-                </div>
-                {selectedGenre && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedGenre(null)}
-                    className="text-xs h-8 hover:bg-destructive/10 hover:text-destructive"
-                  >
-                    Limpiar
-                  </Button>
-                )}
-              </div>
-
-              {/* Scrollable Genre Chips */}
+            <div className="mb-8">
               <ScrollArea className="w-full">
-                <div className="flex gap-2 pb-4">
+                <div className="flex gap-2 pb-2">
+                  {selectedGenre && (
+                    <button
+                      onClick={() => setSelectedGenre(null)}
+                      className="px-3 py-1.5 rounded-full text-xs font-medium bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors flex-shrink-0"
+                    >
+                      Limpiar filtro
+                    </button>
+                  )}
                   {uniqueGenres.map((genre) => {
                     const isSelected = selectedGenre === genre;
                     return (
                       <button
                         key={genre}
                         onClick={() => handleGenreClick(genre)}
-                        className={`
-                          relative px-5 py-2.5 rounded-full text-sm font-medium
-                          transition-all duration-200 flex-shrink-0
-                          ${isSelected
-                            ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 scale-105'
-                            : 'bg-card border border-border hover:border-primary/50 hover:bg-primary/5 text-foreground'
-                          }
-                        `}
+                        className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors flex-shrink-0 capitalize ${
+                          isSelected
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'
+                        }`}
                       >
-                        <span className="relative z-10">{genre}</span>
-                        {isSelected && (
-                          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 to-transparent blur-xl" />
-                        )}
+                        {genre}
                       </button>
                     );
                   })}
                 </div>
-                <ScrollBar orientation="horizontal" className="h-2" />
+                <ScrollBar orientation="horizontal" className="h-1.5" />
               </ScrollArea>
             </div>
           )}
 
-          {/* Artists Grid/List - Mobile: vertical list, Desktop: grid */}
+          {/* Artists Grid */}
           {artists.length > 0 ? (
             <>
-              {/* Mobile: Vertical List */}
-              <div className="flex flex-col gap-3 lg:hidden">
-                {artists.map((artist: any) => {
-                  return (
-                    <Card
-                      key={artist.id}
-                      className="group overflow-hidden hover:shadow-lg transition-all duration-300 border border-border hover:border-primary/30 cursor-pointer bg-card rounded-2xl"
-                      onClick={() => navigate(`/artists/${artist.slug}`)}
-                    >
-                      <CardContent className="p-0">
-                        <div className="flex items-center gap-4 p-4">
-                          {/* Circular Photo */}
-                          <div className="relative shrink-0">
-                            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden bg-muted">
-                              <img
-                                src={artist.photo_url || getDefaultImage()}
-                                alt={artist.name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                                loading="lazy"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Artist Info */}
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors truncate">
-                              {artist.name}
-                            </h3>
-                            {artist.genres && artist.genres.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {artist.genres.slice(0, 2).map((genre: string, index: number) => (
-                                  <Badge
-                                    key={index}
-                                    variant="secondary"
-                                    className="text-xs px-2 py-0.5 bg-primary/10 text-primary dark:bg-primary/20"
-                                  >
-                                    {genre}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-
-              {/* Desktop: Grid with horizontal cards */}
-              <div className="hidden lg:grid lg:grid-cols-3 gap-4">
-                {artists.map((artist: any) => {
-                  return (
-                    <Card
-                      key={artist.id}
-                      className="group overflow-hidden hover:shadow-xl transition-all duration-300 border border-border hover:border-primary/30 cursor-pointer bg-card rounded-2xl"
-                      onClick={() => navigate(`/artists/${artist.slug}`)}
-                    >
-                      <CardContent className="p-0">
-                        <div className="flex items-center gap-4 p-4">
-                          {/* Circular Photo */}
-                          <div className="relative shrink-0">
-                            <div className="w-20 h-20 rounded-full overflow-hidden bg-muted">
-                              <img
-                                src={artist.photo_url || getDefaultImage()}
-                                alt={artist.name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                                loading="lazy"
-                              />
-                            </div>
-                          </div>
-
-                          {/* Artist Info */}
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors truncate">
-                              {artist.name}
-                            </h3>
-                            {artist.genres && artist.genres.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-1">
-                                {artist.genres.slice(0, 2).map((genre: string, index: number) => (
-                                  <Badge
-                                    key={index}
-                                    variant="secondary"
-                                    className="text-xs px-2 py-0.5 bg-primary/10 text-primary dark:bg-primary/20"
-                                  >
-                                    {genre}
-                                  </Badge>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5">
+                {artists.map((artist: any) => (
+                  <button
+                    key={artist.id}
+                    className="group text-left focus:outline-none flex flex-col"
+                    onClick={() => navigate(`/artists/${artist.slug}`)}
+                  >
+                    <div className="aspect-square rounded-2xl overflow-hidden bg-muted mb-2.5 relative">
+                      <img
+                        src={artist.photo_url || getDefaultImage()}
+                        alt={artist.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <h3 className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors truncate">
+                        {artist.name}
+                      </h3>
+                      {artist.is_verified !== false && (
+                        <svg className="h-[15px] w-[15px] flex-shrink-0" viewBox="0 0 24 24" aria-label="Verificado">
+                          <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .494.083.964.237 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z" fill="hsl(var(--primary))" />
+                        </svg>
+                      )}
+                    </div>
+                    {artist.genres && artist.genres.length > 0 && (
+                      <p className="text-xs text-muted-foreground truncate mt-0.5 capitalize">
+                        {artist.genres.slice(0, 2).join(', ')}
+                      </p>
+                    )}
+                  </button>
+                ))}
               </div>
 
               {/* Pagination */}

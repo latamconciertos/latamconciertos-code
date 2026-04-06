@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Edit, Music, Trophy, Calendar, CheckCircle, Heart } from 'lucide-react';
+import { Trophy, Calendar, CheckCircle, Heart, Share2, Download } from 'lucide-react';
 import BadgesDisplay from '@/components/BadgesDisplay';
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
@@ -39,6 +39,8 @@ const Profile = () => {
     country_id: string | null;
     city_id: string | null;
     birth_date: string | null;
+    avatar_url: string | null;
+    bio: string | null;
   } | null>(null);
   const [selectedArtists, setSelectedArtists] = useState<string[]>([]);
 
@@ -74,6 +76,8 @@ const Profile = () => {
         country_id: profile.country_id,
         city_id: profile.city_id,
         birth_date: profile.birth_date,
+        avatar_url: profile.avatar_url,
+        bio: profile.bio,
       });
       const artists = profile.favorite_artists;
       setSelectedArtists(
@@ -99,7 +103,11 @@ const Profile = () => {
 
       await updateProfile.mutateAsync({
         userId: profile.id,
-        profileData: validatedData,
+        profileData: {
+          ...validatedData,
+          avatar_url: localProfile.avatar_url,
+          bio: localProfile.bio?.trim() || null,
+        },
         favoriteArtists: selectedArtists,
       });
 
@@ -140,6 +148,34 @@ const Profile = () => {
     );
   };
 
+  // Export upcoming concerts to ICS
+  const exportToICS = () => {
+    const upcoming = concertsData?.upcoming || [];
+    if (upcoming.length === 0) return;
+
+    let ics = 'BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Conciertos Latam//ES\r\nCALSCALE:GREGORIAN\r\n';
+    upcoming.forEach(concert => {
+      if (!concert.date) return;
+      const date = new Date(concert.date);
+      const dateStr = date.toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
+      ics += `BEGIN:VEVENT\r\nUID:${concert.id}@conciertoslatam.com\r\nDTSTAMP:${dateStr}\r\nDTSTART:${dateStr}\r\n`;
+      ics += `SUMMARY:${concert.title}\r\nDESCRIPTION:Concierto de ${concert.artist?.name || 'Artista'}\r\n`;
+      ics += `LOCATION:${concert.venue?.name || ''}\r\nEND:VEVENT\r\n`;
+    });
+    ics += 'END:VCALENDAR\r\n';
+
+    const blob = new Blob([ics], { type: 'text/calendar' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'mis-conciertos.ics';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    toast.success('Calendario exportado');
+  };
+
   // Get location string
   const selectedCountry = countries.find(c => c.id === localProfile?.country_id);
   const selectedCity = cities.find(c => c.id === localProfile?.city_id);
@@ -166,13 +202,15 @@ const Profile = () => {
         description="Administra tu información personal y preferencias musicales"
       />
       <Header />
-      <main className="min-h-screen bg-background pt-20 sm:pt-24 pb-8">
-        <div className="container mx-auto px-4 max-w-2xl">
+      <main className="min-h-screen bg-background pt-24 sm:pt-28 pb-8">
+        <div className="mx-auto px-4 max-w-lg sm:max-w-xl lg:max-w-4xl">
           {/* Profile Header */}
           <ProfileHeader
             displayName={displayName}
             username={localProfile.username}
             location={locationString}
+            bio={localProfile.bio}
+            avatarUrl={localProfile.avatar_url}
             stats={{
               concerts: concertsData?.stats.totalConcerts || 0,
               artists: selectedArtists.length,
@@ -181,61 +219,88 @@ const Profile = () => {
           />
 
           {/* Action Buttons */}
-          <div className="flex gap-3 mt-6 mb-8">
+          <div className="flex gap-2 mt-4">
             <Button
-              variant="outline"
-              className="flex-1 h-10 gap-2"
+              variant="secondary"
+              className="flex-1 h-9 text-sm font-semibold rounded-lg"
               onClick={() => setEditSheetOpen(true)}
             >
-              <Edit className="h-4 w-4" />
               Editar perfil
             </Button>
             <Button
-              variant="outline"
-              className="flex-1 h-10 gap-2"
+              variant="secondary"
+              className="flex-1 h-9 text-sm font-semibold rounded-lg"
               onClick={() => setArtistsSheetOpen(true)}
             >
-              <Music className="h-4 w-4" />
               Artistas favoritos
+            </Button>
+            <Button
+              variant="secondary"
+              size="icon"
+              className="h-9 w-9 flex-shrink-0 rounded-lg"
+              onClick={async () => {
+                const profileUrl = `${window.location.origin}/profile/${localProfile.username}`;
+                if (navigator.share) {
+                  try {
+                    await navigator.share({ title: displayName, url: profileUrl });
+                  } catch { /* user cancelled */ }
+                } else {
+                  await navigator.clipboard.writeText(profileUrl);
+                  toast.success('Enlace de perfil copiado');
+                }
+              }}
+            >
+              <Share2 className="h-4 w-4" />
             </Button>
           </div>
 
-          {/* Concert Tabs */}
-          <Tabs defaultValue="upcoming" className="w-full">
-            <TabsList className="w-full grid grid-cols-3 mb-4">
-              <TabsTrigger value="upcoming" className="gap-1.5 text-xs sm:text-sm">
-                <Calendar className="h-4 w-4" />
-                <span className="hidden sm:inline">Próximos</span>
-                <span className="sm:hidden">Próx.</span>
-                {(concertsData?.stats.upcomingCount || 0) > 0 && (
-                  <span className="ml-1 text-[10px] bg-primary/20 text-primary px-1.5 rounded-full">
-                    {concertsData?.stats.upcomingCount}
-                  </span>
-                )}
+          {/* Tabs - Instagram style with top border */}
+          <Tabs defaultValue="upcoming" className="w-full mt-6">
+            <TabsList className="w-full h-auto p-0 bg-transparent border-t border-border rounded-none grid grid-cols-4">
+              <TabsTrigger
+                value="upcoming"
+                className="rounded-none border-t-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground"
+              >
+                <Calendar className="h-5 w-5" />
+                <span className="text-xs hidden sm:inline">Próximos</span>
               </TabsTrigger>
-              <TabsTrigger value="attended" className="gap-1.5 text-xs sm:text-sm">
-                <CheckCircle className="h-4 w-4" />
-                <span className="hidden sm:inline">Asistidos</span>
-                <span className="sm:hidden">Asist.</span>
-                {(concertsData?.stats.attendedCount || 0) > 0 && (
-                  <span className="ml-1 text-[10px] bg-primary/20 text-primary px-1.5 rounded-full">
-                    {concertsData?.stats.attendedCount}
-                  </span>
-                )}
+              <TabsTrigger
+                value="attended"
+                className="rounded-none border-t-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground"
+              >
+                <CheckCircle className="h-5 w-5" />
+                <span className="text-xs hidden sm:inline">Asistidos</span>
               </TabsTrigger>
-              <TabsTrigger value="favorites" className="gap-1.5 text-xs sm:text-sm">
-                <Heart className="h-4 w-4" />
-                <span className="hidden sm:inline">Favoritos</span>
-                <span className="sm:hidden">Favs</span>
-                {(concertsData?.stats.favoritesCount || 0) > 0 && (
-                  <span className="ml-1 text-[10px] bg-primary/20 text-primary px-1.5 rounded-full">
-                    {concertsData?.stats.favoritesCount}
-                  </span>
-                )}
+              <TabsTrigger
+                value="favorites"
+                className="rounded-none border-t-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground"
+              >
+                <Heart className="h-5 w-5" />
+                <span className="text-xs hidden sm:inline">Favoritos</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="badges"
+                className="rounded-none border-t-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground"
+              >
+                <Trophy className="h-5 w-5" />
+                <span className="text-xs hidden sm:inline">Insignias</span>
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="upcoming" className="mt-0">
+              {(concertsData?.upcoming?.length || 0) > 0 && (
+                <div className="flex justify-end py-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-xs gap-1.5 text-muted-foreground"
+                    onClick={exportToICS}
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    Exportar calendario
+                  </Button>
+                </div>
+              )}
               <ConcertGrid
                 concerts={concertsData?.upcoming || []}
                 emptyMessage="No tienes conciertos próximos"
@@ -258,16 +323,11 @@ const Profile = () => {
                 emptyIcon="music"
               />
             </TabsContent>
-          </Tabs>
 
-          {/* Badges Section */}
-          <div className="mt-8 pt-6 border-t border-border">
-            <div className="flex items-center gap-2 text-sm font-medium text-foreground mb-4">
-              <Trophy className="h-4 w-4 text-primary" />
-              Mis Insignias
-            </div>
-            <BadgesDisplay userId={profile.id} />
-          </div>
+            <TabsContent value="badges" className="mt-4">
+              <BadgesDisplay userId={profile.id} />
+            </TabsContent>
+          </Tabs>
         </div>
       </main>
       <Footer />

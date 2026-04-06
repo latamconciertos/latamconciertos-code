@@ -15,6 +15,8 @@ export interface UserProfile {
   country_id: string | null;
   city_id: string | null;
   birth_date: string | null;
+  avatar_url: string | null;
+  bio: string | null;
   favorite_artists: any;
 }
 

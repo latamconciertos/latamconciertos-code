@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { Calendar, Music } from 'lucide-react';
+import { Calendar, Music, MapPin, ExternalLink } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import type { ProfileConcert } from '@/hooks/queries/useProfileConcerts';
 
 interface ConcertGridProps {
@@ -10,67 +10,97 @@ interface ConcertGridProps {
   emptyIcon?: 'calendar' | 'music';
 }
 
+const formatShortDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return {
+    day: date.getDate(),
+    month: date.toLocaleDateString('es-ES', { month: 'short' }).toUpperCase(),
+  };
+};
+
 const ConcertGrid = ({ concerts, emptyMessage, emptyIcon = 'calendar' }: ConcertGridProps) => {
   const navigate = useNavigate();
 
   if (concerts.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
+      <div className="flex flex-col items-center justify-center py-16 text-center">
         {emptyIcon === 'calendar' ? (
-          <Calendar className="h-12 w-12 text-muted-foreground/40 mb-3" />
+          <Calendar className="h-14 w-14 text-muted-foreground/30 mb-4" />
         ) : (
-          <Music className="h-12 w-12 text-muted-foreground/40 mb-3" />
+          <Music className="h-14 w-14 text-muted-foreground/30 mb-4" />
         )}
-        <p className="text-sm text-muted-foreground">{emptyMessage}</p>
+        <p className="text-sm text-muted-foreground mb-4">{emptyMessage}</p>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate('/concerts')}
+        >
+          Explorar conciertos
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-1">
+    <div className="space-y-2">
       {concerts.map((concert) => {
+        const dateInfo = concert.date ? formatShortDate(concert.date) : null;
         const imageUrl = concert.image_url || concert.artist?.photo_url;
-        const formattedDate = concert.date
-          ? format(new Date(concert.date), 'dd MMM', { locale: es })
-          : null;
+        const venueName = concert.venue?.name;
+        const cityName = concert.venue?.city?.name;
+        const locationStr = [venueName, cityName].filter(Boolean).join(' · ');
 
         return (
-          <button
+          <Card
             key={concert.id}
+            className="overflow-hidden border-border/50 hover:border-primary/30 transition-colors cursor-pointer"
             onClick={() => navigate(`/concerts/${concert.slug}`)}
-            className="aspect-square relative group overflow-hidden bg-muted rounded-sm"
           >
-            {imageUrl ? (
-              <img
-                src={imageUrl}
-                alt={concert.title}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/30">
-                <Music className="h-8 w-8 text-primary/60" />
-              </div>
-            )}
-            
-            {/* Overlay with date */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-            
-            {/* Date badge */}
-            {formattedDate && (
-              <div className="absolute bottom-1 left-1 right-1">
-                <span className="text-[10px] sm:text-xs font-medium text-white bg-black/60 px-1.5 py-0.5 rounded backdrop-blur-sm">
-                  {formattedDate}
-                </span>
-              </div>
-            )}
+            <CardContent className="p-0">
+              <div className="flex items-stretch">
+                {/* Date column */}
+                {dateInfo && (
+                  <div className="flex-shrink-0 w-14 sm:w-16 bg-primary/5 flex flex-col items-center justify-center py-3 border-r border-border/30">
+                    <span className="text-lg sm:text-xl font-bold text-primary leading-none">{dateInfo.day}</span>
+                    <span className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">{dateInfo.month}</span>
+                  </div>
+                )}
 
-            {/* Hover title */}
-            <div className="absolute inset-0 flex items-center justify-center p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-              <p className="text-xs text-white text-center font-medium line-clamp-3 drop-shadow-lg">
-                {concert.title}
-              </p>
-            </div>
-          </button>
+                {/* Content */}
+                <div className="flex-1 p-3 sm:p-4 min-w-0">
+                  <h3 className="text-sm sm:text-base font-semibold text-foreground truncate mb-1">
+                    {concert.title}
+                  </h3>
+
+                  {concert.artist?.name && (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-0.5">
+                      <Music className="h-3 w-3 flex-shrink-0 text-primary" />
+                      <span className="truncate">{concert.artist.name}</span>
+                    </div>
+                  )}
+
+                  {locationStr && (
+                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                      <MapPin className="h-3 w-3 flex-shrink-0" />
+                      <span className="truncate">{locationStr}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Image */}
+                {imageUrl && (
+                  <div className="flex-shrink-0 w-16 sm:w-20">
+                    <img
+                      src={imageUrl}
+                      alt={concert.title}
+                      className="w-full h-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         );
       })}
     </div>

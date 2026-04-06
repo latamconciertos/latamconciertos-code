@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, ArrowRight, MapPin, Ticket, Music, Users } from 'lucide-react';
+import { Calendar, ArrowRight, MapPin, Ticket, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ModernConcertCard } from './ModernConcertCard';
 import { useUpcomingConcerts } from '@/hooks/queries';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
@@ -13,6 +12,8 @@ import { spotifyService } from '@/lib/spotify';
 import { getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
 import ConcertAttendanceButtons from '@/components/ConcertAttendanceButtons';
 import ConcertCommunity from '@/components/ConcertCommunity';
+import { format, parseISO } from 'date-fns';
+import { es } from 'date-fns/locale';
 
 interface ConcertWithImage {
     id: string;
@@ -85,15 +86,6 @@ export const NewHomeUpcomingConcerts = () => {
         fetchArtistImages();
     }, [concertsData]);
 
-    const formatDate = (dateString: string) => {
-        const [year, month, day] = dateString.split('-').map(Number);
-        const date = new Date(year, month - 1, day);
-        return {
-            day: date.getDate(),
-            month: date.toLocaleDateString('es', { month: 'short' }),
-            year: date.getFullYear()
-        };
-    };
 
     const getDefaultImage = () => getDefaultImageUtil('concert');
     const displayConcerts = concertsWithImages.length > 0 ? concertsWithImages : (concerts as ConcertWithImage[]);
@@ -145,172 +137,93 @@ export const NewHomeUpcomingConcerts = () => {
                                 </div>
                             </DialogTrigger>
 
-                            <DialogContent className="max-w-[95vw] sm:max-w-[85vw] md:max-w-5xl lg:max-w-6xl max-h-[92vh] md:max-h-[90vh] overflow-y-auto p-0 gap-0 bg-gradient-to-br from-background via-background to-muted/20">
-                                <DialogHeader className="backdrop-blur-xl bg-background/95 border-b border-border/50 p-4 sm:p-5 md:p-6 pb-3 md:pb-4">
-                                    <div className="flex items-start gap-2 md:gap-4">
-                                        <Badge className="bg-primary text-primary-foreground text-sm px-3 py-1.5 font-bold shrink-0">
-                                            <Music className="h-4 w-4 mr-1.5" />
-                                            Concierto
-                                        </Badge>
-                                        <DialogTitle className="text-xl md:text-2xl lg:text-3xl font-bold leading-tight text-foreground font-fira">
-                                            {selectedConcert?.title}
-                                        </DialogTitle>
-                                    </div>
-                                </DialogHeader>
+                            <DialogContent className="max-w-[100vw] sm:max-w-lg md:max-w-2xl h-[100dvh] sm:h-auto sm:max-h-[92vh] overflow-hidden p-0 gap-0 rounded-none sm:rounded-2xl bg-background border-0 sm:border">
+                                <DialogTitle className="sr-only">
+                                    {selectedConcert?.title}
+                                </DialogTitle>
 
-                                <div className="p-4 sm:p-5 md:p-6 lg:p-8">
-                                    {selectedConcert && (
-                                        <Tabs defaultValue="details" className="w-full">
-                                            <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-6 md:mb-8 h-11 md:h-12 bg-muted/50">
-                                                <TabsTrigger
-                                                    value="details"
-                                                    className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-semibold"
-                                                >
-                                                    <Calendar className="w-4 h-4" />
-                                                    Detalles
-                                                </TabsTrigger>
-                                                <TabsTrigger
-                                                    value="community"
-                                                    className="flex items-center gap-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground font-semibold"
-                                                >
-                                                    <Users className="w-4 h-4" />
-                                                    Comunidad
-                                                </TabsTrigger>
-                                            </TabsList>
+                                {selectedConcert && (
+                                    <div className="flex flex-col h-full sm:h-auto">
+                                        {/* Hero image — aspect ratio preserved */}
+                                        <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] overflow-hidden shrink-0">
+                                            <img
+                                                src={selectedConcert.artist_image_url || getDefaultImage()}
+                                                alt={selectedConcert.artists?.name || selectedConcert.title}
+                                                className="w-full h-full object-cover object-top"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-black/10" />
 
-                                            <TabsContent value="details" className="space-y-6 mt-0">
-                                                <div className="grid md:grid-cols-[2fr_3fr] gap-4 sm:gap-5 md:gap-6 lg:gap-8">
-                                                    {/* Image with premium styling */}
-                                                    <div className="relative md:aspect-square w-full">
-                                                        <div className="rounded-2xl overflow-hidden bg-gradient-to-br from-primary/10 to-primary/5 p-1 shadow-2xl h-full">
-                                                            <div className="h-48 sm:h-64 md:h-full w-full rounded-xl overflow-hidden bg-muted">
-                                                                <img
-                                                                    src={selectedConcert.artist_image_url || getDefaultImage()}
-                                                                    alt={selectedConcert.artists?.name || selectedConcert.title}
-                                                                    className="w-full h-full object-cover"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                        <div className="absolute inset-0 -z-10 blur-3xl opacity-30 bg-gradient-to-br from-primary to-blue-500" />
-                                                    </div>
-
-                                                    {/* Details */}
-                                                    <div className="space-y-4 md:space-y-6">
-                                                        {/* Attendance */}
-                                                        <div className="space-y-3">
-                                                            <Badge variant="outline" className="text-sm px-3 py-1">
-                                                                <Users className="w-3.5 h-3.5 mr-1.5" />
-                                                                Asistencia
-                                                            </Badge>
-                                                            <ConcertAttendanceButtons concertId={selectedConcert.id} />
-                                                        </div>
-
-                                                        {/* Info Cards */}
-                                                        <div className="space-y-3">
-                                                            <h4 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">Información del Evento</h4>
-
-                                                            <div className="space-y-2">
-                                                                <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-primary/5 to-transparent border border-primary/10">
-                                                                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                                                                        <Music className="h-5 w-5 text-primary" />
-                                                                    </div>
-                                                                    <div className="flex-1 min-w-0">
-                                                                        <p className="text-xs text-muted-foreground font-medium">Artista</p>
-                                                                        <p className="text-sm font-semibold text-foreground truncate">{selectedConcert.artists?.name}</p>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30">
-                                                                    <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                                                                        <MapPin className="h-5 w-5 text-primary" />
-                                                                    </div>
-                                                                    <div className="flex-1 min-w-0">
-                                                                        <p className="text-xs text-muted-foreground font-medium">Venue</p>
-                                                                        <p className="text-sm font-semibold text-foreground truncate">{selectedConcert.venues?.name}</p>
-                                                                    </div>
-                                                                </div>
-
-                                                                {selectedConcert.venues?.cities && (
-                                                                    <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30">
-                                                                        <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-                                                                            <MapPin className="h-5 w-5 text-primary" />
-                                                                        </div>
-                                                                        <div className="flex-1 min-w-0">
-                                                                            <p className="text-xs text-muted-foreground font-medium">Ciudad</p>
-                                                                            <p className="text-sm font-semibold text-foreground truncate">
-                                                                                {selectedConcert.venues.cities.name}
-                                                                                {selectedConcert.venues.cities.countries?.name &&
-                                                                                    `, ${selectedConcert.venues.cities.countries.name}`}
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-
-                                                                {selectedConcert.date && (
-                                                                    <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-blue-500/10 to-transparent border border-blue-500/20">
-                                                                        <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-                                                                            <Calendar className="h-5 w-5 text-blue-500" />
-                                                                        </div>
-                                                                        <div className="flex-1">
-                                                                            <p className="text-xs text-muted-foreground font-medium">Fecha</p>
-                                                                            <Badge variant="secondary" className="mt-1 font-bold">
-                                                                                {formatDate(selectedConcert.date).day} {formatDate(selectedConcert.date).month} {formatDate(selectedConcert.date).year}
-                                                                            </Badge>
-                                                                        </div>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Description */}
-                                                        {selectedConcert.description && (
-                                                            <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
-                                                                <h4 className="text-sm font-semibold text-foreground mb-2 flex items-center gap-2">
-                                                                    <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
-                                                                    Descripción
-                                                                </h4>
-                                                                <p className="text-sm text-muted-foreground leading-relaxed">
-                                                                    {selectedConcert.description}
-                                                                </p>
-                                                            </div>
-                                                        )}
-                                                    </div>
+                                            {/* Info overlaid at bottom of image */}
+                                            <div className="absolute bottom-0 left-0 right-0 p-5 space-y-2">
+                                                {selectedConcert.artists?.name && (
+                                                    <span className="inline-block bg-white/15 backdrop-blur-md text-white text-xs font-medium px-3 py-1 rounded-full">
+                                                        {selectedConcert.artists.name}
+                                                    </span>
+                                                )}
+                                                <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight font-fira">
+                                                    {selectedConcert.title}
+                                                </h2>
+                                                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-white/70">
+                                                    {selectedConcert.venues?.name && (
+                                                        <span className="flex items-center gap-1">
+                                                            <MapPin className="w-3.5 h-3.5" />
+                                                            {selectedConcert.venues.name}
+                                                            {selectedConcert.venues.cities?.name && `, ${selectedConcert.venues.cities.name}`}
+                                                        </span>
+                                                    )}
+                                                    {selectedConcert.date && (
+                                                        <span className="flex items-center gap-1 capitalize">
+                                                            <Calendar className="w-3.5 h-3.5" />
+                                                            {format(parseISO(selectedConcert.date), "EEE d 'de' MMM", { locale: es })}
+                                                        </span>
+                                                    )}
                                                 </div>
+                                            </div>
+                                        </div>
 
-                                                {/* Action buttons */}
-                                                <div className="grid md:grid-cols-2 gap-3 pt-6 border-t border-border/50">
+                                        {/* Scrollable content */}
+                                        <div className="flex-1 overflow-y-auto">
+                                            {/* Attendance + Actions */}
+                                            <div className="px-5 py-4 space-y-4">
+                                                <ConcertAttendanceButtons concertId={selectedConcert.id} compact />
+
+                                                <div className="flex gap-3">
                                                     <Button
                                                         variant="outline"
-                                                        className="w-full rounded-lg h-12 font-semibold hover:bg-muted"
+                                                        className="flex-1 rounded-xl h-11 text-sm font-semibold"
                                                         asChild
                                                     >
                                                         <Link to={`/concerts/${selectedConcert.slug}`}>
-                                                            <ArrowRight className="h-4 w-4 mr-2" />
-                                                            Ver página completa
+                                                            <ArrowRight className="h-4 w-4 mr-1.5" />
+                                                            Ver detalles
                                                         </Link>
                                                     </Button>
-
                                                     {selectedConcert.ticket_url && (
                                                         <Button
-                                                            className="w-full rounded-lg h-12 font-semibold bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+                                                            className="flex-1 rounded-xl h-11 text-sm font-semibold"
                                                             onClick={() => window.open(selectedConcert.ticket_url!, '_blank')}
                                                         >
-                                                            <Ticket className="h-4 w-4 mr-2" />
-                                                            Comprar Entradas
+                                                            <Ticket className="h-4 w-4 mr-1.5" />
+                                                            Entradas
                                                         </Button>
                                                     )}
                                                 </div>
-                                            </TabsContent>
+                                            </div>
 
-                                            <TabsContent value="community" className="mt-0">
+                                            {/* Community section */}
+                                            <div className="border-t border-border/40 px-5 py-4">
+                                                <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                                                    <Users className="h-4 w-4 text-primary" />
+                                                    Comunidad
+                                                </h3>
                                                 <ConcertCommunity
                                                     concertId={selectedConcert.id}
                                                     concertTitle={selectedConcert.title}
                                                 />
-                                            </TabsContent>
-                                        </Tabs>
-                                    )}
-                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </DialogContent>
                         </Dialog>
                     ))}
