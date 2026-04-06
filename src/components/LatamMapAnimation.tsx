@@ -20,35 +20,32 @@ const cities = [
   { name: 'La Paz', country: '🇧🇴', x: 175, y: 235, size: 5 },
 ];
 
+const countries = ['🇲🇽 México', '🇨🇴 Colombia', '🇦🇷 Argentina', '🇧🇷 Brasil', '🇨🇱 Chile', '🇵🇪 Perú'];
+
 const LatamMapAnimation = () => {
   return (
-    <div className="relative w-full max-w-md mx-auto">
+    <div className="relative w-full max-w-sm md:max-w-md mx-auto" role="img" aria-label="Mapa interactivo de Latinoamérica mostrando ciudades con presencia de Conciertos Latam">
       {/* SVG Container */}
       <svg viewBox="0 0 350 400" className="w-full h-auto">
-        {/* Gradient definitions */}
         <defs>
           <radialGradient id="cityGlow" cx="50%" cy="50%" r="50%">
             <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.8" />
             <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
           </radialGradient>
-          <linearGradient id="mapGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.1" />
-          </linearGradient>
         </defs>
 
-        {/* Real Latin America Map as background */}
-        <image 
-          href={LatamMapSvg} 
-          x="0" 
-          y="0" 
-          width="350" 
+        {/* Map background */}
+        <image
+          href={LatamMapSvg}
+          x="0"
+          y="0"
+          width="350"
           height="396"
-          className="opacity-30"
-          style={{ filter: 'hue-rotate(180deg) saturate(0.5)' }}
+          className="opacity-40"
+          style={{ filter: 'hue-rotate(180deg) saturate(0.5) brightness(1.2)' }}
         />
 
-        {/* Connection lines between major cities */}
+        {/* Connection lines */}
         {cities.slice(0, -1).map((city, i) => (
           <motion.line
             key={`line-${i}`}
@@ -57,27 +54,26 @@ const LatamMapAnimation = () => {
             x2={cities[i + 1].x}
             y2={cities[i + 1].y}
             stroke="hsl(var(--primary))"
-            strokeWidth="0.5"
-            strokeOpacity="0.2"
+            strokeWidth="0.6"
+            strokeOpacity="0.25"
             initial={{ pathLength: 0 }}
             animate={{ pathLength: 1 }}
             transition={{ duration: 2, delay: i * 0.1 }}
           />
         ))}
 
-        {/* City points with pulse animation */}
+        {/* City points */}
         {cities.map((city, i) => (
           <g key={city.name}>
-            {/* Outer pulse ring */}
             <motion.circle
               cx={city.x}
               cy={city.y}
               r={city.size}
               fill="url(#cityGlow)"
               initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ 
-                scale: [1, 2, 1],
-                opacity: [0.6, 0, 0.6]
+              animate={{
+                scale: [1, 1.8, 1],
+                opacity: [0.5, 0, 0.5]
               }}
               transition={{
                 duration: 3,
@@ -86,29 +82,7 @@ const LatamMapAnimation = () => {
                 ease: "easeInOut"
               }}
             />
-            
-            {/* Inner pulse ring */}
-            <motion.circle
-              cx={city.x}
-              cy={city.y}
-              r={city.size * 0.6}
-              fill="none"
-              stroke="hsl(var(--primary))"
-              strokeWidth="1"
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ 
-                scale: [1, 1.8],
-                opacity: [0.8, 0]
-              }}
-              transition={{
-                duration: 2,
-                delay: i * 0.15 + 0.5,
-                repeat: Infinity,
-                ease: "easeOut"
-              }}
-            />
 
-            {/* Main city dot */}
             <motion.circle
               cx={city.x}
               cy={city.y}
@@ -121,29 +95,30 @@ const LatamMapAnimation = () => {
                 stiffness: 200,
                 delay: i * 0.1
               }}
-              className="drop-shadow-[0_0_8px_hsl(var(--primary))]"
+              className="drop-shadow-[0_0_6px_hsl(var(--primary))]"
             />
           </g>
         ))}
       </svg>
 
-      {/* Decorative gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50 pointer-events-none" />
+      {/* Fade edges */}
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-background/30 via-transparent to-background/50" />
+      <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-background/20 via-transparent to-background/20" />
 
-      {/* Legend */}
-      <motion.div 
-        className="mt-6 flex flex-wrap justify-center gap-3 text-sm"
-        initial={{ opacity: 0, y: 20 }}
+      {/* Country badges */}
+      <motion.div
+        className="flex flex-wrap justify-center gap-2 mt-4"
+        initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5 }}
+        transition={{ delay: 1.2 }}
       >
-        {['🇲🇽 México', '🇨🇴 Colombia', '🇦🇷 Argentina', '🇧🇷 Brasil', '🇨🇱 Chile', '🇵🇪 Perú'].map((country, i) => (
-          <motion.span 
+        {countries.map((country, i) => (
+          <motion.span
             key={country}
-            className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium"
+            className="px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium backdrop-blur-sm"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1.5 + i * 0.1 }}
+            transition={{ delay: 1.2 + i * 0.08 }}
           >
             {country}
           </motion.span>

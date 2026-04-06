@@ -12,10 +12,20 @@ const About = () => {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Conciertos Latam",
+    "alternateName": "ConciertosLatam",
     "url": "https://www.conciertoslatam.app",
     "logo": "https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/social-images/social-1757981020072-Logo Principal transparente.png",
-    "description": "Plataforma líder de información sobre conciertos y eventos musicales en América Latina",
+    "description": "Plataforma líder de información sobre conciertos y eventos musicales en América Latina. Encuentra fechas, venues, artistas y compra entradas en México, Colombia, Argentina, Chile, Perú y Brasil.",
     "foundingDate": "2024",
+    "areaServed": [
+      { "@type": "Country", "name": "México" },
+      { "@type": "Country", "name": "Colombia" },
+      { "@type": "Country", "name": "Argentina" },
+      { "@type": "Country", "name": "Chile" },
+      { "@type": "Country", "name": "Perú" },
+      { "@type": "Country", "name": "Brasil" }
+    ],
+    "sameAs": [],
     "contactPoint": {
       "@type": "ContactPoint",
       "email": "latamconciertos@gmail.com",
@@ -27,7 +37,7 @@ const About = () => {
     <>
       <SEO
         title="Acerca de Nosotros"
-        description="Conciertos Latam es la plataforma líder de información sobre conciertos y eventos musicales en América Latina. Conoce nuestra misión y equipo."
+        description="Conciertos Latam: +50,000 fanáticos descubren conciertos y festivales en México, Colombia, Argentina, Chile, Perú y Brasil. Conoce nuestra misión, equipo y cobertura."
         url="/about"
         structuredData={structuredData}
       />
@@ -36,29 +46,33 @@ const About = () => {
         
         <main className="pt-20 md:pt-24 pb-12">
           {/* Hero Section with Stats */}
-          <section className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5 py-12 md:py-16">
+          <section aria-labelledby="about-hero-heading" className="relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5 py-12 md:py-20">
             <div className="container mx-auto px-4">
-              <div className="grid md:grid-cols-2 gap-8 items-center">
-                {/* Left side - Decorative Map Concept */}
-                <div className="relative hidden md:flex items-center justify-center">
+              {/* Mobile: stacked centered / Desktop: side by side */}
+              <div className="grid md:grid-cols-2 gap-10 md:gap-16 items-center">
+                {/* Map - visible on all sizes */}
+                <div className="relative flex items-center justify-center order-2 md:order-1">
                   <LatamMapAnimation />
                 </div>
 
-                {/* Right side - Stats and CTA */}
-                <div className="space-y-6">
+                {/* Stats and CTA */}
+                <div className="space-y-5 text-center md:text-left order-1 md:order-2">
                   <div>
-                    <div className="inline-flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full mb-3">
+                    <div className="inline-flex items-center gap-2 bg-primary/10 px-3 py-1.5 rounded-full mb-4">
                       <Sparkles className="h-4 w-4 text-primary" />
                       <span className="text-primary font-medium text-sm">La Comunidad Musical de Latinoamérica</span>
                     </div>
-                    <h1 className="text-4xl md:text-5xl font-bold text-primary mb-3">
+                    <h1 id="about-hero-heading" className="text-5xl md:text-6xl font-extrabold text-primary mb-2 tracking-tight">
                       50,000+
                     </h1>
-                    <p className="text-base text-muted-foreground leading-relaxed mb-4">
-                      Fanáticos de la música de todos los países y gustos que tienen algo en común: están 
-                      <span className="text-foreground font-medium"> descubriendo y conectando con la mejor música en vivo</span>.
+                    <p className="text-lg md:text-xl font-semibold text-foreground mb-2">
+                      Fanáticos de la música en vivo
                     </p>
-                    <Button size="default" className="gap-2">
+                    <p className="text-base text-muted-foreground leading-relaxed mb-5 max-w-md mx-auto md:mx-0">
+                      De todos los países y gustos, unidos por algo en común:
+                      <span className="text-foreground font-medium"> descubrir y conectar con los mejores conciertos de Latinoamérica</span>.
+                    </p>
+                    <Button size="lg" className="gap-2">
                       Únete Ahora
                       <TrendingUp className="h-4 w-4" />
                     </Button>
@@ -187,72 +201,32 @@ const About = () => {
 
           {/* Values Section */}
           <section className="py-12 md:py-16 bg-background">
-            <div className="container mx-auto px-4 max-w-3xl">
-              <h2 className="text-2xl md:text-3xl font-bold mb-6 text-center">Nuestros Valores</h2>
-              <div className="space-y-4">
-                <Card className="border-l-4 border-l-primary">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="bg-primary/10 p-1.5 rounded-lg">
-                        <Sparkles className="h-5 w-5 text-primary" />
+            <div className="container mx-auto px-4 max-w-4xl">
+              <div className="text-center mb-10">
+                <h2 className="text-2xl md:text-3xl font-bold mb-2">Nuestros Valores</h2>
+                <p className="text-sm text-muted-foreground">Lo que nos impulsa cada día</p>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {[
+                  { icon: Sparkles, title: 'Precisión', desc: 'Información verificada y actualizada constantemente para que nunca te pierdas un evento', color: 'primary' },
+                  { icon: Globe, title: 'Transparencia', desc: 'Fuentes claras y procesos editoriales rigurosos en cada publicación', color: 'primary' },
+                  { icon: Users, title: 'Comunidad', desc: 'Fomentamos el diálogo y la conexión entre fans de toda América Latina', color: 'primary' },
+                  { icon: Heart, title: 'Pasión', desc: 'Amor genuino por la música y la cultura en vivo que se refleja en cada detalle', color: 'primary' },
+                ].map(({ icon: Icon, title, desc }) => (
+                  <Card key={title} className="border hover:border-primary/40 transition-all group">
+                    <CardContent className="p-5">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="bg-primary/10 p-2.5 rounded-xl group-hover:bg-primary/20 transition-colors">
+                          <Icon className="h-5 w-5 text-primary" />
+                        </div>
+                        <h3 className="font-bold text-base">{title}</h3>
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-base mb-1">Precisión</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Información verificada y actualizada constantemente para que nunca te pierdas un evento
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-l-4 border-l-secondary">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="bg-secondary/10 p-1.5 rounded-lg">
-                        <Globe className="h-5 w-5 text-secondary" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-base mb-1">Transparencia</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Fuentes claras y procesos editoriales rigurosos en cada publicación
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-l-4 border-l-accent">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="bg-accent/10 p-1.5 rounded-lg">
-                        <Users className="h-5 w-5 text-accent" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-base mb-1">Comunidad</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Fomentamos el diálogo y la conexión entre fans de toda América Latina
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-l-4 border-l-primary">
-                  <CardContent className="p-4">
-                    <div className="flex items-start gap-3">
-                      <div className="bg-primary/10 p-1.5 rounded-lg">
-                        <Heart className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-base mb-1">Pasión</h3>
-                        <p className="text-sm text-muted-foreground">
-                          Amor genuino por la música y la cultura en vivo que se refleja en cada detalle
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
+                      <p className="text-sm text-muted-foreground leading-relaxed">
+                        {desc}
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </div>
           </section>
