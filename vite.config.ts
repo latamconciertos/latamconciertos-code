@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => ({
           ],
           'query-vendor': ['@tanstack/react-query'],
           'charts-vendor': ['recharts'],
-          'editor-vendor': ['react-quill'],
+          'editor-vendor': ['@tiptap/react', '@tiptap/starter-kit', '@tiptap/core'],
           'animation-vendor': ['framer-motion'],
           'supabase-vendor': ['@supabase/supabase-js'],
           'forms-vendor': ['react-hook-form', '@hookform/resolvers', 'zod'],

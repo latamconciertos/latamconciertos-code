@@ -18,3 +18,5 @@ export * from './common';
 export * from './user';
 export * from './media';
 export * from './friendship';
+export * from './accreditation';
+export * from './contact';

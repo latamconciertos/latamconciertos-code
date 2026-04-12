@@ -17,7 +17,9 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 // Lazy loaded routes
 
 const Auth = lazy(() => import("./pages/Auth"));
+const AdminPortal = lazy(() => import("./pages/AdminPortal"));
 const Admin = lazy(() => import("./pages/Admin"));
+const AdminOperations = lazy(() => import("./pages/AdminOperations"));
 const Artists = lazy(() => import("./pages/Artists"));
 const ArtistDetail = lazy(() => import("./pages/ArtistDetail"));
 const Concerts = lazy(() => import("./pages/Concerts"));
@@ -38,6 +40,7 @@ const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const EditorialGuidelines = lazy(() => import("./pages/EditorialGuidelines"));
 const GoogleSearchConsoleSetup = lazy(() => import("./pages/GoogleSearchConsoleSetup"));
 const SEOGuide = lazy(() => import("./pages/admin/SEOGuide"));
+const NewsArticleEditor = lazy(() => import("./pages/admin/NewsArticleEditor"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Setlists = lazy(() => import("./pages/Setlists"));
 const SetlistDetail = lazy(() => import("./pages/SetlistDetail"));
@@ -96,7 +99,11 @@ const AppContent = () => {
         <Routes>
           <Route path="/" element={<NewHome />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin" element={<AdminPortal />} />
+          <Route path="/admin/content" element={<Admin />} />
+          <Route path="/admin/operations" element={<AdminOperations />} />
+          <Route path="/admin/news/new" element={<NewsArticleEditor />} />
+          <Route path="/admin/news/edit/:id" element={<NewsArticleEditor />} />
           <Route path="/admin/seo-guide" element={<SEOGuide />} />
           <Route path="/admin/google-search-console-setup" element={<GoogleSearchConsoleSetup />} />
           <Route path="/artists" element={<Artists />} />

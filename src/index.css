@@ -156,6 +156,102 @@ All colors MUST be HSL.
 
   @layer components {
 
+    /* Tiptap editor */
+    .tiptap p.is-editor-empty:first-child::before,
+    .tiptap .is-empty::before {
+      @apply text-muted-foreground/50 pointer-events-none float-left h-0;
+      content: attr(data-placeholder);
+    }
+
+    .tiptap {
+      @apply leading-relaxed;
+    }
+
+    .tiptap > * + * {
+      margin-top: 0.5em;
+    }
+
+    .tiptap p {
+      @apply my-1;
+    }
+
+    .tiptap h2 {
+      @apply text-2xl font-bold mt-8 mb-3 first:mt-0;
+    }
+
+    .tiptap h3 {
+      @apply text-xl font-semibold mt-6 mb-2 first:mt-0;
+    }
+
+    .tiptap h4 {
+      @apply text-lg font-medium mt-5 mb-2 first:mt-0;
+    }
+
+    .tiptap ul,
+    .tiptap ol {
+      @apply pl-6 my-3;
+    }
+
+    .tiptap ul {
+      @apply list-disc;
+    }
+
+    .tiptap ol {
+      @apply list-decimal;
+    }
+
+    .tiptap li {
+      @apply my-1;
+    }
+
+    .tiptap li p {
+      @apply my-0;
+    }
+
+    .tiptap blockquote {
+      @apply border-l-4 border-primary/40 pl-4 py-2 my-4 text-muted-foreground;
+    }
+
+    .tiptap blockquote p {
+      @apply italic;
+    }
+
+    .tiptap hr {
+      @apply border-border my-8;
+    }
+
+    .tiptap a {
+      @apply text-primary underline underline-offset-2 cursor-pointer;
+    }
+
+    .tiptap mark {
+      @apply rounded px-1 py-0.5;
+    }
+
+    .tiptap img {
+      @apply max-w-full rounded-lg my-6 mx-auto;
+    }
+
+    .tiptap img.ProseMirror-selectednode {
+      @apply ring-2 ring-primary ring-offset-2 ring-offset-background;
+    }
+
+    .tiptap pre {
+      @apply bg-muted rounded-lg p-4 my-4 overflow-x-auto;
+    }
+
+    .tiptap pre code {
+      @apply text-sm font-mono bg-transparent p-0;
+    }
+
+    .tiptap code {
+      @apply bg-muted rounded px-1.5 py-0.5 text-sm font-mono text-primary;
+    }
+
+    .tiptap .ProseMirror-focused {
+      outline: none;
+    }
+
     /* Título principal de páginas (H1) */
     .page-title {
       @apply font-fira text-2xl md:text-3xl font-bold text-foreground;

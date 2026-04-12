@@ -3,7 +3,8 @@ import {
   Home, Newspaper, Music, MapPin, Calendar, Users, Smartphone,
   Video, Megaphone, TrendingUp, BarChart3, Building2, FileText,
   Images, Share2, ListMusic, Lightbulb, ChevronDown, Settings,
-  Layers, Users2, DollarSign, Link2, LucideIcon, Sparkles
+  Layers, Users2, DollarSign, Link2, LucideIcon, Sparkles,
+  ArrowLeft
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
@@ -199,9 +200,9 @@ export function AdminSidebar({ activeTab, onTabChange }: AdminSidebarProps) {
             isCollapsed && "px-2"
           )}
         >
-          <Link to="/" className="flex items-center justify-center gap-2">
-            <Home className="h-4 w-4 shrink-0" />
-            {!isCollapsed && <span>Ir al Home</span>}
+          <Link to="/admin" className="flex items-center justify-center gap-2">
+            <ArrowLeft className="h-4 w-4 shrink-0" />
+            {!isCollapsed && <span>Volver al portal</span>}
           </Link>
         </Button>
       </SidebarFooter>

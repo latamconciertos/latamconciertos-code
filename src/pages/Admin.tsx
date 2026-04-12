@@ -4,7 +4,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { User } from '@supabase/supabase-js';
-import { LogOut } from 'lucide-react';
+import { LogOut, Sun, Moon } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AdminSidebar } from '@/components/AdminSidebar';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
@@ -39,6 +40,7 @@ const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { logout } = useAuth();
+  const { theme, setTheme } = useTheme();
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -145,23 +147,30 @@ const Admin = () => {
         <AdminSidebar activeTab={activeTab} onTabChange={handleTabChange} />
 
         <div className="flex-1 flex flex-col">
-          <header className="border-b bg-card shadow-sm sticky top-0 z-10">
-            <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                <SidebarTrigger />
-                <div>
-                  <h1 className="text-2xl font-bold">Panel de Administración</h1>
-                  <p className="text-sm text-muted-foreground">Gestiona tu plataforma de conciertos</p>
-                </div>
+          <header className="border-b border-border/50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 sticky top-0 z-10">
+            <div className="px-4 py-2.5 flex justify-between items-center">
+              <div className="flex items-center gap-3">
+                <SidebarTrigger className="text-muted-foreground" />
+                <div className="h-4 w-px bg-border hidden sm:block" />
+                <span className="text-sm font-medium text-muted-foreground hidden sm:block">
+                  Gestor de Contenido
+                </span>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="text-right hidden sm:block">
-                  <p className="text-sm font-medium">{user?.email}</p>
-                  <p className="text-xs text-muted-foreground">Administrador</p>
-                </div>
-                <Button onClick={handleLogout} variant="outline" size="sm">
-                  <LogOut className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">Cerrar Sesión</span>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-muted-foreground hidden sm:block">
+                  {user?.email}
+                </span>
+                <Button
+                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                  variant="ghost"
+                  size="icon"
+                  className="text-muted-foreground hover:text-foreground h-8 w-8"
+                >
+                  {theme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
+                </Button>
+                <Button onClick={handleLogout} variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground h-8 px-2.5">
+                  <LogOut className="w-3.5 h-3.5 mr-1.5" />
+                  <span className="hidden sm:inline text-xs">Salir</span>
                 </Button>
               </div>
             </div>
