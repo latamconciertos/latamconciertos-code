@@ -94,25 +94,33 @@ export const ImageCropDialog = ({
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
 
-    canvas.width = pixelCrop.width;
-    canvas.height = pixelCrop.height;
+    // Use the real pixel dimensions from the original image, not the preview size
+    const realWidth = pixelCrop.width * scaleX;
+    const realHeight = pixelCrop.height * scaleY;
+
+    canvas.width = realWidth;
+    canvas.height = realHeight;
+
+    // High-quality smoothing for resize operations
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
 
     ctx.drawImage(
       image,
       pixelCrop.x * scaleX,
       pixelCrop.y * scaleY,
-      pixelCrop.width * scaleX,
-      pixelCrop.height * scaleY,
+      realWidth,
+      realHeight,
       0,
       0,
-      pixelCrop.width,
-      pixelCrop.height
+      realWidth,
+      realHeight
     );
 
     return new Promise((resolve) => {
       canvas.toBlob((blob) => {
         resolve(blob);
-      }, 'image/jpeg', 0.9);
+      }, 'image/jpeg', 0.92);
     });
   };
 

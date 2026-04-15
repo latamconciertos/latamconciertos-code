@@ -126,7 +126,7 @@ export const NewsArticleForm = ({ article }: NewsArticleFormProps) => {
         if (result) await saveMedia(result.id);
       }
 
-      navigate('/admin?tab=news');
+      navigate('/admin/content?tab=news');
     } catch {
       // Handled by mutation hooks
     }
@@ -155,7 +155,7 @@ export const NewsArticleForm = ({ article }: NewsArticleFormProps) => {
               type="button"
               variant="ghost"
               size="icon"
-              onClick={() => navigate('/admin?tab=news')}
+              onClick={() => navigate('/admin/content?tab=news')}
               className="shrink-0"
             >
               <ArrowLeft className="h-4 w-4" />
