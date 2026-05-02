@@ -4,15 +4,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#1a1a1a" />
+    <meta name="theme-color" content="#004aad" />
     <title>Conciertos Latam - Tu guía de música en vivo</title>
     <meta name="description" content="Descubre los mejores conciertos y eventos musicales de América Latina. Noticias, entrevistas y entradas para shows en vivo.">
     <meta name="author" content="Conciertos Latam" />
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <link rel="canonical" href="https://www.conciertoslatam.app/" />
 
     <meta property="og:title" content="Conciertos Latam - Tu guía de música en vivo" />
     <meta property="og:description" content="Descubre los mejores conciertos y eventos musicales de América Latina" />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.conciertoslatam.app/" />
+    <meta property="og:site_name" content="Conciertos Latam" />
+    <meta property="og:locale" content="es_419" />
     <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/social-images/social-1757981020072-Logo Principal transparente.png">
 
     <meta name="twitter:card" content="summary_large_image" />
@@ -22,9 +26,51 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/uploads/1757980928489-Logo Principal transparente.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+    <!-- Organization & WebSite structured data (sitewide) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://www.conciertoslatam.app/#organization",
+          "name": "Conciertos Latam",
+          "url": "https://www.conciertoslatam.app/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/social-images/social-1757981020072-Logo Principal transparente.png",
+            "width": 600,
+            "height": 60
+          },
+          "sameAs": [
+            "https://twitter.com/conciertoslatam",
+            "https://instagram.com/conciertoslatam"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://www.conciertoslatam.app/#website",
+          "url": "https://www.conciertoslatam.app/",
+          "name": "Conciertos Latam",
+          "description": "Tu guía de música en vivo en América Latina",
+          "publisher": { "@id": "https://www.conciertoslatam.app/#organization" },
+          "inLanguage": "es-419",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://www.conciertoslatam.app/buscar?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        }
+      ]
+    }
+    </script>
 </head>
 
   <body>

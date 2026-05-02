@@ -13,7 +13,7 @@ import { toast } from 'sonner';
 const GoogleSearchConsoleSetup = () => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   
-  const siteUrl = 'https://conciertoslatam.lovable.app';
+  const siteUrl = 'https://www.conciertoslatam.app';
   
   const sitemaps = [
     { name: 'Sitemap Principal (Index)', url: `${siteUrl}/sitemap.xml` },

@@ -34,24 +34,30 @@ export const SEO = ({
   const fullUrl = url ? `${siteUrl}${url}` : siteUrl;
   const fullTitle = title.includes('Conciertos Latam') ? title : `${title} | Conciertos Latam`;
   
-  // Enhanced breadcrumb structured data
-  const breadcrumbData = url && url !== '/' ? {
+  const breadcrumbItems: Array<{ name: string; item: string }> = [];
+  if (url && url !== '/') {
+    breadcrumbItems.push({ name: 'Inicio', item: siteUrl });
+    if (type === 'article' && url.startsWith('/blog/')) {
+      breadcrumbItems.push({ name: 'Noticias', item: `${siteUrl}/blog` });
+      if (article?.section) {
+        breadcrumbItems.push({
+          name: article.section,
+          item: `${siteUrl}/blog?category=${encodeURIComponent(article.section.toLowerCase())}`,
+        });
+      }
+    }
+    breadcrumbItems.push({ name: title, item: fullUrl });
+  }
+
+  const breadcrumbData = breadcrumbItems.length > 1 ? {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Inicio",
-        "item": siteUrl
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
-        "name": title,
-        "item": fullUrl
-      }
-    ]
+    "itemListElement": breadcrumbItems.map((it, i) => ({
+      "@type": "ListItem",
+      "position": i + 1,
+      "name": it.name,
+      "item": it.item,
+    })),
   } : null;
 
   return (
@@ -94,7 +100,7 @@ export const SEO = ({
       <meta property="og:url" content={fullUrl} />
       <meta property="og:type" content={type} />
       <meta property="og:site_name" content="Conciertos Latam" />
-      <meta property="og:locale" content="es_LA" />
+      <meta property="og:locale" content="es_419" />
       <meta property="og:locale:alternate" content="es_MX" />
       <meta property="og:locale:alternate" content="es_AR" />
       <meta property="og:locale:alternate" content="es_CO" />

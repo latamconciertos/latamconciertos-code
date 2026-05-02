@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { Calendar, User, ArrowLeft, Clock } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { ArrowLeft, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
@@ -31,7 +30,11 @@ interface Article {
   featured_image_mobile?: string | null;
   photo_credit: string | null;
   published_at: string;
+  updated_at?: string | null;
   meta_description: string | null;
+  meta_title?: string | null;
+  keywords?: string | null;
+  tags?: unknown;
   artist_id: string | null;
   artists?: {
     name: string;
@@ -71,7 +74,11 @@ const BlogPost = () => {
           featured_image,
           photo_credit,
           published_at,
+          updated_at,
           meta_description,
+          meta_title,
+          keywords,
+          tags,
           category_id,
           artist_id,
           artists (name, photo_url),
@@ -161,6 +168,21 @@ const BlogPost = () => {
     return Math.ceil(wordCount / wordsPerMinute);
   };
 
+  const stripHtml = (html: string | null | undefined) =>
+    (html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
+  const getWordCount = (content: string | null) => {
+    const plain = stripHtml(content);
+    return plain ? plain.split(/\s+/).filter(Boolean).length : 0;
+  };
+
+  const getArticleTags = (a: Article): string[] => {
+    if (Array.isArray(a.tags)) return a.tags.filter((t): t is string => typeof t === 'string');
+    if (a.keywords) return a.keywords.split(',').map((s) => s.trim()).filter(Boolean);
+    if (a.categories) return [a.categories.name];
+    return [];
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background">
@@ -191,156 +213,171 @@ const BlogPost = () => {
     );
   }
 
+  const SITE_URL = 'https://www.conciertoslatam.app';
+  const LOGO_URL =
+    'https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/social-images/social-1757981020072-Logo Principal transparente.png';
+  const articleUrl = `${SITE_URL}/blog/${article.slug}`;
+  const plainContent = stripHtml(article.content);
+  const articleDescription =
+    article.meta_description || (plainContent ? plainContent.slice(0, 160) : article.title);
+  const articleTags = getArticleTags(article);
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
     "headline": article.title,
-    "description": article.meta_description || article.content?.substring(0, 160),
+    "description": articleDescription,
     "image": [getArticleImage(article)],
     "datePublished": article.published_at,
-    "dateModified": article.published_at, // TODO: Agregar campo updated_at en la BD
+    "dateModified": article.updated_at || article.published_at,
     "author": {
-      "@type": "Person",
+      "@type": "Organization",
       "name": "Conciertos Latam",
-      "url": "https://conciertoslatam.lovable.app/about"
+      "url": SITE_URL
     },
     "publisher": {
       "@type": "Organization",
       "name": "Conciertos Latam",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/social-images/social-1757981020072-Logo Principal transparente.png",
+        "url": LOGO_URL,
         "width": 600,
         "height": 60
       },
-      "url": "https://conciertoslatam.lovable.app"
+      "url": SITE_URL
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://conciertoslatam.lovable.app/blog/${article.slug}`
+      "@id": articleUrl
     },
-    "articleBody": article.content?.substring(0, 500) || article.meta_description,
+    "articleBody": plainContent || articleDescription,
     "articleSection": article.categories?.name || "Música",
-    "inLanguage": "es-LA",
+    "wordCount": getWordCount(article.content),
+    "inLanguage": "es-419",
     "isAccessibleForFree": true,
-    "keywords": article.categories?.name || "música, conciertos, América Latina"
+    "keywords": articleTags.length ? articleTags : ["música", "conciertos", "América Latina"]
   };
 
   return (
     <>
       <SEO
-        title={article.title}
-        description={article.meta_description || article.content?.substring(0, 160) || ''}
-        keywords={`${article.artists?.name || ''}, ${article.categories?.name || ''}, noticias musicales, conciertos`}
+        title={article.meta_title || article.title}
+        description={articleDescription}
+        keywords={articleTags.join(', ') || `${article.categories?.name || 'música'}, conciertos, América Latina`}
         image={getArticleImage(article)}
         url={`/blog/${article.slug}`}
         type="article"
         article={{
           publishedTime: article.published_at,
+          modifiedTime: article.updated_at || article.published_at,
+          author: 'Conciertos Latam',
+          authorUrl: SITE_URL,
           section: article.categories?.name,
-          tags: article.categories ? [article.categories.name] : []
+          tags: articleTags.length ? articleTags : article.categories ? [article.categories.name] : []
         }}
         structuredData={structuredData}
       />
       <div className="min-h-screen bg-background">
         <Header />
 
-        {/* Hero - Editorial full-screen with overlay */}
-        <div className="relative w-full h-[70vh] md:h-[80vh] overflow-hidden">
-          {/* Background image */}
-          <picture className="absolute inset-0 w-full h-full">
-            {article.featured_image_mobile && (
-              <source media="(max-width: 767px)" srcSet={article.featured_image_mobile} />
-            )}
-            <img
-              src={getArticleImage(article)}
-              alt={article.title}
-              className="w-full h-full object-cover object-center scale-[1.02] transition-transform duration-700"
-            />
-          </picture>
-
-          {/* Gradient: transparent top → heavy black bottom */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/20" />
-
-          {/* Back button — top left */}
-          <div className="absolute top-20 left-4 md:left-8 z-20">
-            <Link
-              to="/blog"
-              className="inline-flex items-center gap-2 text-white/90 hover:text-white bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/20 px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span>Noticias</span>
-            </Link>
-          </div>
-
-          {/* Photo credit — bottom right */}
-          {article.photo_credit && (
-            <div className="absolute bottom-4 right-4 z-20">
-              <span className="text-xs text-white/60 bg-black/30 px-2 py-0.5 rounded backdrop-blur-sm">
-                {article.photo_credit}
-              </span>
+        {/* Hero — Editorial text-first (Rolling Stone / Billboard / RS Latam pattern) */}
+        <section className="bg-background pt-20 md:pt-28 pb-8 md:pb-14 border-b border-border/50">
+          <div className="container mx-auto max-w-4xl px-4 md:px-8">
+            {/* Back link */}
+            <div className="mb-3 md:mb-6">
+              <Link
+                to="/blog"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>Noticias</span>
+              </Link>
             </div>
-          )}
 
-          {/* Editorial overlay — title + meta at bottom */}
-          <div className="absolute bottom-0 left-0 right-0 z-10 px-4 md:px-8 lg:px-16 pb-8 md:pb-12">
-            <div className="max-w-4xl mx-auto">
-              {article.categories && (
-                <div className="mb-3">
-                  <Badge className="bg-primary text-white text-xs font-semibold tracking-wide uppercase px-3 py-1">
-                    {article.categories.name}
-                  </Badge>
-                </div>
-              )}
-              <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4 drop-shadow-lg">
-                {article.title}
-              </h1>
-              <div className="flex flex-wrap items-center gap-3 md:gap-5 text-sm text-white/75">
-                <div className="flex items-center gap-1.5">
-                  <User className="h-3.5 w-3.5" />
-                  <span>Conciertos Latam</span>
-                </div>
-                <span className="text-white/30">·</span>
-                <div className="flex items-center gap-1.5">
-                  <Calendar className="h-3.5 w-3.5" />
-                  <span>{formatDate(article.published_at)}</span>
-                </div>
-                {article.content && (
-                  <>
-                    <span className="text-white/30">·</span>
-                    <div className="flex items-center gap-1.5">
-                      <Clock className="h-3.5 w-3.5" />
-                      <span>{getReadingTime(article.content)} min de lectura</span>
-                    </div>
-                  </>
-                )}
+            {/* Eyebrow — category */}
+            {article.categories && (
+              <div className="mb-3 md:mb-6 text-center">
+                <Link
+                  to={`/blog?category=${article.categories.slug}`}
+                  className="inline-block text-[11px] md:text-xs font-bold uppercase tracking-[0.2em] text-primary hover:underline underline-offset-4"
+                >
+                  {article.categories.name}
+                </Link>
               </div>
+            )}
+
+            {/* Headline */}
+            <h1 className="text-center text-[28px] sm:text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] md:leading-[1.05] text-foreground text-balance mb-4 md:mb-6">
+              {article.title}
+            </h1>
+
+            {/* Deck / Subtitle */}
+            {article.meta_description && (
+              <p className="text-center text-base md:text-xl text-muted-foreground font-normal leading-relaxed max-w-2xl mx-auto mb-6 md:mb-10">
+                {article.meta_description}
+              </p>
+            )}
+
+            {/* Byline */}
+            <div className="flex flex-wrap justify-center items-center gap-x-2.5 md:gap-x-3 gap-y-1 text-xs md:text-sm text-muted-foreground">
+              <span>
+                Por <span className="font-semibold text-foreground">Conciertos Latam</span>
+              </span>
+              <span className="text-muted-foreground/40">·</span>
+              <time dateTime={article.published_at}>{formatDate(article.published_at)}</time>
+              {article.content && (
+                <>
+                  <span className="text-muted-foreground/40">·</span>
+                  <span>{getReadingTime(article.content)} min de lectura</span>
+                </>
+              )}
             </div>
           </div>
-        </div>
+
+          {/* Featured image — edge-to-edge on mobile, padded on desktop. Caps tall posters. */}
+          <div className="mx-auto max-w-5xl mt-8 md:mt-14 md:px-8">
+            <figure>
+              <picture className="block">
+                {article.featured_image_mobile && (
+                  <source media="(max-width: 767px)" srcSet={article.featured_image_mobile} />
+                )}
+                <img
+                  src={getArticleImage(article)}
+                  alt={article.title}
+                  className="w-auto h-auto max-w-full max-h-[70vh] md:max-h-[78vh] mx-auto md:rounded-lg shadow-sm"
+                />
+              </picture>
+              {article.photo_credit && (
+                <figcaption className="mt-2.5 md:mt-3 px-4 md:px-0 text-[11px] md:text-xs text-muted-foreground italic text-right">
+                  Foto: {article.photo_credit}
+                </figcaption>
+              )}
+            </figure>
+          </div>
+        </section>
+
+        {/* Brand accent rule between hero and body */}
+        <div className="h-0.5 bg-primary" aria-hidden="true" />
 
         {/* Article Content Section */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
-          {/* Social Share */}
-          <div className="flex items-center justify-between mb-8 pb-6 border-b">
-            <SocialShare
-              url={`https://www.conciertoslatam.app/blog/${article.slug}`}
-              title={article.title}
-            />
-          </div>
-
-          {/* Summary/Lead */}
-          {article.meta_description && (
-            <p className="text-lg md:text-xl text-foreground leading-relaxed font-medium mb-8">
-              {article.meta_description}
-            </p>
-          )}
-
           {/* Article Content */}
-          <div className="prose prose-lg max-w-none">
+          <article
+            className={[
+              'prose prose-lg dark:prose-invert max-w-none',
+              'prose-headings:text-foreground prose-headings:tracking-tight',
+              'prose-h2:text-2xl md:prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-10 prose-h2:mb-4',
+              'prose-h3:text-xl md:prose-h3:text-2xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-3',
+              'prose-p:text-foreground prose-p:leading-relaxed',
+              'prose-strong:text-foreground prose-em:text-foreground',
+              'prose-a:text-primary prose-a:no-underline hover:prose-a:underline',
+              'prose-blockquote:text-foreground prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:not-italic prose-blockquote:font-medium',
+              'prose-li:text-foreground prose-img:rounded-lg',
+              '[&>div>p:first-of-type:first-letter]:float-left [&>div>p:first-of-type:first-letter]:text-7xl md:[&>div>p:first-of-type:first-letter]:text-8xl [&>div>p:first-of-type:first-letter]:font-extrabold [&>div>p:first-of-type:first-letter]:leading-[0.85] [&>div>p:first-of-type:first-letter]:mr-3 [&>div>p:first-of-type:first-letter]:mt-1 [&>div>p:first-of-type:first-letter]:text-primary',
+            ].join(' ')}
+          >
             {article.content ? (
               <div
-                className="text-foreground leading-relaxed text-base md:text-lg [&>p]:mb-6 [&>h2]:mt-8 [&>h2]:mb-4 [&>h2]:text-xl [&>h2]:font-bold [&>h3]:mt-6 [&>h3]:mb-3 [&>h3]:text-lg [&>h3]:font-semibold [&>ul]:my-4 [&>ol]:my-4"
                 dangerouslySetInnerHTML={{
                   __html: sanitizeHTML(parseContentWithMedia(article.content, article.media_items || []))
                 }}
@@ -348,53 +385,61 @@ const BlogPost = () => {
             ) : (
               <p className="text-muted-foreground">No hay contenido disponible para este artículo.</p>
             )}
-          </div>
+          </article>
 
-          {/* Share again at bottom */}
-          <div className="mt-12 pt-8 border-t">
-            <p className="text-base font-semibold mb-4">¿Te gustó esta noticia? ¡Compártela!</p>
-            <SocialShare
-              url={`https://www.conciertoslatam.app/blog/${article.slug}`}
-              title={article.title}
-            />
+          {/* Share rail */}
+          <div className="mt-12 pt-6 border-t border-border/60">
+            <div className="flex items-center gap-4">
+              <span className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">Compartir</span>
+              <SocialShare
+                url={`https://www.conciertoslatam.app/blog/${article.slug}`}
+                title={article.title}
+              />
+            </div>
           </div>
         </div>
 
         {/* Related Articles */}
         {relatedArticles.length > 0 && (
-          <section className="bg-muted/30 py-12">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h2 className="text-xl md:text-2xl font-bold text-foreground mb-8">
-                Te podría interesar
-              </h2>
+          <section className="bg-muted/30 py-14 md:py-20 border-t border-border/50">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="mb-8 md:mb-10">
+                <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.2em] text-primary mb-2">
+                  Sigue leyendo
+                </p>
+                <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground">
+                  Te podría interesar
+                </h2>
+              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                 {relatedArticles.map((relatedArticle) => (
                   <Link
                     key={relatedArticle.id}
                     to={`/blog/${relatedArticle.slug}`}
-                    className="group"
+                    className="group block"
                   >
-                    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 h-full">
-                      <div className="relative overflow-hidden aspect-video">
+                    <Card className="overflow-hidden border-border/60 bg-background hover:border-primary/30 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full">
+                      <div className="relative overflow-hidden aspect-video bg-muted">
                         <img
                           src={getArticleImage(relatedArticle)}
                           alt={relatedArticle.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          loading="lazy"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
                       </div>
-                      <CardContent className="p-4">
+                      <CardContent className="p-5">
                         {relatedArticle.categories && (
-                          <Badge variant="secondary" className="mb-2 text-xs">
+                          <span className="inline-block mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
                             {relatedArticle.categories.name}
-                          </Badge>
+                          </span>
                         )}
-                        <h3 className="font-bold text-sm text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors mb-2">
+                        <h3 className="font-bold text-base text-foreground leading-snug line-clamp-3 group-hover:text-primary transition-colors mb-3">
                           {relatedArticle.title}
                         </h3>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                           <Calendar className="h-3 w-3" />
-                          <span>{formatDate(relatedArticle.published_at)}</span>
+                          <time dateTime={relatedArticle.published_at}>{formatDate(relatedArticle.published_at)}</time>
                         </div>
                       </CardContent>
                     </Card>
