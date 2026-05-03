@@ -86,8 +86,11 @@ export const HeroCarousel = () => {
         );
     }
 
+    const currentArticle = articles[currentSlide];
+    const articleHref = `/blog/${currentArticle.slug}`;
+
     return (
-        <section className="relative w-full h-[600px] md:h-[700px] overflow-hidden">
+        <section className="relative w-full h-[600px] md:h-[700px] overflow-hidden group/hero">
             {/* Background image with minimal overlay for text readability */}
             <AnimatePresence mode="wait">
                 <motion.div
@@ -98,19 +101,19 @@ export const HeroCarousel = () => {
                     transition={{ duration: 0.5 }}
                     className="absolute inset-0"
                 >
-                    {articles[currentSlide].featured_image ? (
+                    {currentArticle.featured_image ? (
                         <>
                             <picture>
-                                {articles[currentSlide].featured_image_mobile && (
+                                {currentArticle.featured_image_mobile && (
                                     <source
                                         media="(max-width: 767px)"
-                                        srcSet={articles[currentSlide].featured_image_mobile}
+                                        srcSet={currentArticle.featured_image_mobile}
                                     />
                                 )}
                                 <img
-                                    src={articles[currentSlide].featured_image}
-                                    alt={articles[currentSlide].title}
-                                    className="w-full h-full object-cover"
+                                    src={currentArticle.featured_image}
+                                    alt={currentArticle.title}
+                                    className="w-full h-full object-cover transition-transform duration-700 group-hover/hero:scale-[1.02]"
                                 />
                             </picture>
                             {/* Dark overlay across entire image for text readability */}
@@ -125,7 +128,16 @@ export const HeroCarousel = () => {
                 </motion.div>
             </AnimatePresence>
 
-            {/* Navigation Arrows */}
+            {/* Full-area click target — covers the whole hero so tapping anywhere
+                (image, dark overlay, even on top of text) navigates to the article.
+                Sits at z-10. Arrows and dots use z-20 to stay above and capture their own clicks. */}
+            <Link
+                to={articleHref}
+                aria-label={`Leer: ${currentArticle.title}`}
+                className="absolute inset-0 z-10 cursor-pointer"
+            />
+
+            {/* Navigation Arrows — above the click overlay */}
             <button
                 onClick={prevSlide}
                 className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-3 md:p-4 rounded-full transition-all duration-300 hover:scale-110"
@@ -142,8 +154,10 @@ export const HeroCarousel = () => {
                 <ChevronRight className="h-6 w-6 md:h-8 md:w-8" />
             </button>
 
-            {/* Slides Container */}
-            <div className="relative h-full flex items-center justify-center px-4 md:px-16 lg:px-24 z-10">
+            {/* Slides Container — text/CTA visual layer.
+                pointer-events-none so it doesn't block the click overlay underneath;
+                inner button re-enables pointer-events. */}
+            <div className="absolute inset-0 flex items-center justify-center px-4 md:px-16 lg:px-24 z-10 pointer-events-none">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={currentSlide}
@@ -153,7 +167,7 @@ export const HeroCarousel = () => {
                         transition={{ duration: 0.6, ease: 'easeInOut' }}
                         className="text-center max-w-4xl"
                     >
-                        {articles[currentSlide].categories && (
+                        {currentArticle.categories && (
                             <motion.div
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -161,7 +175,7 @@ export const HeroCarousel = () => {
                                 className="mb-4"
                             >
                                 <Badge className="bg-primary text-primary-foreground font-bold">
-                                    {articles[currentSlide].categories.name}
+                                    {currentArticle.categories.name}
                                 </Badge>
                             </motion.div>
                         )}
@@ -172,17 +186,17 @@ export const HeroCarousel = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3, duration: 0.6 }}
                         >
-                            {articles[currentSlide].title}
+                            {currentArticle.title}
                         </motion.h1>
 
-                        {articles[currentSlide].meta_description && (
+                        {currentArticle.meta_description && (
                             <motion.p
                                 className="text-base md:text-xl text-white/90 mb-8 leading-relaxed max-w-2xl mx-auto line-clamp-3"
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.4, duration: 0.6 }}
                             >
-                                {articles[currentSlide].meta_description}
+                                {currentArticle.meta_description}
                             </motion.p>
                         )}
 
@@ -190,12 +204,14 @@ export const HeroCarousel = () => {
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.5, duration: 0.6 }}
+                            className="pointer-events-auto inline-block"
                         >
                             <Link
-                                to={`/blog/${articles[currentSlide].slug}`}
-                                className="inline-block bg-white text-primary hover:bg-white/90 font-semibold px-8 py-3 md:py-4 text-base md:text-lg rounded-lg transition-all hover:scale-105"
+                                to={articleHref}
+                                className="inline-flex items-center gap-2 bg-white text-primary hover:bg-white/90 font-semibold px-8 py-3 md:py-4 text-base md:text-lg rounded-lg transition-all hover:scale-105 group/cta"
                             >
-                                LEER MÁS
+                                Leer historia
+                                <ChevronRight className="h-4 w-4 transition-transform group-hover/cta:translate-x-0.5" />
                             </Link>
                         </motion.div>
 
@@ -205,7 +221,7 @@ export const HeroCarousel = () => {
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.6 }}
                         >
-                            {formatDisplayDate(articles[currentSlide].published_at)}
+                            {formatDisplayDate(currentArticle.published_at)}
                         </motion.p>
                     </motion.div>
                 </AnimatePresence>

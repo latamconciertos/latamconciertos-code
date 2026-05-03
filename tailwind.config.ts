@@ -71,12 +71,12 @@ export default {
 				}
 			},
 			fontFamily: {
-				'sans': ['Poppins', 'system-ui', 'sans-serif'],
-				'display': ['"Big Shoulders Display"', 'Poppins', 'system-ui', 'sans-serif'],
-				'fira': ['"Fira Sans"', 'Poppins', 'sans-serif'],
-				// Legacy aliases — kept to avoid breaking older code; both resolve to Poppins now
-				'spotify': ['Poppins', 'system-ui', 'sans-serif'],
-				'roboto': ['Poppins', 'sans-serif'],
+				'sans': ['"DM Sans"', 'system-ui', 'sans-serif'],
+				'display': ['"Big Shoulders Display"', '"DM Sans"', 'system-ui', 'sans-serif'],
+				'fira': ['"Fira Sans"', '"DM Sans"', 'sans-serif'],
+				// Legacy aliases — kept to avoid breaking older code; both resolve to DM Sans now
+				'spotify': ['"DM Sans"', 'system-ui', 'sans-serif'],
+				'roboto': ['"DM Sans"', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
