@@ -71,9 +71,12 @@ export default {
 				}
 			},
 			fontFamily: {
-				'spotify': ['Inter', 'system-ui', 'sans-serif'],
-				'fira': ['Fira Sans', 'sans-serif'],
-				'roboto': ['Roboto', 'sans-serif'],
+				'sans': ['Poppins', 'system-ui', 'sans-serif'],
+				'display': ['"Big Shoulders Display"', 'Poppins', 'system-ui', 'sans-serif'],
+				'fira': ['"Fira Sans"', 'Poppins', 'sans-serif'],
+				// Legacy aliases — kept to avoid breaking older code; both resolve to Poppins now
+				'spotify': ['Poppins', 'system-ui', 'sans-serif'],
+				'roboto': ['Poppins', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

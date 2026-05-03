@@ -7,7 +7,7 @@ import { SEO } from '@/components/SEO';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Lightbulb, Calendar, MapPin, Music, Users, Zap } from 'lucide-react';
+import { Lightbulb, Calendar, MapPin, Music } from 'lucide-react';
 import { formatDisplayDate } from '@/lib/timezone';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
 import { useFanProjects } from '@/hooks/queries/useFanProjects';
@@ -74,50 +74,64 @@ const FanProjects = () => {
       <div className="min-h-screen bg-background">
         <Header />
 
-        <main className="container mx-auto px-4 pt-24 pb-16" itemScope itemType="https://schema.org/CollectionPage">
-          {/* Hero Section */}
-          <header className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
-              <Lightbulb className="h-5 w-5 text-primary" aria-hidden="true" />
-              <span className="text-primary font-semibold">Fan Projects</span>
-            </div>
-
-            <h1 className="page-title mb-4" itemProp="name">
-              Proyectos de Fans
+        <main className="container mx-auto px-4 pt-24 md:pt-28 pb-16" itemScope itemType="https://schema.org/CollectionPage">
+          {/* Editorial Hero */}
+          <header className="text-center mt-6 mb-10 md:mb-14">
+            <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-3">
+              El show lo hacemos juntos
+            </p>
+            <h1 className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.015em] leading-[0.92] text-foreground text-balance mb-4" itemProp="name">
+              Fan Projects
             </h1>
-
-            <p className="page-subtitle max-w-3xl mx-auto" itemProp="description">
-              Únete a los proyectos de luces y sé parte del espectáculo. Descarga las secuencias antes del concierto y participa sin consumir datos.
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed" itemProp="description">
+              Únete al espectáculo de luces. Descarga las secuencias antes del concierto y volvete parte del show — sin consumir datos.
             </p>
 
-            {/* Stats */}
-            <div className="flex flex-wrap justify-center gap-6 mt-6 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4 text-primary" aria-hidden="true" />
-                <span><strong className="text-foreground">{projects.length}</strong> Proyectos Activos</span>
+            {/* Stats — editorial */}
+            <div className="flex flex-wrap justify-center gap-x-10 md:gap-x-14 gap-y-4 mt-8 md:mt-10">
+              <div className="flex flex-col items-center min-w-[80px]">
+                <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+                  {projects.length}
+                </span>
+                <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
+                  {projects.length === 1 ? 'Proyecto' : 'Proyectos'}
+                </span>
               </div>
-              <div className="flex items-center gap-2">
-                <Music className="h-4 w-4 text-primary" aria-hidden="true" />
-                <span><strong className="text-foreground">{totalSongs}+</strong> Canciones</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-primary" aria-hidden="true" />
-                <span><strong className="text-foreground">Miles</strong> de fans participando</span>
+              {totalSongs > 0 && (
+                <div className="flex flex-col items-center min-w-[80px]">
+                  <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+                    {totalSongs}
+                  </span>
+                  <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
+                    {totalSongs === 1 ? 'Canción' : 'Canciones'}
+                  </span>
+                </div>
+              )}
+              <div className="flex flex-col items-center min-w-[80px]">
+                <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+                  Miles
+                </span>
+                <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
+                  De fans
+                </span>
               </div>
             </div>
           </header>
 
           {/* Projects Grid */}
           {projects.length === 0 ? (
-            <div className="text-center py-20 px-4">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-muted mb-6">
-                <Lightbulb className="h-10 w-10 text-muted-foreground/50" />
+            <div className="text-center max-w-md mx-auto py-16 md:py-24 px-4">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-card border border-border/60 mb-6">
+                <Lightbulb className="h-9 w-9 text-muted-foreground/40" />
               </div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">
-                No hay proyectos activos
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-2">
+                Próximamente
+              </p>
+              <h2 className="font-display uppercase text-3xl md:text-4xl font-black tracking-tight leading-[0.95] text-foreground mb-3">
+                Sin proyectos activos
               </h2>
-              <p className="text-muted-foreground max-w-md mx-auto">
-                Vuelve pronto para ver los próximos eventos con proyectos de fans
+              <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
+                Volvé pronto. Cuando un artista active un proyecto de luces para su próximo concierto, aparece acá.
               </p>
             </div>
           ) : (

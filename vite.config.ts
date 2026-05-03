@@ -82,6 +82,8 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,jpg,jpeg,webp,woff,woff2}'],
+        // Web Push handler — adds push + notificationclick listeners to the generated SW
+        importScripts: ['/push-handler.js'],
         maximumFileSizeToCacheInBytes: 10485760, // 10 MB (aumentado para más assets)
         runtimeCaching: [
           // Google Fonts - CacheFirst (no cambian)

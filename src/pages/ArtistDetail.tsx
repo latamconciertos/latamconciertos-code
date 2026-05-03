@@ -95,49 +95,105 @@ const ArtistDetail = () => {
 
   const heroImage = artist.photo_url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&h=600&fit=crop";
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "MusicGroup",
-    "name": artist.name,
-    "description": artist.bio,
-    "image": artist.photo_url,
-    "url": `https://www.conciertoslatam.app/artists/${artist.slug}`,
-    "event": concerts.map(concert => ({
+  const SITE_URL = 'https://www.conciertoslatam.app';
+  const artistUrl = `${SITE_URL}/artists/${artist.slug}`;
+  const sameAs = artist.social_links && typeof artist.social_links === 'object'
+    ? Object.values(artist.social_links).filter(
+        (v): v is string => typeof v === 'string' && /^https?:\/\//i.test(v)
+      )
+    : [];
+
+  const upcomingEvents = concerts.map((concert) => {
+    const event: Record<string, unknown> = {
       "@type": "MusicEvent",
       "name": concert.title,
       "startDate": concert.date,
-      "location": { "@type": "Place", "name": concert.venues?.name, "address": concert.venues?.location }
-    }))
+      "eventStatus": "https://schema.org/EventScheduled",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "performer": { "@type": "MusicGroup", "name": artist.name, "@id": artistUrl },
+      "url": `${SITE_URL}/concerts/${concert.slug}`,
+    };
+    if (concert.venues?.name) {
+      event.location = {
+        "@type": "MusicVenue",
+        "name": concert.venues.name,
+        ...(concert.venues.location ? { "address": concert.venues.location } : {}),
+      };
+    }
+    if (concert.image_url) event.image = concert.image_url;
+    return event;
+  });
+
+  const seoDescription = artist.bio
+    ? artist.bio.slice(0, 200)
+    : `Descubre conciertos de ${artist.name} en América Latina. ${concerts.length > 0 ? `${concerts.length} fechas próximas, ` : ''}top tracks, noticias y redes sociales en Conciertos Latam.`;
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "MusicGroup",
+    "@id": `${artistUrl}#artist`,
+    "name": artist.name,
+    "description": seoDescription,
+    "image": artist.photo_url || undefined,
+    "url": artistUrl,
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": artistUrl,
+    },
+    ...(sameAs.length ? { "sameAs": sameAs } : {}),
+    ...(upcomingEvents.length ? { "event": upcomingEvents } : {}),
+    "subjectOf": news.slice(0, 5).map((article) => ({
+      "@type": "NewsArticle",
+      "headline": article.title,
+      "url": `${SITE_URL}/blog/${article.slug}`,
+      "datePublished": article.published_at,
+    })),
   };
 
   return (
     <>
       <SEO
-        title={`${artist.name} | Conciertos y Música`}
-        description={artist.bio || `Descubre todos los conciertos de ${artist.name} en América Latina. Fechas, entradas y música.`}
-        keywords={`${artist.name}, conciertos, tour 2026, entradas, música`}
+        title={
+          concerts.length > 0
+            ? `${artist.name} en LATAM · ${concerts.length} concierto${concerts.length !== 1 ? 's' : ''} próximo${concerts.length !== 1 ? 's' : ''}`
+            : `${artist.name} · Conciertos, música y noticias`
+        }
+        description={seoDescription}
+        keywords={`${artist.name}, conciertos ${artist.name}, ${artist.name} tour 2026, entradas ${artist.name}, música, biografía`}
         image={artist.photo_url || undefined}
         url={`/artists/${artist.slug}`}
-        type="music.song"
+        type="profile"
         structuredData={structuredData}
       />
       <div className="min-h-screen bg-background">
         <Header />
 
-        {/* Hero - Mobile: full-width image, Desktop: side-by-side */}
-        <div className="pt-20">
-          {/* Background gradient bar */}
-          <div className="relative bg-gradient-to-b from-primary/15 via-primary/5 to-transparent">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-              <Breadcrumbs items={[
-                { label: 'Artistas', href: '/artists' },
-                { label: artist.name }
-              ]} />
+        {/* Hero — Spotify/Apple Music style full-bleed atmospheric */}
+        <section className="relative overflow-hidden bg-neutral-950">
+          {/* Blurred backdrop derived from artist photo */}
+          <div className="absolute inset-0" aria-hidden="true">
+            <img
+              src={heroImage}
+              alt=""
+              className="w-full h-full object-cover scale-110 blur-3xl opacity-50"
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/60 to-background" />
+          </div>
 
-              <div className="mt-6 flex flex-col lg:flex-row gap-8 lg:gap-10 items-center lg:items-end">
+          {/* Foreground */}
+          <div className="relative pt-28 md:pt-36 pb-10 md:pb-16">
+            <div className="max-w-7xl mx-auto px-4 md:px-8">
+              <div className="text-white/70 [&_*]:!text-white/70 [&_a]:hover:!text-white">
+                <Breadcrumbs items={[
+                  { label: 'Artistas', href: '/artists' },
+                  { label: artist.name }
+                ]} />
+              </div>
+
+              <div className="mt-8 md:mt-12 grid md:grid-cols-12 gap-8 md:gap-10 items-end">
                 {/* Artist Photo */}
-                <div className="flex-shrink-0">
-                  <div className="w-52 h-52 sm:w-60 sm:h-60 lg:w-64 lg:h-64 rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10">
+                <div className="md:col-span-4 lg:col-span-3 flex md:block justify-center">
+                  <div className="w-44 h-44 sm:w-52 sm:h-52 md:w-full md:h-auto md:aspect-square rounded-2xl overflow-hidden shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] ring-1 ring-white/15">
                     <img
                       src={heroImage}
                       alt={artist.name}
@@ -147,42 +203,45 @@ const ArtistDetail = () => {
                 </div>
 
                 {/* Artist Info */}
-                <div className="flex-1 text-center lg:text-left min-w-0 pb-2">
-                  <div className="flex items-center gap-2 justify-center lg:justify-start">
-                    <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-foreground truncate">
-                      {artist.name}
-                    </h1>
+                <div className="md:col-span-8 lg:col-span-9 text-center md:text-left min-w-0">
+                  <div className="flex items-center gap-2 justify-center md:justify-start mb-3 md:mb-4">
                     {VERIFIED_BADGE}
+                    <span className="text-[11px] md:text-xs font-bold uppercase tracking-[0.2em] text-white/85">
+                      Artista Verificado
+                    </span>
                   </div>
 
-                  {artist.bio && (
-                    <p className="text-sm sm:text-base text-muted-foreground mt-3 max-w-2xl line-clamp-3 leading-relaxed">
-                      {artist.bio}
-                    </p>
-                  )}
+                  <h1 className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-[7.5rem] font-black tracking-[-0.015em] leading-[0.92] text-white text-balance mb-5 md:mb-6">
+                    {artist.name}
+                  </h1>
 
-                  {/* Stats */}
-                  <div className="flex items-center gap-2 mt-5 justify-center lg:justify-start flex-wrap">
+                  {/* Stat row — inline numerical signals */}
+                  <div className="flex items-center justify-center md:justify-start gap-x-5 gap-y-2 flex-wrap text-sm text-white/75 mb-6">
                     {concerts.length > 0 && (
-                      <span className="text-xs font-medium text-primary bg-primary/10 px-3 py-1.5 rounded-full">
-                        {concerts.length} concierto{concerts.length !== 1 ? 's' : ''}
+                      <span className="flex items-baseline gap-1.5">
+                        <span className="font-bold text-white">{concerts.length}</span>
+                        concierto{concerts.length !== 1 ? 's' : ''}
                       </span>
                     )}
+                    {concerts.length > 0 && (topTracks.length > 0 || news.length > 0) && <span className="text-white/30">·</span>}
                     {topTracks.length > 0 && (
-                      <span className="text-xs font-medium text-primary bg-primary/10 px-3 py-1.5 rounded-full">
-                        {topTracks.length} canciones
+                      <span className="flex items-baseline gap-1.5">
+                        <span className="font-bold text-white">{topTracks.length}</span>
+                        canciones
                       </span>
                     )}
+                    {topTracks.length > 0 && news.length > 0 && <span className="text-white/30">·</span>}
                     {news.length > 0 && (
-                      <span className="text-xs font-medium text-primary bg-primary/10 px-3 py-1.5 rounded-full">
-                        {news.length} noticia{news.length !== 1 ? 's' : ''}
+                      <span className="flex items-baseline gap-1.5">
+                        <span className="font-bold text-white">{news.length}</span>
+                        noticia{news.length !== 1 ? 's' : ''}
                       </span>
                     )}
                   </div>
 
-                  {/* Social links */}
+                  {/* Action row — social/streaming links */}
                   {artist.social_links && Object.keys(artist.social_links).length > 0 && (
-                    <div className="flex gap-2 mt-4 justify-center lg:justify-start">
+                    <div className="flex gap-2 mb-6 justify-center md:justify-start flex-wrap">
                       {Object.entries(artist.social_links).map(([key, url]) => {
                         if (typeof url !== 'string' || !url.startsWith('http')) return null;
                         const social = SOCIAL_ICONS[key.toLowerCase().replace(/_url$/, '')];
@@ -193,7 +252,7 @@ const ArtistDetail = () => {
                             href={url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={`flex items-center gap-1.5 text-xs font-medium bg-muted hover:bg-muted/80 px-3 py-1.5 rounded-full transition-colors ${social.color}`}
+                            className="flex items-center gap-1.5 text-xs font-semibold bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/15 text-white px-3.5 py-2 rounded-full transition-colors"
                           >
                             <span dangerouslySetInnerHTML={{ __html: social.svg }} />
                             {social.label}
@@ -202,11 +261,18 @@ const ArtistDetail = () => {
                       })}
                     </div>
                   )}
+
+                  {/* Bio */}
+                  {artist.bio && (
+                    <p className="text-sm md:text-base text-white/75 max-w-2xl mx-auto md:mx-0 leading-relaxed">
+                      {artist.bio}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Content */}
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
@@ -273,7 +339,12 @@ const ArtistDetail = () => {
                   })}
                 </div>
               ) : (
-                <EmptyState icon={<Calendar className="h-12 w-12" />} message="No hay conciertos próximos" />
+                <EmptyState
+                  icon={<Calendar className="h-12 w-12" />}
+                  title="Sin fechas anunciadas"
+                  message={`Aún no hay conciertos confirmados de ${artist.name} en LATAM. Te avisaremos apenas se anuncie.`}
+                  cta={{ label: 'Ver todos los conciertos', to: '/concerts' }}
+                />
               )}
             </TabsContent>
 
@@ -320,41 +391,117 @@ const ArtistDetail = () => {
                   ))}
                 </div>
               ) : (
-                <EmptyState icon={<Music className="h-12 w-12" />} message="No se encontraron canciones" />
+                <EmptyState
+                  icon={<Music className="h-12 w-12" />}
+                  title="Música no disponible"
+                  message={`No encontramos canciones de ${artist.name} en Spotify por ahora.`}
+                />
               )}
             </TabsContent>
 
             {/* ── News ── */}
             <TabsContent value="news" className="mt-6">
               {news.length > 0 ? (
-                <div className="space-y-2">
-                  {news.map((article) => (
-                    <Link
-                      key={article.id}
-                      to={`/blog/${article.slug}`}
-                      className="flex items-center gap-4 p-3 sm:p-4 rounded-xl hover:bg-muted/50 transition-colors group"
-                    >
-                      {article.featured_image && (
-                        <img
-                          src={article.featured_image}
-                          alt={article.title}
-                          className="w-16 h-16 sm:w-20 sm:h-14 rounded-lg object-cover flex-shrink-0"
-                          loading="lazy"
-                        />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-foreground line-clamp-2 group-hover:text-primary transition-colors">
-                          {article.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {formatDisplayDate(article.published_at)}
-                        </p>
+                <div className="space-y-8 md:space-y-10">
+                  {/* Featured — latest article */}
+                  {(() => {
+                    const featured = news[0];
+                    return (
+                      <Link
+                        to={`/blog/${featured.slug}`}
+                        className="group block"
+                      >
+                        <div className="grid md:grid-cols-12 gap-5 md:gap-8 items-center">
+                          {featured.featured_image && (
+                            <div className="md:col-span-7 lg:col-span-7">
+                              <div className="aspect-[16/10] overflow-hidden rounded-xl bg-muted ring-1 ring-border/40">
+                                <img
+                                  src={featured.featured_image}
+                                  alt={featured.title}
+                                  className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                                  loading="lazy"
+                                />
+                              </div>
+                            </div>
+                          )}
+                          <div className={featured.featured_image ? 'md:col-span-5 lg:col-span-5' : 'md:col-span-12'}>
+                            <div className="flex items-center gap-2 mb-3">
+                              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+                                {featured.categories?.name || 'Noticias'}
+                              </span>
+                              <span className="text-muted-foreground/40">·</span>
+                              <span className="text-xs text-muted-foreground">Última publicación</span>
+                            </div>
+                            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight leading-[1.15] text-foreground group-hover:text-primary transition-colors mb-3">
+                              {featured.title}
+                            </h3>
+                            {featured.meta_description && (
+                              <p className="text-sm md:text-base text-muted-foreground leading-relaxed line-clamp-3 mb-4">
+                                {featured.meta_description}
+                              </p>
+                            )}
+                            <time
+                              dateTime={featured.published_at}
+                              className="text-xs text-muted-foreground"
+                            >
+                              {formatDisplayDate(featured.published_at)}
+                            </time>
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })()}
+
+                  {/* Rest as enriched list */}
+                  {news.length > 1 && (
+                    <div className="border-t border-border/50 pt-6 md:pt-8">
+                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-5">
+                        Más sobre {artist.name}
+                      </p>
+                      <div className="grid sm:grid-cols-2 gap-5 md:gap-6">
+                        {news.slice(1).map((article) => (
+                          <Link
+                            key={article.id}
+                            to={`/blog/${article.slug}`}
+                            className="group flex gap-4"
+                          >
+                            {article.featured_image && (
+                              <div className="flex-shrink-0 w-28 sm:w-32 aspect-[4/3] overflow-hidden rounded-lg bg-muted ring-1 ring-border/40">
+                                <img
+                                  src={article.featured_image}
+                                  alt={article.title}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                  loading="lazy"
+                                />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary">
+                                {article.categories?.name || 'Noticias'}
+                              </span>
+                              <h4 className="text-sm md:text-base font-semibold leading-snug text-foreground line-clamp-3 group-hover:text-primary transition-colors mt-1.5 mb-2">
+                                {article.title}
+                              </h4>
+                              <time
+                                dateTime={article.published_at}
+                                className="text-xs text-muted-foreground"
+                              >
+                                {formatDisplayDate(article.published_at)}
+                              </time>
+                            </div>
+                          </Link>
+                        ))}
                       </div>
-                    </Link>
-                  ))}
+                    </div>
+                  )}
                 </div>
               ) : (
-                <EmptyState icon={<Newspaper className="h-12 w-12" />} message="No hay noticias disponibles" />
+                <EmptyState
+                  icon={<Newspaper className="h-12 w-12" />}
+                  title="Sin noticias todavía"
+                  message={`Aún no hemos publicado noticias sobre ${artist.name}.`}
+                  cta={{ label: 'Ver todas las noticias', to: '/blog' }}
+                />
               )}
             </TabsContent>
           </Tabs>
@@ -366,11 +513,31 @@ const ArtistDetail = () => {
   );
 };
 
-function EmptyState({ icon, message }: { icon: React.ReactNode; message: string }) {
+function EmptyState({
+  icon,
+  title,
+  message,
+  cta,
+}: {
+  icon: React.ReactNode;
+  title?: string;
+  message: string;
+  cta?: { label: string; to: string };
+}) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 text-muted-foreground/40">
-      {icon}
-      <p className="text-sm text-muted-foreground mt-3">{message}</p>
+    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+      <div className="text-muted-foreground/40">{icon}</div>
+      {title && (
+        <p className="text-base font-semibold text-foreground mt-4">{title}</p>
+      )}
+      <p className="text-sm text-muted-foreground mt-2 max-w-md">{message}</p>
+      {cta && (
+        <Link to={cta.to} className="mt-5">
+          <Button variant="outline" size="sm">
+            {cta.label}
+          </Button>
+        </Link>
+      )}
     </div>
   );
 }

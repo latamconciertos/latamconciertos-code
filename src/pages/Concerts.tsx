@@ -155,7 +155,7 @@ const Concerts = () => {
       <div className="min-h-screen bg-background">
         <Header />
 
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16" itemScope itemType="https://schema.org/CollectionPage">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-28 pb-16" itemScope itemType="https://schema.org/CollectionPage">
           <Breadcrumbs items={[
             { label: 'Conciertos', href: '/concerts' },
             ...(selectedCountryName ? [{ label: selectedCountryName }] : []),
@@ -201,13 +201,13 @@ const Concerts = () => {
 
             {/* Search Bar */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Buscar conciertos, artistas o venues..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full h-12 text-sm md:text-base pl-10"
+                className="w-full h-11 text-sm pl-11 rounded-full bg-card border-border/60 focus-visible:ring-primary/30"
               />
             </div>
 
@@ -288,30 +288,34 @@ const Concerts = () => {
                     </div>
                   </MobileFiltersSheet>
 
-                  {/* Status filter as scrollable tabs on mobile */}
+                  {/* Status filter as editorial tab bar on mobile */}
                   <div className="flex-1 overflow-x-auto scrollbar-hide">
-                    <div className="flex gap-2 min-w-max">
-                      <Button
-                        size="sm"
-                        variant={filterStatus === 'upcoming' ? 'default' : 'outline'}
-                        onClick={() => setFilterStatus('upcoming')}
-                      >
-                        Próximos
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={filterStatus === 'past' ? 'default' : 'outline'}
-                        onClick={() => setFilterStatus('past')}
-                      >
-                        Pasados
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={filterStatus === 'all' ? 'default' : 'outline'}
-                        onClick={() => setFilterStatus('all')}
-                      >
-                        Todos
-                      </Button>
+                    <div className="flex items-center gap-1 min-w-max border-b border-border/60">
+                      {[
+                        { value: 'upcoming' as const, label: 'Próximos' },
+                        { value: 'past' as const, label: 'Pasados' },
+                        { value: 'all' as const, label: 'Todos' },
+                      ].map(({ value, label }) => {
+                        const isActive = filterStatus === value;
+                        return (
+                          <button
+                            key={value}
+                            onClick={() => setFilterStatus(value)}
+                            className={`relative px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] transition-colors ${
+                              isActive ? 'text-foreground' : 'text-muted-foreground'
+                            }`}
+                            aria-pressed={isActive}
+                          >
+                            {label}
+                            <span
+                              className={`absolute left-0 right-0 -bottom-px h-0.5 transition-colors ${
+                                isActive ? 'bg-primary' : 'bg-transparent'
+                              }`}
+                              aria-hidden="true"
+                            />
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -361,25 +365,32 @@ const Concerts = () => {
                   </Select>
                 </div>
 
-                <div className="flex justify-center gap-2">
-                  <Button
-                    variant={filterStatus === 'upcoming' ? 'default' : 'outline'}
-                    onClick={() => setFilterStatus('upcoming')}
-                  >
-                    Próximos
-                  </Button>
-                  <Button
-                    variant={filterStatus === 'past' ? 'default' : 'outline'}
-                    onClick={() => setFilterStatus('past')}
-                  >
-                    Pasados
-                  </Button>
-                  <Button
-                    variant={filterStatus === 'all' ? 'default' : 'outline'}
-                    onClick={() => setFilterStatus('all')}
-                  >
-                    Todos
-                  </Button>
+                <div className="flex items-center justify-center gap-1 sm:gap-2 border-b border-border/60">
+                  {[
+                    { value: 'upcoming' as const, label: 'Próximos' },
+                    { value: 'past' as const, label: 'Pasados' },
+                    { value: 'all' as const, label: 'Todos' },
+                  ].map(({ value, label }) => {
+                    const isActive = filterStatus === value;
+                    return (
+                      <button
+                        key={value}
+                        onClick={() => setFilterStatus(value)}
+                        className={`relative px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] transition-colors ${
+                          isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                        aria-pressed={isActive}
+                      >
+                        {label}
+                        <span
+                          className={`absolute left-0 right-0 -bottom-px h-0.5 transition-colors ${
+                            isActive ? 'bg-primary' : 'bg-transparent'
+                          }`}
+                          aria-hidden="true"
+                        />
+                      </button>
+                    );
+                  })}
                 </div>
               </>
             )}

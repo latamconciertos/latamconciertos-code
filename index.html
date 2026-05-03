@@ -5,6 +5,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#004aad" />
+    <meta name="color-scheme" content="dark light" />
+
+    <!-- Theme: dark by default, persist user choice. Runs before paint to avoid FOUC. -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('theme');
+          var resolved = saved || 'dark';
+          if (resolved === 'system') {
+            resolved = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+          }
+          document.documentElement.classList.add(resolved);
+          document.documentElement.style.colorScheme = resolved;
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+          document.documentElement.style.colorScheme = 'dark';
+        }
+      })();
+    </script>
+
     <title>Conciertos Latam - Tu guía de música en vivo</title>
     <meta name="description" content="Descubre los mejores conciertos y eventos musicales de América Latina. Noticias, entrevistas y entradas para shows en vivo.">
     <meta name="author" content="Conciertos Latam" />
@@ -26,7 +46,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;700;800;900&family=Fira+Sans:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/uploads/1757980928489-Logo Principal transparente.png">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 

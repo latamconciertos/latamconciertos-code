@@ -307,7 +307,7 @@ const BlogPost = () => {
             )}
 
             {/* Headline */}
-            <h1 className="text-center text-[28px] sm:text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] md:leading-[1.05] text-foreground text-balance mb-4 md:mb-6">
+            <h1 className="font-display uppercase text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-[-0.01em] leading-[0.95] text-foreground text-balance mb-4 md:mb-6">
               {article.title}
             </h1>
 
@@ -407,7 +407,7 @@ const BlogPost = () => {
                 <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.2em] text-primary mb-2">
                   Sigue leyendo
                 </p>
-                <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight text-foreground">
+                <h2 className="font-fira text-3xl md:text-4xl font-bold tracking-tight text-foreground">
                   Te podría interesar
                 </h2>
               </div>

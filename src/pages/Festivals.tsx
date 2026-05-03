@@ -165,7 +165,7 @@ const Festivals = () => {
       <div className="min-h-screen bg-background">
         <Header />
 
-        <main className="container mx-auto px-4 py-16">
+        <main className="container mx-auto px-4 pt-24 md:pt-28 pb-16">
           <Breadcrumbs items={[
             { label: 'Inicio', href: '/' },
             { label: 'Festivales', href: '/festivals' },

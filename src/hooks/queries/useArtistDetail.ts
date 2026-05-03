@@ -37,6 +37,10 @@ export interface ArtistNewsArticle {
   featured_image: string | null;
   published_at: string;
   meta_description: string | null;
+  categories: {
+    name: string;
+    slug: string;
+  } | null;
 }
 
 /**
@@ -106,14 +110,22 @@ export function useArtistNews(artistId: string | undefined) {
 
       const { data, error } = await supabase
         .from('news_articles')
-        .select('id, title, slug, featured_image, published_at, meta_description')
+        .select(`
+          id,
+          title,
+          slug,
+          featured_image,
+          published_at,
+          meta_description,
+          categories:category_id (name, slug)
+        `)
         .eq('artist_id', artistId)
         .eq('status', 'published')
         .order('published_at', { ascending: false })
         .limit(6);
 
       if (error) throw error;
-      return (data || []) as ArtistNewsArticle[];
+      return (data || []) as unknown as ArtistNewsArticle[];
     },
     enabled: !!artistId,
   });

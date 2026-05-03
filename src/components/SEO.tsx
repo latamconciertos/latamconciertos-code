@@ -6,7 +6,7 @@ interface SEOProps {
   keywords?: string;
   image?: string;
   url?: string;
-  type?: 'website' | 'article' | 'music.song' | 'music.album';
+  type?: 'website' | 'article' | 'music.song' | 'music.album' | 'profile' | 'music.musician' | 'event';
   article?: {
     publishedTime?: string;
     modifiedTime?: string;

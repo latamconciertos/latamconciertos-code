@@ -1,14 +1,11 @@
 import { useState, useRef } from 'react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  Users,
   Calendar,
   MapPin,
   ExternalLink,
   Clock,
   AlertTriangle,
-  Edit,
   ChevronLeft,
   ChevronRight,
 } from 'lucide-react';
@@ -22,6 +19,9 @@ import {
   type AccreditationWithTeam,
 } from '@/types/entities';
 import { cn } from '@/lib/utils';
+import { AccreditationDetailSheet } from './AccreditationDetailSheet';
+import { CalendarSubscribeDialog } from './CalendarSubscribeDialog';
+import { PushSubscribeDialog } from './PushSubscribeDialog';
 
 interface ColumnConfig {
   status: AccreditationStatus;
@@ -74,7 +74,9 @@ export const AccreditationsKanban = () => {
   const updateAccreditation = useUpdateAccreditation();
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverColumn, setDragOverColumn] = useState<AccreditationStatus | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const selected = selectedId ? accreditations.find((a) => a.id === selectedId) ?? null : null;
 
   const handleDragStart = (e: React.DragEvent, id: string) => {
     e.dataTransfer.setData('accreditation-id', id);
@@ -95,7 +97,7 @@ export const AccreditationsKanban = () => {
     }
   };
 
-  const handleDrop = async (e: React.DragEvent, newStatus: AccreditationStatus) => {
+  const handleDrop = (e: React.DragEvent, newStatus: AccreditationStatus) => {
     e.preventDefault();
     const id = e.dataTransfer.getData('accreditation-id');
     setDraggingId(null);
@@ -109,7 +111,9 @@ export const AccreditationsKanban = () => {
       data.submitted_at = new Date().toISOString();
     }
 
-    await updateAccreditation.mutateAsync({ id, data });
+    // Fire-and-forget: el optimistic update mueve la card al instante,
+    // si la mutación falla el hook hace rollback automáticamente.
+    updateAccreditation.mutate({ id, data });
   };
 
   const handleDragEnd = () => {
@@ -137,13 +141,17 @@ export const AccreditationsKanban = () => {
             {accreditations.length} acreditaciones en total
           </p>
         </div>
-        <div className="flex items-center gap-1">
-          <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => scrollBoard('left')}>
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-          <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => scrollBoard('right')}>
-            <ChevronRight className="h-4 w-4" />
-          </Button>
+        <div className="flex items-center gap-2">
+          <PushSubscribeDialog />
+          <CalendarSubscribeDialog />
+          <div className="flex items-center gap-1">
+            <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => scrollBoard('left')}>
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button variant="outline" size="icon" className="h-8 w-8" onClick={() => scrollBoard('right')}>
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -197,6 +205,7 @@ export const AccreditationsKanban = () => {
                     daysBetween={daysBetween}
                     onDragStart={handleDragStart}
                     onDragEnd={handleDragEnd}
+                    onClick={() => setSelectedId(a.id)}
                   />
                 ))}
 
@@ -219,6 +228,12 @@ export const AccreditationsKanban = () => {
           );
         })}
       </div>
+
+      <AccreditationDetailSheet
+        accreditation={selected}
+        open={!!selectedId}
+        onOpenChange={(open) => !open && setSelectedId(null)}
+      />
     </div>
   );
 };
@@ -229,12 +244,14 @@ function KanbanCard({
   daysBetween,
   onDragStart,
   onDragEnd,
+  onClick,
 }: {
   accreditation: AccreditationWithTeam;
   isDragging: boolean;
   daysBetween: (d: string) => number;
   onDragStart: (e: React.DragEvent, id: string) => void;
   onDragEnd: () => void;
+  onClick: () => void;
 }) {
   const days = daysBetween(a.deadline);
   const isUrgent = ['draft', 'pending'].includes(a.status) && days <= 3 && days >= 0;
@@ -247,6 +264,15 @@ function KanbanCard({
       draggable
       onDragStart={(e) => onDragStart(e, a.id)}
       onDragEnd={onDragEnd}
+      onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
       className={cn(
         'group rounded-lg border bg-card p-3.5 cursor-grab active:cursor-grabbing transition-all duration-200',
         'hover:shadow-md hover:border-border hover:-translate-y-0.5',

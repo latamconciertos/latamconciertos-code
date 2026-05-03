@@ -16,6 +16,7 @@ import {
   Users,
   TrendingUp,
   ArrowRight,
+  Home,
 } from 'lucide-react';
 import logoPrincipal from '@/assets/logo-principal.png';
 
@@ -37,7 +38,16 @@ const AdminPortal = () => {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border/50">
-        <div className="max-w-5xl mx-auto px-6 py-2.5 flex items-center justify-end">
+        <div className="max-w-5xl mx-auto px-6 py-2.5 flex items-center justify-between gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/')}
+            className="text-muted-foreground hover:text-foreground h-8 -ml-2"
+          >
+            <Home className="h-3.5 w-3.5 mr-1.5" />
+            Ir al sitio
+          </Button>
           <div className="flex items-center gap-3">
             <span className="text-xs text-muted-foreground hidden sm:block">
               {user?.email}

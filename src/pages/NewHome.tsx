@@ -12,7 +12,6 @@ import { NewHomeFeaturedImages } from '@/components/newhome/NewHomeFeaturedImage
 import { NewHomeSpotifyCharts } from '@/components/newhome/NewHomeSpotifyCharts';
 import FeaturedVideosSection from '@/components/FeaturedVideosSection';
 import { WrappedBanner } from '@/components/wrapped/WrappedBanner';
-import { HomeSEOContent } from '@/components/newhome/HomeSEOContent';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 const NewHome = () => {
@@ -133,9 +132,6 @@ const NewHome = () => {
                         <NewHomeSpotifyCharts />
                     </motion.div>
                 </motion.main>
-
-
-                <HomeSEOContent />
 
                 <Footer />
             </div>

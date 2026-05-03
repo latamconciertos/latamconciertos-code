@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react';
-import { Search, Calendar, Tag, Clock, User } from 'lucide-react';
+import { Search, Calendar, Clock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SEO } from '@/components/SEO';
@@ -10,15 +9,23 @@ import Footer from '@/components/Footer';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { useBlogArticles, useBlogCategories, type BlogArticle } from '@/hooks/queries';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
-import { MobileFiltersSheet, ActiveFiltersChips, FilterLabel, type ActiveFilter } from '@/components/filters';
-import { useIsMobile } from '@/hooks/use-mobile';
+
+const SITE_URL = 'https://www.conciertoslatam.app';
+const LOGO_URL = 'https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/social-images/social-1757981020072-Logo Principal transparente.png';
+
+const stripHtml = (html: string | null | undefined) =>
+  (html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
+const getReadingTime = (content: string | null | undefined) => {
+  const text = stripHtml(content);
+  if (!text) return 0;
+  return Math.max(1, Math.ceil(text.split(/\s+/).filter(Boolean).length / 200));
+};
 
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('newest');
-
-  const isMobile = useIsMobile();
 
   const { data: articles = [], isLoading: loadingArticles } = useBlogArticles();
   const { data: categories = [], isLoading: loadingCategories } = useBlogCategories();
@@ -26,31 +33,11 @@ const Blog = () => {
   const getCategoryById = (id: string | null) => categories.find((c) => c.id === id);
   const getCategorySlugForArticle = (article: BlogArticle) => getCategoryById(article.category_id)?.slug;
 
-  // Active filters for mobile
-  const getActiveFilters = (): ActiveFilter[] => {
-    const filters: ActiveFilter[] = [];
-    if (selectedCategory !== 'all') {
-      const category = categories.find(c => c.slug === selectedCategory);
-      if (category) filters.push({ key: 'category', label: category.name, value: selectedCategory });
-    }
-    if (sortBy !== 'newest') {
-      filters.push({ key: 'sort', label: 'Más antiguo', value: sortBy });
-    }
-    return filters;
-  };
-
-  const handleRemoveFilter = (key: string) => {
-    if (key === 'category') setSelectedCategory('all');
-    if (key === 'sort') setSortBy('newest');
-  };
-
   const handleClearAllFilters = () => {
     setSelectedCategory('all');
     setSortBy('newest');
     setSearchTerm('');
   };
-
-  const activeFilters = getActiveFilters();
 
   const filteredArticles = useMemo(() => {
     return articles.filter(article => {
@@ -97,240 +84,343 @@ const Blog = () => {
     );
   }
 
+  const filterCategoryName = selectedCategory !== 'all'
+    ? categories.find((c) => c.slug === selectedCategory)?.name
+    : null;
+
+  const blogUrl = filterCategoryName
+    ? `${SITE_URL}/blog?category=${selectedCategory}`
+    : `${SITE_URL}/blog`;
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Blog",
-    "name": "Noticias Musicales Conciertos Latam",
-    "description": "Noticias, entrevistas exclusivas y análisis profundos sobre la escena musical latinoamericana",
-    "url": "https://www.conciertoslatam.app/blog",
-    "inLanguage": "es-LA",
+    "@id": `${blogUrl}#blog`,
+    "name": filterCategoryName
+      ? `${filterCategoryName} | Noticias Conciertos Latam`
+      : "Noticias Musicales Conciertos Latam",
+    "description": filterCategoryName
+      ? `Cobertura editorial de ${filterCategoryName.toLowerCase()} en la escena musical de América Latina.`
+      : "Noticias, entrevistas exclusivas y análisis profundos sobre la escena musical latinoamericana.",
+    "url": blogUrl,
+    "inLanguage": "es-419",
+    "isPartOf": { "@id": `${SITE_URL}/#website` },
     "publisher": {
       "@type": "Organization",
+      "@id": `${SITE_URL}/#organization`,
       "name": "Conciertos Latam",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/social-images/social-1757981020072-Logo Principal transparente.png"
-      }
+        "url": LOGO_URL,
+      },
     },
-    "blogPost": filteredArticles.slice(0, 10).map(article => ({
-      "@type": "BlogPosting",
-      "headline": article.title,
-      "description": article.meta_description || article.content?.substring(0, 160),
-      "image": getArticleImage(article),
-      "datePublished": article.published_at || article.created_at,
-      "dateModified": article.published_at || article.created_at,
-      "inLanguage": "es-LA",
-      "author": {
-        "@type": "Person",
-        "name": article.profiles?.username || "Conciertos Latam"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "Conciertos Latam",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/social-images/social-1757981020072-Logo Principal transparente.png"
-        }
-      },
-      "mainEntityOfPage": {
-        "@type": "WebPage",
-        "@id": `https://www.conciertoslatam.app/blog/${article.slug}`
-      }
-    }))
+    "blogPost": filteredArticles.slice(0, 10).map((article) => {
+      const description = article.meta_description || stripHtml(article.content).slice(0, 160);
+      return {
+        "@type": "BlogPosting",
+        "headline": article.title,
+        "description": description,
+        "image": getArticleImage(article),
+        "datePublished": article.published_at || article.created_at,
+        "dateModified": article.published_at || article.created_at,
+        "inLanguage": "es-419",
+        "wordCount": stripHtml(article.content).split(/\s+/).filter(Boolean).length,
+        "articleSection": article.categories?.name,
+        "author": {
+          "@type": "Organization",
+          "name": "Conciertos Latam",
+          "url": SITE_URL,
+        },
+        "publisher": {
+          "@type": "Organization",
+          "@id": `${SITE_URL}/#organization`,
+          "name": "Conciertos Latam",
+          "logo": { "@type": "ImageObject", "url": LOGO_URL },
+        },
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": `${SITE_URL}/blog/${article.slug}`,
+        },
+        "url": `${SITE_URL}/blog/${article.slug}`,
+      };
+    }),
   };
+
+  const featuredArticle = filteredArticles[0];
+  const restArticles = filteredArticles.slice(1);
 
   return (
     <>
-      <SEO 
-        title="Noticias Musicales - Entrevistas y Análisis"
-        description="Lee las últimas noticias, entrevistas exclusivas y análisis profundos de la escena musical latinoamericana. Mantente informado sobre los mejores conciertos y artistas de América Latina."
-        keywords="noticias musicales, entrevistas artistas, música latina, análisis musical, América Latina, conciertos, shows en vivo"
+      <SEO
+        title={
+          filterCategoryName
+            ? `${filterCategoryName} · Noticias Musicales LATAM`
+            : `Noticias Musicales · Entrevistas, conciertos y cultura latina${filteredArticles.length ? ` · ${filteredArticles.length} historias` : ''}`
+        }
+        description={
+          filterCategoryName
+            ? `Cobertura editorial de ${filterCategoryName.toLowerCase()} en la escena musical latinoamericana. Reportajes, entrevistas y novedades.`
+            : 'Las últimas noticias, entrevistas exclusivas, reportajes y análisis de la escena musical latinoamericana. Conciertos, festivales y artistas en un solo lugar.'
+        }
+        keywords={
+          filterCategoryName
+            ? `${filterCategoryName.toLowerCase()}, noticias ${filterCategoryName.toLowerCase()}, música latina, América Latina`
+            : 'noticias musicales, entrevistas artistas, música latina, reportajes, análisis musical, América Latina, conciertos, festivales, shows en vivo'
+        }
         url="/blog"
         type="website"
         structuredData={structuredData}
       />
       <div className="min-h-screen bg-background">
         <Header />
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-28 pb-8">
         <Breadcrumbs items={[
           { label: 'Noticias' }
         ]} />
-        
-        {/* Header */}
-        <div className="text-center mb-10">
-          <h1 className="page-title mb-4">
-            Noticias Musicales
-          </h1>
-          <p className="page-subtitle max-w-2xl mx-auto">
-            Descubre las últimas noticias, entrevistas y análisis de la escena musical latina
+
+        {/* Editorial Hero */}
+        <header className="text-center mt-6 mb-10 md:mb-14">
+          <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-3">
+            La revista de música latina
           </p>
-        </div>
-
-        {/* Filters */}
-        <div className="bg-card rounded-lg p-4 md:p-6 mb-8 border">
-          {isMobile ? (
-            <div className="space-y-3">
-              {/* Search always visible */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Buscar artículos..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 text-sm"
-                />
+          <h1 className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.015em] leading-[0.92] text-foreground text-balance mb-4">
+            Noticias
+          </h1>
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Entrevistas, reportajes y la cobertura editorial completa de la escena musical en América Latina.
+          </p>
+          {(articles.length > 0 || categories.length > 0) && (
+            <div className="flex flex-wrap justify-center gap-x-10 md:gap-x-14 gap-y-4 mt-8 md:mt-10">
+              <div className="flex flex-col items-center min-w-[80px]">
+                <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+                  {articles.length}
+                </span>
+                <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
+                  Historias
+                </span>
               </div>
-
-              <div className="flex gap-2">
-                <MobileFiltersSheet
-                  activeFiltersCount={activeFilters.length}
-                  onClearFilters={handleClearAllFilters}
-                  title="Filtros"
-                >
-                  <div className="space-y-6">
-                    <div>
-                      <FilterLabel icon={<Tag className="h-4 w-4" />}>Categoría</FilterLabel>
-                      <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Categoría" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">Todas las categorías</SelectItem>
-                          {categories.map((category) => (
-                            <SelectItem key={category.id} value={category.slug}>
-                              {category.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div>
-                      <FilterLabel icon={<Clock className="h-4 w-4" />}>Ordenar</FilterLabel>
-                      <Select value={sortBy} onValueChange={setSortBy}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Ordenar" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="newest">Más reciente</SelectItem>
-                          <SelectItem value="oldest">Más antiguo</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                </MobileFiltersSheet>
-              </div>
-
-              {/* Active Filters Chips */}
-              {activeFilters.length > 0 && (
-                <ActiveFiltersChips 
-                  filters={activeFilters} 
-                  onRemove={handleRemoveFilter} 
-                />
+              {categories.length > 0 && (
+                <div className="flex flex-col items-center min-w-[80px]">
+                  <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+                    {categories.length}
+                  </span>
+                  <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
+                    Categorías
+                  </span>
+                </div>
               )}
             </div>
-          ) : (
-            /* Desktop Filters */
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar artículos..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 text-sm"
-                  />
-                </div>
-              </div>
-              
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                <SelectTrigger className="w-full md:w-48 text-sm">
-                  <Tag className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Categoría" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas las categorías</SelectItem>
-                  {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.slug}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select value={sortBy} onValueChange={setSortBy}>
-                <SelectTrigger className="w-full md:w-40 text-sm">
-                  <Clock className="h-4 w-4 mr-2" />
-                  <SelectValue placeholder="Ordenar" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="newest">Más reciente</SelectItem>
-                  <SelectItem value="oldest">Más antiguo</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           )}
-        </div>
+        </header>
 
-        {/* Results */}
-        <div className="mb-6">
-          <p className="text-sm text-muted-foreground">
-            Mostrando {filteredArticles.length} artículo{filteredArticles.length !== 1 ? 's' : ''}
-          </p>
-        </div>
-
-        {/* Articles Grid */}
-        {filteredArticles.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredArticles.map((article) => (
-              <a 
-                key={article.id} 
-                href={`/blog/${article.slug}`}
-                className="block"
-              >
-                <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group border h-full">
-                  <div className="relative overflow-hidden">
-                    <img
-                      src={getArticleImage(article)}
-                      alt={article.title}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
-                      decoding="async"
-                      width={400}
-                      height={192}
-                    />
-                    {getCategoryById(article.category_id) && (
-                      <Badge className="absolute top-3 left-3 text-xs">
-                        {getCategoryById(article.category_id)?.name}
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  <CardContent className="p-5">
-                    <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-2 text-base leading-6">
-                      {article.title}
-                    </h3>
-                    
-                    <p className="text-muted-foreground mb-4 line-clamp-2 text-sm leading-5">
-                      {article.meta_description || article.content?.substring(0, 120) + '...'}
-                    </p>
-                    
-                    <div className="flex items-center justify-between text-xs text-muted-foreground">
-                      <div className="flex items-center space-x-2">
-                        <User className="h-3 w-3" />
-                        <span>{article.profiles?.username || 'Autor'}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="h-3 w-3" />
-                        <span>{formatDate(article.published_at || article.created_at)}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </a>
-            ))}
+        {/* Editorial filter bar */}
+        <div className="mb-8 md:mb-10">
+          {/* Row 1: search + sort */}
+          <div className="flex items-center gap-3 mb-5">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Buscar artículos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full h-11 text-sm pl-11 rounded-full bg-card border-border/60 focus-visible:ring-primary/30"
+              />
+            </div>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="h-11 w-auto min-w-[140px] sm:min-w-[160px] rounded-full bg-card border-border/60 text-xs font-semibold uppercase tracking-[0.12em]">
+                <Clock className="h-3.5 w-3.5 mr-2 flex-shrink-0" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Más reciente</SelectItem>
+                <SelectItem value="oldest">Más antiguo</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+
+          {/* Row 2: category tab bar — editorial pattern */}
+          <div className="overflow-x-auto scrollbar-hide -mx-4 sm:mx-0">
+            <div className="flex items-center gap-1 sm:gap-2 min-w-max sm:min-w-0 sm:justify-center px-4 sm:px-0 border-b border-border/60">
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className={`relative px-3 sm:px-5 py-3 text-[11px] sm:text-xs font-bold uppercase tracking-[0.18em] transition-colors whitespace-nowrap ${
+                  selectedCategory === 'all'
+                    ? 'text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                aria-pressed={selectedCategory === 'all'}
+              >
+                Todas
+                <span
+                  className={`absolute left-0 right-0 -bottom-px h-0.5 transition-colors ${
+                    selectedCategory === 'all' ? 'bg-primary' : 'bg-transparent'
+                  }`}
+                  aria-hidden="true"
+                />
+              </button>
+              {categories.map((cat) => {
+                const isActive = selectedCategory === cat.slug;
+                return (
+                  <button
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.slug)}
+                    className={`relative px-3 sm:px-5 py-3 text-[11px] sm:text-xs font-bold uppercase tracking-[0.18em] transition-colors whitespace-nowrap ${
+                      isActive
+                        ? 'text-foreground'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                    aria-pressed={isActive}
+                  >
+                    {cat.name}
+                    <span
+                      className={`absolute left-0 right-0 -bottom-px h-0.5 transition-colors ${
+                        isActive ? 'bg-primary' : 'bg-transparent'
+                      }`}
+                      aria-hidden="true"
+                    />
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Active filters / count */}
+          <div className="flex items-center justify-between mt-5">
+            <p className="text-xs text-muted-foreground">
+              {filteredArticles.length} {filteredArticles.length === 1 ? 'historia' : 'historias'}
+              {selectedCategory !== 'all' && filterCategoryName && (
+                <span> en <span className="text-foreground font-semibold">{filterCategoryName}</span></span>
+              )}
+            </p>
+            {(selectedCategory !== 'all' || sortBy !== 'newest' || searchTerm) && (
+              <button
+                onClick={handleClearAllFilters}
+                className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Limpiar
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Articles */}
+        {filteredArticles.length > 0 ? (
+          <>
+            {/* Featured — first article as a magazine cover */}
+            {featuredArticle && (
+              <a
+                href={`/blog/${featuredArticle.slug}`}
+                className="group block mb-12 md:mb-16"
+              >
+                <div className="grid md:grid-cols-12 gap-6 md:gap-10 items-center">
+                  <div className="md:col-span-7">
+                    <div className="aspect-[16/10] overflow-hidden rounded-2xl bg-muted ring-1 ring-border/40">
+                      <img
+                        src={getArticleImage(featuredArticle)}
+                        alt={featuredArticle.title}
+                        className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                        loading="eager"
+                        decoding="async"
+                      />
+                    </div>
+                  </div>
+                  <div className="md:col-span-5">
+                    <div className="flex items-center gap-3 mb-3 md:mb-4">
+                      <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+                        {getCategoryById(featuredArticle.category_id)?.name || 'Noticias'}
+                      </span>
+                      <span className="text-muted-foreground/40">·</span>
+                      <span className="text-xs text-muted-foreground">Destacado</span>
+                    </div>
+                    <h2 className="font-display uppercase text-3xl md:text-4xl lg:text-5xl font-black tracking-[-0.01em] leading-[0.95] text-foreground text-balance mb-4 md:mb-5 group-hover:text-primary transition-colors">
+                      {featuredArticle.title}
+                    </h2>
+                    {(featuredArticle.meta_description || featuredArticle.content) && (
+                      <p className="text-base md:text-lg text-muted-foreground leading-relaxed line-clamp-3 mb-5">
+                        {featuredArticle.meta_description || stripHtml(featuredArticle.content).slice(0, 200)}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                      <time dateTime={featuredArticle.published_at || featuredArticle.created_at}>
+                        {formatDate(featuredArticle.published_at || featuredArticle.created_at)}
+                      </time>
+                      {getReadingTime(featuredArticle.content) > 0 && (
+                        <>
+                          <span className="text-muted-foreground/40">·</span>
+                          <span>{getReadingTime(featuredArticle.content)} min de lectura</span>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </a>
+            )}
+
+            {/* Rest of the grid */}
+            {restArticles.length > 0 && (
+              <>
+                <div className="flex items-center gap-3 mb-6 md:mb-8 pt-2">
+                  <span className="h-px flex-1 bg-border/60" aria-hidden="true" />
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                    {filterCategoryName ? `Más en ${filterCategoryName}` : 'Más historias'}
+                  </p>
+                  <span className="h-px flex-1 bg-border/60" aria-hidden="true" />
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                  {restArticles.map((article) => {
+                    const readTime = getReadingTime(article.content);
+                    return (
+                      <a
+                        key={article.id}
+                        href={`/blog/${article.slug}`}
+                        className="group block focus:outline-none"
+                      >
+                        <Card className="overflow-hidden border-border/60 bg-card hover:border-primary/30 hover:shadow-xl group-hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
+                          <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+                            <img
+                              src={getArticleImage(article)}
+                              alt={article.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              loading="lazy"
+                              decoding="async"
+                            />
+                          </div>
+
+                          <CardContent className="p-5 flex-1 flex flex-col">
+                            {getCategoryById(article.category_id) && (
+                              <span className="inline-block text-[10px] font-bold uppercase tracking-[0.18em] text-primary mb-2">
+                                {getCategoryById(article.category_id)?.name}
+                              </span>
+                            )}
+                            <h3 className="font-bold text-base md:text-lg text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-3 leading-snug">
+                              {article.title}
+                            </h3>
+                            {article.meta_description && (
+                              <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+                                {article.meta_description}
+                              </p>
+                            )}
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-auto">
+                              <Calendar className="h-3 w-3" />
+                              <time dateTime={article.published_at || article.created_at}>
+                                {formatDate(article.published_at || article.created_at)}
+                              </time>
+                              {readTime > 0 && (
+                                <>
+                                  <span className="text-muted-foreground/40">·</span>
+                                  <span>{readTime} min</span>
+                                </>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </a>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </>
         ) : (
           <div className="text-center py-12">
             <Search className="h-16 w-16 text-muted-foreground mx-auto mb-4" />

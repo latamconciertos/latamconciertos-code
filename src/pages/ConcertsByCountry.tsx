@@ -6,8 +6,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { SEO } from '@/components/SEO';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
-import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Users, Ticket, ChevronRight, ChevronDown, Music } from 'lucide-react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 import { format, parseISO, isPast } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { spotifyService } from '@/lib/spotify';
@@ -45,6 +44,7 @@ interface ConcertWithDetails {
     id: string;
     name: string;
     slug: string;
+    photo_url: string | null;
   } | null;
   venues: {
     id: string;
@@ -110,7 +110,7 @@ const ConcertsByCountry = () => {
         .from('concerts')
         .select(`
           id, title, slug, date, image_url, event_type,
-          artists:artist_id (id, name, slug),
+          artists:artist_id (id, name, slug, photo_url),
           venues:venue_id (
             id, name, slug,
             cities:city_id (id, name, slug)
@@ -121,13 +121,14 @@ const ConcertsByCountry = () => {
       
       if (concertsError) throw concertsError;
       
-      // Enrich with Spotify images
+      // Prefer artist photo, fallback to Spotify image, then concert poster
       const enriched = await Promise.all(
         (concertsData || []).map(async (concert) => {
-          let artistImage = concert.image_url;
+          let artistImage: string | null = concert.artists?.photo_url || null;
           if (!artistImage && concert.artists?.name) {
             artistImage = await spotifyService.getArtistImage(concert.artists.name);
           }
+          if (!artistImage) artistImage = concert.image_url;
           return { ...concert, artist_image_url: artistImage };
         })
       );
@@ -199,8 +200,29 @@ const ConcertsByCountry = () => {
   const dateRange = getDateRange();
   const artistsText = featuredArtists.length > 0 ? featuredArtists.join(' · ') : '';
   
-  // Título SEO dinámico
-  const pageTitle = `${eventTypeText} en ${countryInfo.name} ${yearText} | Fechas y Entradas`;
+  // Top cities & venues (for SEO sub-sections + FAQ)
+  const cityCounts = (concerts || [])
+    .filter((c) => c.venues?.cities?.name)
+    .reduce<Record<string, { name: string; slug: string; count: number }>>((acc, c) => {
+      const key = c.venues!.cities!.slug;
+      if (!acc[key]) acc[key] = { name: c.venues!.cities!.name, slug: key, count: 0 };
+      acc[key].count++;
+      return acc;
+    }, {});
+  const topCities = Object.values(cityCounts).sort((a, b) => b.count - a.count).slice(0, 6);
+
+  const venueCounts = (concerts || [])
+    .filter((c) => c.venues?.name)
+    .reduce<Record<string, { name: string; slug: string; cityName?: string; count: number }>>((acc, c) => {
+      const key = c.venues!.slug;
+      if (!acc[key]) acc[key] = { name: c.venues!.name, slug: key, cityName: c.venues!.cities?.name, count: 0 };
+      acc[key].count++;
+      return acc;
+    }, {});
+  const topVenues = Object.values(venueCounts).sort((a, b) => b.count - a.count).slice(0, 6);
+
+  // Título SEO dinámico — keyword first
+  const pageTitle = `Conciertos en ${countryInfo.name} ${yearText}: ${upcomingConcerts.length > 0 ? `${upcomingConcerts.length} fechas, ` : ''}entradas y calendario | Conciertos Latam`;
   
   // Meta descripción dinámica (max 160 caracteres)
   const buildDescription = () => {
@@ -230,84 +252,167 @@ const ConcertsByCountry = () => {
     ...featuredArtists.map(artist => `${artist} ${countryInfo.name} ${currentYear}`),
   ].join(', ');
 
-  // Structured data mejorado para SEO
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "ItemList",
-    "name": `${eventTypeText} en ${countryInfo.name} ${yearText}`,
-    "description": pageDescription,
-    "numberOfItems": upcomingConcerts.length,
-    "itemListElement": upcomingConcerts.slice(0, 10).map((concert, index) => ({
-      "@type": "ListItem",
-      "position": index + 1,
-      "item": {
-        "@type": "MusicEvent",
-        "name": concert.title,
-        "startDate": concert.date,
-        "eventStatus": "https://schema.org/EventScheduled",
-        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-        "location": {
-          "@type": "Place",
-          "name": concert.venues?.name,
-          "address": {
-            "@type": "PostalAddress",
-            "addressLocality": concert.venues?.cities?.name,
-            "addressCountry": countryInfo.isoCode
-          }
-        },
-        "performer": concert.artists ? {
-          "@type": "MusicGroup",
-          "name": concert.artists.name
-        } : undefined,
-        "image": concert.artist_image_url || undefined,
-        "url": `https://www.conciertoslatam.app/concerts/${concert.slug}`
-      }
-    }))
-  };
+  // FAQ content (drives FAQPage schema + on-page text)
+  const faqs = [
+    {
+      q: `¿Cuáles son los próximos conciertos en ${countryInfo.name} ${yearText}?`,
+      a: upcomingConcerts.length > 0
+        ? `Hay ${upcomingConcerts.length} ${upcomingConcerts.length === 1 ? 'concierto programado' : 'conciertos programados'} en ${countryInfo.name} para ${yearText}, incluyendo shows de ${featuredArtists.slice(0, 5).join(', ')}${featuredArtists.length > 5 ? ' y más artistas' : ''}. Revisa el calendario completo arriba con fechas, venues y enlaces para comprar entradas.`
+        : `Aún no hay conciertos confirmados en ${countryInfo.name} para ${yearText}. Revisa esta página o suscríbete a nuestras notificaciones para enterarte primero cuando se anuncien fechas.`,
+    },
+    {
+      q: `¿Dónde comprar entradas para conciertos en ${countryInfo.name}?`,
+      a: `En cada concierto listado encontrás el botón "Ver entradas" que te lleva al sitio oficial de venta autorizado por la promotora del evento. Conciertos Latam no vende entradas directamente — solo te conectamos con la fuente oficial para evitar reventa y estafas.`,
+    },
+    ...(topCities.length > 0 ? [{
+      q: `¿En qué ciudades de ${countryInfo.name} hay más conciertos?`,
+      a: `Las ciudades con más eventos musicales en ${countryInfo.name} son ${topCities.slice(0, 5).map(c => `${c.name} (${c.count} ${c.count === 1 ? 'concierto' : 'conciertos'})`).join(', ')}.`,
+    }] : []),
+    ...(topVenues.length > 0 ? [{
+      q: `¿Cuáles son los mejores venues para conciertos en ${countryInfo.name}?`,
+      a: `Los venues con más actividad este año en ${countryInfo.name} son ${topVenues.slice(0, 5).map(v => v.name).join(', ')}. Encuentra fechas y artistas de cada venue en la lista de conciertos arriba.`,
+    }] : []),
+    {
+      q: `¿Cómo me entero de nuevos conciertos en ${countryInfo.name}?`,
+      a: `Esta página se actualiza automáticamente cada vez que añadimos un nuevo evento. Te recomendamos guardarla en favoritos. Cubrimos conciertos, festivales, giras internacionales y shows de artistas locales en todo ${countryInfo.name}.`,
+    },
+  ];
 
-  const ConcertCard = ({ concert }: { concert: ConcertWithDetails }) => (
-    <Link 
-      to={`/concerts/${concert.slug}`}
-      className="group block bg-card rounded-xl overflow-hidden border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
-    >
-      <div className="aspect-[4/3] sm:aspect-video relative overflow-hidden">
-        <img
-          src={concert.artist_image_url || '/placeholder.svg'}
-          alt={concert.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-        <Badge 
-          className="absolute top-2 left-2 sm:top-3 sm:left-3 text-xs"
-          variant={concert.event_type === 'festival' ? 'secondary' : 'default'}
-        >
-          {concert.event_type === 'festival' ? 'Festival' : 'Concierto'}
-        </Badge>
-      </div>
-      <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
-        <h3 className="font-semibold text-sm sm:text-base text-foreground group-hover:text-primary transition-colors line-clamp-2">
-          {concert.title}
-        </h3>
-        {concert.artists && (
-          <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5 sm:gap-2">
-            <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-            <span className="truncate">{concert.artists.name}</span>
-          </p>
-        )}
-        {concert.date && (
-          <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5 sm:gap-2">
-            <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-            {format(parseISO(concert.date), "d 'de' MMMM, yyyy", { locale: es })}
-          </p>
-        )}
-        {concert.venues && (
-          <p className="text-xs sm:text-sm text-muted-foreground flex items-center gap-1.5 sm:gap-2">
-            <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-            <span className="truncate">{concert.venues.name}, {concert.venues.cities?.name}</span>
-          </p>
-        )}
-      </div>
-    </Link>
-  );
+  // Structured data — multi-schema graph for max ranking signal
+  const SITE_URL = 'https://www.conciertoslatam.app';
+  const pageUrl = `${SITE_URL}/conciertos/${countrySlug}`;
+
+  const structuredData = [
+    // Breadcrumb
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Inicio", "item": SITE_URL },
+        { "@type": "ListItem", "position": 2, "name": "Conciertos", "item": `${SITE_URL}/concerts` },
+        { "@type": "ListItem", "position": 3, "name": countryInfo.name, "item": pageUrl },
+      ],
+    },
+    // CollectionPage with ItemList of MusicEvents
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "@id": `${pageUrl}#collection`,
+      "name": `Conciertos en ${countryInfo.name} ${yearText}`,
+      "description": pageDescription,
+      "url": pageUrl,
+      "isPartOf": { "@id": `${SITE_URL}/#website` },
+      "inLanguage": "es-419",
+      "about": {
+        "@type": "Place",
+        "name": countryInfo.name,
+        "address": { "@type": "PostalAddress", "addressCountry": countryInfo.isoCode },
+      },
+      "mainEntity": {
+        "@type": "ItemList",
+        "name": `Conciertos en ${countryInfo.name} ${yearText}`,
+        "numberOfItems": upcomingConcerts.length,
+        "itemListElement": upcomingConcerts.slice(0, 20).map((concert, index) => ({
+          "@type": "ListItem",
+          "position": index + 1,
+          "item": {
+            "@type": "MusicEvent",
+            "name": concert.title,
+            "startDate": concert.date,
+            "eventStatus": "https://schema.org/EventScheduled",
+            "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+            "location": concert.venues ? {
+              "@type": "MusicVenue",
+              "name": concert.venues.name,
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": concert.venues.cities?.name,
+                "addressCountry": countryInfo.isoCode,
+              },
+            } : undefined,
+            "performer": concert.artists ? {
+              "@type": "MusicGroup",
+              "name": concert.artists.name,
+              "url": `${SITE_URL}/artists/${concert.artists.slug}`,
+            } : undefined,
+            "image": concert.artist_image_url || undefined,
+            "url": `${SITE_URL}/concerts/${concert.slug}`,
+            "offers": {
+              "@type": "Offer",
+              "url": `${SITE_URL}/concerts/${concert.slug}`,
+              "availability": "https://schema.org/InStock",
+              "validFrom": concert.date,
+            },
+          },
+        })),
+      },
+    },
+    // FAQPage — drives "People also ask" boxes in SERP
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": faqs.map((f) => ({
+        "@type": "Question",
+        "name": f.q,
+        "acceptedAnswer": { "@type": "Answer", "text": f.a },
+      })),
+    },
+  ];
+
+  const ConcertCard = ({ concert }: { concert: ConcertWithDetails }) => {
+    const dateObj = concert.date ? parseISO(concert.date) : null;
+    const day = dateObj ? format(dateObj, 'd') : '';
+    const month = dateObj ? format(dateObj, 'MMM', { locale: es }).replace('.', '').toUpperCase() : '';
+    const isFestival = concert.event_type === 'festival';
+
+    return (
+      <Link
+        to={`/concerts/${concert.slug}`}
+        className="group block focus:outline-none"
+      >
+        <div className="relative aspect-[4/5] sm:aspect-[3/4] overflow-hidden rounded-xl bg-muted ring-1 ring-border/50 group-hover:ring-primary/40 transition-all duration-300">
+          <img
+            src={concert.artist_image_url || '/placeholder.svg'}
+            alt={`${concert.artists?.name || concert.title} en ${concert.venues?.cities?.name || countryInfo.name}`}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+
+          {/* Festival badge — only when relevant */}
+          {isFestival && (
+            <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-[0.15em] bg-primary text-primary-foreground px-2.5 py-1 rounded-full">
+              Festival
+            </span>
+          )}
+
+          {/* Date stamp top-right */}
+          {dateObj && (
+            <time
+              dateTime={concert.date || ''}
+              className="absolute top-3 right-3 bg-background/95 backdrop-blur rounded-lg px-2.5 py-1.5 text-center min-w-[48px]"
+            >
+              <span className="block font-display text-xl font-black text-foreground leading-none">{day}</span>
+              <span className="block text-[9px] uppercase font-bold tracking-[0.1em] text-muted-foreground mt-0.5">{month}</span>
+            </time>
+          )}
+
+          {/* Title + meta over image bottom */}
+          <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
+            <h3 className="font-bold text-sm sm:text-base text-white leading-tight line-clamp-2 mb-1.5">
+              {concert.title}
+            </h3>
+            {concert.venues && (
+              <p className="text-[11px] sm:text-xs text-white/80 truncate">
+                {concert.venues.name}
+                {concert.venues.cities?.name ? ` · ${concert.venues.cities.name}` : ''}
+              </p>
+            )}
+          </div>
+        </div>
+      </Link>
+    );
+  };
 
   return (
     <>
@@ -320,39 +425,55 @@ const ConcertsByCountry = () => {
       />
       
       <Header />
-      
-      <main className="min-h-screen pt-28 sm:pt-32 pb-12 sm:pb-16">
+
+      <main className="min-h-screen pt-24 md:pt-28 pb-12 sm:pb-16">
         <div className="container mx-auto px-4">
-          {/* Hero Section */}
-          <header className="text-center mb-8 sm:mb-12">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-foreground mb-3 sm:mb-4">
-              {eventTypeText} en {countryInfo.name} {yearText}
+          {/* Editorial Hero — keyword-rich h1 for SEO */}
+          <header className="text-center mt-6 mb-10 md:mb-14">
+            <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-3">
+              Música en vivo · {countryInfo.name}
+            </p>
+            <h1 className="font-display uppercase font-black tracking-[-0.015em] leading-[0.92] text-foreground text-balance mb-4">
+              <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-muted-foreground/70 mb-1 md:mb-2">
+                Conciertos en
+              </span>
+              <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-8xl">
+                {countryInfo.name} {yearText}
+              </span>
             </h1>
-            <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
-              {upcomingConcerts.length > 0 
-                ? `${upcomingConcerts.length} eventos próximos${featuredArtists.length > 0 ? `: ${featuredArtists.slice(0, 3).join(', ')} y más` : ''}.`
-                : `Calendario de conciertos, festivales y eventos de música en vivo en ${countryInfo.name}.`}
+            <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              {upcomingConcerts.length > 0
+                ? `Calendario completo de ${upcomingConcerts.length} ${upcomingConcerts.length === 1 ? 'evento próximo' : 'eventos próximos'} en ${countryInfo.name}${featuredArtists.length > 0 ? `: ${featuredArtists.slice(0, 3).join(', ')} y más` : ''}. Fechas, venues y entradas.`
+                : `Calendario de conciertos, festivales y eventos de música en vivo en ${countryInfo.name}. Fechas, artistas y venta de entradas.`}
             </p>
           </header>
 
-          {/* Quick Stats - Solo 3 cards sin eventos pasados */}
+          {/* Editorial stats */}
           {concerts && concerts.length > 0 && (
-            <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-8 sm:mb-12 max-w-2xl mx-auto">
-              <div className="bg-card rounded-lg sm:rounded-xl p-3 sm:p-4 border border-border text-center">
-                <p className="text-xl sm:text-3xl font-bold text-primary">{upcomingConcerts.length}</p>
-                <p className="text-[10px] sm:text-sm text-muted-foreground">Próximos</p>
+            <div className="flex flex-wrap justify-center gap-x-10 md:gap-x-14 gap-y-4 mb-10 md:mb-14">
+              <div className="flex flex-col items-center min-w-[80px]">
+                <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+                  {upcomingConcerts.length}
+                </span>
+                <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
+                  Próximos
+                </span>
               </div>
-              <div className="bg-card rounded-lg sm:rounded-xl p-3 sm:p-4 border border-border text-center">
-                <p className="text-xl sm:text-3xl font-bold text-primary">
+              <div className="flex flex-col items-center min-w-[80px]">
+                <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
                   {new Set(concerts.map(c => c.artists?.name).filter(Boolean)).size}
-                </p>
-                <p className="text-[10px] sm:text-sm text-muted-foreground">Artistas</p>
+                </span>
+                <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
+                  Artistas
+                </span>
               </div>
-              <div className="bg-card rounded-lg sm:rounded-xl p-3 sm:p-4 border border-border text-center">
-                <p className="text-xl sm:text-3xl font-bold text-primary">
+              <div className="flex flex-col items-center min-w-[80px]">
+                <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
                   {new Set(concerts.map(c => c.venues?.cities?.name).filter(Boolean)).size}
-                </p>
-                <p className="text-[10px] sm:text-sm text-muted-foreground">Ciudades</p>
+                </span>
+                <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
+                  Ciudades
+                </span>
               </div>
             </div>
           )}
@@ -365,11 +486,15 @@ const ConcertsByCountry = () => {
             <>
               {/* Upcoming Concerts */}
               {upcomingConcerts.length > 0 && (
-                <section className="mb-10 sm:mb-16" aria-labelledby="upcoming-concerts">
-                  <h2 id="upcoming-concerts" className="text-lg sm:text-xl md:text-2xl font-bold text-foreground mb-4 sm:mb-6 flex items-center gap-2">
-                    <Ticket className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-                    Próximos conciertos en {countryInfo.name}
-                  </h2>
+                <section className="mb-12 sm:mb-16" aria-labelledby="upcoming-concerts">
+                  <div className="mb-6 md:mb-8">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-2">
+                      Próximamente
+                    </p>
+                    <h2 id="upcoming-concerts" className="font-display uppercase text-3xl md:text-4xl font-black tracking-tight leading-[0.95] text-foreground">
+                      En cartelera
+                    </h2>
+                  </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
                     {upcomingConcerts.map(concert => (
                       <ConcertCard key={concert.id} concert={concert} />
@@ -382,24 +507,27 @@ const ConcertsByCountry = () => {
               {pastConcerts.length > 0 && (
                 <Collapsible open={isPastConcertsOpen} onOpenChange={setIsPastConcertsOpen}>
                   <CollapsibleTrigger asChild>
-                    <button 
-                      className="w-full flex items-center justify-between p-4 bg-card/50 rounded-xl border border-border hover:border-primary/30 transition-all duration-300 group mb-4"
+                    <button
+                      className="w-full flex items-center justify-between py-4 border-y border-border/60 hover:border-primary/40 transition-colors group mb-4"
                       aria-labelledby="past-concerts"
                     >
-                      <div className="flex items-center gap-2">
-                        <Music className="w-5 h-5 sm:w-6 sm:h-6 text-muted-foreground" />
-                        <h2 id="past-concerts" className="text-lg sm:text-xl font-bold text-foreground">
-                          Conciertos pasados en {countryInfo.name}
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                          Archivo
+                        </span>
+                        <span className="h-3 w-px bg-border/60" />
+                        <h2 id="past-concerts" className="font-display uppercase text-xl md:text-2xl font-black tracking-tight text-foreground">
+                          Pasados
                         </h2>
-                        <Badge variant="secondary" className="ml-2">
+                        <span className="font-display text-base md:text-lg font-black text-primary">
                           {pastConcerts.length}
-                        </Badge>
+                        </span>
                       </div>
-                      <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform duration-300 ${isPastConcertsOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-5 h-5 text-muted-foreground group-hover:text-foreground transition-transform duration-300 ${isPastConcertsOpen ? 'rotate-180' : ''}`} />
                     </button>
                   </CollapsibleTrigger>
                   <CollapsibleContent className="overflow-hidden data-[state=open]:animate-accordion-down data-[state=closed]:animate-accordion-up">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 pt-2">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 pt-4">
                       {pastConcerts.map(concert => (
                         <ConcertCard key={concert.id} concert={concert} />
                       ))}
@@ -426,33 +554,136 @@ const ConcertsByCountry = () => {
             </>
           )}
 
-          {/* SEO Content Section */}
-          <section className="mt-12 sm:mt-16 prose prose-invert max-w-none">
-            <h2 className="text-base sm:text-xl font-semibold text-foreground">
-              Guía de {eventTypeText.toLowerCase()} en {countryInfo.name} {yearText}
+          {/* Top Cities — pills, editorial */}
+          {topCities.length > 0 && (
+            <section className="mt-16 sm:mt-20 text-center" aria-labelledby="top-cities">
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-3">
+                Explorá por ciudad
+              </p>
+              <h2 id="top-cities" className="font-display uppercase text-2xl md:text-3xl font-black tracking-tight leading-[0.95] text-foreground mb-6">
+                Conciertos en {countryInfo.name} por ciudad
+              </h2>
+              <div className="flex flex-wrap justify-center gap-1.5 max-w-3xl mx-auto">
+                {topCities.map((city) => (
+                  <Link
+                    key={city.slug}
+                    to={`/concerts?city=${city.slug}`}
+                    aria-label={`Conciertos en ${city.name}, ${countryInfo.name}`}
+                    className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/60 text-muted-foreground hover:text-foreground hover:border-border transition-colors"
+                  >
+                    <span className="text-[11px] font-bold uppercase tracking-[0.15em]">
+                      {city.name}
+                    </span>
+                    <span className="text-[10px] font-black text-primary group-hover:text-primary tabular-nums">
+                      {city.count}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Top Venues — internal linking + keyword "Conciertos en {Venue}" */}
+          {topVenues.length > 0 && (
+            <section className="mt-12 sm:mt-16" aria-labelledby="top-venues">
+              <div className="mb-6 md:mb-8 max-w-3xl mx-auto text-center">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-2">
+                  Venues principales
+                </p>
+                <h2 id="top-venues" className="font-display uppercase text-2xl md:text-3xl font-black tracking-tight leading-[0.95] text-foreground">
+                  Los venues más activos de {countryInfo.name}
+                </h2>
+              </div>
+              <ul className="max-w-3xl mx-auto divide-y divide-border/60 border-y border-border/60">
+                {topVenues.map((venue) => (
+                  <li key={venue.slug} className="py-4 px-2 flex items-center justify-between gap-4">
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-base md:text-lg text-foreground truncate">
+                        {venue.name}
+                      </h3>
+                      {venue.cityName && (
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {venue.cityName}, {countryInfo.name}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex-shrink-0 text-right">
+                      <span className="font-display text-xl font-black text-foreground leading-none">
+                        {venue.count}
+                      </span>
+                      <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mt-0.5">
+                        {venue.count === 1 ? 'concierto' : 'conciertos'}
+                      </p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {/* SEO Editorial Section */}
+          <section className="mt-16 sm:mt-20 max-w-3xl mx-auto">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-3">
+              Guía editorial
+            </p>
+            <h2 className="font-display uppercase text-2xl md:text-3xl font-black tracking-tight leading-[0.95] text-foreground mb-5">
+              {eventTypeText} en {countryInfo.name}
             </h2>
-            <p className="text-sm sm:text-base text-muted-foreground">
-              {countryInfo.name} es uno de los destinos más importantes para la música en vivo en América Latina. 
+            <p className="text-base text-muted-foreground leading-relaxed mb-4">
+              {countryInfo.name} es uno de los destinos más importantes para la música en vivo en América Latina.
               {upcomingConcerts.length > 0 && ` Este ${currentYear}${hasNextYearConcerts ? ` y ${nextYear}` : ''}, hay ${upcomingConcerts.length} eventos programados`}
               {featuredArtists.length > 0 && `, incluyendo shows de ${featuredArtists.slice(0, 3).join(', ')}${featuredArtists.length > 3 ? ' y más artistas' : ''}`}.
-              {' '}En Conciertos Latam te mantenemos actualizado con toda la información sobre fechas, 
+              {' '}En Conciertos Latam te mantenemos actualizado con toda la información sobre fechas,
               lugares y venta de entradas para que no te pierdas ningún show.
+            </p>
+            <p className="text-base text-muted-foreground leading-relaxed">
+              Cubrimos toda la oferta de conciertos en {countryInfo.name}: giras internacionales, festivales, residencias de artistas locales y shows en venues de todo el país.
+              {topCities.length > 0 && ` Las ciudades con mayor actividad son ${topCities.slice(0, 3).map(c => c.name).join(', ')}, que concentran la mayoría de eventos.`}
+              {' '}Si querés saber qué pasa con un artista en particular, visitá su perfil; si te interesa un venue específico, podés filtrar la cartelera por ciudad.
             </p>
           </section>
 
-          {/* Internal Links Navigation */}
-          <nav className="mt-12 sm:mt-16 pt-6 sm:pt-8 border-t border-border/50 text-center" aria-label="Otros países">
-            <h3 className="text-base sm:text-lg font-semibold text-foreground mb-4">
-              Explora conciertos en otros países
+          {/* FAQ Section — drives FAQPage schema rich result */}
+          <section className="mt-16 sm:mt-20 max-w-3xl mx-auto" aria-labelledby="faq-title">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-3">
+              Preguntas frecuentes
+            </p>
+            <h2 id="faq-title" className="font-display uppercase text-2xl md:text-3xl font-black tracking-tight leading-[0.95] text-foreground mb-8">
+              Conciertos en {countryInfo.name}: lo que más preguntan
+            </h2>
+            <div className="divide-y divide-border/60 border-y border-border/60">
+              {faqs.map((faq, i) => (
+                <details key={i} className="group py-5">
+                  <summary className="flex items-center justify-between cursor-pointer list-none">
+                    <h3 className="font-bold text-base md:text-lg text-foreground pr-4">
+                      {faq.q}
+                    </h3>
+                    <ChevronDown className="w-5 h-5 text-muted-foreground group-open:rotate-180 transition-transform flex-shrink-0" />
+                  </summary>
+                  <p className="text-sm md:text-base text-muted-foreground leading-relaxed mt-3 pr-9">
+                    {faq.a}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </section>
+
+          {/* Internal Links Navigation — country pills */}
+          <nav className="mt-16 sm:mt-20 pt-10 border-t border-border/60 text-center" aria-label="Otros países">
+            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-3">
+              Sigue explorando
+            </p>
+            <h3 className="font-display uppercase text-2xl md:text-3xl font-black tracking-tight leading-[0.95] text-foreground mb-6">
+              Conciertos en otros países
             </h3>
-            <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
+            <div className="flex flex-wrap justify-center gap-1.5 max-w-3xl mx-auto">
               {Object.entries(COUNTRY_DATA)
                 .filter(([slug]) => slug !== countrySlug)
                 .map(([slug, data]) => (
                   <Link
                     key={slug}
                     to={`/conciertos/${slug}`}
-                    className="px-3 py-1.5 sm:px-4 sm:py-2 bg-muted rounded-full text-xs sm:text-sm text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+                    className="px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] bg-card border border-border/60 text-muted-foreground hover:text-foreground hover:border-border transition-colors"
                   >
                     {data.name}
                   </Link>

@@ -4,11 +4,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { SEO } from '@/components/SEO';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Music, Calendar, MapPin, Search } from 'lucide-react';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { useSetlistsPage, type ConcertWithSetlist } from '@/hooks/queries';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
@@ -70,49 +67,130 @@ export default function Setlists() {
     );
   }
 
+  const setlistCount = concerts.filter(c => c.setlist_count > 0).length;
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "@id": "https://www.conciertoslatam.app/setlists#collection",
+    "name": "Setlists de Conciertos en América Latina",
+    "description": "Catálogo de setlists de conciertos en Latinoamérica: canciones, orden de show, venues y fechas.",
+    "url": "https://www.conciertoslatam.app/setlists",
+    "isPartOf": { "@id": "https://www.conciertoslatam.app/#website" },
+    "inLanguage": "es-419",
+    "mainEntity": {
+      "@type": "ItemList",
+      "name": "Setlists",
+      "numberOfItems": concerts.length,
+      "itemListElement": concerts.slice(0, 20).map((c, i) => ({
+        "@type": "MusicEvent",
+        "position": i + 1,
+        "name": c.title,
+        "startDate": c.date || undefined,
+        "url": `https://www.conciertoslatam.app${generateSetlistUrl(c)}`,
+        "performer": c.artist ? { "@type": "MusicGroup", "name": c.artist.name } : undefined,
+        "location": c.venue ? { "@type": "MusicVenue", "name": c.venue.name } : undefined,
+        "image": c.image_url || c.artist?.photo_url || undefined,
+      })),
+    },
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <SEO
-        title="Setlists de Conciertos | Conciertos Latam"
-        description="Explora los setlists de todos los conciertos en Latinoamérica. Descubre qué canciones tocaron tus artistas favoritos."
+        title={
+          searchTerm
+            ? `Setlists de ${searchTerm} | Conciertos Latam`
+            : `Setlists de Conciertos en LATAM${concerts.length ? ` · ${concerts.length} shows documentados` : ''}`
+        }
+        description="El archivo más completo de setlists de conciertos en Latinoamérica: canciones tocadas, orden de show, venues, fechas. Revive cada show de tus artistas favoritos."
+        keywords="setlists conciertos, canciones concierto, setlist artista, setlists LATAM, qué tocó en concierto, repertorio show"
+        url="/setlists"
         type="website"
+        structuredData={structuredData}
       />
       <Header />
 
-      <main className="container mx-auto px-4 py-16">
-        {/* Header Section */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
-            <Music className="h-5 w-5 text-primary" />
-            <span className="text-primary font-semibold">Setlists Exclusivos</span>
-          </div>
-          <h1 className="page-title mb-4">Setlists de Conciertos</h1>
-          <p className="page-subtitle max-w-3xl mx-auto">
-            Descubre las canciones que tocaron tus artistas favoritos en sus conciertos por toda Latinoamérica
+      <main className="container mx-auto px-4 pt-24 md:pt-28 pb-16">
+        {/* Editorial Hero */}
+        <header className="text-center mt-6 mb-10 md:mb-14">
+          <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-3">
+            El archivo de la música en vivo
           </p>
-        </div>
+          <h1 className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.015em] leading-[0.92] text-foreground text-balance mb-4">
+            Setlists
+          </h1>
+          <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Las canciones, el orden y la energía de cada show en LATAM. El registro definitivo de la música en vivo.
+          </p>
+          {concerts.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-x-10 md:gap-x-14 gap-y-4 mt-8 md:mt-10">
+              <div className="flex flex-col items-center min-w-[80px]">
+                <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+                  {concerts.length}
+                </span>
+                <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
+                  Conciertos
+                </span>
+              </div>
+              {setlistCount > 0 && (
+                <div className="flex flex-col items-center min-w-[80px]">
+                  <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+                    {setlistCount}
+                  </span>
+                  <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
+                    Con setlist
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
+        </header>
 
-        {/* Search Bar */}
-        <div className="max-w-2xl mx-auto mb-8 relative">
-          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder="Buscar por artista..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-            className="w-full h-12 text-sm md:text-base pl-12"
-          />
-        </div>
+        {/* Search + Editorial filter bar */}
+        <div className="max-w-3xl mx-auto mb-10 md:mb-12">
+          <div className="relative mb-5">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="search"
+              placeholder="Buscar por artista..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              className="w-full h-11 text-sm pl-11 rounded-full bg-card border-border/60 focus-visible:ring-primary/30"
+            />
+          </div>
 
-        {/* Filter Tabs */}
-        <Tabs value={filter} onValueChange={handleFilterChange} className="mb-8">
-          <TabsList className="grid w-full max-w-md mx-auto grid-cols-4">
-            <TabsTrigger value="all">Todos</TabsTrigger>
-            <TabsTrigger value="past">Pasados</TabsTrigger>
-            <TabsTrigger value="upcoming">Próximos</TabsTrigger>
-            <TabsTrigger value="no-setlist">Sin Setlist</TabsTrigger>
-          </TabsList>
-        </Tabs>
+          <div className="flex items-center justify-center gap-1 sm:gap-2 border-b border-border/60">
+            {[
+              { value: 'all', label: 'Todos' },
+              { value: 'past', label: 'Pasados' },
+              { value: 'upcoming', label: 'Próximos' },
+              { value: 'no-setlist', label: 'Sin Setlist' },
+            ].map(({ value, label }) => {
+              const isActive = filter === value;
+              return (
+                <button
+                  key={value}
+                  onClick={() => handleFilterChange(value)}
+                  className={`relative px-3 sm:px-5 py-3 text-[11px] sm:text-xs font-bold uppercase tracking-[0.18em] transition-colors ${
+                    isActive
+                      ? 'text-foreground'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                  aria-pressed={isActive}
+                >
+                  {label}
+                  <span
+                    className={`absolute left-0 right-0 -bottom-px h-0.5 transition-colors ${
+                      isActive ? 'bg-primary' : 'bg-transparent'
+                    }`}
+                    aria-hidden="true"
+                  />
+                </button>
+              );
+            })}
+          </div>
+        </div>
 
         {concerts.length === 0 ? (
           <Card>
@@ -130,99 +208,105 @@ export default function Setlists() {
           </Card>
         ) : (
           <>
-            {/* Concerts Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+            {/* Setlists list — setlist.fm / Songkick pattern */}
+            <div className="max-w-4xl mx-auto divide-y divide-border/60 border-y border-border/60">
               {paginatedConcerts.map((concert) => {
-                const imageUrl = concert.image_url || concert.artist?.photo_url || getDefaultImage();
+                const imageUrl = concert.artist?.photo_url || concert.image_url || getDefaultImage();
                 const hasSetlist = concert.setlist_count > 0;
+                const dateObj = concert.date ? new Date(concert.date) : null;
+                const day = dateObj ? dateObj.getDate().toString() : '—';
+                const month = dateObj ? dateObj.toLocaleDateString('es', { month: 'short' }).replace('.', '').toUpperCase() : '';
+                const year = dateObj ? dateObj.getFullYear().toString() : '';
 
                 return (
-                  <Card
+                  <Link
                     key={concert.id}
-                    className="group overflow-hidden hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30"
+                    to={generateSetlistUrl(concert)}
+                    className="group flex items-center gap-4 sm:gap-6 py-5 px-2 sm:px-4 hover:bg-muted/40 transition-colors focus:outline-none"
                   >
-                    <CardContent className="p-4 sm:p-5 md:p-6">
-                      <div className="flex gap-4 sm:gap-5">
-                        {/* Image with Blur Background */}
-                        <div className="relative overflow-hidden bg-card rounded-lg flex-shrink-0">
-                          {/* Blurred background */}
-                          <div
-                            className="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-60"
-                            style={{ backgroundImage: `url(${imageUrl})` }}
-                          />
+                    {/* Date column */}
+                    <time
+                      dateTime={concert.date || ''}
+                      className="flex-shrink-0 w-14 sm:w-16 text-center"
+                    >
+                      <div className="font-display text-3xl sm:text-4xl font-black text-foreground leading-none">{day}</div>
+                      <div className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.15em] text-primary mt-1">{month}</div>
+                      {year && <div className="text-[10px] text-muted-foreground/70 mt-0.5">{year}</div>}
+                    </time>
 
-                          {/* Main image */}
-                          <img
-                            src={imageUrl}
-                            alt={concert.title}
-                            className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 object-contain group-hover:scale-105 transition-transform duration-500"
-                          />
+                    {/* Thumbnail — small, square, ringed */}
+                    <div className="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-muted ring-1 ring-border/40">
+                      <img
+                        src={imageUrl}
+                        alt=""
+                        aria-hidden="true"
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+
+                    {/* Main content */}
+                    <div className="flex-1 min-w-0">
+                      {concert.artist && (
+                        <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] text-primary mb-1 truncate">
+                          {concert.artist.name}
+                        </p>
+                      )}
+                      <h3 className="text-sm sm:text-base font-bold leading-snug text-foreground group-hover:text-primary transition-colors truncate">
+                        {concert.title}
+                      </h3>
+                      {concert.venue && (
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-1">
+                          <MapPin className="w-3 h-3 flex-shrink-0" />
+                          <span className="truncate">
+                            {concert.venue.name}
+                            {concert.venue.city?.name ? ` · ${concert.venue.city.name}` : ''}
+                          </span>
                         </div>
+                      )}
+                    </div>
 
-                        {/* Content */}
-                        <div className="flex-1 min-w-0 flex flex-col justify-between">
-                          <div className="min-w-0">
-                            <h3 className="font-bold text-base sm:text-lg md:text-xl line-clamp-2 mb-2 group-hover:text-primary transition-colors">
-                              {concert.title}
-                            </h3>
-                            <div className="space-y-1 text-xs sm:text-sm text-muted-foreground">
-                              {concert.artist && (
-                                <div className="flex items-center gap-2">
-                                  <Music className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-                                  <span className="truncate">{concert.artist.name}</span>
-                                </div>
-                              )}
-                              {concert.date && (
-                                <div className="flex items-center gap-2">
-                                  <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-                                  <span className="truncate">
-                                    {new Date(concert.date).toLocaleDateString('es', {
-                                      year: 'numeric',
-                                      month: 'long',
-                                      day: 'numeric'
-                                    })}
-                                  </span>
-                                </div>
-                              )}
-                              {concert.venue && (
-                                <div className="flex items-center gap-2">
-                                  <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-                                  <span className="truncate">{concert.venue.name}</span>
-                                </div>
-                              )}
-                            </div>
+                    {/* Right column — setlist count + CTA */}
+                    <div className="flex-shrink-0 hidden sm:flex flex-col items-end gap-1">
+                      {hasSetlist ? (
+                        <>
+                          <span className="font-display text-xl font-black text-foreground leading-none">
+                            {concert.setlist_count}
+                          </span>
+                          <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                            {concert.setlist_count === 1 ? 'canción' : 'canciones'}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                          Sin setlist
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Mobile setlist count */}
+                    <div className="flex-shrink-0 sm:hidden">
+                      {hasSetlist ? (
+                        <div className="text-right">
+                          <div className="font-display text-lg font-black text-foreground leading-none">
+                            {concert.setlist_count}
                           </div>
-
-                          {/* Actions */}
-                          <div className="flex items-center gap-2 mt-3 flex-wrap">
-                            {hasSetlist ? (
-                              <>
-                                <Badge variant="secondary" className="text-xs sm:text-sm">
-                                  {concert.setlist_count} {concert.setlist_count === 1 ? 'canción' : 'canciones'}
-                                </Badge>
-                                <Button asChild size="sm" className="h-8 sm:h-9 text-xs sm:text-sm">
-                                  <Link to={generateSetlistUrl(concert)}>
-                                    Ver Setlist
-                                  </Link>
-                                </Button>
-                              </>
-                            ) : (
-                              <>
-                                <Badge variant="outline" className="text-muted-foreground text-xs sm:text-sm">
-                                  Sin setlist
-                                </Badge>
-                                <Button asChild size="sm" variant="outline" className="h-8 sm:h-9 text-xs sm:text-sm">
-                                  <Link to={generateSetlistUrl(concert)}>
-                                    Participar
-                                  </Link>
-                                </Button>
-                              </>
-                            )}
+                          <div className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground mt-0.5">
+                            {concert.setlist_count === 1 ? 'canción' : 'cnc.'}
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      ) : (
+                        <span className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground/60">
+                          —
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Arrow */}
+                    <span className="flex-shrink-0 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-1 transition-all" aria-hidden="true">
+                      →
+                    </span>
+                  </Link>
                 );
               })}
             </div>

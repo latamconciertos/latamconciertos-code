@@ -143,11 +143,25 @@ export const useUpdateAccreditation = () => {
       if (error) throw error;
       return result;
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: KEYS.all });
-      toast.success('Acreditación actualizada');
+    // Optimistic update: cache se actualiza al instante para que la UI responda fluida
+    onMutate: async ({ id, data }) => {
+      await qc.cancelQueries({ queryKey: KEYS.all });
+      const snapshots = qc.getQueriesData<AccreditationWithTeam[]>({ queryKey: KEYS.all });
+      qc.setQueriesData<AccreditationWithTeam[]>({ queryKey: KEYS.all }, (old) =>
+        Array.isArray(old)
+          ? old.map((a) => (a.id === id ? ({ ...a, ...(data as Partial<AccreditationWithTeam>) }) : a))
+          : old
+      );
+      return { snapshots };
     },
-    onError: (e: Error) => toast.error(`Error: ${e.message}`),
+    onError: (e: Error, _vars, ctx) => {
+      // Rollback al snapshot si la mutación falla
+      ctx?.snapshots?.forEach(([key, value]) => qc.setQueryData(key, value));
+      toast.error(`Error: ${e.message}`);
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: KEYS.all });
+    },
   });
 };
 

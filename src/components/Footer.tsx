@@ -140,21 +140,42 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Países Section with modern design */}
-        <div className="relative py-8 mb-8">
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-800/30 to-transparent"></div>
-          <div className="relative">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <MapPin className="h-4 w-4 text-primary" />
-              <h4 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">Países que Cubrimos</h4>
-            </div>
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-xs">
-              {['México', 'Colombia', 'Argentina', 'Chile', 'Perú', 'Brasil', 'Uruguay', 'Ecuador', 'Costa Rica', 'Guatemala', 'Panamá', 'República Dominicana'].map((country, index) => (
-                <span key={index} className="text-gray-500 hover:text-primary transition-colors cursor-default">
-                  {country}
-                </span>
-              ))}
-            </div>
+        {/* Conciertos por País — real internal links for SEO + navigation */}
+        <div className="relative py-8 mb-8 border-t border-gray-800/50">
+          <div className="flex items-center gap-2 mb-5">
+            <MapPin className="h-4 w-4 text-primary" />
+            <h4 className="text-[11px] font-bold text-gray-300 uppercase tracking-[0.18em]">
+              Conciertos por país
+            </h4>
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {[
+              { slug: 'colombia', name: 'Colombia' },
+              { slug: 'mexico', name: 'México' },
+              { slug: 'argentina', name: 'Argentina' },
+              { slug: 'chile', name: 'Chile' },
+              { slug: 'peru', name: 'Perú' },
+              { slug: 'brasil', name: 'Brasil' },
+              { slug: 'ecuador', name: 'Ecuador' },
+              { slug: 'uruguay', name: 'Uruguay' },
+              { slug: 'paraguay', name: 'Paraguay' },
+              { slug: 'bolivia', name: 'Bolivia' },
+              { slug: 'venezuela', name: 'Venezuela' },
+              { slug: 'costa-rica', name: 'Costa Rica' },
+              { slug: 'panama', name: 'Panamá' },
+              { slug: 'guatemala', name: 'Guatemala' },
+              { slug: 'republica-dominicana', name: 'República Dominicana' },
+              { slug: 'puerto-rico', name: 'Puerto Rico' },
+            ].map((c) => (
+              <a
+                key={c.slug}
+                href={`/conciertos/${c.slug}`}
+                aria-label={`Conciertos en ${c.name}`}
+                className="px-3 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-[0.12em] bg-gray-800/60 border border-gray-700/50 text-gray-400 hover:text-white hover:border-primary/60 hover:bg-gray-800 transition-colors"
+              >
+                {c.name}
+              </a>
+            ))}
           </div>
         </div>
 
