@@ -112,7 +112,7 @@ export const BannersAdmin = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Banners del Sitio</h2>
+        <h2 className="text-2xl font-bold">Banners del Sitio</h2>
         <p className="text-muted-foreground mt-1">
           Activa o desactiva banners promocionales en el home
         </p>

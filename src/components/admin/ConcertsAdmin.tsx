@@ -2,6 +2,16 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import {
   useAdminConcerts,
@@ -32,6 +42,7 @@ export const ConcertsAdmin = () => {
   const [editingConcert, setEditingConcert] = useState<Concert | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [selectedFestivalArtists, setSelectedFestivalArtists] = useState<string[]>([]);
+  const [deleteTarget, setDeleteTarget] = useState<Concert | null>(null);
 
   // Filters state
   const [filters, setFilters] = useState<ConcertFilters>({
@@ -200,12 +211,18 @@ export const ConcertsAdmin = () => {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (concert: Concert) => {
+    setDeleteTarget(concert);
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await deleteConcert.mutateAsync(id);
+      await deleteConcert.mutateAsync(deleteTarget.id);
     } catch (error) {
       // Error handled by mutation hook
     }
+    setDeleteTarget(null);
   };
 
   const resetForm = () => {
@@ -297,12 +314,10 @@ export const ConcertsAdmin = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Gestión de Conciertos</h2>
-          <p className="text-muted-foreground mt-1">
-            Administra eventos, conciertos y festivales
-          </p>
+          <h2 className="text-2xl font-bold">Gestión de Conciertos</h2>
+          <p className="text-muted-foreground">Administra eventos, conciertos y festivales</p>
         </div>
-        <Button onClick={() => setShowForm(true)}>
+        <Button onClick={() => setShowForm(true)} size="lg">
           <Plus className="w-4 h-4 mr-2" />
           Nuevo Concierto
         </Button>
@@ -346,6 +361,31 @@ export const ConcertsAdmin = () => {
         onRefetchVenues={fetchVenues}
         onRefetchPromoters={fetchPromoters}
       />
+
+      {/* Delete confirmation */}
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar concierto?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. El concierto{' '}
+              <strong>&quot;{deleteTarget?.title}&quot;</strong> será eliminado permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

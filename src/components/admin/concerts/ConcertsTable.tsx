@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ConcertTableRow } from './ConcertTableRow';
 import type { Concert, Artist, Venue } from './types';
 
@@ -11,7 +9,7 @@ interface ConcertsTableProps {
     artists: Artist[];
     venues: Venue[];
     onEdit: (concert: Concert) => void;
-    onDelete: (id: string) => void;
+    onDelete: (concert: Concert) => void;
     onToggleFeatured: (id: string, currentStatus: boolean) => void;
 }
 
@@ -24,111 +22,98 @@ export const ConcertsTable = ({
     onToggleFeatured,
 }: ConcertsTableProps) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSize] = useState(25);
 
-    // Pagination calculations
     const totalPages = Math.ceil(concerts.length / pageSize);
     const startIndex = (currentPage - 1) * pageSize;
     const endIndex = startIndex + pageSize;
     const paginatedConcerts = concerts.slice(startIndex, endIndex);
 
-    // Reset to page 1 when page size changes
-    const handlePageSizeChange = (newSize: string) => {
-        setPageSize(Number(newSize));
-        setCurrentPage(1);
-    };
-
     return (
         <div className="space-y-4">
-            {/* Controls: Page size selector */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground whitespace-nowrap">Mostrar:</span>
-                    <Select value={pageSize.toString()} onValueChange={handlePageSizeChange}>
-                        <SelectTrigger className="w-[100px]">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="10">10</SelectItem>
-                            <SelectItem value="20">20</SelectItem>
-                            <SelectItem value="50">50</SelectItem>
-                            <SelectItem value="100">100</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-            </div>
-
             {/* Table */}
             <div className="border rounded-lg overflow-hidden bg-card">
-                <Table>
-                    <TableHeader>
-                        <TableRow className="bg-muted/50">
-                            <TableHead className="w-12">#</TableHead>
-                            <TableHead className="w-16">Imagen</TableHead>
-                            <TableHead>Título</TableHead>
-                            <TableHead>Tipo/Artista</TableHead>
-                            <TableHead>Venue</TableHead>
-                            <TableHead>Fecha</TableHead>
-                            <TableHead className="text-right">Acciones</TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {paginatedConcerts.length > 0 ? (
-                            paginatedConcerts.map((concert, index) => (
-                                <ConcertTableRow
-                                    key={concert.id}
-                                    concert={concert}
-                                    index={startIndex + index}
-                                    artists={artists}
-                                    venues={venues}
-                                    onEdit={onEdit}
-                                    onDelete={onDelete}
-                                    onToggleFeatured={onToggleFeatured}
-                                />
-                            ))
-                        ) : (
-                            <TableRow>
-                                <TableCell colSpan={7} className="text-center py-12 text-muted-foreground">
-                                    No se encontraron conciertos
-                                </TableCell>
-                            </TableRow>
-                        )}
-                    </TableBody>
-                </Table>
+                <div className="grid grid-cols-12 gap-4 px-4 py-2.5 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    <div className="col-span-4">Concierto</div>
+                    <div className="col-span-2">Tipo / Artista</div>
+                    <div className="col-span-2">Venue</div>
+                    <div className="col-span-2">Fecha</div>
+                    <div className="col-span-2 text-right">Acciones</div>
+                </div>
+
+                <div className="divide-y">
+                    {paginatedConcerts.length === 0 ? (
+                        <div className="p-8 text-center text-sm text-muted-foreground">
+                            No se encontraron conciertos.
+                        </div>
+                    ) : (
+                        paginatedConcerts.map((concert) => (
+                            <ConcertTableRow
+                                key={concert.id}
+                                concert={concert}
+                                artists={artists}
+                                venues={venues}
+                                onEdit={onEdit}
+                                onDelete={onDelete}
+                                onToggleFeatured={onToggleFeatured}
+                            />
+                        ))
+                    )}
+                </div>
             </div>
 
             {/* Pagination */}
             {concerts.length > 0 && (
                 <div className="flex items-center justify-between">
-                    <div className="text-sm text-muted-foreground">
-                        Mostrando <span className="font-medium text-foreground">{startIndex + 1}</span> a{' '}
-                        <span className="font-medium text-foreground">{Math.min(endIndex, concerts.length)}</span> de{' '}
-                        <span className="font-medium text-foreground">{concerts.length}</span> conciertos
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                            disabled={currentPage === 1}
-                        >
-                            <ChevronLeft className="h-4 w-4 mr-1" />
-                            Anterior
-                        </Button>
-                        <div className="flex items-center gap-1">
-                            <span className="text-sm text-muted-foreground">
-                                Página {currentPage} de {totalPages}
-                            </span>
+                    <span className="text-sm text-muted-foreground">
+                        Mostrando {startIndex + 1}–{Math.min(endIndex, concerts.length)} de {concerts.length}
+                    </span>
+
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-muted-foreground">Por página:</span>
+                            <Select
+                                value={String(pageSize)}
+                                onValueChange={(v) => {
+                                    setPageSize(Number(v));
+                                    setCurrentPage(1);
+                                }}
+                            >
+                                <SelectTrigger className="w-20 h-8">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="10">10</SelectItem>
+                                    <SelectItem value="25">25</SelectItem>
+                                    <SelectItem value="50">50</SelectItem>
+                                    <SelectItem value="100">100</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                            disabled={currentPage === totalPages}
-                        >
-                            Siguiente
-                            <ChevronRight className="h-4 w-4 ml-1" />
-                        </Button>
+
+                        {totalPages > 1 && (
+                            <div className="flex items-center gap-2">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                    disabled={currentPage === 1}
+                                >
+                                    Anterior
+                                </Button>
+                                <span className="text-sm">
+                                    {currentPage} / {totalPages}
+                                </span>
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage === totalPages}
+                                >
+                                    Siguiente
+                                </Button>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

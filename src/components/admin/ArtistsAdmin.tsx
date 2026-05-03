@@ -1,6 +1,16 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
@@ -17,6 +27,7 @@ export const ArtistsAdmin = () => {
   const [editingArtist, setEditingArtist] = useState<Artist | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [deleteTarget, setDeleteTarget] = useState<Artist | null>(null);
 
   // React Query hooks
   const { data: artists = [], isLoading } = useAdminArtists();
@@ -116,14 +127,18 @@ export const ArtistsAdmin = () => {
     setValidationErrors({});
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar este artista?')) return;
+  const handleDelete = (artist: Artist) => {
+    setDeleteTarget(artist);
+  };
 
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await deleteArtist.mutateAsync(id);
+      await deleteArtist.mutateAsync(deleteTarget.id);
     } catch (err) {
       console.error('Error eliminando artista:', err);
     }
+    setDeleteTarget(null);
   };
 
   const resetForm = () => {
@@ -146,8 +161,11 @@ export const ArtistsAdmin = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Gestión de Artistas</h2>
-        <Button onClick={() => setShowForm(true)}>
+        <div>
+          <h2 className="text-2xl font-bold">Gestión de Artistas</h2>
+          <p className="text-muted-foreground">Administra el catálogo de artistas</p>
+        </div>
+        <Button onClick={() => setShowForm(true)} size="lg">
           <Plus className="w-4 h-4 mr-2" />
           Nuevo Artista
         </Button>
@@ -177,6 +195,31 @@ export const ArtistsAdmin = () => {
         isSubmitting={isSubmitting}
         validationErrors={validationErrors}
       />
+
+      {/* Delete confirmation dialog */}
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar artista?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. El artista{' '}
+              <strong>&quot;{deleteTarget?.name}&quot;</strong> será eliminado permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

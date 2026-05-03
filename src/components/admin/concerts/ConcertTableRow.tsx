@@ -1,32 +1,21 @@
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { TableCell, TableRow } from '@/components/ui/table';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { MoreVertical, Edit, Trash2, Star, Music } from 'lucide-react';
+import { Pencil, Trash2, Star, Music } from 'lucide-react';
 import { SetlistManager } from '../SetlistManager';
 import type { Concert, Artist, Venue } from './types';
 
 interface ConcertTableRowProps {
     concert: Concert;
-    index: number;
     artists: Artist[];
     venues: Venue[];
     onEdit: (concert: Concert) => void;
-    onDelete: (id: string) => void;
+    onDelete: (concert: Concert) => void;
     onToggleFeatured: (id: string, currentStatus: boolean) => void;
 }
 
 export const ConcertTableRow = ({
     concert,
-    index,
     artists,
     venues,
     onEdit,
@@ -34,34 +23,31 @@ export const ConcertTableRow = ({
     onToggleFeatured,
 }: ConcertTableRowProps) => {
     const getArtistName = (artistId: string | null) => {
-        if (!artistId) return 'N/A';
-        const artist = artists.find(a => a.id === artistId);
-        return artist ? artist.name : 'N/A';
+        if (!artistId) return null;
+        return artists.find((a) => a.id === artistId)?.name ?? null;
     };
 
-    const getVenueName = (venueId: string | null) => {
-        if (!venueId) return 'N/A';
-        const venue = venues.find(v => v.id === venueId);
-        if (!venue) return 'N/A';
-        const cityName = venue.cities?.name || '';
-        return cityName ? `${venue.name} (${cityName})` : venue.name;
+    const getVenueLabel = (venueId: string | null) => {
+        if (!venueId) return null;
+        const venue = venues.find((v) => v.id === venueId);
+        if (!venue) return null;
+        const cityName = venue.cities?.name;
+        return cityName ? `${venue.name} · ${cityName}` : venue.name;
     };
 
     const formatDate = (date: string | null) => {
-        if (!date) return 'Sin fecha';
-        // Parse as local date to avoid timezone issues
+        if (!date) return null;
         const [year, month, day] = date.split('-').map(Number);
         const localDate = new Date(year, month - 1, day);
         return localDate.toLocaleDateString('es', {
             year: 'numeric',
             month: 'short',
-            day: 'numeric'
+            day: 'numeric',
         });
     };
 
     const isPastConcert = (date: string | null) => {
         if (!date) return false;
-        // Parse as local date to avoid timezone issues
         const [year, month, day] = date.split('-').map(Number);
         const concertDate = new Date(year, month - 1, day);
         const today = new Date();
@@ -69,139 +55,126 @@ export const ConcertTableRow = ({
         return concertDate < today;
     };
 
-    const handleDeleteClick = () => {
-        if (confirm('¿Estás seguro de que quieres eliminar este concierto?')) {
-            onDelete(concert.id);
-        }
-    };
+    const venueLabel = getVenueLabel(concert.venue_id);
+    const artistName = getArtistName(concert.artist_id);
+    const dateLabel = formatDate(concert.date);
 
     return (
-        <TableRow className="hover:bg-muted/30">
-            <TableCell className="font-medium text-muted-foreground">
-                {index + 1}
-            </TableCell>
-
-            {/* Imagen */}
-            <TableCell>
+        <div
+            className="grid grid-cols-12 gap-4 px-4 py-2.5 items-center hover:bg-muted/40 transition-colors cursor-pointer"
+            onClick={() => onEdit(concert)}
+        >
+            <div className="col-span-4 flex items-center gap-3 min-w-0">
                 {concert.image_url ? (
                     <img
                         src={concert.image_url}
-                        alt={concert.title}
-                        className="w-10 h-10 rounded object-cover"
+                        alt=""
+                        className="w-10 h-10 rounded object-cover shrink-0"
+                        loading="lazy"
+                        decoding="async"
+                        width={40}
+                        height={40}
                     />
                 ) : (
-                    <div className="w-10 h-10 rounded bg-muted flex items-center justify-center">
-                        <Music className="w-5 h-5 text-muted-foreground" />
+                    <div className="w-10 h-10 rounded bg-muted flex items-center justify-center shrink-0">
+                        <Music className="w-4 h-4 text-muted-foreground" />
                     </div>
                 )}
-            </TableCell>
-
-            {/* Título */}
-            <TableCell>
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                        <span className="font-medium">{concert.title}</span>
-                        {concert.is_featured && (
-                            <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        )}
-                    </div>
+                <div className="min-w-0">
+                    <h3 className="font-medium truncate">{concert.title}</h3>
                     {concert.ticket_prices_html && (
-                        <Badge variant="outline" className="text-xs w-fit">
-                            💰 Precios
-                        </Badge>
+                        <p className="text-[10px] text-muted-foreground">💰 Precios</p>
                     )}
                 </div>
-            </TableCell>
+            </div>
 
-            {/* Artista/Tipo */}
-            <TableCell>
-                <div className="flex flex-col gap-1">
-                    <Badge
-                        variant={concert.event_type === 'festival' ? 'default' : 'secondary'}
-                        className="text-xs w-fit"
-                    >
-                        {concert.event_type === 'festival' ? 'Festival' : 'Concierto'}
-                    </Badge>
-                    {concert.event_type === 'concert' && (
-                        <span className="text-sm text-muted-foreground">
-                            {getArtistName(concert.artist_id)}
-                        </span>
-                    )}
-                </div>
-            </TableCell>
+            <div className="col-span-2 min-w-0">
+                <Badge
+                    variant={concert.event_type === 'festival' ? 'default' : 'secondary'}
+                    className="text-[10px]"
+                >
+                    {concert.event_type === 'festival' ? 'Festival' : 'Concierto'}
+                </Badge>
+                {concert.event_type === 'concert' && artistName && (
+                    <p className="text-xs text-muted-foreground truncate mt-0.5">{artistName}</p>
+                )}
+            </div>
 
-            {/* Venue */}
-            <TableCell className="text-sm">
-                {getVenueName(concert.venue_id)}
-            </TableCell>
+            <div className="col-span-2 text-sm text-muted-foreground truncate">
+                {venueLabel ?? <span className="italic">—</span>}
+            </div>
 
-            {/* Fecha */}
-            <TableCell>
-                <div className="flex flex-col gap-1">
-                    <span className="text-sm">{formatDate(concert.date)}</span>
-                    {concert.date && (
-                        <Badge
-                            variant={isPastConcert(concert.date) ? 'outline' : 'default'}
-                            className="text-xs w-fit"
+            <div className="col-span-2 min-w-0">
+                <p className="text-sm">{dateLabel ?? <span className="text-muted-foreground italic">Sin fecha</span>}</p>
+                {concert.date && (
+                    <p className={`text-[10px] ${isPastConcert(concert.date) ? 'text-muted-foreground' : 'text-primary'}`}>
+                        {isPastConcert(concert.date) ? 'Pasado' : 'Próximo'}
+                    </p>
+                )}
+            </div>
+
+            <div className="col-span-2 flex justify-end gap-1">
+                <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleFeatured(concert.id, concert.is_featured);
+                    }}
+                    aria-label={concert.is_featured ? 'Quitar destacado' : 'Marcar destacado'}
+                >
+                    <Star
+                        className={`w-4 h-4 ${concert.is_featured ? 'fill-yellow-400 text-yellow-400' : ''}`}
+                    />
+                </Button>
+
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                            onClick={(e) => e.stopPropagation()}
+                            aria-label="Gestionar setlist"
                         >
-                            {isPastConcert(concert.date) ? 'Pasado' : 'Próximo'}
-                        </Badge>
-                    )}
-                </div>
-            </TableCell>
-
-            {/* Acciones */}
-            <TableCell className="text-right">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <MoreVertical className="h-4 w-4" />
-                            <span className="sr-only">Abrir menú</span>
+                            <Music className="w-4 h-4" />
                         </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                        <DialogHeader>
+                            <DialogTitle>Gestionar Setlist</DialogTitle>
+                        </DialogHeader>
+                        <SetlistManager concertId={concert.id} concertTitle={concert.title} />
+                    </DialogContent>
+                </Dialog>
 
-                        <DropdownMenuItem onClick={() => onEdit(concert)}>
-                            <Edit className="mr-2 h-4 w-4" />
-                            <span>Editar</span>
-                        </DropdownMenuItem>
+                <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onEdit(concert);
+                    }}
+                    aria-label="Editar"
+                >
+                    <Pencil className="w-4 h-4" />
+                </Button>
 
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                    <Music className="mr-2 h-4 w-4" />
-                                    <span>Gestionar Setlist</span>
-                                </DropdownMenuItem>
-                            </DialogTrigger>
-                            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                                <DialogHeader>
-                                    <DialogTitle>Gestionar Setlist</DialogTitle>
-                                </DialogHeader>
-                                <SetlistManager concertId={concert.id} concertTitle={concert.title} />
-                            </DialogContent>
-                        </Dialog>
-
-                        <DropdownMenuItem
-                            onClick={() => onToggleFeatured(concert.id, concert.is_featured)}
-                        >
-                            <Star className={`mr-2 h-4 w-4 ${concert.is_featured ? 'fill-current' : ''}`} />
-                            <span>{concert.is_featured ? 'Quitar destacado' : 'Marcar destacado'}</span>
-                        </DropdownMenuItem>
-
-                        <DropdownMenuSeparator />
-
-                        <DropdownMenuItem
-                            className="text-destructive focus:text-destructive"
-                            onClick={handleDeleteClick}
-                        >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            <span>Eliminar</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </TableCell>
-        </TableRow>
+                <Button
+                    size="icon"
+                    variant="ghost"
+                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(concert);
+                    }}
+                    aria-label="Eliminar"
+                >
+                    <Trash2 className="w-4 h-4" />
+                </Button>
+            </div>
+        </div>
     );
 };

@@ -25,7 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Target, Eye, Trash2 } from 'lucide-react';
+import { Eye, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -163,10 +163,7 @@ const AdvertisingAdmin = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Target className="h-6 w-6 text-primary" />
-          <h2 className="text-2xl font-bold">Solicitudes de Publicidad</h2>
-        </div>
+        <h2 className="text-2xl font-bold">Solicitudes de Publicidad</h2>
         <Badge variant="secondary">{requests.length} solicitudes</Badge>
       </div>
 

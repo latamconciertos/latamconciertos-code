@@ -145,11 +145,11 @@ export const PushCampaignsAdmin = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="page-title">Notificaciones Push</h2>
-        <p className="page-subtitle">Enviá alertas push a los fans suscritos del sitio.</p>
+        <h2 className="text-2xl font-bold">Notificaciones Push</h2>
+        <p className="text-muted-foreground">Enviá alertas push a los fans suscritos del sitio.</p>
       </div>
 
-      <Tabs defaultValue="compose" className="space-y-4">
+      <Tabs defaultValue="compose" className="space-y-6">
         <TabsList>
           <TabsTrigger value="compose" className="gap-1.5">
             <Send className="h-3.5 w-3.5" /> Componer
@@ -159,287 +159,324 @@ export const PushCampaignsAdmin = () => {
           </TabsTrigger>
         </TabsList>
 
-        {/* Compose */}
-        <TabsContent value="compose" className="space-y-5 max-w-2xl">
-          {/* Concert link picker — auto-fills the form */}
-          <div className="rounded-xl border border-border/60 bg-card p-5 space-y-3">
-            <Label className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary block">
-              Vincular concierto <span className="text-muted-foreground/70 normal-case font-medium tracking-normal">(opcional)</span>
-            </Label>
-
-            {linkedConcert ? (
-              <div className="rounded-md bg-primary/5 border border-primary/20 px-3 py-3 flex items-start gap-3">
-                <Ticket className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                <div className="flex-1 min-w-0">
-                  {linkedConcert.artists?.name && (
-                    <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-                      {linkedConcert.artists.name}
-                    </p>
-                  )}
-                  <p className="text-sm font-semibold truncate">{linkedConcert.title}</p>
-                  <p className="text-xs text-muted-foreground truncate">
-                    {[
-                      linkedConcert.date
-                        ? new Date(linkedConcert.date + 'T12:00:00').toLocaleDateString('es', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric',
-                          })
-                        : null,
-                      linkedConcert.venues?.name,
-                      linkedConcert.venues?.cities?.name,
-                    ]
-                      .filter(Boolean)
-                      .join(' · ')}
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-7 w-7 shrink-0"
-                  onClick={handleClearConcert}
-                  aria-label="Quitar vínculo con concierto"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-            ) : (
-              <div className="relative">
-                <SearchIcon className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  value={concertSearch}
-                  onChange={(e) => {
-                    setConcertSearch(e.target.value);
-                    setShowConcertResults(true);
-                  }}
-                  onFocus={() => setShowConcertResults(true)}
-                  placeholder="Buscar concierto por título..."
-                  className="pl-9"
-                />
-                {showConcertResults && concertSearch.trim().length >= 2 && concertResults.length > 0 && (
-                  <div className="absolute z-10 mt-1 w-full max-h-72 overflow-y-auto rounded-md border border-border bg-popover shadow-lg divide-y divide-border/50">
-                    {concertResults.map((c) => (
-                      <button
-                        key={c.id}
-                        type="button"
-                        onClick={() => handleSelectConcert(c)}
-                        className="w-full text-left px-3 py-2.5 hover:bg-muted/50 transition-colors"
-                      >
-                        {c.artists?.name && (
-                          <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-                            {c.artists.name}
-                          </p>
-                        )}
-                        <p className="text-sm font-semibold truncate">{c.title}</p>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {[
-                            c.date
-                              ? new Date(c.date + 'T12:00:00').toLocaleDateString('es', {
-                                  day: 'numeric',
-                                  month: 'short',
-                                  year: 'numeric',
-                                })
-                              : null,
-                            c.venues?.name,
-                          ]
-                            .filter(Boolean)
-                            .join(' · ')}
+        {/* Compose: 2-col layout — form left, sticky preview/CTA right on desktop */}
+        <TabsContent value="compose" className="space-y-0">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_340px] gap-x-10 gap-y-8">
+            {/* FORM */}
+            <div className="space-y-8 max-w-xl">
+              {/* Concert link */}
+              <FormSection
+                title="Vincular concierto"
+                hint="Opcional. Autocompleta título, cuerpo, URL y segmenta a los fans del artista."
+              >
+                {linkedConcert ? (
+                  <div className="rounded-lg bg-primary/5 border border-primary/20 px-3.5 py-3 flex items-start gap-3">
+                    <Ticket className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <div className="flex-1 min-w-0">
+                      {linkedConcert.artists?.name && (
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+                          {linkedConcert.artists.name}
                         </p>
-                      </button>
-                    ))}
+                      )}
+                      <p className="text-sm font-semibold truncate">{linkedConcert.title}</p>
+                      <p className="text-xs text-muted-foreground truncate">
+                        {[
+                          linkedConcert.date
+                            ? new Date(linkedConcert.date + 'T12:00:00').toLocaleDateString('es', {
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric',
+                              })
+                            : null,
+                          linkedConcert.venues?.name,
+                          linkedConcert.venues?.cities?.name,
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')}
+                      </p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 shrink-0"
+                      onClick={handleClearConcert}
+                      aria-label="Quitar vínculo con concierto"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <SearchIcon className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                    <Input
+                      value={concertSearch}
+                      onChange={(e) => {
+                        setConcertSearch(e.target.value);
+                        setShowConcertResults(true);
+                      }}
+                      onFocus={() => setShowConcertResults(true)}
+                      placeholder="Buscar concierto…"
+                      className="pl-9 h-10 text-sm"
+                    />
+                    {showConcertResults && concertSearch.trim().length >= 2 && concertResults.length > 0 && (
+                      <div className="absolute z-10 mt-1 w-full max-h-72 overflow-y-auto rounded-lg border border-border bg-popover shadow-lg divide-y divide-border/50">
+                        {concertResults.map((c) => (
+                          <button
+                            key={c.id}
+                            type="button"
+                            onClick={() => handleSelectConcert(c)}
+                            className="w-full text-left px-3 py-2.5 hover:bg-muted/50 transition-colors"
+                          >
+                            {c.artists?.name && (
+                              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+                                {c.artists.name}
+                              </p>
+                            )}
+                            <p className="text-sm font-semibold truncate">{c.title}</p>
+                            <p className="text-xs text-muted-foreground truncate">
+                              {[
+                                c.date
+                                  ? new Date(c.date + 'T12:00:00').toLocaleDateString('es', {
+                                      day: 'numeric',
+                                      month: 'short',
+                                      year: 'numeric',
+                                    })
+                                  : null,
+                                c.venues?.name,
+                              ]
+                                .filter(Boolean)
+                                .join(' · ')}
+                            </p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {showConcertResults &&
+                      concertSearch.trim().length >= 2 &&
+                      concertResults.length === 0 && (
+                        <p className="mt-1.5 text-xs text-muted-foreground italic">
+                          Sin resultados para "{concertSearch}"
+                        </p>
+                      )}
                   </div>
                 )}
-                {showConcertResults &&
-                  concertSearch.trim().length >= 2 &&
-                  concertResults.length === 0 && (
-                    <p className="mt-2 text-xs text-muted-foreground italic">
-                      Sin resultados para "{concertSearch}"
-                    </p>
-                  )}
-                <p className="text-[10px] text-muted-foreground/70 mt-2">
-                  Al seleccionar un concierto se autocompleta el título, cuerpo, URL y se segmenta a los fans del artista.
-                </p>
-              </div>
-            )}
-          </div>
+              </FormSection>
 
-          <div className="rounded-xl border border-border/60 bg-card p-5 space-y-5">
-            <div className="space-y-2">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
-                Mensaje
-              </Label>
-              <div className="space-y-3">
-                <div>
-                  <Label htmlFor="push-title" className="text-xs text-muted-foreground">
-                    Título <span className="text-muted-foreground/50">({title.length}/60 recomendado)</span>
-                  </Label>
-                  <Input
-                    id="push-title"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="Bad Bunny vuelve a Colombia 🎤"
-                    maxLength={120}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="push-body" className="text-xs text-muted-foreground">
-                    Cuerpo <span className="text-muted-foreground/50">({body.length}/160 recomendado)</span>
-                  </Label>
-                  <Textarea
-                    id="push-body"
-                    value={body}
-                    onChange={(e) => setBody(e.target.value)}
-                    placeholder="3 fechas confirmadas en Bogotá. Entradas a la venta el viernes."
-                    rows={3}
-                    maxLength={300}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="push-url" className="text-xs text-muted-foreground">
-                    URL al hacer click (opcional)
-                  </Label>
-                  <Input
-                    id="push-url"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    placeholder="/concerts/bad-bunny-bogota-2026"
-                  />
-                  <p className="text-[10px] text-muted-foreground/70 mt-1">
-                    Path relativo (ej. <code>/concerts/...</code>) o URL completa
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-xl border border-border/60 bg-card p-5 space-y-4">
-            <Label className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary block">
-              Audiencia
-            </Label>
-
-            <div className="grid grid-cols-3 gap-2">
-              {(['all', 'country', 'artist'] as const).map((t) => (
-                <button
-                  key={t}
-                  type="button"
-                  onClick={() => setAudienceType(t)}
-                  className={
-                    audienceType === t
-                      ? 'rounded-md border-2 border-primary bg-primary/5 px-3 py-2.5 text-xs font-semibold transition-colors'
-                      : 'rounded-md border border-border/60 px-3 py-2.5 text-xs font-medium text-muted-foreground hover:border-border transition-colors'
-                  }
-                >
-                  {t === 'all' ? 'Todos' : t === 'country' ? 'Por país' : 'Por artista'}
-                </button>
-              ))}
-            </div>
-
-            {audienceType === 'country' && (
-              <div>
-                <Label className="text-xs text-muted-foreground">País</Label>
-                <Select value={countryId} onValueChange={setCountryId}>
-                  <SelectTrigger><SelectValue placeholder="Seleccionar país" /></SelectTrigger>
-                  <SelectContent>
-                    {countries.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-
-            {audienceType === 'artist' && (
-              <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">Buscar artista</Label>
+              {/* Mensaje */}
+              <FormSection title="Mensaje">
+                <FieldLabel htmlFor="push-title">
+                  Título
+                  <FieldCount value={title.length} max={60} />
+                </FieldLabel>
                 <Input
-                  value={artistSearch}
-                  onChange={(e) => setArtistSearch(e.target.value)}
-                  placeholder="Bad Bunny, Karol G..."
+                  id="push-title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Bad Bunny vuelve a Colombia 🎤"
+                  maxLength={120}
+                  className="h-10 text-sm"
                 />
-                {artistResults.length > 0 && artistSearch && (
-                  <div className="max-h-44 overflow-y-auto rounded-md border border-border/60 divide-y divide-border/50">
-                    {artistResults.map((a) => (
+
+                <div className="pt-1" />
+
+                <FieldLabel htmlFor="push-body">
+                  Cuerpo
+                  <FieldCount value={body.length} max={160} />
+                </FieldLabel>
+                <Textarea
+                  id="push-body"
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
+                  placeholder="3 fechas confirmadas en Bogotá. Entradas a la venta el viernes."
+                  rows={3}
+                  maxLength={300}
+                  className="text-sm resize-none"
+                />
+
+                <div className="pt-1" />
+
+                <FieldLabel htmlFor="push-url">URL al hacer click</FieldLabel>
+                <Input
+                  id="push-url"
+                  value={url}
+                  onChange={(e) => setUrl(e.target.value)}
+                  placeholder="/concerts/bad-bunny-bogota-2026"
+                  className="h-10 text-sm font-mono"
+                />
+                <p className="text-[11px] text-muted-foreground">
+                  Path relativo (<code className="text-foreground">/concerts/…</code>) o URL completa.
+                </p>
+              </FormSection>
+
+              {/* Audiencia */}
+              <FormSection title="Audiencia">
+                <div className="flex items-center gap-1 border-b border-border/60">
+                  {(
+                    [
+                      { v: 'all', label: 'Todos' },
+                      { v: 'country', label: 'Por país' },
+                      { v: 'artist', label: 'Por artista' },
+                    ] as const
+                  ).map(({ v, label }) => {
+                    const isActive = audienceType === v;
+                    return (
                       <button
-                        key={a.id}
+                        key={v}
                         type="button"
-                        onClick={() => {
-                          setArtistId(a.id);
-                          setArtistSearch(a.name);
-                        }}
+                        onClick={() => setAudienceType(v)}
                         className={
-                          'w-full text-left px-3 py-2 text-sm hover:bg-muted/40 transition-colors ' +
-                          (artistId === a.id ? 'bg-primary/10 text-primary font-semibold' : '')
+                          'relative px-4 py-2.5 text-xs font-semibold transition-colors ' +
+                          (isActive
+                            ? 'text-foreground'
+                            : 'text-muted-foreground hover:text-foreground')
                         }
+                        aria-pressed={isActive}
                       >
-                        {a.name}
+                        {label}
+                        <span
+                          aria-hidden="true"
+                          className={
+                            'absolute left-0 right-0 -bottom-px h-0.5 transition-colors ' +
+                            (isActive ? 'bg-primary' : 'bg-transparent')
+                          }
+                        />
                       </button>
-                    ))}
+                    );
+                  })}
+                </div>
+
+                {audienceType === 'country' && (
+                  <div className="pt-3">
+                    <FieldLabel>País</FieldLabel>
+                    <Select value={countryId} onValueChange={setCountryId}>
+                      <SelectTrigger className="h-10 text-sm">
+                        <SelectValue placeholder="Seleccionar país" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {countries.map((c) => (
+                          <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 )}
-                {artistId && (
-                  <p className="text-xs text-muted-foreground">
-                    Seleccionado: <span className="font-semibold text-foreground">{artistResults.find((a) => a.id === artistId)?.name || artistSearch}</span>
-                  </p>
-                )}
-              </div>
-            )}
 
-            <div className="rounded-md bg-muted/40 px-3 py-2.5 text-xs text-muted-foreground">
-              <span className="font-semibold text-foreground">Audiencia: </span>{audienceLabel}
+                {audienceType === 'artist' && (
+                  <div className="pt-3 space-y-2">
+                    <FieldLabel>Buscar artista</FieldLabel>
+                    <Input
+                      value={artistSearch}
+                      onChange={(e) => setArtistSearch(e.target.value)}
+                      placeholder="Bad Bunny, Karol G…"
+                      className="h-10 text-sm"
+                    />
+                    {artistResults.length > 0 && artistSearch && !artistId && (
+                      <div className="max-h-44 overflow-y-auto rounded-lg border border-border/60 divide-y divide-border/50">
+                        {artistResults.map((a) => (
+                          <button
+                            key={a.id}
+                            type="button"
+                            onClick={() => {
+                              setArtistId(a.id);
+                              setArtistSearch(a.name);
+                            }}
+                            className="w-full text-left px-3 py-2 text-sm hover:bg-muted/40 transition-colors"
+                          >
+                            {a.name}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    {artistId && (
+                      <div className="rounded-md bg-primary/5 border border-primary/20 px-3 py-2 flex items-center justify-between">
+                        <span className="text-sm">
+                          <span className="text-muted-foreground">Seleccionado: </span>
+                          <span className="font-semibold text-foreground">
+                            {artistResults.find((a) => a.id === artistId)?.name || artistSearch}
+                          </span>
+                        </span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => {
+                            setArtistId('');
+                            setArtistSearch('');
+                          }}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </FormSection>
             </div>
-          </div>
 
-          {/* Preview */}
-          {(title || body) && (
-            <div className="rounded-xl border border-border/60 bg-muted/20 p-5">
-              <Label className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary block mb-3">
-                Vista previa
-              </Label>
-              <div className="rounded-lg bg-background border border-border/60 p-3 max-w-sm">
-                <div className="flex items-start gap-2.5">
-                  <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center shrink-0">
-                    <Bell className="h-4 w-4 text-primary-foreground" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-foreground truncate">
-                      {title || 'Título de la notificación'}
-                    </p>
-                    <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
-                      {body || 'Cuerpo del mensaje'}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground/60 mt-1">Conciertos Latam · ahora</p>
+            {/* PREVIEW + CTA — sticky right column on desktop */}
+            <aside className="lg:sticky lg:top-24 lg:self-start space-y-4">
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-3">
+                  Vista previa
+                </p>
+                <div className="rounded-xl bg-card border border-border/60 p-3.5 shadow-sm">
+                  <div className="flex items-start gap-2.5">
+                    <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
+                      <Bell className="h-4 w-4 text-primary-foreground" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold text-foreground truncate">
+                        {title || 'Título de la notificación'}
+                      </p>
+                      <p className="text-xs text-muted-foreground line-clamp-3 mt-0.5">
+                        {body || 'Cuerpo del mensaje'}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground/60 mt-1.5">
+                        Conciertos Latam · ahora
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          )}
 
-          <div className="flex justify-end">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button disabled={!canSend || createCampaign.isPending} size="lg" className="gap-2">
-                  {createCampaign.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Send className="h-4 w-4" />
-                  )}
-                  Enviar campaña
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>¿Enviar push ahora?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Se va a enviar a: <strong>{audienceLabel}</strong>. Esta acción no se puede deshacer — los push notifications se entregan instantáneamente.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleSend}>Enviar</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+              <div className="rounded-lg bg-muted/40 border border-border/60 px-3 py-2.5 space-y-1">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                  Audiencia
+                </p>
+                <p className="text-sm text-foreground">{audienceLabel}</p>
+              </div>
+
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    disabled={!canSend || createCampaign.isPending}
+                    size="lg"
+                    className="w-full gap-2"
+                  >
+                    {createCampaign.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Send className="h-4 w-4" />
+                    )}
+                    Enviar campaña
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>¿Enviar push ahora?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Se va a enviar a: <strong>{audienceLabel}</strong>. Esta acción no se puede deshacer — los push se entregan instantáneamente.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleSend}>Enviar</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </aside>
           </div>
         </TabsContent>
 
@@ -499,3 +536,57 @@ export const PushCampaignsAdmin = () => {
     </div>
   );
 };
+
+// — Helpers for form layout —
+
+function FormSection({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="space-y-3">
+      <div>
+        <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+        {hint && <p className="text-xs text-muted-foreground mt-0.5">{hint}</p>}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function FieldLabel({
+  htmlFor,
+  children,
+}: {
+  htmlFor?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <Label
+      htmlFor={htmlFor}
+      className="text-xs font-medium text-muted-foreground flex items-center justify-between mb-1.5"
+    >
+      {children}
+    </Label>
+  );
+}
+
+function FieldCount({ value, max }: { value: number; max: number }) {
+  const over = value > max;
+  return (
+    <span
+      className={
+        over
+          ? 'text-[10px] font-medium tabular-nums text-amber-500'
+          : 'text-[10px] font-medium tabular-nums text-muted-foreground/60'
+      }
+    >
+      {value}/{max}
+    </span>
+  );
+}

@@ -7,6 +7,16 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Plus, Loader2, Sparkles } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import {
   useAdminFestivals,
@@ -53,6 +63,7 @@ export function FestivalsAdmin() {
   const [editingFestival, setEditingFestival] = useState<FestivalWithRelations | null>(null);
   const [lineupFestival, setLineupFestival] = useState<FestivalWithRelations | null>(null);
   const [filters, setFilters] = useState<FestivalFiltersState>(DEFAULT_FILTERS);
+  const [deleteTarget, setDeleteTarget] = useState<FestivalWithRelations | null>(null);
 
   useEffect(() => {
     fetchVenues();
@@ -153,14 +164,18 @@ export function FestivalsAdmin() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar este festival? Esta acción también eliminará todo el lineup.')) return;
+  const handleDelete = (festival: FestivalWithRelations) => {
+    setDeleteTarget(festival);
+  };
 
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await deleteFestival.mutateAsync(id);
+      await deleteFestival.mutateAsync(deleteTarget.id);
     } catch (error) {
       // Error handled by mutation
     }
+    setDeleteTarget(null);
   };
 
   const handleToggleFeatured = async (id: string, isFeatured: boolean) => {
@@ -180,12 +195,12 @@ export function FestivalsAdmin() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <div className="flex items-center gap-3">
-          <Sparkles className="h-6 w-6 text-primary" />
+        <div>
           <h2 className="text-2xl font-bold">Gestión de Festivales</h2>
+          <p className="text-muted-foreground">Administra festivales y sus lineups</p>
         </div>
         {!showForm && (
-          <Button onClick={() => setShowForm(true)}>
+          <Button onClick={() => setShowForm(true)} size="lg">
             <Plus className="w-4 h-4 mr-2" />
             Nuevo Festival
           </Button>
@@ -257,6 +272,31 @@ export function FestivalsAdmin() {
         open={!!lineupFestival}
         onClose={() => setLineupFestival(null)}
       />
+
+      {/* Delete confirmation */}
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar festival?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. El festival{' '}
+              <strong>&quot;{deleteTarget?.name}&quot;</strong> y todo su lineup serán eliminados permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

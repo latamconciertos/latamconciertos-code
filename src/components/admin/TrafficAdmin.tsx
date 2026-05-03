@@ -195,7 +195,7 @@ export function TrafficAdmin() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold">Tráfico del Sitio</h2>
+          <h2 className="text-2xl font-bold">Tráfico del Sitio</h2>
           <p className="text-muted-foreground">Análisis de visitantes y comportamiento</p>
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>

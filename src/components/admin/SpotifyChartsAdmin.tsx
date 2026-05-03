@@ -324,7 +324,7 @@ export const SpotifyChartsAdmin = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Gestión de Charts Spotify</h1>
+          <h2 className="text-2xl font-bold">Gestión de Charts Spotify</h2>
           <p className="text-muted-foreground mt-2">
             Busca y organiza los tops de canciones y artistas por país
           </p>

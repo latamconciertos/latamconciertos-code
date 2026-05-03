@@ -2,8 +2,17 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { Plus } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import {
   useAdminVenues,
@@ -31,6 +40,7 @@ export const VenuesAdmin = () => {
   const [cities, setCities] = useState<City[]>([]);
   const [editingVenue, setEditingVenue] = useState<Venue | null>(null);
   const [showVenueForm, setShowVenueForm] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Venue | null>(null);
 
   useEffect(() => {
     fetchCountries();
@@ -118,12 +128,18 @@ export const VenuesAdmin = () => {
     setShowVenueForm(true);
   };
 
-  const handleDeleteVenue = async (id: string) => {
+  const handleDeleteVenue = (venue: Venue) => {
+    setDeleteTarget(venue);
+  };
+
+  const confirmDeleteVenue = async () => {
+    if (!deleteTarget) return;
     try {
-      await deleteVenue.mutateAsync(id);
+      await deleteVenue.mutateAsync(deleteTarget.id);
     } catch (error) {
       // Error handled by mutation hook
     }
+    setDeleteTarget(null);
   };
 
   const resetVenueForm = () => {
@@ -167,50 +183,33 @@ export const VenuesAdmin = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header with stats */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      {/* Header */}
+      <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Gestión de Venues</h2>
-          <p className="text-muted-foreground mt-1">
-            Administra venues, países y ciudades
-          </p>
+          <h2 className="text-2xl font-bold">Gestión de Venues</h2>
+          <p className="text-muted-foreground">Administra venues, países y ciudades</p>
         </div>
-        <div className="flex gap-2">
-          <Badge variant="secondary" className="text-sm">
-            {(venues ?? []).length} venues
-          </Badge>
-          <Badge variant="secondary" className="text-sm">
-            {countries.length} países
-          </Badge>
-          <Badge variant="secondary" className="text-sm">
-            {cities.length} ciudades
-          </Badge>
-        </div>
+        <Button onClick={() => setShowVenueForm(true)} size="lg">
+          <Plus className="w-4 h-4 mr-2" />
+          Nuevo Venue
+        </Button>
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="venues" className="w-full">
         <TabsList>
-          <TabsTrigger value="venues">Venues</TabsTrigger>
-          <TabsTrigger value="countries">Países</TabsTrigger>
-          <TabsTrigger value="cities">Ciudades</TabsTrigger>
+          <TabsTrigger value="venues">Venues ({(venues ?? []).length})</TabsTrigger>
+          <TabsTrigger value="countries">Países ({countries.length})</TabsTrigger>
+          <TabsTrigger value="cities">Ciudades ({cities.length})</TabsTrigger>
         </TabsList>
 
         <TabsContent value="venues" className="space-y-4 mt-6">
-          <div className="flex justify-between items-center">
-            <h3 className="text-xl font-semibold">Venues</h3>
-            <Button onClick={() => setShowVenueForm(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Nuevo Venue
-            </Button>
-          </div>
-
           <VenuesTable
             venues={venues as any}
             cities={cities}
             countries={countries}
             onEdit={handleEditVenue as any}
-            onDelete={handleDeleteVenue}
+            onDelete={handleDeleteVenue as any}
           />
         </TabsContent>
 
@@ -240,6 +239,31 @@ export const VenuesAdmin = () => {
         cities={cities}
         onSubmit={handleVenueSubmit}
       />
+
+      {/* Delete confirmation */}
+      <AlertDialog
+        open={!!deleteTarget}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar venue?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. El venue{' '}
+              <strong>&quot;{deleteTarget?.name}&quot;</strong> será eliminado permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmDeleteVenue}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Eliminar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

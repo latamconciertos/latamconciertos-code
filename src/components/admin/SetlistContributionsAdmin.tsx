@@ -161,7 +161,7 @@ export function SetlistContributionsAdmin() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold">Contribuciones de Setlist</h2>
+        <h2 className="text-2xl font-bold">Contribuciones de Setlist</h2>
         <p className="text-muted-foreground mt-2">
           Revisa y aprueba las canciones que los usuarios han agregado a los setlists
         </p>
