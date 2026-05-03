@@ -29,6 +29,7 @@ const TrafficAdmin = lazy(() => import('@/components/admin/TrafficAdmin').then(m
 const SocialNetworksAdmin = lazy(() => import('@/components/admin/SocialNetworksAdmin').then(m => ({ default: m.SocialNetworksAdmin })));
 const SetlistContributionsAdmin = lazy(() => import('@/components/admin/SetlistContributionsAdmin').then(m => ({ default: m.SetlistContributionsAdmin })));
 const FanProjectsAdmin = lazy(() => import('@/components/admin/FanProjectsAdmin').then(m => ({ default: m.FanProjectsAdmin })));
+const PushCampaignsAdmin = lazy(() => import('@/components/admin/PushCampaignsAdmin').then(m => ({ default: m.PushCampaignsAdmin })));
 const FestivalsAdmin = lazy(() => import('@/components/admin/FestivalsAdmin').then(m => ({ default: m.FestivalsAdmin })));
 const BannersAdmin = lazy(() => import('@/components/admin/BannersAdmin').then(m => ({ default: m.BannersAdmin })));
 
@@ -130,6 +131,7 @@ const Admin = () => {
         case 'traffic': return <TrafficAdmin />;
         case 'pwa': return <PWAAdmin />;
         case 'fan-projects': return <FanProjectsAdmin />;
+        case 'push-campaigns': return <PushCampaignsAdmin />;
         case 'banners': return <BannersAdmin />;
         default: return <NewsAdminNew />;
       }

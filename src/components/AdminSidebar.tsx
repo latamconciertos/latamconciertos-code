@@ -4,7 +4,7 @@ import {
   Video, Megaphone, TrendingUp, BarChart3, Building2, FileText,
   Images, Share2, ListMusic, Lightbulb, ChevronDown, Settings,
   Layers, Users2, DollarSign, Link2, LucideIcon, Sparkles,
-  ArrowLeft
+  ArrowLeft, Bell
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import {
@@ -54,6 +54,7 @@ const menuGroups: MenuGroup[] = [
     icon: Users2,
     items: [
       { title: 'Usuarios', tab: 'users', icon: Users },
+      { title: 'Notificaciones', tab: 'push-campaigns', icon: Bell },
       { title: 'Contribuciones', tab: 'setlist-contributions', icon: ListMusic },
       { title: 'Fan Projects', tab: 'fan-projects', icon: Lightbulb },
     ]

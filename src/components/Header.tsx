@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X, Search, User, Settings, Moon, Sun, Calendar, LogOut, Home, Mic2, Music2, BookOpen, ListMusic, Lightbulb, Users, ChevronDown, Bot, Sparkles } from "lucide-react";
+import { Menu, X, Search, User, Settings, Moon, Sun, Calendar, LogOut, Home, Mic2, Music2, BookOpen, ListMusic, Lightbulb, Users, ChevronDown, Bot, Sparkles, Bell } from "lucide-react";
+import { PushSubscribeDialog } from "@/components/admin/PushSubscribeDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
@@ -211,6 +212,21 @@ const Header = ({ visible = true }: HeaderProps) => {
             >
               <Search className="h-5 w-5" />
             </Button>
+
+            {user && (
+              <PushSubscribeDialog
+                trigger={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="text-white hover:bg-white/10"
+                    aria-label="Notificaciones push"
+                  >
+                    <Bell className="h-5 w-5" />
+                  </Button>
+                }
+              />
+            )}
 
             {user ? (
               <div className="hidden lg:flex items-center space-x-1">

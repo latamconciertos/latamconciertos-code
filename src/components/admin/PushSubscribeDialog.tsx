@@ -19,7 +19,7 @@ import {
 } from '@/lib/pushNotifications';
 import { toast } from 'sonner';
 
-export function PushSubscribeDialog() {
+export function PushSubscribeDialog({ trigger }: { trigger?: React.ReactNode } = {}) {
   const [open, setOpen] = useState(false);
   const [supported, setSupported] = useState<{ supported: boolean; reason?: string }>({
     supported: true,
@@ -94,10 +94,12 @@ export function PushSubscribeDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 gap-1.5">
-          <Bell className="h-3.5 w-3.5" />
-          <span className="text-[11px] font-bold uppercase tracking-[0.15em]">Push</span>
-        </Button>
+        {trigger ?? (
+          <Button variant="outline" size="sm" className="h-8 gap-1.5">
+            <Bell className="h-3.5 w-3.5" />
+            <span className="text-[11px] font-bold uppercase tracking-[0.15em]">Push</span>
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
