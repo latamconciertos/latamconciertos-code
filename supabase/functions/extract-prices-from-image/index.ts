@@ -1,4 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { enforceRateLimit } from "../_shared/rateLimit.ts";
+import { requireAdmin } from "../_shared/requireAdmin.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -28,6 +30,19 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Solo admins (función con API de pago).
+  const { error: authError } = await requireAdmin(req);
+  if (authError) return authError;
+
+  // Rate limit estricto (API de visión de pago).
+  const limited = await enforceRateLimit(req, {
+    functionName: 'extract-prices-from-image',
+    maxRequests: 10,
+    windowSeconds: 60,
+    byUser: true,
+  });
+  if (limited) return limited;
+
   try {
     const { imageUrl, imageBase64 } = await req.json();
 
@@ -35,6 +50,21 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ success: false, error: 'Se requiere imageUrl o imageBase64' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Anti-SSRF: si viene imageUrl, exigir http(s) y host público.
+    if (imageUrl && !/^https?:\/\//i.test(String(imageUrl))) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'imageUrl inválida' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    // Límite de tamaño del base64 (~8MB) para evitar payloads enormes.
+    if (imageBase64 && String(imageBase64).length > 8_000_000) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Imagen demasiado grande' }),
+        { status: 413, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 

@@ -4,6 +4,7 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
+import { sanitizeSearchTerm } from '@/lib/searchSanitize';
 import type {
   Friendship,
   Friend,
@@ -210,14 +211,15 @@ class FriendServiceClass {
    * Search users by username or name
    */
   async searchUsers(userId: string, query: string): Promise<UserSearchResult[]> {
-    const searchTerm = `%${query}%`;
-    
+    const safe = sanitizeSearchTerm(query);
+    if (!safe) return [];
+    const searchTerm = `%${safe}%`;
+
+    // Usa la vista profiles_search (solo columnas no sensibles); la tabla
+    // profiles está restringida por RLS a perfil propio/amigos/admin.
     const { data, error } = await supabase
-      .from('profiles')
-      .select(`
-        id, username, first_name, last_name,
-        countries(name, iso_code)
-      `)
+      .from('profiles_search')
+      .select(`id, username, first_name, last_name, country_name, country_iso_code`)
       .neq('id', userId)
       .or(`username.ilike.${searchTerm},first_name.ilike.${searchTerm},last_name.ilike.${searchTerm}`)
       .limit(20);
@@ -226,7 +228,7 @@ class FriendServiceClass {
 
     // Get friendship status for each user
     const results: UserSearchResult[] = [];
-    
+
     for (const user of data || []) {
       const friendshipStatus = await this.getFriendshipStatus(userId, user.id);
       results.push({
@@ -234,8 +236,8 @@ class FriendServiceClass {
         username: user.username,
         first_name: user.first_name,
         last_name: user.last_name,
-        country_name: (user.countries as any)?.name || null,
-        country_code: (user.countries as any)?.iso_code || null,
+        country_name: (user as any).country_name || null,
+        country_code: (user as any).country_iso_code || null,
         friendship_status: friendshipStatus.status as any,
         friendship_id: friendshipStatus.friendshipId
       });

@@ -6,7 +6,8 @@
  */
 
 import { supabase } from '@/integrations/supabase/client';
-import type { 
+import { sanitizeSearchTerm } from '@/lib/searchSanitize';
+import type {
   Profile,
   ProfileWithRoles,
   ProfileUpdate,
@@ -222,7 +223,10 @@ class UserServiceClass {
         .order('created_at', { ascending: false });
 
       if (options?.search) {
-        query = query.or(`username.ilike.%${options.search}%,first_name.ilike.%${options.search}%,last_name.ilike.%${options.search}%`);
+        const safe = sanitizeSearchTerm(options.search);
+        if (safe) {
+          query = query.or(`username.ilike.%${safe}%,first_name.ilike.%${safe}%,last_name.ilike.%${safe}%`);
+        }
       }
 
       if (options?.limit) {

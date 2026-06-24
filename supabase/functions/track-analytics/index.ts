@@ -1,10 +1,28 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.52.0";
+import { enforceRateLimit } from "../_shared/rateLimit.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Deriva el user id desde el JWT verificado (si viene); nunca confía en el body.
+async function getUserIdFromRequest(req: Request): Promise<string | null> {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader) return null;
+  try {
+    const client = createClient(
+      Deno.env.get('SUPABASE_URL')!,
+      Deno.env.get('SUPABASE_ANON_KEY')!,
+      { global: { headers: { Authorization: authHeader } } }
+    );
+    const { data: { user } } = await client.auth.getUser();
+    return user?.id ?? null;
+  } catch {
+    return null;
+  }
+}
 
 interface TrackingData {
   sessionId: string;
@@ -26,13 +44,24 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Rate limit por IP (alto volumen legítimo). Fail-open.
+  const limited = await enforceRateLimit(req, {
+    functionName: 'track-analytics',
+    maxRequests: 120,
+    windowSeconds: 60,
+  });
+  if (limited) return limited;
+
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceRoleKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    
+
     const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
 
     const trackingData: TrackingData = await req.json();
+
+    // No confiar en userId del body: derivarlo del JWT verificado si está presente.
+    const verifiedUserId = await getUserIdFromRequest(req);
 
     // Validate required fields
     if (!trackingData.sessionId || !trackingData.pagePath) {
@@ -50,7 +79,7 @@ serve(async (req) => {
     // Sanitize and truncate data to prevent injection/overflow
     const sanitizedData = {
       session_id: trackingData.sessionId.substring(0, 100),
-      user_id: trackingData.userId || null,
+      user_id: verifiedUserId,
       page_path: trackingData.pagePath.substring(0, 500),
       page_title: trackingData.pageTitle?.substring(0, 200) || null,
       referrer: trackingData.referrer?.substring(0, 500) || null,

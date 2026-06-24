@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getVerifiedUserId } from "../_shared/auth.ts";
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -10,12 +11,6 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
-
-function getUserIdFromJwt(authHeader: string): string {
-  const token = authHeader.replace('Bearer ', '');
-  const payload = JSON.parse(atob(token.split('.')[1]));
-  return payload.sub;
-}
 
 async function getUserTokens(userId: string): Promise<{ access_token: string; refresh_token: string; token_expires_at: string }> {
   const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
@@ -192,14 +187,7 @@ serve(async (req: Request) => {
 
   try {
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      throw new Error('Missing Authorization header');
-    }
-
-    const userId = getUserIdFromJwt(authHeader);
-    if (!userId) {
-      throw new Error('Invalid token: no user ID');
-    }
+    const userId = await getVerifiedUserId(authHeader);
 
     const { action, timeRange, limit } = await req.json();
 

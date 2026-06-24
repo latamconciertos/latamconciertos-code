@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { enforceRateLimit } from "../_shared/rateLimit.ts";
 
 const SPOTIFY_CLIENT_ID = Deno.env.get('SPOTIFY_CLIENT_ID');
 const SPOTIFY_CLIENT_SECRET = Deno.env.get('SPOTIFY_CLIENT_SECRET');
@@ -225,6 +226,14 @@ serve(async (req: Request) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Función pública: protegida con rate limit por IP (no exige auth).
+  const limited = await enforceRateLimit(req, {
+    functionName: 'spotify-api',
+    maxRequests: 60,
+    windowSeconds: 60,
+  });
+  if (limited) return limited;
+
   try {
     const { action, artistName, query, artist, market, limit, artistIds } = await req.json();
 
@@ -255,6 +264,7 @@ serve(async (req: Request) => {
 
       case 'getArtistsByIds':
         if (!artistIds || !Array.isArray(artistIds)) throw new Error('artistIds array is required');
+        if (artistIds.length > 200) throw new Error('artistIds excede el máximo permitido (200)');
         result = await getArtistsByIds(artistIds);
         break;
 

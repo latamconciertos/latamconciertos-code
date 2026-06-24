@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getVerifiedUserId } from "../_shared/auth.ts";
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -38,12 +39,6 @@ interface WrappedData {
   badgesEarned: Array<{ name: string; icon: string; description: string }>;
 }
 
-function getUserIdFromJwt(authHeader: string): string {
-  const token = authHeader.replace('Bearer ', '');
-  const payload = JSON.parse(atob(token.split('.')[1]));
-  return payload.sub;
-}
-
 function normalize(name: string): string {
   return name.toLowerCase().trim();
 }
@@ -55,14 +50,7 @@ serve(async (req: Request) => {
 
   try {
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      throw new Error('Missing Authorization header');
-    }
-
-    const userId = getUserIdFromJwt(authHeader);
-    if (!userId) {
-      throw new Error('Invalid token: no user ID');
-    }
+    const userId = await getVerifiedUserId(authHeader);
 
     const { year, forceRegenerate } = await req.json();
 

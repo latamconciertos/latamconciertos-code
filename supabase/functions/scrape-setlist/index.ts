@@ -1,4 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { enforceRateLimit } from "../_shared/rateLimit.ts";
+import { requireAdmin } from "../_shared/requireAdmin.ts";
 
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
@@ -219,6 +221,19 @@ Deno.serve(async (req) => {
     if (req.method === 'OPTIONS') {
         return new Response(null, { headers: corsHeaders });
     }
+
+    // Solo admins (consume Spotify/setlist.fm de forma intensiva).
+    const { error: authError } = await requireAdmin(req);
+    if (authError) return authError;
+
+    // Rate limit.
+    const limited = await enforceRateLimit(req, {
+        functionName: 'scrape-setlist',
+        maxRequests: 10,
+        windowSeconds: 60,
+        byUser: true,
+    });
+    if (limited) return limited;
 
     try {
         const { url, artist_name } = await req.json();

@@ -1,3 +1,6 @@
+import { enforceRateLimit } from "../_shared/rateLimit.ts";
+import { requireAdmin } from "../_shared/requireAdmin.ts";
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -27,6 +30,19 @@ Deno.serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Solo admins (API de scraping de pago).
+  const { error: authError } = await requireAdmin(req);
+  if (authError) return authError;
+
+  // Rate limit estricto.
+  const limited = await enforceRateLimit(req, {
+    functionName: 'firecrawl-scrape-prices',
+    maxRequests: 10,
+    windowSeconds: 60,
+    byUser: true,
+  });
+  if (limited) return limited;
+
   try {
     const { url } = await req.json();
 
@@ -50,6 +66,33 @@ Deno.serve(async (req) => {
     let formattedUrl = url.trim();
     if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
       formattedUrl = `https://${formattedUrl}`;
+    }
+
+    // Anti-SSRF: validar que sea una URL pública (no localhost ni IPs privadas).
+    let parsedHost: string;
+    try {
+      parsedHost = new URL(formattedUrl).hostname.toLowerCase();
+    } catch {
+      return new Response(
+        JSON.stringify({ success: false, error: 'URL inválida' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    const isPrivateHost =
+      parsedHost === 'localhost' ||
+      parsedHost === '0.0.0.0' ||
+      /^127\./.test(parsedHost) ||
+      /^10\./.test(parsedHost) ||
+      /^192\.168\./.test(parsedHost) ||
+      /^169\.254\./.test(parsedHost) ||
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(parsedHost) ||
+      parsedHost.endsWith('.local') ||
+      parsedHost.endsWith('.internal');
+    if (isPrivateHost) {
+      return new Response(
+        JSON.stringify({ success: false, error: 'URL no permitida' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     console.log('Scraping ticket prices from URL:', formattedUrl);

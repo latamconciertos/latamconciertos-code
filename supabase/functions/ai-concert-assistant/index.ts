@@ -3,6 +3,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
+import { enforceRateLimit } from "../_shared/rateLimit.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -204,10 +205,60 @@ serve(async (req: Request) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Exigir usuario autenticado (verifica firma del JWT). El frontend envía el
+  // header Authorization con el access_token de la sesión.
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader) {
+    return new Response(JSON.stringify({ error: 'No autorizado' }), {
+      status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+  const authClient = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+    { global: { headers: { Authorization: authHeader } } }
+  );
+  const { data: { user: authedUser } } = await authClient.auth.getUser();
+  if (!authedUser) {
+    return new Response(JSON.stringify({ error: 'Sesión inválida' }), {
+      status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  // Rate limit por usuario (API de pago).
+  const limited = await enforceRateLimit(req, {
+    functionName: 'ai-concert-assistant',
+    maxRequests: 10,
+    windowSeconds: 60,
+    byUser: true,
+  });
+  if (limited) return limited;
+
   try {
     console.log('=== AI Concert Assistant Request Started ===');
-    const { messages: rawMessages, userId, conversationId } = await req.json();
+    const { messages: rawMessages, conversationId } = await req.json();
+    // userId se deriva del JWT verificado, no del body.
+    const userId = authedUser.id;
     console.log('[Step 1] Received request with', rawMessages?.length || 0, 'messages');
+
+    // Validar tamaño del input para evitar abuso de tokens.
+    if (!Array.isArray(rawMessages) || rawMessages.length === 0) {
+      return new Response(JSON.stringify({ error: 'messages requerido' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    if (rawMessages.length > 30) {
+      return new Response(JSON.stringify({ error: 'Demasiados mensajes' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+    const totalChars = rawMessages.reduce(
+      (sum: number, m: any) => sum + (typeof m?.content === 'string' ? m.content.length : 0), 0);
+    if (totalChars > 8000) {
+      return new Response(JSON.stringify({ error: 'Conversación demasiado larga' }), {
+        status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Map 'bot' role to 'assistant' for OpenAI compatibility
     const messages = (rawMessages || []).map((msg: any) => ({

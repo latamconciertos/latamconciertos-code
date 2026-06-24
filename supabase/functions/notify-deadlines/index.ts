@@ -243,10 +243,9 @@ serve(async (req: Request) => {
 
     let sentCount = 0;
     const logs: any[] = [];
-    const debugInfo: any[] = [];
 
     console.log('Relevant accreditations:', relevant.map(a => a.event_name));
-    console.log('Email map:', emailMap);
+    console.log('Team emails resolved:', Object.keys(emailMap).length);
 
     for (const acc of relevant) {
       const days = daysBetween(acc.deadline);
@@ -263,8 +262,9 @@ serve(async (req: Request) => {
         const email = emailMap[member.user_id];
         if (!email) { console.log(`No email for user ${member.user_id}`); continue; }
 
+        // El dedup contra notification_log usa user_email; mantener ese formato.
         const key = `${acc.id}:${email}:${notifType}`;
-        if (sentSet.has(key)) { console.log(`Already sent: ${key}`); continue; }
+        if (sentSet.has(key)) { console.log(`Already sent: ${acc.id}:${notifType} (user ${member.user_id})`); continue; }
 
         const subject =
           days < 0
@@ -277,10 +277,9 @@ serve(async (req: Request) => {
 
         const roleLabel = ROLE_LABELS[member.role] || member.role;
         const html = buildEmailHtml(acc, days, roleLabel);
-        console.log(`Sending to ${email}: ${subject}`);
+        console.log(`Sending notification for ${acc.event_name} to user ${member.user_id}`);
         const sent = await sendEmail(email, subject, html);
-        console.log(`Send result for ${email}: ${sent}`);
-        debugInfo.push({ email, subject: subject.slice(0, 50), sent });
+        console.log(`Send result for user ${member.user_id}: ${sent}`);
 
         if (sent) {
           sentCount++;
@@ -299,13 +298,12 @@ serve(async (req: Request) => {
       await supabase.from('notification_log').insert(logs);
     }
 
+    // No exponer correos del equipo (emailMap/debugInfo) en la respuesta HTTP.
     return new Response(
       JSON.stringify({
         message: `Sent ${sentCount} notifications`,
         sent: sentCount,
         checked: relevant.length,
-        debug: debugInfo,
-        emailMap,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
     );

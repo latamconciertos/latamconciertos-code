@@ -85,7 +85,7 @@ declare
 begin
   -- Only fire when status actually changed
   if new.status is distinct from old.status then
-    v_title := public.accreditation_status_message(new.status);
+    v_title := public.accreditation_status_message(new.status::text);
     v_body := new.event_name;
 
     -- Notify creator

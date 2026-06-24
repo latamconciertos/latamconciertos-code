@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getVerifiedUserId } from "../_shared/auth.ts";
 
 const SPOTIFY_CLIENT_ID = Deno.env.get('SPOTIFY_CLIENT_ID');
 const SPOTIFY_CLIENT_SECRET = Deno.env.get('SPOTIFY_CLIENT_SECRET');
@@ -14,17 +15,6 @@ const corsHeaders = {
 
 function getServiceClient() {
   return createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
-}
-
-function getUserIdFromJwt(authHeader: string): string {
-  try {
-    const token = authHeader.replace('Bearer ', '');
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    if (!payload.sub) throw new Error('No sub in token');
-    return payload.sub;
-  } catch {
-    throw new Error('Invalid token');
-  }
 }
 
 async function getAuthUrl(userId: string): Promise<{ authUrl: string }> {
@@ -140,8 +130,8 @@ serve(async (req: Request) => {
 
     console.log(`Spotify Auth action: ${action}`);
 
-    const authHeader = req.headers.get('Authorization') || '';
-    const userId = getUserIdFromJwt(authHeader);
+    const authHeader = req.headers.get('Authorization');
+    const userId = await getVerifiedUserId(authHeader);
 
     let result: unknown;
 
