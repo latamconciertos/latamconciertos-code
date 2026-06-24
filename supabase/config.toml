@@ -21,9 +21,6 @@ verify_jwt = false
 [functions.generate-blog-sitemap]
 verify_jwt = false
 
-[functions.generate-setlist-image]
-verify_jwt = false
-
 [functions.detect-user-country]
 verify_jwt = false
 

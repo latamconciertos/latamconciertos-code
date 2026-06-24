@@ -113,17 +113,6 @@ export default function SetlistDetail() {
     );
   }
 
-  const setlistData = {
-    concertTitle: concert.title,
-    artistName: concert.artist?.name,
-    date: concert.date || undefined,
-    concertImage: concert.image_url || undefined,
-    songs: songs.map((song) => ({
-      song_name: song.song_name,
-      artist_name: song.artist_name || concert.artist?.name || undefined
-    }))
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <SEO
@@ -132,7 +121,7 @@ export default function SetlistDetail() {
         keywords={`setlist ${concert.artist?.name || ''}, setlist ${concert.artist?.name || ''} ${concert.venue?.location || ''}, ${concert.artist?.name || ''} ${concert.date ? new Date(concert.date).getFullYear() : ''}, lista de canciones ${concert.artist?.name || ''}, ${concert.artist?.name || ''} live, ${concert.artist?.name || ''} tour, setlist ${concert.venue?.name || ''}, canciones ${concert.title}`}
         type="article"
         image={concert.image_url || undefined}
-        url={`/setlists/${artistSlug}/${concertSlug}/${city}/${date}`}
+        url={`/setlist/${artistSlug}/${concertSlug}/${city}/${date}`}
       />
       <Header />
 
@@ -189,7 +178,6 @@ export default function SetlistDetail() {
             <SocialShare
               url={window.location.href}
               title={`Setlist: ${concert.title}`}
-              setlistData={setlistData}
             />
           </div>
 
