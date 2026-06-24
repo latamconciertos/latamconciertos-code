@@ -6,6 +6,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { spotifyService } from '@/lib/spotify';
 import { queryKeys } from './queryKeys';
 
 export interface SetlistSong {
@@ -16,6 +17,7 @@ export interface SetlistSong {
   duration_seconds: number | null;
   notes: string | null;
   spotify_url: string | null;
+  spotify_track_id: string | null;
   is_official: boolean | null;
   contributed_by: string | null;
 }
@@ -117,6 +119,35 @@ export function useSetlistSongs(concertId: string | undefined) {
       return (data || []) as SetlistSong[];
     },
     enabled: !!concertId,
+  });
+}
+
+/**
+ * Fetch Spotify album cover images for a list of track IDs.
+ * Returns a map of trackId -> album image URL. Batched into a single
+ * Spotify request (up to 50 IDs each) via the spotify-api edge function.
+ */
+export function useSpotifyTrackImages(trackIds: (string | null | undefined)[]) {
+  const ids = Array.from(
+    new Set(trackIds.filter((id): id is string => !!id))
+  ).sort();
+
+  return useQuery({
+    queryKey: ['spotify', 'track-images', ids],
+    queryFn: async () => {
+      if (ids.length === 0) return {} as Record<string, string>;
+
+      const tracks = await spotifyService.getTracksByIds(ids);
+      const map: Record<string, string> = {};
+      for (const track of tracks) {
+        const images = track.album?.images;
+        const url = images?.[1]?.url || images?.[0]?.url;
+        if (track.id && url) map[track.id] = url;
+      }
+      return map;
+    },
+    enabled: ids.length > 0,
+    staleTime: 1000 * 60 * 60 * 24, // album art rarely changes
   });
 }
 

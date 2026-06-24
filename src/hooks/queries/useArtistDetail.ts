@@ -132,18 +132,51 @@ export function useArtistNews(artistId: string | undefined) {
 }
 
 /**
- * Fetch Spotify top tracks for an artist
+ * Extract the Spotify artist ID from a Spotify artist URL.
+ * e.g. https://open.spotify.com/intl-es/artist/1KfRf4VkEYpL2G0FTWb7JX?si=... -> 1KfRf4VkEYpL2G0FTWb7JX
  */
-export function useArtistSpotifyTracks(artistName: string | undefined) {
-  return useQuery({
-    queryKey: ['spotify', 'tracks', artistName],
-    queryFn: async () => {
-      if (!artistName) return [];
+export function extractSpotifyArtistId(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  const match = url.match(/artist[/:]([a-zA-Z0-9]+)/);
+  return match?.[1];
+}
 
-      const tracks = await spotifyService.searchTrack(artistName, artistName);
+/**
+ * Resolve an artist's Spotify ID from their social_links blob.
+ * Prefers the stored spotify_id, falling back to parsing the spotify URL.
+ */
+export function resolveSpotifyArtistId(socialLinks: any): string | undefined {
+  if (!socialLinks || typeof socialLinks !== 'object') return undefined;
+  if (typeof socialLinks.spotify_id === 'string' && socialLinks.spotify_id.trim()) {
+    return socialLinks.spotify_id.trim();
+  }
+  return extractSpotifyArtistId(socialLinks.spotify_url || socialLinks.spotify);
+}
+
+/**
+ * Fetch Spotify top tracks for an artist.
+ * Uses the artist's exact Spotify ID (from social_links) when available, which is
+ * reliable. Falls back to an exact-name lookup otherwise.
+ */
+export function useArtistSpotifyTracks(
+  artistName: string | undefined,
+  socialLinks?: any
+) {
+  const spotifyId = resolveSpotifyArtistId(socialLinks);
+
+  return useQuery({
+    queryKey: ['spotify', 'tracks', spotifyId || artistName],
+    queryFn: async () => {
+      if (!spotifyId && !artistName) return [];
+
+      const tracks = await spotifyService.getArtistTopTracks({
+        spotifyId,
+        artistName,
+        market: 'CO',
+      });
       return tracks.slice(0, 5) as SpotifyTrack[];
     },
-    enabled: !!artistName,
+    enabled: !!(spotifyId || artistName),
     staleTime: 1000 * 60 * 30, // 30 minutes
   });
 }

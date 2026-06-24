@@ -13,7 +13,7 @@ import { Music, Calendar, MapPin, Plus, ExternalLink } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { useSetlistConcert, useSetlistSongs, useContributeToSetlist } from '@/hooks/queries';
+import { useSetlistConcert, useSetlistSongs, useContributeToSetlist, useSpotifyTrackImages } from '@/hooks/queries';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 
 export default function SetlistDetail() {
@@ -28,6 +28,7 @@ export default function SetlistDetail() {
 
   const { data: concert, isLoading: loadingConcert } = useSetlistConcert(concertSlug, artistSlug, city, date);
   const { data: songs = [], isLoading: loadingSongs } = useSetlistSongs(concert?.id);
+  const { data: trackImages = {} } = useSpotifyTrackImages(songs.map((s) => s.spotify_track_id));
   const contributeMutation = useContributeToSetlist();
 
   useEffect(() => {
@@ -188,11 +189,22 @@ export default function SetlistDetail() {
             </CardHeader>
             <CardContent>
               <div className="space-y-1">
-                {songs.map((song) => (
-                  <div key={song.id} className="flex items-start gap-2 p-2 rounded-lg hover:bg-accent transition-colors">
-                    <span className="font-mono text-xs text-muted-foreground w-6 flex-shrink-0 pt-0.5">
-                      •
-                    </span>
+                {songs.map((song) => {
+                  const albumImage = song.spotify_track_id ? trackImages[song.spotify_track_id] : undefined;
+                  return (
+                  <div key={song.id} className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent transition-colors">
+                    <div className="h-10 w-10 flex-shrink-0 rounded overflow-hidden bg-muted flex items-center justify-center">
+                      {albumImage ? (
+                        <img
+                          src={albumImage}
+                          alt={song.song_name}
+                          loading="lazy"
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <Music className="h-4 w-4 text-muted-foreground/50" />
+                      )}
+                    </div>
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium flex items-center gap-1.5 flex-wrap">
                         {song.song_name}
@@ -231,7 +243,8 @@ export default function SetlistDetail() {
                       </Button>
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
 
               {songs.length === 0 && (

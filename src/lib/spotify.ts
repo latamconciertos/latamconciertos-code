@@ -98,6 +98,28 @@ class SpotifyService {
     }
   }
 
+  async getArtistTopTracks(opts: {
+    spotifyId?: string;
+    artistName?: string;
+    market?: string;
+  }): Promise<SpotifyTrack[]> {
+    try {
+      const { data, error } = await supabase.functions.invoke('spotify-api', {
+        body: { action: 'getArtistTopTracks', ...opts }
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        return [];
+      }
+
+      return data?.data || [];
+    } catch (error) {
+      console.error('Error fetching artist top tracks from Spotify:', error);
+      return [];
+    }
+  }
+
   async getTopTracksByMarket(market: string, limit: number = 10): Promise<SpotifyTrack[]> {
     try {
       const { data, error } = await supabase.functions.invoke('spotify-api', {
@@ -112,6 +134,26 @@ class SpotifyService {
       return data?.data || [];
     } catch (error) {
       console.error('Error fetching top tracks from Spotify:', error);
+      return [];
+    }
+  }
+
+  async getTracksByIds(trackIds: string[]): Promise<SpotifyTrack[]> {
+    if (trackIds.length === 0) return [];
+
+    try {
+      const { data, error } = await supabase.functions.invoke('spotify-api', {
+        body: { action: 'getTracksByIds', trackIds }
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        return [];
+      }
+
+      return data?.data || [];
+    } catch (error) {
+      console.error('Error fetching tracks from Spotify:', error);
       return [];
     }
   }

@@ -91,7 +91,7 @@ export { useSetlistsPage } from './useSetlistsPage';
 export type { ConcertWithSetlist } from './useSetlistsPage';
 
 // Setlist Detail Hooks
-export { useSetlistConcert, useSetlistSongs, useContributeToSetlist } from './useSetlistDetail';
+export { useSetlistConcert, useSetlistSongs, useContributeToSetlist, useSpotifyTrackImages } from './useSetlistDetail';
 export type { SetlistSong, SetlistConcert } from './useSetlistDetail';
 
 // Promoters Page Hooks

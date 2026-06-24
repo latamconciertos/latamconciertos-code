@@ -170,6 +170,35 @@ async function searchTrack(query: string, artist?: string): Promise<any[]> {
   return searchData.tracks?.items || [];
 }
 
+async function getArtistTopTracks(
+  opts: { spotifyId?: string; artistName?: string; market?: string }
+): Promise<any[]> {
+  const token = await getAccessToken();
+  const market = opts.market || 'CO';
+
+  // Prefer the exact Spotify artist ID (from the artist's stored Spotify URL).
+  // Fall back to an exact-name lookup only when no ID is available.
+  let artistId = opts.spotifyId;
+  if (!artistId && opts.artistName) {
+    const artist = await getArtistByName(opts.artistName);
+    artistId = artist?.id;
+  }
+
+  if (!artistId) return [];
+
+  const response = await fetch(
+    `https://api.spotify.com/v1/artists/${artistId}/top-tracks?market=${market}`,
+    { headers: { 'Authorization': `Bearer ${token}` } }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch artist top tracks');
+  }
+
+  const data = await response.json();
+  return data.tracks || [];
+}
+
 async function getTopTracksByMarket(market: string, limit: number = 10): Promise<any[]> {
   const token = await getAccessToken();
 
@@ -190,6 +219,33 @@ async function getTopTracksByMarket(market: string, limit: number = 10): Promise
   return tracks
     .sort((a: any, b: any) => (b.popularity || 0) - (a.popularity || 0))
     .slice(0, limit);
+}
+
+async function getTracksByIds(trackIds: string[]): Promise<any[]> {
+  const token = await getAccessToken();
+
+  const chunks = [];
+  for (let i = 0; i < trackIds.length; i += 50) {
+    chunks.push(trackIds.slice(i, i + 50));
+  }
+
+  const allTracks: any[] = [];
+
+  for (const chunk of chunks) {
+    const response = await fetch(
+      `https://api.spotify.com/v1/tracks?ids=${chunk.join(',')}`,
+      { headers: { 'Authorization': `Bearer ${token}` } }
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch tracks');
+    }
+
+    const data = await response.json();
+    allTracks.push(...(data.tracks || []));
+  }
+
+  return allTracks;
 }
 
 async function getArtistsByIds(artistIds: string[]): Promise<any[]> {
@@ -235,7 +291,7 @@ serve(async (req: Request) => {
   if (limited) return limited;
 
   try {
-    const { action, artistName, query, artist, market, limit, artistIds } = await req.json();
+    const { action, artistName, query, artist, market, limit, artistIds, spotifyId, trackIds } = await req.json();
 
     console.log(`Spotify API action: ${action}`);
 
@@ -257,6 +313,11 @@ serve(async (req: Request) => {
         result = await searchTrack(query, artist);
         break;
 
+      case 'getArtistTopTracks':
+        if (!spotifyId && !artistName) throw new Error('spotifyId or artistName is required');
+        result = await getArtistTopTracks({ spotifyId, artistName, market });
+        break;
+
       case 'getTopTracksByMarket':
         if (!market) throw new Error('market is required');
         result = await getTopTracksByMarket(market, limit || 10);
@@ -266,6 +327,12 @@ serve(async (req: Request) => {
         if (!artistIds || !Array.isArray(artistIds)) throw new Error('artistIds array is required');
         if (artistIds.length > 200) throw new Error('artistIds excede el máximo permitido (200)');
         result = await getArtistsByIds(artistIds);
+        break;
+
+      case 'getTracksByIds':
+        if (!trackIds || !Array.isArray(trackIds)) throw new Error('trackIds array is required');
+        if (trackIds.length > 200) throw new Error('trackIds excede el máximo permitido (200)');
+        result = await getTracksByIds(trackIds);
         break;
 
       case 'getArtistByName':

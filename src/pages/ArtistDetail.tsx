@@ -61,7 +61,7 @@ const ArtistDetail = () => {
   const { data: artist, isLoading: artistLoading } = useArtistDetail(slug);
   const { data: concerts = [] } = useArtistConcerts(artist?.id);
   const { data: news = [] } = useArtistNews(artist?.id);
-  const { data: topTracks = [] } = useArtistSpotifyTracks(artist?.name);
+  const { data: topTracks = [] } = useArtistSpotifyTracks(artist?.name, artist?.social_links);
 
   const formatDuration = (ms: number) => {
     const minutes = Math.floor(ms / 60000);
