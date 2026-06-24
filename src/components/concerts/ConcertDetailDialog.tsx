@@ -143,15 +143,6 @@ export const ConcertDetailDialog = ({ concert, onClose }: ConcertDetailDialogPro
                         <SocialShare
                           url={`https://www.conciertoslatam.app/concerts#${concert.slug}`}
                           title={`Setlist de ${concert.title}`}
-                          setlistData={{
-                            concertTitle: concert.title,
-                            artistName: concert.artists?.name,
-                            date: concert.date ?? undefined,
-                            songs: setlist.map((song: any) => ({
-                              song_name: song.song_name,
-                              artist_name: song.artist_name || undefined
-                            }))
-                          }}
                         />
                         <div className="space-y-2">
                           {setlist.map((song: any, index) => (

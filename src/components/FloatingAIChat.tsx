@@ -105,14 +105,15 @@ export const FloatingAIChat = () => {
         });
       }
 
+      const { data: { session } } = await supabase.auth.getSession();
       const response = await fetch(`https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/ai-concert-assistant`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
         },
         body: JSON.stringify({
           messages: [...messages, { role: 'user', content: userMessage }],
-          userId,
           conversationId,
         })
       });

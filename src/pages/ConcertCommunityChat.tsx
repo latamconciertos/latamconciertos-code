@@ -182,7 +182,7 @@ export default function ConcertCommunityChat() {
     if (data) {
       const withProfiles = await Promise.all(
         data.map(async (msg) => {
-          const { data: profile } = await supabase.from('profiles').select('username, first_name, last_name').eq('id', msg.user_id).single();
+          const { data: profile } = await supabase.from('profiles_search').select('username, first_name, last_name').eq('id', msg.user_id).maybeSingle();
           return { ...msg, sender: profile || { username: null, first_name: null, last_name: null } };
         })
       );
@@ -193,16 +193,28 @@ export default function ConcertCommunityChat() {
   const loadMembers = async (cid: string) => {
     const { data } = await supabase
       .from('community_members')
-      .select('id, user_id, profiles:user_id(username, first_name, last_name)')
+      .select('id, user_id')
       .eq('community_id', cid);
 
     if (data) {
-      setMembers(data.map(m => ({
-        id: m.id, user_id: m.user_id,
-        username: (m.profiles as any)?.username || null,
-        first_name: (m.profiles as any)?.first_name || null,
-        last_name: (m.profiles as any)?.last_name || null,
-      })));
+      // El embed PostgREST no funciona sobre la vista profiles_search,
+      // así que resolvemos los perfiles en una segunda consulta.
+      const ids = data.map(m => m.user_id);
+      const { data: profs } = await supabase
+        .from('profiles_search')
+        .select('id, username, first_name, last_name')
+        .in('id', ids);
+      const byId = new Map((profs || []).map(p => [p.id, p]));
+
+      setMembers(data.map(m => {
+        const p = byId.get(m.user_id) as any;
+        return {
+          id: m.id, user_id: m.user_id,
+          username: p?.username || null,
+          first_name: p?.first_name || null,
+          last_name: p?.last_name || null,
+        };
+      }));
     }
   };
 
@@ -210,7 +222,7 @@ export default function ConcertCommunityChat() {
     const channel = supabase.channel(`community-messages-${cid}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'community_messages', filter: `community_id=eq.${cid}` },
         async (payload) => {
-          const { data: profileData } = await supabase.from('profiles').select('username, first_name, last_name').eq('id', payload.new.user_id).single();
+          const { data: profileData } = await supabase.from('profiles_search').select('username, first_name, last_name').eq('id', payload.new.user_id).maybeSingle();
           const newMsg: Message = { id: payload.new.id, message: payload.new.message, created_at: payload.new.created_at, user_id: payload.new.user_id, sender: profileData || { username: null, first_name: null, last_name: null } };
           setMessages(prev => prev.some(m => m.id === newMsg.id) ? prev : [...prev, newMsg]);
         }

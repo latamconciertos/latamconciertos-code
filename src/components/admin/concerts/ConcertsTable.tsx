@@ -9,6 +9,7 @@ interface ConcertsTableProps {
     artists: Artist[];
     venues: Venue[];
     onEdit: (concert: Concert) => void;
+    onDuplicate: (concert: Concert) => void;
     onDelete: (concert: Concert) => void;
     onToggleFeatured: (id: string, currentStatus: boolean) => void;
 }
@@ -18,6 +19,7 @@ export const ConcertsTable = ({
     artists,
     venues,
     onEdit,
+    onDuplicate,
     onDelete,
     onToggleFeatured,
 }: ConcertsTableProps) => {
@@ -54,6 +56,7 @@ export const ConcertsTable = ({
                                 artists={artists}
                                 venues={venues}
                                 onEdit={onEdit}
+                                onDuplicate={onDuplicate}
                                 onDelete={onDelete}
                                 onToggleFeatured={onToggleFeatured}
                             />

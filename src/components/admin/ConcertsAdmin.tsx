@@ -40,6 +40,7 @@ export const ConcertsAdmin = () => {
   const [promoters, setPromoters] = useState<Promoter[]>([]);
   const [cities, setCities] = useState<Array<{ id: string; name: string }>>([]);
   const [editingConcert, setEditingConcert] = useState<Concert | null>(null);
+  const [duplicateSource, setDuplicateSource] = useState<Concert | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [selectedFestivalArtists, setSelectedFestivalArtists] = useState<string[]>([]);
   const [deleteTarget, setDeleteTarget] = useState<Concert | null>(null);
@@ -190,10 +191,7 @@ export const ConcertsAdmin = () => {
     }
   };
 
-  const handleEdit = async (concert: Concert) => {
-    setEditingConcert(concert);
-
-    // Load festival artists if it's a festival
+  const loadFestivalArtists = async (concert: Concert) => {
     if (concert.event_type === 'festival') {
       const { data: festivalArtists } = await supabase
         .from('festival_artists')
@@ -201,13 +199,23 @@ export const ConcertsAdmin = () => {
         .eq('concert_id', concert.id)
         .order('position');
 
-      if (festivalArtists) {
-        setSelectedFestivalArtists(festivalArtists.map(fa => fa.artist_id));
-      }
+      setSelectedFestivalArtists(festivalArtists ? festivalArtists.map(fa => fa.artist_id) : []);
     } else {
       setSelectedFestivalArtists([]);
     }
+  };
 
+  const handleEdit = async (concert: Concert) => {
+    setDuplicateSource(null);
+    setEditingConcert(concert);
+    await loadFestivalArtists(concert);
+    setShowForm(true);
+  };
+
+  const handleDuplicate = async (concert: Concert) => {
+    setEditingConcert(null);
+    setDuplicateSource(concert);
+    await loadFestivalArtists(concert);
     setShowForm(true);
   };
 
@@ -228,6 +236,7 @@ export const ConcertsAdmin = () => {
   const resetForm = () => {
     setSelectedFestivalArtists([]);
     setEditingConcert(null);
+    setDuplicateSource(null);
     setShowForm(false);
   };
 
@@ -341,6 +350,7 @@ export const ConcertsAdmin = () => {
         artists={artists}
         venues={venues}
         onEdit={handleEdit}
+        onDuplicate={handleDuplicate}
         onDelete={handleDelete}
         onToggleFeatured={toggleFeatured}
       />
@@ -350,6 +360,7 @@ export const ConcertsAdmin = () => {
         open={showForm}
         onClose={resetForm}
         concert={editingConcert}
+        initialData={duplicateSource}
         artists={artists}
         venues={venues}
         promoters={promoters}

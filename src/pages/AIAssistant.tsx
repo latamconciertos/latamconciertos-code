@@ -170,14 +170,15 @@ const AIAssistant = () => {
       // Llamar a la Edge Function
       let response;
       try {
+        const { data: { session } } = await supabase.auth.getSession();
         response = await fetch(`https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/ai-concert-assistant`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
           },
           body: JSON.stringify({
             messages: [...messages, { role: 'user', content: userMessage }],
-            userId,
             conversationId: currentConversationId,
           })
         });

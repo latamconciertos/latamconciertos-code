@@ -1,8 +1,17 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Pencil, Trash2, Star, Music } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Pencil, Trash2, Star, Music, MoreHorizontal, ListMusic, Copy } from 'lucide-react';
 import { SetlistManager } from '../SetlistManager';
+import { useArtistImage } from '@/hooks/useArtistImage';
 import type { Concert, Artist, Venue } from './types';
 
 interface ConcertTableRowProps {
@@ -10,6 +19,7 @@ interface ConcertTableRowProps {
     artists: Artist[];
     venues: Venue[];
     onEdit: (concert: Concert) => void;
+    onDuplicate: (concert: Concert) => void;
     onDelete: (concert: Concert) => void;
     onToggleFeatured: (id: string, currentStatus: boolean) => void;
 }
@@ -19,6 +29,7 @@ export const ConcertTableRow = ({
     artists,
     venues,
     onEdit,
+    onDuplicate,
     onDelete,
     onToggleFeatured,
 }: ConcertTableRowProps) => {
@@ -59,15 +70,20 @@ export const ConcertTableRow = ({
     const artistName = getArtistName(concert.artist_id);
     const dateLabel = formatDate(concert.date);
 
+    const spotifyImage = useArtistImage(artistName);
+    const thumbnailUrl = spotifyImage ?? concert.image_url;
+
+    const [setlistOpen, setSetlistOpen] = useState(false);
+
     return (
         <div
             className="grid grid-cols-12 gap-4 px-4 py-2.5 items-center hover:bg-muted/40 transition-colors cursor-pointer"
             onClick={() => onEdit(concert)}
         >
             <div className="col-span-4 flex items-center gap-3 min-w-0">
-                {concert.image_url ? (
+                {thumbnailUrl ? (
                     <img
-                        src={concert.image_url}
+                        src={thumbnailUrl}
                         alt=""
                         className="w-10 h-10 rounded object-cover shrink-0"
                         loading="lazy"
@@ -113,68 +129,89 @@ export const ConcertTableRow = ({
                 )}
             </div>
 
-            <div className="col-span-2 flex justify-end gap-1">
-                <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleFeatured(concert.id, concert.is_featured);
-                    }}
-                    aria-label={concert.is_featured ? 'Quitar destacado' : 'Marcar destacado'}
-                >
-                    <Star
-                        className={`w-4 h-4 ${concert.is_featured ? 'fill-yellow-400 text-yellow-400' : ''}`}
-                    />
-                </Button>
-
-                <Dialog>
-                    <DialogTrigger asChild>
+            <div className="col-span-2 flex justify-end">
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
                         <Button
                             size="icon"
                             variant="ghost"
                             className="h-8 w-8 text-muted-foreground hover:text-foreground"
                             onClick={(e) => e.stopPropagation()}
-                            aria-label="Gestionar setlist"
+                            aria-label="Acciones"
                         >
-                            <Music className="w-4 h-4" />
+                            <MoreHorizontal className="w-4 h-4" />
                         </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                        <DialogHeader>
-                            <DialogTitle>Gestionar Setlist</DialogTitle>
-                        </DialogHeader>
-                        <SetlistManager concertId={concert.id} concertTitle={concert.title} />
-                    </DialogContent>
-                </Dialog>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                        <DropdownMenuItem
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onToggleFeatured(concert.id, concert.is_featured);
+                            }}
+                        >
+                            <Star
+                                className={`w-4 h-4 mr-2 ${concert.is_featured ? 'fill-yellow-400 text-yellow-400' : ''}`}
+                            />
+                            {concert.is_featured ? 'Quitar destacado' : 'Marcar destacado'}
+                        </DropdownMenuItem>
 
-                <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onEdit(concert);
-                    }}
-                    aria-label="Editar"
-                >
-                    <Pencil className="w-4 h-4" />
-                </Button>
+                        <DropdownMenuItem
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                setSetlistOpen(true);
+                            }}
+                        >
+                            <ListMusic className="w-4 h-4 mr-2" />
+                            Gestionar setlist
+                        </DropdownMenuItem>
 
-                <Button
-                    size="icon"
-                    variant="ghost"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onDelete(concert);
-                    }}
-                    aria-label="Eliminar"
-                >
-                    <Trash2 className="w-4 h-4" />
-                </Button>
+                        <DropdownMenuItem
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onEdit(concert);
+                            }}
+                        >
+                            <Pencil className="w-4 h-4 mr-2" />
+                            Editar
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDuplicate(concert);
+                            }}
+                        >
+                            <Copy className="w-4 h-4 mr-2" />
+                            Duplicar
+                        </DropdownMenuItem>
+
+                        <DropdownMenuSeparator />
+
+                        <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDelete(concert);
+                            }}
+                        >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Eliminar
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
+
+            <Dialog open={setlistOpen} onOpenChange={setSetlistOpen}>
+                <DialogContent
+                    className="max-w-4xl max-h-[80vh] overflow-y-auto"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <DialogHeader>
+                        <DialogTitle>Gestionar Setlist</DialogTitle>
+                    </DialogHeader>
+                    <SetlistManager concertId={concert.id} concertTitle={concert.title} />
+                </DialogContent>
+            </Dialog>
         </div>
     );
 };

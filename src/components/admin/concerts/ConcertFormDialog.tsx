@@ -17,6 +17,8 @@ interface ConcertFormDialogProps {
     open: boolean;
     onClose: () => void;
     concert: Concert | null;
+    /** When set (and concert is null), pre-fills the form from this concert to create a copy. */
+    initialData?: Concert | null;
     artists: Artist[];
     venues: Venue[];
     promoters: Promoter[];
@@ -48,6 +50,7 @@ export const ConcertFormDialog = ({
     open,
     onClose,
     concert,
+    initialData,
     artists,
     venues,
     promoters,
@@ -74,22 +77,27 @@ export const ConcertFormDialog = ({
         event_type: 'concert',
     });
 
+    // When duplicating, pre-fill everything except the date and slug so the
+    // copy is forced to differ (new show, same lineup/venue).
+    const isDuplicate = !concert && !!initialData;
+
     // Update form when concert changes
     useEffect(() => {
-        if (concert) {
+        const source = concert ?? initialData;
+        if (source) {
             setFormData({
-                title: concert.title,
-                slug: concert.slug,
-                description: concert.description || '',
-                date: concert.date || '',
-                image_url: concert.image_url || '',
-                ticket_url: concert.ticket_url || '',
-                ticket_prices_html: concert.ticket_prices_html || '',
-                spotify_embed_url: concert.spotify_embed_url || '',
-                artist_id: concert.artist_id || '',
-                venue_id: concert.venue_id || '',
-                promoter_id: concert.promoter_id || '',
-                event_type: concert.event_type || 'concert',
+                title: source.title,
+                slug: concert ? source.slug : '',
+                description: source.description || '',
+                date: concert ? (source.date || '') : '',
+                image_url: source.image_url || '',
+                ticket_url: source.ticket_url || '',
+                ticket_prices_html: source.ticket_prices_html || '',
+                spotify_embed_url: source.spotify_embed_url || '',
+                artist_id: source.artist_id || '',
+                venue_id: source.venue_id || '',
+                promoter_id: source.promoter_id || '',
+                event_type: source.event_type || 'concert',
             });
         } else {
             setFormData({
@@ -107,7 +115,7 @@ export const ConcertFormDialog = ({
                 event_type: 'concert',
             });
         }
-    }, [concert]);
+    }, [concert, initialData]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -161,8 +169,13 @@ export const ConcertFormDialog = ({
             <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
                 <DialogHeader>
                     <DialogTitle>
-                        {concert ? 'Editar Concierto' : 'Nuevo Concierto'}
+                        {concert ? 'Editar Concierto' : isDuplicate ? 'Duplicar Concierto' : 'Nuevo Concierto'}
                     </DialogTitle>
+                    {isDuplicate && (
+                        <p className="text-sm text-muted-foreground">
+                            Estás creando una copia de <strong>{initialData?.title}</strong>. Asígnale una nueva fecha para diferenciarla.
+                        </p>
+                    )}
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -206,13 +219,23 @@ export const ConcertFormDialog = ({
                             </Select>
                         </div>
                         <div>
-                            <Label htmlFor="date">Fecha del Evento</Label>
+                            <Label htmlFor="date">
+                                Fecha del Evento
+                                {isDuplicate && <span className="text-destructive ml-1">*</span>}
+                            </Label>
                             <Input
                                 id="date"
                                 type="date"
                                 value={formData.date}
                                 onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                                required={isDuplicate}
+                                className={isDuplicate && !formData.date ? 'border-destructive' : undefined}
                             />
+                            {isDuplicate && (
+                                <p className="text-xs text-muted-foreground mt-1">
+                                    Nueva fecha requerida para la copia
+                                </p>
+                            )}
                         </div>
                         {formData.event_type === 'concert' && (
                             <div>

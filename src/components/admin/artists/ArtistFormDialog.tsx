@@ -163,82 +163,40 @@ export const ArtistFormDialog = ({
                             </p>
                         </div>
 
-                        {/* Artist Selection Grid */}
+                        {/* Artist Selection List */}
                         {searchResults.length > 0 && (
-                            <div className="mb-6 p-4 border rounded-lg bg-gradient-to-br from-purple-50/50 to-blue-50/50 dark:from-purple-950/20 dark:to-blue-950/20">
+                            <div className="mb-6 p-4 border rounded-lg bg-muted/30">
                                 <Label className="text-base font-semibold mb-3 block">
                                     Selecciona el artista correcto ({searchResults.length} resultados)
                                 </Label>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-96 overflow-y-auto">
+                                <div className="flex flex-col gap-1.5 max-h-96 overflow-y-auto">
                                     {searchResults.map((artist) => (
-                                        <div
+                                        <button
+                                            type="button"
                                             key={artist.id}
                                             onClick={() => handleArtistSelect(artist)}
-                                            className="group relative p-3 border rounded-lg bg-background/80 backdrop-blur-sm cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-primary/50 hover:bg-gradient-to-br hover:from-purple-100/30 hover:to-blue-100/30 dark:hover:from-purple-900/30 dark:hover:to-blue-900/30"
+                                            className="flex items-center gap-3 p-2.5 border rounded-lg bg-background text-left transition-colors hover:border-primary/50 hover:bg-muted/50"
                                         >
-                                            <div className="flex items-start gap-3">
-                                                {/* Artist Image */}
-                                                <div className="relative flex-shrink-0">
-                                                    <img
-                                                        src={artist.images[0]?.url || 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop'}
-                                                        alt={artist.name}
-                                                        className="w-16 h-16 rounded-full object-cover ring-2 ring-border group-hover:ring-primary/50 transition-all"
-                                                        onError={(e) => {
-                                                            e.currentTarget.src = 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop';
-                                                        }}
-                                                    />
-                                                    {artist.popularity && artist.popularity > 70 && (
-                                                        <div className="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-lg">
-                                                            ⭐
-                                                        </div>
-                                                    )}
-                                                </div>
+                                            {/* Artist Image */}
+                                            <img
+                                                src={artist.images[0]?.url || 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop'}
+                                                alt={artist.name}
+                                                className="w-12 h-12 rounded-full object-cover flex-shrink-0 ring-1 ring-border"
+                                                onError={(e) => {
+                                                    e.currentTarget.src = 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop';
+                                                }}
+                                            />
 
-                                                {/* Artist Info */}
-                                                <div className="flex-1 min-w-0">
-                                                    <h4 className="font-semibold text-sm truncate group-hover:text-primary transition-colors">
-                                                        {artist.name}
-                                                    </h4>
-
-                                                    {/* Popularity */}
-                                                    {artist.popularity !== undefined && (
-                                                        <div className="flex items-center gap-1 mt-1">
-                                                            <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                                                                <div
-                                                                    className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full transition-all"
-                                                                    style={{ width: `${artist.popularity}%` }}
-                                                                />
-                                                            </div>
-                                                            <span className="text-xs text-muted-foreground font-medium">
-                                                                {artist.popularity}
-                                                            </span>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Genres */}
-                                                    {artist.genres && artist.genres.length > 0 && (
-                                                        <div className="flex flex-wrap gap-1 mt-2">
-                                                            {artist.genres.slice(0, 2).map((genre, idx) => (
-                                                                <span
-                                                                    key={idx}
-                                                                    className="text-xs px-2 py-0.5 bg-primary/10 text-primary rounded-full font-medium"
-                                                                >
-                                                                    {genre}
-                                                                </span>
-                                                            ))}
-                                                            {artist.genres.length > 2 && (
-                                                                <span className="text-xs text-muted-foreground">
-                                                                    +{artist.genres.length - 2}
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
+                                            {/* Artist Info */}
+                                            <div className="min-w-0">
+                                                <p className="font-medium text-sm">{artist.name}</p>
+                                                {artist.genres && artist.genres.length > 0 && (
+                                                    <p className="text-xs text-muted-foreground truncate">
+                                                        {artist.genres.slice(0, 3).join(' · ')}
+                                                    </p>
+                                                )}
                                             </div>
-
-                                            {/* Hover overlay indicator */}
-                                            <div className="absolute inset-0 rounded-lg border-2 border-primary opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
-                                        </div>
+                                        </button>
                                     ))}
                                 </div>
                             </div>
