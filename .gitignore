@@ -61,3 +61,6 @@ coverage/
 *.swo
 *~
 .cache
+
+# Supabase CLI cache (project refs, pooler URLs — not for VCS)
+supabase/.temp/
