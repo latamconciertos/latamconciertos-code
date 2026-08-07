@@ -8,6 +8,8 @@ import { formatDisplayDate } from '@/lib/timezone';
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { AdSenseUnit } from '@/components/ads/AdSenseUnit';
+import { AD_SLOTS } from '@/lib/adsense';
 import { parseContentWithMedia } from '@/lib/contentParser';
 import { SocialShare } from '@/components/SocialShare';
 import { sanitizeHTML } from '@/lib/sanitize';
@@ -388,6 +390,7 @@ const BlogPost = () => {
             )}
           </article>
 
+          <AdSenseUnit slot={AD_SLOTS.inArticle} format="fluid" layout="in-article" className="mt-10" />
 
           {/* Share rail */}
           <div className="mt-12 pt-6 border-t border-border/60">

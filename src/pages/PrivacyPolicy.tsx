@@ -61,6 +61,17 @@ const PrivacyPolicy = () => {
               <p className="mt-3">
                 Puedes configurar tu navegador para rechazar cookies, aunque esto puede afectar algunas funcionalidades del sitio.
               </p>
+              <p className="mt-3">
+                <strong>Publicidad de terceros:</strong> Utilizamos Google AdSense para mostrar anuncios. Google y sus socios usan cookies publicitarias (incluida la cookie de DoubleClick) para mostrar anuncios basados en tus visitas a este y otros sitios web. Puedes desactivar la publicidad personalizada en la{' '}
+                <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  configuración de anuncios de Google
+                </a>{' '}
+                o visitar{' '}
+                <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                  aboutads.info
+                </a>{' '}
+                para gestionar cookies de otros proveedores.
+              </p>
             </section>
 
             <section>

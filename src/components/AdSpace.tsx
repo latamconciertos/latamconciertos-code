@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { AdSenseUnit } from '@/components/ads/AdSenseUnit';
+import { AD_SLOTS } from '@/lib/adsense';
 
 interface AdSpaceProps {
   position: 'sidebar-left' | 'sidebar-right' | 'content' | 'footer';
@@ -96,8 +98,17 @@ export const AdSpace = ({ position, page }: AdSpaceProps) => {
     }
   };
 
-  // Don't render anything if there's no ad
-  if (!ad || loading) return null;
+  if (loading) return null;
+
+  // Sin anuncio directo vendido para esta posición: rellenar con AdSense
+  if (!ad) {
+    return (
+      <AdSenseUnit
+        slot={AD_SLOTS.display}
+        format={position === 'sidebar-left' || position === 'sidebar-right' ? 'rectangle' : 'auto'}
+      />
+    );
+  }
 
   const aspectRatio = ad.format === 'banner' ? 'aspect-[728/90]' : 'aspect-[300/250]';
   const sizeClass = position === 'sidebar-left' || position === 'sidebar-right' 

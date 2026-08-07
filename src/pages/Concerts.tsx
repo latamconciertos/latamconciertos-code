@@ -6,6 +6,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { AdSenseUnit } from '@/components/ads/AdSenseUnit';
+import { AD_SLOTS } from '@/lib/adsense';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { ConcertsFAQ } from '@/components/ConcertsFAQ';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
@@ -419,6 +421,7 @@ const Concerts = () => {
             </div>
           )}
 
+          <AdSenseUnit slot={AD_SLOTS.display} className="mb-16" />
 
           {/* Conciertos por País - Cards con Banderas */}
           <ConcertsCountryGrid />

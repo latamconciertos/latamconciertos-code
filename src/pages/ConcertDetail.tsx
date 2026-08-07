@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { AdSenseUnit } from '@/components/ads/AdSenseUnit';
+import { AD_SLOTS } from '@/lib/adsense';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import ConcertAttendanceButtons from '@/components/ConcertAttendanceButtons';
@@ -623,6 +625,7 @@ const ConcertDetail = () => {
               </div>
             </div>
 
+            <AdSenseUnit slot={AD_SLOTS.display} className="mt-12" />
           </div>
         </main>
 

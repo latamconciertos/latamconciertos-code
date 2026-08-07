@@ -11,6 +11,7 @@ import ProfileCompletionDialog from "@/components/profile/ProfileCompletionDialo
 import { useProfileCompletion } from "@/hooks/useProfileCompletion";
 import { useUserProfile, useProfileCountries, useProfileCities } from "@/hooks/queries/useProfile";
 import { supabase } from "@/integrations/supabase/client";
+import { loadAdSense } from "@/lib/adsense";
 
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
@@ -60,6 +61,10 @@ const AppContent = () => {
   useTrafficTracking();
   const location = useLocation();
   const [userId, setUserId] = useState<string | undefined>();
+
+  useEffect(() => {
+    loadAdSense();
+  }, []);
 
   // Get current user session
   useEffect(() => {

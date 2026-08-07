@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { AdSenseUnit } from '@/components/ads/AdSenseUnit';
+import { AD_SLOTS } from '@/lib/adsense';
 import HeroLanding from '@/components/HeroLanding';
 import { HeroCarousel } from '@/components/HeroCarousel';
 import { FeatureCards } from '@/components/FeatureCards';
@@ -72,6 +74,7 @@ const NewHome = () => {
                     {/* News by Category Section */}
                     <FeatureCards />
 
+                    <AdSenseUnit slot={AD_SLOTS.display} className="container mx-auto px-4 py-8" />
 
                     {/* Featured Artists Section with modern design and parallax scroll reveal */}
                     <motion.div
