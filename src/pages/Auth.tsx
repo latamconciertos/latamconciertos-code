@@ -10,7 +10,7 @@ import logo from '@/assets/logo-principal.png';
 import { authSchema } from '@/lib/validation';
 import { z } from 'zod';
 import { Eye, EyeOff } from 'lucide-react';
-import { AuroraBackground } from '@/components/ui/aurora-background';
+import { StadiumArcs } from '@/components/newhome/StadiumArcs';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -138,23 +138,35 @@ const Auth = () => {
   };
 
   return (
-    <AuroraBackground className="min-h-screen" showRadialGradient>
+    // "Evolución Nocturna": el login vive dentro del venue de noche
+    <div className="dark font-fira relative min-h-screen overflow-hidden bg-noche text-texto">
+      {/* Glow de escenario: cobalto en radial, nunca plano */}
+      <div
+        className="absolute left-1/2 top-[30%] h-[420px] w-[min(760px,90vw)] -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
+        style={{
+          background: 'radial-gradient(closest-side, rgba(0,74,173,.45), transparent 70%)',
+          filter: 'blur(110px)'
+        }}
+      />
+      {/* Elemento firma: arcos del isotipo en el horizonte */}
+      <StadiumArcs className="absolute inset-x-0 bottom-0 h-[50vh] w-full pointer-events-none" />
+
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
-        <Card className="w-full max-w-md bg-card/80 backdrop-blur-sm border-border/50">
+        <Card className="w-full max-w-md rounded-[20px] border-linea bg-superficie">
           <CardHeader className="space-y-4">
             <div className="flex justify-center">
               <img src={logo} alt="Conciertos LATAM" className="h-40 w-auto" decoding="async" width={160} height={160} />
             </div>
-            <CardTitle className="text-2xl text-center">
-              {isLogin ? 'Iniciar Sesión' : 'Registrarse'}
+            <CardTitle className="font-display text-3xl font-extrabold uppercase tracking-[0.01em] text-center text-texto">
+              {isLogin ? 'Iniciar sesión' : 'Unirme gratis'}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {/* Google Sign-In Button */}
+            {/* Google Sign-In Button — variante oscura oficial, el logo multicolor es identidad de Google */}
             <Button
               type="button"
               variant="outline"
-              className="w-full h-12 bg-white hover:bg-gray-50 text-gray-700 border-gray-300 font-medium mb-4"
+              className="w-full h-12 rounded-full bg-superficie-2 hover:bg-superficie-2/70 text-texto border-linea font-medium mb-4"
               onClick={handleGoogleSignIn}
               disabled={loading}
             >
@@ -182,10 +194,10 @@ const Auth = () => {
             {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
+                <span className="w-full border-t border-linea" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">
+                <span className="bg-superficie px-2 text-texto-2">
                   o continúa con email
                 </span>
               </div>
@@ -201,7 +213,7 @@ const Auth = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  className="bg-background/50"
+                  className="h-11 rounded-full bg-superficie-2 border-linea focus-visible:ring-periwinkle px-4"
                 />
               </div>
               <div className="space-y-2">
@@ -213,25 +225,30 @@ const Auth = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="pr-10 bg-background/50"
+                    className="h-11 rounded-full bg-superficie-2 border-linea focus-visible:ring-periwinkle px-4 pr-11"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-texto-2 hover:text-texto transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? 'Cargando...' : (isLogin ? 'Iniciar Sesión' : 'Registrarse')}
+              <Button
+                type="submit"
+                className="w-full h-11 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(0,74,173,.55)]"
+                disabled={loading}
+              >
+                {loading ? 'Cargando...' : (isLogin ? 'Iniciar sesión' : 'Unirme gratis')}
               </Button>
             </form>
 
             <div className="mt-6 text-center">
               <Button
                 variant="link"
+                className="text-periwinkle hover:text-azul-claro"
                 onClick={() => setIsLogin(!isLogin)}
               >
                 {isLogin ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'}
@@ -240,7 +257,7 @@ const Auth = () => {
           </CardContent>
         </Card>
       </div>
-    </AuroraBackground>
+    </div>
   );
 };
 

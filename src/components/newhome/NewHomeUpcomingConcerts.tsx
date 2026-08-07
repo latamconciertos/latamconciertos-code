@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { Calendar, ArrowRight, MapPin, Ticket, Users } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { SectionHeader } from './SectionHeader';
+import { StadiumArcs } from './StadiumArcs';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ModernConcertCard } from './ModernConcertCard';
 import { useUpcomingConcerts } from '@/hooks/queries';
@@ -93,7 +93,7 @@ export const NewHomeUpcomingConcerts = () => {
 
     if (isLoading) {
         return (
-            <section className="w-full py-16 md:py-20 bg-background">
+            <section className="w-full py-12 md:py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-center">
                         <LoadingSpinnerInline />
@@ -108,26 +108,19 @@ export const NewHomeUpcomingConcerts = () => {
     }
 
     return (
-        <section className="w-full py-8 md:py-12 bg-background">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="text-center mb-12"
-                >
-                    <Badge className="bg-primary text-primary-foreground hover:bg-primary text-base px-4 py-1.5 font-bold font-fira mb-4">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        Próximos Conciertos
-                    </Badge>
-                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 font-fira">
-                        Próximos conciertos
-                    </h2>
-                    <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-                        Los conciertos más esperados de Latinoamérica
-                    </p>
-                </motion.div>
+        <section className="relative w-full py-12 md:py-16 overflow-hidden">
+            {/* Aparición secundaria del elemento firma */}
+            <StadiumArcs
+                variant="mini"
+                className="absolute top-0 right-0 w-[400px] h-[200px] pointer-events-none hidden lg:block"
+            />
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <SectionHeader
+                    eyebrow="Agenda"
+                    title="Próximos conciertos"
+                    subtitle="Los shows más esperados de Latinoamérica, con fechas y entradas."
+                    action={{ label: 'Ver todos los conciertos', to: '/concerts' }}
+                />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {displayConcerts.map((concert) => (
@@ -192,7 +185,7 @@ export const NewHomeUpcomingConcerts = () => {
                                                 <div className="flex gap-3">
                                                     <Button
                                                         variant="outline"
-                                                        className="flex-1 rounded-xl h-11 text-sm font-semibold"
+                                                        className="flex-1 rounded-full h-11 text-sm font-semibold border-linea bg-transparent hover:bg-superficie-2"
                                                         asChild
                                                     >
                                                         <Link to={`/concerts/${selectedConcert.slug}`}>
@@ -201,7 +194,7 @@ export const NewHomeUpcomingConcerts = () => {
                                                         </Link>
                                                     </Button>
                                                     {selectedConcert.ticket_url && (
-                                                        <Button className="flex-1 rounded-xl h-11 text-sm font-semibold" asChild>
+                                                        <Button className="flex-1 rounded-full h-11 text-sm font-semibold border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95" asChild>
                                                             <a
                                                                 href={withTicketTracking(selectedConcert.ticket_url)}
                                                                 target="_blank"
@@ -218,7 +211,7 @@ export const NewHomeUpcomingConcerts = () => {
                                             {/* Community section */}
                                             <div className="border-t border-border/40 px-5 py-4">
                                                 <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                                                    <Users className="h-4 w-4 text-primary" />
+                                                    <Users className="h-4 w-4 text-periwinkle" />
                                                     Comunidad
                                                 </h3>
                                                 <ConcertCommunity
@@ -233,20 +226,6 @@ export const NewHomeUpcomingConcerts = () => {
                         </Dialog>
                     ))}
                 </div>
-
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    whileInView={{ opacity: 1 }}
-                    viewport={{ once: true }}
-                    className="mt-12 text-center"
-                >
-                    <Button asChild variant="outline" size="lg" className="rounded-lg px-6 py-3">
-                        <Link to="/concerts">
-                            Ver todos los conciertos
-                            <ArrowRight className="ml-2 h-5 w-5" />
-                        </Link>
-                    </Button>
-                </motion.div>
             </div>
         </section>
     );

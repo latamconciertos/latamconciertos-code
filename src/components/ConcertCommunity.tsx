@@ -123,9 +123,9 @@ const ConcertCommunity = ({ concertId, concertTitle }: ConcertCommunityProps) =>
 
   if (loading) {
     return (
-      <Card>
+      <Card className="rounded-[20px] border-linea bg-superficie">
         <CardContent className="flex items-center justify-center p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-periwinkle"></div>
         </CardContent>
       </Card>
     );
@@ -133,10 +133,10 @@ const ConcertCommunity = ({ concertId, concertTitle }: ConcertCommunityProps) =>
 
   if (!isMember) {
     return (
-      <Card>
+      <Card className="rounded-[20px] border-linea bg-superficie">
         <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
           <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-periwinkle" />
             Comunidad del concierto
           </CardTitle>
           <CardDescription className="text-xs sm:text-sm">
@@ -151,7 +151,7 @@ const ConcertCommunity = ({ concertId, concertTitle }: ConcertCommunityProps) =>
                 ? `${memberCount} miembros en la comunidad`
                 : 'Coordina transporte, filas y proyectos de fans con otros asistentes'}
             </p>
-            <Button onClick={joinCommunity} disabled={loading} className="w-full" size="sm">
+            <Button onClick={joinCommunity} disabled={loading} className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95" size="sm">
               Unirse a la Comunidad
             </Button>
           </div>
@@ -161,14 +161,14 @@ const ConcertCommunity = ({ concertId, concertTitle }: ConcertCommunityProps) =>
   }
 
   return (
-    <Card>
+    <Card className="rounded-[20px] border-linea bg-superficie">
       <CardHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
         <CardTitle className="flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2 text-base sm:text-lg">
-            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+            <Users className="h-4 w-4 sm:h-5 sm:w-5 text-periwinkle" />
             Comunidad del concierto
           </div>
-          <Button onClick={openFullChat} size="sm" className="text-xs sm:text-sm">
+          <Button onClick={openFullChat} variant="outline" size="sm" className="text-xs sm:text-sm rounded-full border-linea bg-transparent hover:bg-superficie-2">
             <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
             Abrir Chat
           </Button>

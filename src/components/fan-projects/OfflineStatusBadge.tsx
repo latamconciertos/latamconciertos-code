@@ -56,31 +56,31 @@ export const OfflineStatusBadge = ({
                     icon: Loader2,
                     text: 'Verificando...',
                     variant: 'secondary' as const,
-                    className: 'bg-gray-100 text-gray-700',
+                    className: 'bg-superficie-2 text-texto-2 border border-linea',
                     iconClassName: 'animate-spin',
                 };
             case 'ready':
                 return {
                     icon: CheckCircle2,
-                    text: '✅ Listo sin internet',
+                    text: 'Listo sin internet',
                     variant: 'default' as const,
-                    className: 'bg-green-500 text-white hover:bg-green-600',
+                    className: 'bg-verde/15 text-verde border border-verde/30 hover:bg-verde/20',
                     iconClassName: '',
                 };
             case 'not-ready':
                 return {
                     icon: AlertTriangle,
-                    text: '⚠️ Requiere precargar',
+                    text: 'Requiere precargar',
                     variant: 'secondary' as const,
-                    className: 'bg-yellow-500 text-white hover:bg-yellow-600',
+                    className: 'bg-superficie text-texto-2 border border-linea hover:bg-superficie-2',
                     iconClassName: '',
                 };
             case 'error':
                 return {
                     icon: XCircle,
-                    text: '❌ Error de verificación',
+                    text: 'Error de verificación',
                     variant: 'destructive' as const,
-                    className: 'bg-red-500 text-white',
+                    className: 'bg-destructive/15 text-destructive border border-destructive/30',
                     iconClassName: '',
                 };
         }

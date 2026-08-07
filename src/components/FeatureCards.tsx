@@ -4,9 +4,9 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { Badge } from './ui/badge';
 import { formatShortDate } from '@/lib/timezone';
 import { ArrowRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { SectionHeader } from './newhome/SectionHeader';
 
 interface NewsArticle {
     id: string;
@@ -94,10 +94,10 @@ export const FeatureCards = () => {
 
     if (isLoading || categoriesWithArticles.length === 0) {
         return (
-            <section className="w-full py-16 md:py-20 bg-background">
+            <section className="w-full py-12 md:py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-periwinkle mx-auto"></div>
                     </div>
                 </div>
             </section>
@@ -105,26 +105,14 @@ export const FeatureCards = () => {
     }
 
     return (
-        <section className="w-full py-16 md:py-20 bg-background">
+        <section className="w-full py-12 md:py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Section Header */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.6 }}
-                    className="text-center mb-12"
-                >
-                    <Badge className="bg-primary text-primary-foreground hover:bg-primary text-base px-4 py-1.5 font-bold font-fira mb-4">
-                        Categorías de Noticias
-                    </Badge>
-                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 font-fira">
-                        Últimas Noticias
-                    </h2>
-                    <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                        Mantente informado con las noticias más recientes del mundo musical
-                    </p>
-                </motion.div>
+                <SectionHeader
+                    eyebrow="Noticias"
+                    title="Las historias detrás de cada show"
+                    subtitle="Lo que está pasando en el mundo de la música en vivo."
+                    action={{ label: 'Ver todas las noticias', to: '/blog' }}
+                />
 
                 {/* Category Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
@@ -136,22 +124,22 @@ export const FeatureCards = () => {
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: index * 0.1 }}
                         >
-                            <Card className="h-full hover:shadow-xl transition-all duration-300 border-primary/10 hover:border-primary/30">
+                            <Card className="h-full rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300">
                                 <CardHeader className="pb-3">
                                     <div className="flex items-center justify-between mb-2">
-                                        <CardTitle className="text-2xl font-bold font-fira text-primary">
+                                        <CardTitle className="font-display text-2xl font-extrabold uppercase tracking-[0.01em] text-texto">
                                             {category.name}
                                         </CardTitle>
                                         {/* Mobile toggle button */}
                                         <button
                                             onClick={() => toggleCard(category.id)}
-                                            className="md:hidden p-2 hover:bg-muted rounded-full transition-colors"
+                                            className="md:hidden p-2 hover:bg-superficie-2 rounded-full transition-colors"
                                             aria-label={expandedCards[category.id] ? "Colapsar" : "Expandir"}
                                         >
                                             {expandedCards[category.id] ? (
-                                                <ChevronUp className="h-5 w-5 text-primary" />
+                                                <ChevronUp className="h-5 w-5 text-periwinkle" />
                                             ) : (
-                                                <ChevronDown className="h-5 w-5 text-primary" />
+                                                <ChevronDown className="h-5 w-5 text-periwinkle" />
                                             )}
                                         </button>
                                     </div>
@@ -191,7 +179,7 @@ export const FeatureCards = () => {
                                                                         <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
                                                                     </div>
                                                                 )}
-                                                                <h3 className="font-bold text-base text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors mb-2">
+                                                                <h3 className="font-bold text-base text-foreground leading-tight line-clamp-2 group-hover:text-periwinkle transition-colors mb-2">
                                                                     {category.articles[0].title}
                                                                 </h3>
                                                                 {category.articles[0].meta_description && (
@@ -211,7 +199,7 @@ export const FeatureCards = () => {
                                                                     to={`/blog/${article.slug}`}
                                                                     className="block group border-t border-border pt-3"
                                                                 >
-                                                                    <h4 className="font-semibold text-sm text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors mb-1">
+                                                                    <h4 className="font-semibold text-sm text-foreground leading-tight line-clamp-2 group-hover:text-periwinkle transition-colors mb-1">
                                                                         {article.title}
                                                                     </h4>
                                                                     <p className="text-xs text-muted-foreground">
@@ -223,7 +211,7 @@ export const FeatureCards = () => {
                                                             {/* View all link */}
                                                             <Link
                                                                 to={`/blog?category=${category.slug}`}
-                                                                className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors pt-2"
+                                                                className="flex items-center gap-2 text-sm font-semibold text-periwinkle hover:text-azul-claro transition-colors pt-2"
                                                             >
                                                                 Ver todas en {category.name}
                                                                 <ArrowRight className="h-4 w-4" />
@@ -260,7 +248,7 @@ export const FeatureCards = () => {
                                                                 <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
                                                             </div>
                                                         )}
-                                                        <h3 className="font-bold text-base text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors mb-2">
+                                                        <h3 className="font-bold text-base text-foreground leading-tight line-clamp-2 group-hover:text-periwinkle transition-colors mb-2">
                                                             {category.articles[0].title}
                                                         </h3>
                                                         {category.articles[0].meta_description && (
@@ -280,7 +268,7 @@ export const FeatureCards = () => {
                                                             to={`/blog/${article.slug}`}
                                                             className="block group border-t border-border pt-3"
                                                         >
-                                                            <h4 className="font-semibold text-sm text-foreground leading-tight line-clamp-2 group-hover:text-primary transition-colors mb-1">
+                                                            <h4 className="font-semibold text-sm text-foreground leading-tight line-clamp-2 group-hover:text-periwinkle transition-colors mb-1">
                                                                 {article.title}
                                                             </h4>
                                                             <p className="text-xs text-muted-foreground">
@@ -292,7 +280,7 @@ export const FeatureCards = () => {
                                                     {/* View all link */}
                                                     <Link
                                                         to={`/blog?category=${category.slug}`}
-                                                        className="flex items-center gap-2 text-sm font-semibold text-primary hover:text-primary/80 transition-colors pt-2"
+                                                        className="flex items-center gap-2 text-sm font-semibold text-periwinkle hover:text-azul-claro transition-colors pt-2"
                                                     >
                                                         Ver todas en {category.name}
                                                         <ArrowRight className="h-4 w-4" />
@@ -311,22 +299,6 @@ export const FeatureCards = () => {
                     ))}
                 </div>
 
-                {/* View all news button */}
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.4 }}
-                    className="text-center mt-12"
-                >
-                    <Link
-                        to="/blog"
-                        className="inline-flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold px-6 py-3 text-base rounded-lg transition-all hover:scale-105"
-                    >
-                        Ver Todas las Noticias
-                        <ArrowRight className="h-5 w-5" />
-                    </Link>
-                </motion.div>
             </div>
         </section>
     );

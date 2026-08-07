@@ -276,18 +276,19 @@ const AIAssistant = () => {
         keywords="asistente IA, chatbot conciertos, recomendaciones eventos, asistente virtual música"
         url="/ai-assistant"
       />
-      <div className="h-screen bg-background flex flex-col overflow-hidden">
+      {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+      <div className="dark font-fira h-screen min-h-screen bg-noche text-texto flex flex-col overflow-hidden">
         <Header />
 
         <main className="flex-1 flex pt-20 md:pt-24 overflow-hidden">
           {/* Sidebar para desktop */}
-          <aside className="hidden lg:flex w-64 border-r border-border bg-card/50 flex-col h-full">
+          <aside className="hidden lg:flex w-64 border-r border-linea bg-superficie/50 flex-col h-full">
             <ConversationSidebar {...sidebarProps} variant="desktop" />
           </aside>
 
           {/* Sidebar móvil */}
           <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-            <SheetContent side="left" className="w-[280px] p-0 flex flex-col">
+            <SheetContent side="left" className="dark font-fira w-[280px] p-0 flex flex-col bg-noche text-texto border-linea">
               <ConversationSidebar
                 {...sidebarProps}
                 variant="mobile"
@@ -302,11 +303,11 @@ const AIAssistant = () => {
               <div className="max-w-4xl mx-auto h-full flex flex-col">
                 {/* Mensaje de autenticación requerida */}
                 {!userId && (
-                  <Card className="mb-6 border-primary/50 bg-primary/5">
+                  <Card className="mb-6 rounded-[20px] border-linea bg-superficie">
                     <CardContent className="p-4 md:p-6">
                       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div className="flex items-center gap-3">
-                          <LogIn className="h-6 w-6 text-primary shrink-0" />
+                          <LogIn className="h-6 w-6 text-periwinkle shrink-0" />
                           <div>
                             <h3 className="font-semibold text-foreground">Inicia sesión para continuar</h3>
                             <p className="text-sm text-muted-foreground">
@@ -314,7 +315,7 @@ const AIAssistant = () => {
                             </p>
                           </div>
                         </div>
-                        <Button onClick={() => navigate('/auth')} className="w-full sm:w-auto">
+                        <Button onClick={() => navigate('/auth')} className="w-full sm:w-auto rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95">
                           Iniciar Sesión
                         </Button>
                       </div>
@@ -334,7 +335,7 @@ const AIAssistant = () => {
                   <>
                     {/* Botón menú móvil para chat activo */}
                     <div className="lg:hidden mb-3">
-                      <Button variant="outline" size="icon" onClick={() => setIsSidebarOpen(true)}>
+                      <Button variant="outline" size="icon" onClick={() => setIsSidebarOpen(true)} className="rounded-full border-linea bg-transparent hover:bg-superficie-2">
                         <Menu className="h-5 w-5" />
                       </Button>
                     </div>

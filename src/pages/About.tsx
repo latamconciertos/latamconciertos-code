@@ -125,21 +125,25 @@ const About = () => {
         url="/about"
         structuredData={structuredData}
       />
-      <div className="min-h-screen bg-background">
+      {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
-        
+
         <main className="pt-24 md:pt-28 pb-12">
           {/* Editorial Hero */}
           <section aria-labelledby="about-hero-heading" className="container mx-auto px-4 mt-6 mb-16 md:mb-24">
             <div className="text-center max-w-4xl mx-auto">
-              <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-3">
+              <span className="eyebrow-nocturno mb-3">
                 La comunidad musical de Latinoamérica
-              </p>
+              </span>
               <h1
                 id="about-hero-heading"
-                className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.015em] leading-[0.92] text-foreground text-balance mb-5 md:mb-6"
+                className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[0.01em] leading-[0.92] text-foreground text-balance mb-5 md:mb-6"
               >
-                Acerca de Conciertos Latam
+                Acerca de{' '}
+                <span className="bg-gradient-to-r from-periwinkle to-verde bg-clip-text text-transparent">
+                  Conciertos Latam
+                </span>
               </h1>
               <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-8 md:mb-10">
                 Somos la plataforma editorial líder de música en vivo en América Latina. Más de 50,000 fans nos eligen para descubrir, comprar entradas y vivir conciertos en 16 países de la región.
@@ -148,7 +152,7 @@ const About = () => {
               {/* Stats inline editorial */}
               <div className="flex flex-wrap justify-center gap-x-10 md:gap-x-14 gap-y-4 mb-8 md:mb-10">
                 <div className="flex flex-col items-center min-w-[90px]">
-                  <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+                  <span className="font-display text-3xl md:text-4xl font-black text-verde tracking-[0.01em] leading-none">
                     50K+
                   </span>
                   <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
@@ -156,7 +160,7 @@ const About = () => {
                   </span>
                 </div>
                 <div className="flex flex-col items-center min-w-[90px]">
-                  <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+                  <span className="font-display text-3xl md:text-4xl font-black text-verde tracking-[0.01em] leading-none">
                     16
                   </span>
                   <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
@@ -164,7 +168,7 @@ const About = () => {
                   </span>
                 </div>
                 <div className="flex flex-col items-center min-w-[90px]">
-                  <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+                  <span className="font-display text-3xl md:text-4xl font-black text-verde tracking-[0.01em] leading-none">
                     2024
                   </span>
                   <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
@@ -173,20 +177,20 @@ const About = () => {
                 </div>
               </div>
 
-              <Button size="lg" className="rounded-full px-8 font-bold uppercase tracking-[0.15em] text-xs">
+              <Button size="lg" className="rounded-full px-8 font-bold uppercase tracking-[0.15em] text-xs border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95">
                 Únete a la comunidad
               </Button>
             </div>
           </section>
 
           {/* Mission / Vision / Community / Coverage */}
-          <section className="py-12 md:py-16 bg-background border-t border-border/40">
+          <section className="py-12 md:py-16 border-t border-linea">
             <div className="container mx-auto px-4">
               <div className="text-center max-w-2xl mx-auto mb-10 md:mb-12">
-                <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-2">
+                <span className="eyebrow-nocturno mb-2">
                   Lo que hacemos
-                </p>
-                <h2 className="font-display uppercase text-3xl md:text-4xl font-black tracking-tight leading-[0.95] text-foreground mb-3">
+                </span>
+                <h2 className="font-display uppercase text-3xl md:text-4xl font-black tracking-[0.01em] leading-[0.95] text-foreground mb-3">
                   Música en vivo, sin filtros
                 </h2>
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
@@ -201,13 +205,13 @@ const About = () => {
                   { icon: Users, title: 'Comunidad', desc: 'Una comunidad apasionada por la música que comparte experiencias, recomendaciones y descubre nuevos artistas cada día.' },
                   { icon: Globe, title: 'Cobertura', desc: 'México, Colombia, Argentina, Chile, Perú, Brasil, Uruguay, Ecuador, Costa Rica, Guatemala, Panamá, República Dominicana y más.' },
                 ].map(({ icon: Icon, title, desc }) => (
-                  <Card key={title} className="border-border/60 bg-card hover:border-primary/30 transition-colors">
+                  <Card key={title} className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-colors">
                     <CardContent className="p-5 md:p-6">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="bg-primary/10 p-2 rounded-lg">
-                          <Icon className="h-4 w-4 text-primary" />
+                        <div className="bg-periwinkle/10 p-2 rounded-lg">
+                          <Icon className="h-4 w-4 text-periwinkle" />
                         </div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-periwinkle">
                           {title}
                         </p>
                       </div>
@@ -222,13 +226,13 @@ const About = () => {
           </section>
 
           {/* Team Section — balanced, editorial, schema-anchored */}
-          <section className="py-12 md:py-16 bg-gradient-to-br from-secondary/5 via-background to-primary/5 border-y border-border/40">
+          <section className="py-12 md:py-16 bg-superficie/40 border-y border-linea">
             <div className="container mx-auto px-4">
               <div className="text-center max-w-2xl mx-auto mb-8 md:mb-10">
-                <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-2">
+                <span className="eyebrow-nocturno mb-2">
                   Quiénes somos
-                </p>
-                <h2 className="font-display uppercase text-3xl md:text-4xl font-black tracking-tight leading-[0.95] text-foreground mb-3">
+                </span>
+                <h2 className="font-display uppercase text-3xl md:text-4xl font-black tracking-[0.01em] leading-[0.95] text-foreground mb-3">
                   El equipo fundador
                 </h2>
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
@@ -243,19 +247,19 @@ const About = () => {
                     id={person.anchor}
                     itemScope
                     itemType="https://schema.org/Person"
-                    className="bg-card border border-border/60 rounded-2xl p-5 md:p-6 hover:border-primary/30 transition-colors"
+                    className="bg-superficie border border-linea rounded-[20px] p-5 md:p-6 hover:border-[rgba(89,124,255,.35)] transition-colors"
                   >
                     <link itemProp="url" href={`${SITE_URL}/about#${person.anchor}`} />
                     <div className="flex items-start gap-4">
                       <div
-                        className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-xl overflow-hidden bg-gradient-to-br from-primary/20 to-primary/5 ring-1 ring-border/60 flex items-center justify-center"
+                        className="flex-shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-2xl overflow-hidden bg-superficie-2 ring-1 ring-linea flex items-center justify-center"
                         itemProp="image"
                       >
                         {/* TODO: Replace with real photo */}
-                        <Users className="h-7 w-7 md:h-9 md:w-9 text-primary/40" aria-hidden="true" />
+                        <Users className="h-7 w-7 md:h-9 md:w-9 text-periwinkle/40" aria-hidden="true" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary mb-1">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-periwinkle mb-1">
                           <span itemProp="jobTitle">{person.role}</span>
                         </p>
                         <h3 className="font-bold text-base md:text-lg text-foreground leading-tight" itemProp="name">
@@ -267,13 +271,13 @@ const About = () => {
                       {person.bio}
                     </p>
                     {person.links.linkedin && (
-                      <div className="mt-4 pt-4 border-t border-border/50">
+                      <div className="mt-4 pt-4 border-t border-linea">
                         <a
                           href={person.links.linkedin}
                           target="_blank"
                           rel="noopener noreferrer me"
                           itemProp="sameAs"
-                          className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1.5"
+                          className="text-[11px] font-bold uppercase tracking-[0.15em] text-texto-2 hover:text-periwinkle transition-colors inline-flex items-center gap-1.5"
                         >
                           LinkedIn →
                         </a>
@@ -290,13 +294,13 @@ const About = () => {
           </section>
 
           {/* Values Section */}
-          <section className="py-12 md:py-16 bg-background border-t border-border/40">
+          <section className="py-12 md:py-16 border-t border-linea">
             <div className="container mx-auto px-4 max-w-4xl">
               <div className="text-center mb-10 md:mb-12">
-                <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-2">
+                <span className="eyebrow-nocturno mb-2">
                   Lo que nos impulsa
-                </p>
-                <h2 className="font-display uppercase text-3xl md:text-4xl font-black tracking-tight leading-[0.95] text-foreground">
+                </span>
+                <h2 className="font-display uppercase text-3xl md:text-4xl font-black tracking-[0.01em] leading-[0.95] text-foreground">
                   Nuestros valores
                 </h2>
               </div>
@@ -307,13 +311,13 @@ const About = () => {
                   { icon: Users, title: 'Comunidad', desc: 'Fomentamos el diálogo y la conexión entre fans de toda América Latina.' },
                   { icon: Heart, title: 'Pasión', desc: 'Amor genuino por la música y la cultura en vivo que se refleja en cada detalle.' },
                 ].map(({ icon: Icon, title, desc }) => (
-                  <Card key={title} className="border-border/60 bg-card hover:border-primary/30 transition-colors group">
+                  <Card key={title} className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-colors group">
                     <CardContent className="p-5 md:p-6">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className="bg-primary/10 p-2 rounded-lg group-hover:bg-primary/20 transition-colors">
-                          <Icon className="h-4 w-4 text-primary" />
+                        <div className="bg-periwinkle/10 p-2 rounded-lg group-hover:bg-periwinkle/20 transition-colors">
+                          <Icon className="h-4 w-4 text-periwinkle" />
                         </div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+                        <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-periwinkle">
                           {title}
                         </p>
                       </div>
@@ -328,13 +332,13 @@ const About = () => {
           </section>
 
           {/* FAQ Section */}
-          <section className="py-12 md:py-16 bg-gradient-to-br from-secondary/5 via-background to-primary/5 border-t border-border/40">
+          <section className="py-12 md:py-16 bg-superficie/40 border-t border-linea">
             <div className="container mx-auto px-4 max-w-3xl">
               <div className="text-center mb-10 md:mb-12">
-                <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-2">
+                <span className="eyebrow-nocturno mb-2">
                   Preguntas frecuentes
-                </p>
-                <h2 className="font-display uppercase text-3xl md:text-4xl font-black tracking-tight leading-[0.95] text-foreground mb-3">
+                </span>
+                <h2 className="font-display uppercase text-3xl md:text-4xl font-black tracking-[0.01em] leading-[0.95] text-foreground mb-3">
                   ¿Qué es Conciertos Latam?
                 </h2>
                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
@@ -343,7 +347,7 @@ const About = () => {
               </div>
 
               <Accordion type="single" collapsible className="space-y-3">
-                <AccordionItem value="item-1" className="border border-border/60 rounded-xl px-5 bg-card">
+                <AccordionItem value="item-1" className="border border-linea rounded-[20px] px-6 bg-superficie hover:bg-superficie-2 transition-colors">
                   <AccordionTrigger className="text-left text-sm md:text-base font-bold">
                     ¿Qué encontrarás en Conciertos Latam?
                   </AccordionTrigger>
@@ -358,7 +362,7 @@ const About = () => {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="item-2" className="border border-border/60 rounded-xl px-5 bg-card">
+                <AccordionItem value="item-2" className="border border-linea rounded-[20px] px-6 bg-superficie hover:bg-superficie-2 transition-colors">
                   <AccordionTrigger className="text-left text-sm md:text-base font-bold">
                     ¿En qué venues puedo encontrar eventos?
                   </AccordionTrigger>
@@ -367,7 +371,7 @@ const About = () => {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="item-3" className="border border-border/60 rounded-xl px-5 bg-card">
+                <AccordionItem value="item-3" className="border border-linea rounded-[20px] px-6 bg-superficie hover:bg-superficie-2 transition-colors">
                   <AccordionTrigger className="text-left text-sm md:text-base font-bold">
                     ¿Qué tipos de eventos cubren?
                   </AccordionTrigger>
@@ -376,7 +380,7 @@ const About = () => {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="item-4" className="border border-border/60 rounded-xl px-5 bg-card">
+                <AccordionItem value="item-4" className="border border-linea rounded-[20px] px-6 bg-superficie hover:bg-superficie-2 transition-colors">
                   <AccordionTrigger className="text-left text-sm md:text-base font-bold">
                     ¿Qué países cubren?
                   </AccordionTrigger>
@@ -385,7 +389,7 @@ const About = () => {
                   </AccordionContent>
                 </AccordionItem>
 
-                <AccordionItem value="item-5" className="border border-border/60 rounded-xl px-5 bg-card">
+                <AccordionItem value="item-5" className="border border-linea rounded-[20px] px-6 bg-superficie hover:bg-superficie-2 transition-colors">
                   <AccordionTrigger className="text-left text-sm md:text-base font-bold">
                     ¿Cómo puedo comprar entradas?
                   </AccordionTrigger>
@@ -398,12 +402,12 @@ const About = () => {
           </section>
 
           {/* Contact Section */}
-          <section className="py-16 md:py-24 bg-background border-t border-border/40">
+          <section className="py-16 md:py-24 border-t border-linea">
             <div className="container mx-auto px-4 max-w-2xl text-center">
-              <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-3">
+              <span className="eyebrow-nocturno mb-3">
                 Hablemos
-              </p>
-              <h2 className="font-display uppercase text-3xl md:text-4xl font-black tracking-tight leading-[0.95] text-foreground mb-4">
+              </span>
+              <h2 className="font-display uppercase text-3xl md:text-4xl font-black tracking-[0.01em] leading-[0.95] text-foreground mb-4">
                 ¿Quieres colaborar?
               </h2>
               <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto">
@@ -412,12 +416,12 @@ const About = () => {
               <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
                 <a
                   href="mailto:latamconciertos@gmail.com"
-                  className="text-primary hover:underline font-semibold text-sm"
+                  className="text-periwinkle hover:underline font-semibold text-sm"
                 >
                   latamconciertos@gmail.com
                 </a>
                 <span className="hidden sm:inline text-muted-foreground/40">·</span>
-                <Button size="lg" className="rounded-full px-8 font-bold uppercase tracking-[0.15em] text-xs">
+                <Button size="lg" className="rounded-full px-8 font-bold uppercase tracking-[0.15em] text-xs border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95">
                   Contáctanos
                 </Button>
               </div>

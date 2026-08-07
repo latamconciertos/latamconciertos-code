@@ -74,7 +74,7 @@ const Blog = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="dark font-fira min-h-screen bg-noche text-texto flex flex-col">
         <Header />
         <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <LoadingSpinnerInline message="Cargando artículos..." />
@@ -171,7 +171,8 @@ const Blog = () => {
         type="website"
         structuredData={structuredData}
       />
-      <div className="min-h-screen bg-background">
+      {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-28 pb-8">
         <Breadcrumbs items={[
@@ -180,14 +181,14 @@ const Blog = () => {
 
         {/* Editorial Hero */}
         <header className="text-center mt-6 mb-10 md:mb-14">
-          <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-3">
+          <span className="eyebrow-nocturno justify-center mb-3">
             La revista de música latina
-          </p>
-          <h1 className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.015em] leading-[0.92] text-foreground text-balance mb-4">
+          </span>
+          <h1 className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[0.01em] leading-[0.92] text-foreground text-balance mb-4">
             Noticias
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Entrevistas, reportajes y la cobertura editorial completa de la escena musical en América Latina.
+            Entrevistas, reportajes y las historias detrás de cada show en América Latina.
           </p>
           {(articles.length > 0 || categories.length > 0) && (
             <div className="flex flex-wrap justify-center gap-x-10 md:gap-x-14 gap-y-4 mt-8 md:mt-10">
@@ -223,11 +224,11 @@ const Blog = () => {
                 placeholder="Buscar artículos..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full h-11 text-sm pl-11 rounded-full bg-card border-border/60 focus-visible:ring-primary/30"
+                className="w-full h-11 text-sm pl-11 rounded-full bg-superficie border-linea focus-visible:ring-periwinkle"
               />
             </div>
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="h-11 w-auto min-w-[140px] sm:min-w-[160px] rounded-full bg-card border-border/60 text-xs font-semibold uppercase tracking-[0.12em]">
+              <SelectTrigger className="h-11 w-auto min-w-[140px] sm:min-w-[160px] rounded-full bg-superficie border-linea focus:ring-periwinkle text-xs font-semibold uppercase tracking-[0.12em]">
                 <Clock className="h-3.5 w-3.5 mr-2 flex-shrink-0" />
                 <SelectValue />
               </SelectTrigger>
@@ -253,7 +254,7 @@ const Blog = () => {
                 Todas
                 <span
                   className={`absolute left-0 right-0 -bottom-px h-0.5 transition-colors ${
-                    selectedCategory === 'all' ? 'bg-primary' : 'bg-transparent'
+                    selectedCategory === 'all' ? 'bg-verde' : 'bg-transparent'
                   }`}
                   aria-hidden="true"
                 />
@@ -274,7 +275,7 @@ const Blog = () => {
                     {cat.name}
                     <span
                       className={`absolute left-0 right-0 -bottom-px h-0.5 transition-colors ${
-                        isActive ? 'bg-primary' : 'bg-transparent'
+                        isActive ? 'bg-verde' : 'bg-transparent'
                       }`}
                       aria-hidden="true"
                     />
@@ -314,7 +315,7 @@ const Blog = () => {
               >
                 <div className="grid md:grid-cols-12 gap-6 md:gap-10 items-center">
                   <div className="md:col-span-7">
-                    <div className="aspect-[16/10] overflow-hidden rounded-2xl bg-muted ring-1 ring-border/40">
+                    <div className="aspect-[16/10] overflow-hidden rounded-[20px] bg-superficie-2 ring-1 ring-linea group-hover:ring-[rgba(89,124,255,.35)] transition-all duration-300 relative">
                       <img
                         src={getArticleImage(featuredArticle)}
                         alt={featuredArticle.title}
@@ -322,17 +323,20 @@ const Blog = () => {
                         loading="eager"
                         decoding="async"
                       />
+                      <div
+                        className="absolute inset-0 pointer-events-none"
+                        style={{ background: 'linear-gradient(180deg, transparent 60%, rgba(7,13,31,.45))' }}
+                      />
                     </div>
                   </div>
                   <div className="md:col-span-5">
                     <div className="flex items-center gap-3 mb-3 md:mb-4">
-                      <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+                      <span className="inline-flex items-center rounded-full border border-verde/30 bg-superficie px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-verde">
                         {getCategoryById(featuredArticle.category_id)?.name || 'Noticias'}
                       </span>
-                      <span className="text-muted-foreground/40">·</span>
                       <span className="text-xs text-muted-foreground">Destacado</span>
                     </div>
-                    <h2 className="font-display uppercase text-3xl md:text-4xl lg:text-5xl font-black tracking-[-0.01em] leading-[0.95] text-foreground text-balance mb-4 md:mb-5 group-hover:text-primary transition-colors">
+                    <h2 className="font-display uppercase text-3xl md:text-4xl lg:text-5xl font-black tracking-[0.01em] leading-[0.95] text-foreground text-balance mb-4 md:mb-5 group-hover:text-periwinkle transition-colors">
                       {featuredArticle.title}
                     </h2>
                     {(featuredArticle.meta_description || featuredArticle.content) && (
@@ -375,8 +379,8 @@ const Blog = () => {
                         href={`/blog/${article.slug}`}
                         className="group block focus:outline-none"
                       >
-                        <Card className="overflow-hidden border-border/60 bg-card hover:border-primary/30 hover:shadow-xl group-hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
-                          <div className="relative aspect-[16/10] overflow-hidden bg-muted">
+                        <Card className="overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] group-hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
+                          <div className="relative aspect-[16/10] overflow-hidden bg-superficie-2">
                             <img
                               src={getArticleImage(article)}
                               alt={article.title}
@@ -384,15 +388,19 @@ const Blog = () => {
                               loading="lazy"
                               decoding="async"
                             />
+                            <div
+                              className="absolute inset-0 pointer-events-none"
+                              style={{ background: 'linear-gradient(180deg, transparent 60%, rgba(7,13,31,.45))' }}
+                            />
                           </div>
 
                           <CardContent className="p-5 flex-1 flex flex-col">
                             {getCategoryById(article.category_id) && (
-                              <span className="inline-block text-[10px] font-bold uppercase tracking-[0.18em] text-primary mb-2">
+                              <span className="inline-block text-[10px] font-bold uppercase tracking-[0.18em] text-verde mb-2">
                                 {getCategoryById(article.category_id)?.name}
                               </span>
                             )}
-                            <h3 className="font-bold text-base md:text-lg text-foreground mb-2 group-hover:text-primary transition-colors line-clamp-3 leading-snug">
+                            <h3 className="font-bold text-base md:text-lg text-foreground mb-2 group-hover:text-periwinkle transition-colors line-clamp-3 leading-snug">
                               {article.title}
                             </h3>
                             {article.meta_description && (
@@ -423,8 +431,8 @@ const Blog = () => {
           </>
         ) : (
           <div className="text-center py-12">
-            <Search className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-foreground mb-2">No se encontraron artículos</h3>
+            <Search className="h-16 w-16 text-periwinkle/40 mx-auto mb-4" />
+            <h3 className="font-display text-2xl font-extrabold uppercase tracking-[0.01em] text-foreground mb-2">No se encontraron artículos</h3>
             <p className="text-sm text-muted-foreground">
               Intenta ajustar tus filtros de búsqueda
             </p>

@@ -50,42 +50,43 @@ All colors MUST be HSL.
       --midnight-blue: #0a1128;
     }
 
+    /* Evolución Nocturna — noche #070D1F, superficie #0E1830, periwinkle #597CFF */
     .dark {
-      --background: 222 60% 8%;
-      --foreground: 210 40% 98%;
+      --background: 225 63% 7%;
+      --foreground: 222 63% 97%;
 
-      --card: 220 30% 12%;
-      --card-foreground: 210 40% 98%;
+      --card: 222 55% 12%;
+      --card-foreground: 222 63% 97%;
 
-      --popover: 220 30% 10%;
-      --popover-foreground: 210 40% 98%;
+      --popover: 222 55% 12%;
+      --popover-foreground: 222 63% 97%;
 
-      --primary: 217 91% 60%;
-      --primary-foreground: 222.2 47.4% 11.2%;
+      --primary: 227 100% 67%;
+      --primary-foreground: 0 0% 100%;
 
-      --secondary: 217 20% 20%;
-      --secondary-foreground: 210 40% 98%;
+      --secondary: 223 52% 16%;
+      --secondary-foreground: 222 63% 97%;
 
-      --muted: 217 20% 18%;
-      --muted-foreground: 215 20% 65%;
+      --muted: 223 52% 16%;
+      --muted-foreground: 222 24% 66%;
 
-      --accent: 217 30% 22%;
-      --accent-foreground: 210 40% 98%;
+      --accent: 223 52% 16%;
+      --accent-foreground: 222 63% 97%;
 
       --destructive: 0 62.8% 50.6%;
       --destructive-foreground: 210 40% 98%;
 
-      --border: 217 20% 25%;
-      --input: 217 20% 25%;
-      --ring: 217 91% 60%;
-      --sidebar-background: 220 30% 10%;
-      --sidebar-foreground: 210 40% 98%;
-      --sidebar-primary: 217 91% 60%;
-      --sidebar-primary-foreground: 222.2 47.4% 11.2%;
-      --sidebar-accent: 217 30% 22%;
-      --sidebar-accent-foreground: 210 40% 98%;
-      --sidebar-border: 217 20% 25%;
-      --sidebar-ring: 217 91% 60%;
+      --border: 223 43% 16%;
+      --input: 223 43% 16%;
+      --ring: 227 100% 67%;
+      --sidebar-background: 222 55% 12%;
+      --sidebar-foreground: 222 63% 97%;
+      --sidebar-primary: 227 100% 67%;
+      --sidebar-primary-foreground: 0 0% 100%;
+      --sidebar-accent: 223 52% 16%;
+      --sidebar-accent-foreground: 222 63% 97%;
+      --sidebar-border: 223 43% 16%;
+      --sidebar-ring: 227 100% 67%;
     }
   }
 
@@ -266,9 +267,89 @@ All colors MUST be HSL.
     .section-title {
       @apply font-fira text-xl md:text-2xl font-bold;
     }
+
+    /* ============================================
+       Evolución Nocturna — componentes de la home
+       ============================================ */
+
+    /* Botón primario: gradiente cobalto→periwinkle, pill */
+    .btn-nocturno {
+      @apply inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5 font-fira text-base font-semibold text-white transition-all duration-300 border-0;
+      background: linear-gradient(95deg, #004AAD, #597CFF);
+      box-shadow: 0 8px 32px rgba(0, 74, 173, .4);
+    }
+
+    .btn-nocturno:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0, 74, 173, .55);
+      color: #fff;
+    }
+
+    .btn-nocturno:focus-visible {
+      outline: 2px solid #597CFF;
+      outline-offset: 2px;
+    }
+
+    /* Botón secundario: transparente con borde línea */
+    .btn-nocturno-secundario {
+      @apply inline-flex items-center justify-center gap-2 rounded-full border px-6 py-2.5 font-fira text-sm font-semibold transition-colors duration-300;
+      border-color: rgba(131, 180, 255, .12);
+      color: #F2F5FC;
+      background: transparent;
+    }
+
+    .btn-nocturno-secundario:hover {
+      background: #0E1830;
+      border-color: rgba(89, 124, 255, .35);
+      color: #F2F5FC;
+    }
+
+    .btn-nocturno-secundario:focus-visible {
+      outline: 2px solid #597CFF;
+      outline-offset: 2px;
+    }
+
+    /* Eyebrow de sección: barra verde + texto azul claro */
+    .eyebrow-nocturno {
+      @apply inline-flex items-center gap-3 font-fira text-[13px] font-semibold uppercase text-azul-claro;
+      letter-spacing: .12em;
+    }
+
+    .eyebrow-nocturno::before {
+      content: '';
+      width: 24px;
+      height: 2px;
+      background: #37C563;
+      flex-shrink: 0;
+    }
   }
 
   @layer utilities {
+
+    /* Punto verde pulsante para badges "en vivo" */
+    @keyframes pulso-vivo {
+      0% {
+        box-shadow: 0 0 0 0 rgba(55, 197, 99, .55);
+      }
+
+      70% {
+        box-shadow: 0 0 0 9px rgba(55, 197, 99, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(55, 197, 99, 0);
+      }
+    }
+
+    .punto-vivo {
+      animation: pulso-vivo 2s ease-out infinite;
+    }
+
+    /* Focus visible periwinkle en contexto nocturno */
+    .dark :focus-visible {
+      outline-color: #597CFF;
+    }
+
     .scrollbar-hide::-webkit-scrollbar {
       display: none;
     }

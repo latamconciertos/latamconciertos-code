@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Calendar } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { formatDisplayDate } from '@/lib/timezone';
@@ -188,7 +187,7 @@ const BlogPost = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-28">
           <LoadingSpinnerInline message="Cargando artículo..." />
@@ -200,15 +199,13 @@ const BlogPost = () => {
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
-          <h1 className="text-2xl font-bold mb-4">Artículo no encontrado</h1>
-          <Link to="/blog">
-            <Button>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Volver a noticias
-            </Button>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pt-28 text-center">
+          <h1 className="font-display text-3xl font-extrabold uppercase tracking-[0.01em] mb-6">Artículo no encontrado</h1>
+          <Link to="/blog" className="btn-nocturno-secundario">
+            <ArrowLeft className="h-4 w-4" />
+            Volver a noticias
           </Link>
         </div>
         <Footer />
@@ -280,11 +277,12 @@ const BlogPost = () => {
         }}
         structuredData={structuredData}
       />
-      <div className="min-h-screen bg-background">
+      {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
 
         {/* Hero — Editorial text-first (Rolling Stone / Billboard / RS Latam pattern) */}
-        <section className="bg-background pt-20 md:pt-28 pb-8 md:pb-14 border-b border-border/50">
+        <section className="pt-20 md:pt-28 pb-8 md:pb-14 border-b border-linea">
           <div className="container mx-auto max-w-4xl px-4 md:px-8">
             {/* Back link */}
             <div className="mb-3 md:mb-6">
@@ -297,12 +295,12 @@ const BlogPost = () => {
               </Link>
             </div>
 
-            {/* Eyebrow — category */}
+            {/* Eyebrow — chip de categoría en verde */}
             {article.categories && (
               <div className="mb-3 md:mb-6 text-center">
                 <Link
                   to={`/blog?category=${article.categories.slug}`}
-                  className="inline-block text-[11px] md:text-xs font-bold uppercase tracking-[0.2em] text-primary hover:underline underline-offset-4"
+                  className="inline-flex items-center rounded-full border border-verde/30 bg-superficie px-3.5 py-1.5 text-[10px] md:text-[11px] font-bold uppercase tracking-[0.18em] text-verde hover:border-verde/60 transition-colors"
                 >
                   {article.categories.name}
                 </Link>
@@ -310,7 +308,7 @@ const BlogPost = () => {
             )}
 
             {/* Headline */}
-            <h1 className="font-display uppercase text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-[-0.01em] leading-[0.95] text-foreground text-balance mb-4 md:mb-6">
+            <h1 className="font-display uppercase text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-[0.01em] leading-[0.95] text-foreground text-balance mb-4 md:mb-6">
               {article.title}
             </h1>
 
@@ -347,7 +345,7 @@ const BlogPost = () => {
                 <img
                   src={getArticleImage(article)}
                   alt={article.title}
-                  className="w-auto h-auto max-w-full max-h-[70vh] md:max-h-[78vh] mx-auto md:rounded-lg shadow-sm"
+                  className="w-auto h-auto max-w-full max-h-[70vh] md:max-h-[78vh] mx-auto md:rounded-[20px] md:ring-1 md:ring-linea"
                 />
               </picture>
               {article.photo_credit && (
@@ -359,8 +357,8 @@ const BlogPost = () => {
           </div>
         </section>
 
-        {/* Brand accent rule between hero and body */}
-        <div className="h-0.5 bg-primary" aria-hidden="true" />
+        {/* Brand accent rule between hero and body — cobalto solo en gradiente */}
+        <div className="h-0.5 bg-[linear-gradient(95deg,#004AAD,#597CFF)]" aria-hidden="true" />
 
         {/* Article Content Section */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
@@ -373,10 +371,10 @@ const BlogPost = () => {
               'prose-h3:text-xl md:prose-h3:text-2xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-3',
               'prose-p:text-foreground prose-p:leading-relaxed',
               'prose-strong:text-foreground prose-em:text-foreground',
-              'prose-a:text-primary prose-a:no-underline hover:prose-a:underline',
-              'prose-blockquote:text-foreground prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:not-italic prose-blockquote:font-medium',
-              'prose-li:text-foreground prose-img:rounded-lg',
-              '[&>div>p:first-of-type:first-letter]:float-left [&>div>p:first-of-type:first-letter]:text-7xl md:[&>div>p:first-of-type:first-letter]:text-8xl [&>div>p:first-of-type:first-letter]:font-extrabold [&>div>p:first-of-type:first-letter]:leading-[0.85] [&>div>p:first-of-type:first-letter]:mr-3 [&>div>p:first-of-type:first-letter]:mt-1 [&>div>p:first-of-type:first-letter]:text-primary',
+              'prose-a:text-periwinkle prose-a:no-underline hover:prose-a:underline',
+              'prose-blockquote:text-foreground prose-blockquote:border-l-4 prose-blockquote:border-periwinkle prose-blockquote:not-italic prose-blockquote:font-medium',
+              'prose-li:text-foreground prose-img:rounded-[20px]',
+              '[&>div>p:first-of-type:first-letter]:float-left [&>div>p:first-of-type:first-letter]:text-7xl md:[&>div>p:first-of-type:first-letter]:text-8xl [&>div>p:first-of-type:first-letter]:font-extrabold [&>div>p:first-of-type:first-letter]:leading-[0.85] [&>div>p:first-of-type:first-letter]:mr-3 [&>div>p:first-of-type:first-letter]:mt-1 [&>div>p:first-of-type:first-letter]:text-periwinkle',
             ].join(' ')}
           >
             {article.content ? (
@@ -406,13 +404,13 @@ const BlogPost = () => {
 
         {/* Related Articles */}
         {relatedArticles.length > 0 && (
-          <section className="bg-muted/30 py-14 md:py-20 border-t border-border/50">
+          <section className="bg-superficie/40 py-14 md:py-20 border-t border-linea">
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="mb-8 md:mb-10">
-                <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.2em] text-primary mb-2">
+                <span className="eyebrow-nocturno mb-2">
                   Sigue leyendo
-                </p>
-                <h2 className="font-fira text-3xl md:text-4xl font-bold tracking-tight text-foreground">
+                </span>
+                <h2 className="font-display uppercase text-3xl md:text-4xl font-extrabold tracking-[0.01em] leading-none text-foreground">
                   Te podría interesar
                 </h2>
               </div>
@@ -424,22 +422,26 @@ const BlogPost = () => {
                     to={`/blog/${relatedArticle.slug}`}
                     className="group block"
                   >
-                    <Card className="overflow-hidden border-border/60 bg-background hover:border-primary/30 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full">
-                      <div className="relative overflow-hidden aspect-video bg-muted">
+                    <Card className="overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 h-full">
+                      <div className="relative overflow-hidden aspect-video bg-superficie-2">
                         <img
                           src={getArticleImage(relatedArticle)}
                           alt={relatedArticle.title}
                           loading="lazy"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         />
+                        <div
+                          className="absolute inset-0 pointer-events-none"
+                          style={{ background: 'linear-gradient(180deg, transparent 60%, rgba(7,13,31,.45))' }}
+                        />
                       </div>
                       <CardContent className="p-5">
                         {relatedArticle.categories && (
-                          <span className="inline-block mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-primary">
+                          <span className="inline-block mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-verde">
                             {relatedArticle.categories.name}
                           </span>
                         )}
-                        <h3 className="font-bold text-base text-foreground leading-snug line-clamp-3 group-hover:text-primary transition-colors mb-3">
+                        <h3 className="font-bold text-base text-foreground leading-snug line-clamp-3 group-hover:text-periwinkle transition-colors mb-3">
                           {relatedArticle.title}
                         </h3>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">

@@ -19,13 +19,13 @@ const ChatInput = ({ input, onInputChange, onSubmit, isLoading }: ChatInputProps
             onChange={(e) => onInputChange(e.target.value)}
             placeholder="Escribe tu pregunta aquí..."
             disabled={isLoading}
-            className="flex-1 pr-12 py-6 text-base rounded-3xl border-2 focus-visible:ring-1"
+            className="flex-1 pr-14 py-6 text-base rounded-full bg-superficie border-linea focus-visible:ring-periwinkle"
           />
           <Button
             type="submit"
             disabled={isLoading || !input.trim()}
             size="icon"
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full"
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
           >
             {isLoading ? (
               <Loader2 className="h-5 w-5 animate-spin" />

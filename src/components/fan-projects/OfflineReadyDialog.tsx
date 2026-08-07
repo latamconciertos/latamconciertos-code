@@ -23,42 +23,42 @@ export const OfflineReadyDialog = ({
 }: OfflineReadyDialogProps) => {
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            <AlertDialogContent className="max-w-md mx-auto">
+            <AlertDialogContent className="dark font-fira max-w-md mx-auto rounded-[20px] border-linea bg-superficie text-texto">
                 <AlertDialogHeader className="space-y-3">
                     <div className="flex items-center gap-3">
-                        <CheckCircle2 className="h-7 w-7 text-green-500 flex-shrink-0" />
+                        <CheckCircle2 className="h-7 w-7 text-verde flex-shrink-0" />
                         <AlertDialogTitle className="text-xl sm:text-2xl">
                             ¡Todo Listo!
                         </AlertDialogTitle>
                     </div>
                     <AlertDialogDescription className="space-y-4 text-left">
-                        <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-                            <p className="text-green-900 font-semibold text-base">
-                                ✅ {sequenceCount} {sequenceCount === 1 ? 'canción lista' : 'canciones listas'}
+                        <div className="bg-verde/10 border border-verde/30 rounded-2xl p-4">
+                            <p className="text-verde font-semibold text-base">
+                                {sequenceCount} {sequenceCount === 1 ? 'canción lista' : 'canciones listas'}
                             </p>
-                            <p className="text-green-700 text-sm mt-1">
+                            <p className="text-texto-2 text-sm mt-1">
                                 Ya puedes usar el modo luz sin conexión
                             </p>
                         </div>
 
-                        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+                        <div className="bg-superficie-2 border border-linea rounded-2xl p-4">
                             <div className="flex items-start gap-3">
-                                <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                                <AlertTriangle className="h-5 w-5 text-periwinkle mt-0.5 flex-shrink-0" />
                                 <div className="space-y-2">
-                                    <p className="text-yellow-900 font-semibold text-sm">
+                                    <p className="text-texto font-semibold text-sm">
                                         Para el día del concierto:
                                     </p>
-                                    <ul className="text-yellow-800 text-sm space-y-1.5">
+                                    <ul className="text-texto-2 text-sm space-y-1.5">
                                         <li className="flex items-start gap-2">
-                                            <span className="text-yellow-600 mt-0.5">•</span>
+                                            <span className="text-periwinkle mt-0.5">•</span>
                                             <span>No borres los datos de la app</span>
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <span className="text-yellow-600 mt-0.5">•</span>
+                                            <span className="text-periwinkle mt-0.5">•</span>
                                             <span>Mantén tu batería cargada</span>
                                         </li>
                                         <li className="flex items-start gap-2">
-                                            <span className="text-yellow-600 mt-0.5">•</span>
+                                            <span className="text-periwinkle mt-0.5">•</span>
                                             <span>Funciona sin internet</span>
                                         </li>
                                     </ul>
@@ -70,7 +70,7 @@ export const OfflineReadyDialog = ({
                 <AlertDialogFooter className="mt-2">
                     <AlertDialogAction
                         onClick={() => onOpenChange(false)}
-                        className="w-full bg-green-600 hover:bg-green-700 text-base font-semibold py-6"
+                        className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95 text-base font-semibold py-6"
                     >
                         Entendido
                     </AlertDialogAction>

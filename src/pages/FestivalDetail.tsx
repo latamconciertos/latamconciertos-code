@@ -1,7 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { Calendar, MapPin, Ticket, Music, Globe, Users, ArrowLeft, PartyPopper } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
@@ -48,7 +47,7 @@ const FestivalDetail = () => {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen bg-background">
+            <div className="dark font-fira min-h-screen bg-noche text-texto">
                 <Header />
                 <LoadingSpinner message="Cargando festival..." />
                 <Footer />
@@ -64,20 +63,19 @@ const FestivalDetail = () => {
                     description="El festival que buscas no existe o ha sido eliminado."
                     url={`/festivals/${slug}`}
                 />
-                <div className="min-h-screen bg-background">
+                {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+                <div className="dark font-fira min-h-screen bg-noche text-texto">
                     <Header />
                     <div className="container mx-auto px-4 py-24">
                         <div className="text-center">
-                            <PartyPopper className="h-24 w-24 text-muted-foreground mx-auto mb-4" />
-                            <h1 className="text-3xl font-bold text-foreground mb-4">Festival no encontrado</h1>
+                            <PartyPopper className="h-24 w-24 text-periwinkle/40 mx-auto mb-4" />
+                            <h1 className="font-display text-3xl font-extrabold uppercase tracking-[0.01em] text-foreground mb-4">Festival no encontrado</h1>
                             <p className="text-muted-foreground mb-8">
                                 El festival que buscas no existe o ha sido eliminado.
                             </p>
-                            <Link to="/festivals">
-                                <Button>
-                                    <ArrowLeft className="h-4 w-4 mr-2" />
-                                    Ver todos los festivales
-                                </Button>
+                            <Link to="/festivals" className="btn-nocturno-secundario">
+                                <ArrowLeft className="h-4 w-4" />
+                                Ver todos los festivales
                             </Link>
                         </div>
                     </div>
@@ -128,7 +126,8 @@ const FestivalDetail = () => {
                 url={`/festivals/${festival.slug}`}
                 structuredData={structuredData}
             />
-            <div className="min-h-screen bg-background">
+            {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+            <div className="dark font-fira min-h-screen bg-noche text-texto">
                 <Header />
 
                 <main className="pt-20 sm:pt-24 pb-12">
@@ -140,13 +139,17 @@ const FestivalDetail = () => {
 
                         {/* Hero Section */}
                         <div className="relative mb-6 sm:mb-8">
-                            <div className="h-48 sm:h-64 md:h-96 rounded-xl sm:rounded-2xl overflow-hidden">
+                            <div className="h-48 sm:h-64 md:h-96 rounded-[20px] border border-linea bg-superficie-2 overflow-hidden">
                                 <img
                                     src={festival.image_url || "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=1200&h=600&fit=crop"}
                                     alt={festival.name}
                                     className="w-full h-full object-cover"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/50 to-transparent" />
+                                {/* Overlay oscuro desde abajo para que el texto respire */}
+                                <div
+                                    className="absolute inset-0 rounded-[20px]"
+                                    style={{ background: 'linear-gradient(180deg, transparent 30%, rgba(7,13,31,.9))' }}
+                                />
                             </div>
 
                             {/* Floating Favorite Button */}
@@ -156,15 +159,24 @@ const FestivalDetail = () => {
 
                             {/* Festival Info Overlay */}
                             <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 md:p-8">
-                                {festival.edition && (
-                                    <Badge className="bg-primary text-white mb-2 sm:mb-4">
-                                        Edición {festival.edition}
-                                    </Badge>
-                                )}
-                                <Badge className={isUpcoming ? "bg-green-500 text-white mb-2 sm:mb-4 ml-2" : "bg-muted text-muted-foreground mb-2 sm:mb-4 ml-2"}>
-                                    {isUpcoming ? 'Próximo' : 'Finalizado'}
-                                </Badge>
-                                <h1 className="text-xl sm:text-3xl md:text-5xl font-bold text-foreground mb-1 sm:mb-2 line-clamp-2">
+                                <div className="flex flex-wrap items-center gap-2 mb-2 sm:mb-4">
+                                    {festival.edition && (
+                                        <span className="inline-flex items-center rounded-full border border-verde/30 bg-noche/80 backdrop-blur-sm px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-verde">
+                                            Edición {festival.edition}
+                                        </span>
+                                    )}
+                                    {isUpcoming ? (
+                                        <span className="inline-flex items-center gap-2 rounded-full border border-verde/30 bg-noche/80 backdrop-blur-sm px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-verde">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-verde punto-vivo" aria-hidden="true" />
+                                            Próximo
+                                        </span>
+                                    ) : (
+                                        <span className="inline-flex items-center rounded-full border border-linea bg-noche/80 backdrop-blur-sm px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-texto-2">
+                                            Finalizado
+                                        </span>
+                                    )}
+                                </div>
+                                <h1 className="font-display uppercase text-2xl sm:text-4xl md:text-6xl font-black tracking-[0.01em] leading-[0.95] text-texto mb-1 sm:mb-2 line-clamp-2">
                                     {festival.name}
                                 </h1>
                             </div>
@@ -174,21 +186,21 @@ const FestivalDetail = () => {
                         <div className="lg:hidden space-y-4">
                             {/* 1. Lineup - Lo más importante primero */}
                             {lineup && lineup.length > 0 && (
-                                <Card>
+                                <Card className="rounded-[20px] border-linea bg-superficie">
                                     <CardContent className="p-4">
                                         <h2 className="text-base font-bold mb-4 flex items-center gap-2">
-                                            <Music className="h-4 w-4 text-primary" />
+                                            <Music className="h-4 w-4 text-periwinkle" />
                                             Lineup
                                         </h2>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             {lineup.map((lineupItem) => (
                                                 <div
                                                     key={lineupItem.id}
-                                                    className="group relative overflow-hidden rounded-lg border border-border bg-card p-3 hover:border-primary hover:shadow-md transition-all duration-300"
+                                                    className="group relative overflow-hidden rounded-2xl border border-linea bg-superficie-2 p-3 hover:border-[rgba(89,124,255,.35)] transition-all duration-300"
                                                 >
                                                     <div className="flex items-center gap-3">
                                                         {lineupItem.artistImage ? (
-                                                            <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden bg-muted">
+                                                            <div className="flex-shrink-0 w-8 h-8 rounded-full overflow-hidden bg-superficie-2">
                                                                 <img
                                                                     src={lineupItem.artistImage}
                                                                     alt={lineupItem.artists.name}
@@ -196,12 +208,12 @@ const FestivalDetail = () => {
                                                                 />
                                                             </div>
                                                         ) : (
-                                                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                                                                <Music className="h-4 w-4 text-primary" />
+                                                            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-periwinkle/10 flex items-center justify-center group-hover:bg-periwinkle/20 transition-colors">
+                                                                <Music className="h-4 w-4 text-periwinkle" />
                                                             </div>
                                                         )}
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="font-medium text-sm text-foreground truncate group-hover:text-primary transition-colors">
+                                                            <p className="font-medium text-sm text-foreground truncate group-hover:text-periwinkle transition-colors">
                                                                 {lineupItem.artists.name}
                                                             </p>
                                                         </div>
@@ -214,13 +226,13 @@ const FestivalDetail = () => {
                             )}
 
                             {/* 2. Detalles del evento */}
-                            <Card>
+                            <Card className="rounded-[20px] border-linea bg-superficie">
                                 <CardContent className="p-4 space-y-3">
                                     <h3 className="font-bold text-base">Detalles del festival</h3>
 
                                     <div className="space-y-2.5">
                                         <div className="flex items-start gap-3">
-                                            <Calendar className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                                            <Calendar className="h-4 w-4 text-periwinkle mt-0.5 flex-shrink-0" />
                                             <div className="min-w-0">
                                                 <p className="font-medium text-sm">Fecha</p>
                                                 <p className="text-xs text-muted-foreground capitalize">
@@ -232,7 +244,7 @@ const FestivalDetail = () => {
                                         {festival.venues && (
                                             <>
                                                 <div className="flex items-start gap-3">
-                                                    <MapPin className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                                                    <MapPin className="h-4 w-4 text-periwinkle mt-0.5 flex-shrink-0" />
                                                     <div className="min-w-0">
                                                         <p className="font-medium text-sm">Venue</p>
                                                         <p className="text-xs text-muted-foreground">
@@ -243,7 +255,7 @@ const FestivalDetail = () => {
 
                                                 {festival.venues.cities && (
                                                     <div className="flex items-start gap-3">
-                                                        <Globe className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                                                        <Globe className="h-4 w-4 text-periwinkle mt-0.5 flex-shrink-0" />
                                                         <div className="min-w-0">
                                                             <p className="font-medium text-sm">Ubicación</p>
                                                             <p className="text-xs text-muted-foreground">
@@ -258,7 +270,7 @@ const FestivalDetail = () => {
 
                                         {festival.promoters && (
                                             <div className="flex items-start gap-3">
-                                                <Users className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                                                <Users className="h-4 w-4 text-periwinkle mt-0.5 flex-shrink-0" />
                                                 <div className="min-w-0">
                                                     <p className="font-medium text-sm">Promotor</p>
                                                     <p className="text-xs text-muted-foreground">
@@ -270,7 +282,7 @@ const FestivalDetail = () => {
                                     </div>
 
                                     {isUpcoming && festival.ticket_url && (
-                                        <Button className="w-full mt-3" size="sm" asChild>
+                                        <Button className="w-full mt-3 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95" size="sm" asChild>
                                             <a
                                                 href={withTicketTracking(festival.ticket_url)}
                                                 target="_blank"
@@ -285,7 +297,7 @@ const FestivalDetail = () => {
                             </Card>
 
                             {/* 3. ¿Vas a asistir? */}
-                            <Card>
+                            <Card className="rounded-[20px] border-linea bg-superficie">
                                 <CardContent className="p-4">
                                     <h3 className="font-bold text-base mb-3">¿Vas a asistir?</h3>
                                     <FestivalAttendanceButtons festivalId={festival.id} />
@@ -293,7 +305,7 @@ const FestivalDetail = () => {
                             </Card>
 
                             {/* 4. Compartir */}
-                            <Card>
+                            <Card className="rounded-[20px] border-linea bg-superficie">
                                 <CardContent className="p-4">
                                     <h3 className="font-bold text-base mb-3">Compartir</h3>
                                     <SocialShare
@@ -305,7 +317,7 @@ const FestivalDetail = () => {
 
                             {/* 5. Description */}
                             {festival.description && (
-                                <Card>
+                                <Card className="rounded-[20px] border-linea bg-superficie">
                                     <CardContent className="p-4">
                                         <h2 className="text-base font-bold mb-3">Acerca del festival</h2>
                                         <p className="text-sm text-muted-foreground whitespace-pre-line">
@@ -322,7 +334,7 @@ const FestivalDetail = () => {
                             <div className="col-span-2 space-y-8">
                                 {/* Description */}
                                 {festival.description && (
-                                    <Card>
+                                    <Card className="rounded-[20px] border-linea bg-superficie">
                                         <CardContent className="p-6">
                                             <h2 className="text-xl font-bold mb-4">Acerca del festival</h2>
                                             <p className="text-muted-foreground whitespace-pre-line">
@@ -334,21 +346,21 @@ const FestivalDetail = () => {
 
                                 {/* Lineup */}
                                 {lineup && lineup.length > 0 && (
-                                    <Card>
+                                    <Card className="rounded-[20px] border-linea bg-superficie">
                                         <CardContent className="p-6">
                                             <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                                                <Music className="h-5 w-5 text-primary" />
+                                                <Music className="h-5 w-5 text-periwinkle" />
                                                 Lineup
                                             </h2>
                                             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                                 {lineup.map((lineupItem) => (
                                                     <div
                                                         key={lineupItem.id}
-                                                        className="group relative overflow-hidden rounded-lg border border-border bg-card p-4 hover:border-primary hover:shadow-lg transition-all duration-300"
+                                                        className="group relative overflow-hidden rounded-2xl border border-linea bg-superficie-2 p-4 hover:border-[rgba(89,124,255,.35)] transition-all duration-300"
                                                     >
                                                         <div className="flex items-center gap-3">
                                                             {lineupItem.artistImage ? (
-                                                                <div className="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden bg-muted">
+                                                                <div className="flex-shrink-0 w-10 h-10 rounded-full overflow-hidden bg-superficie-2">
                                                                     <img
                                                                         src={lineupItem.artistImage}
                                                                         alt={lineupItem.artists.name}
@@ -356,12 +368,12 @@ const FestivalDetail = () => {
                                                                     />
                                                                 </div>
                                                             ) : (
-                                                                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                                                                    <Music className="h-5 w-5 text-primary" />
+                                                                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-periwinkle/10 flex items-center justify-center group-hover:bg-periwinkle/20 transition-colors">
+                                                                    <Music className="h-5 w-5 text-periwinkle" />
                                                                 </div>
                                                             )}
                                                             <div className="flex-1 min-w-0">
-                                                                <p className="font-medium text-sm text-foreground truncate group-hover:text-primary transition-colors">
+                                                                <p className="font-medium text-sm text-foreground truncate group-hover:text-periwinkle transition-colors">
                                                                     {lineupItem.artists.name}
                                                                 </p>
                                                             </div>
@@ -377,13 +389,13 @@ const FestivalDetail = () => {
                             {/* Sidebar */}
                             <div className="space-y-6">
                                 {/* 1. Event Details Card */}
-                                <Card>
+                                <Card className="rounded-[20px] border-linea bg-superficie">
                                     <CardContent className="p-6 space-y-4">
                                         <h3 className="font-bold text-lg">Detalles del festival</h3>
 
                                         <div className="space-y-3">
                                             <div className="flex items-start gap-3">
-                                                <Calendar className="h-5 w-5 text-primary mt-0.5" />
+                                                <Calendar className="h-5 w-5 text-periwinkle mt-0.5" />
                                                 <div>
                                                     <p className="font-medium">Fecha</p>
                                                     <p className="text-sm text-muted-foreground capitalize">
@@ -395,7 +407,7 @@ const FestivalDetail = () => {
                                             {festival.venues && (
                                                 <>
                                                     <div className="flex items-start gap-3">
-                                                        <MapPin className="h-5 w-5 text-primary mt-0.5" />
+                                                        <MapPin className="h-5 w-5 text-periwinkle mt-0.5" />
                                                         <div>
                                                             <p className="font-medium">Venue</p>
                                                             <p className="text-sm text-muted-foreground">
@@ -406,7 +418,7 @@ const FestivalDetail = () => {
 
                                                     {festival.venues.cities && (
                                                         <div className="flex items-start gap-3">
-                                                            <Globe className="h-5 w-5 text-primary mt-0.5" />
+                                                            <Globe className="h-5 w-5 text-periwinkle mt-0.5" />
                                                             <div>
                                                                 <p className="font-medium">Ubicación</p>
                                                                 <p className="text-sm text-muted-foreground">
@@ -421,7 +433,7 @@ const FestivalDetail = () => {
 
                                             {festival.promoters && (
                                                 <div className="flex items-start gap-3">
-                                                    <Users className="h-5 w-5 text-primary mt-0.5" />
+                                                    <Users className="h-5 w-5 text-periwinkle mt-0.5" />
                                                     <div>
                                                         <p className="font-medium">Promotor</p>
                                                         <p className="text-sm text-muted-foreground">
@@ -433,7 +445,7 @@ const FestivalDetail = () => {
                                         </div>
 
                                         {isUpcoming && festival.ticket_url && (
-                                            <Button className="w-full mt-4" asChild>
+                                            <Button className="w-full mt-4 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95" asChild>
                                                 <a
                                                     href={withTicketTracking(festival.ticket_url)}
                                                     target="_blank"
@@ -448,7 +460,7 @@ const FestivalDetail = () => {
                                 </Card>
 
                                 {/* 2. Attendance */}
-                                <Card>
+                                <Card className="rounded-[20px] border-linea bg-superficie">
                                     <CardContent className="p-6">
                                         <h3 className="font-bold text-lg mb-4">¿Vas a asistir?</h3>
                                         <FestivalAttendanceButtons festivalId={festival.id} />
@@ -456,7 +468,7 @@ const FestivalDetail = () => {
                                 </Card>
 
                                 {/* 3. Share */}
-                                <Card>
+                                <Card className="rounded-[20px] border-linea bg-superficie">
                                     <CardContent className="p-6">
                                         <h3 className="font-bold text-lg mb-4">Compartir</h3>
                                         <SocialShare

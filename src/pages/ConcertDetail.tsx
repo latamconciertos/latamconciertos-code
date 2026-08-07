@@ -42,7 +42,7 @@ const ConcertDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
         <LoadingSpinner message="Cargando concierto..." />
         <Footer />
@@ -58,20 +58,18 @@ const ConcertDetail = () => {
           description="El concierto que buscas no existe o ha sido eliminado."
           url={`/concerts/${slug}`}
         />
-        <div className="min-h-screen bg-background">
+        <div className="dark font-fira min-h-screen bg-noche text-texto">
           <Header />
-          <div className="container mx-auto px-4 py-24">
+          <div className="container mx-auto px-4 py-24 pt-28">
             <div className="text-center">
-              <Music className="h-24 w-24 text-muted-foreground mx-auto mb-4" />
-              <h1 className="text-3xl font-bold text-foreground mb-4">Concierto no encontrado</h1>
+              <Music className="h-24 w-24 text-muted-foreground/40 mx-auto mb-4" />
+              <h1 className="font-display uppercase text-3xl font-extrabold tracking-[0.01em] text-foreground mb-4">Concierto no encontrado</h1>
               <p className="text-muted-foreground mb-8">
                 El concierto que buscas no existe o ha sido eliminado.
               </p>
-              <Link to="/concerts">
-                <Button>
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Ver todos los conciertos
-                </Button>
+              <Link to="/concerts" className="btn-nocturno-secundario">
+                <ArrowLeft className="h-4 w-4" />
+                Ver todos los conciertos
               </Link>
             </div>
           </div>
@@ -127,7 +125,8 @@ const ConcertDetail = () => {
         url={`/concerts/${concert.slug}`}
         structuredData={structuredData}
       />
-      <div className="min-h-screen bg-background">
+      {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
 
         <main className="pt-24 sm:pt-28 pb-12">
@@ -138,7 +137,7 @@ const ConcertDetail = () => {
             ]} />
 
             {/* Hero Section - Redesigned */}
-            <div className="bg-gradient-to-br from-card to-muted border border-border rounded-xl mb-6 sm:mb-8 overflow-hidden">
+            <div className="rounded-[20px] border border-linea bg-superficie mb-6 sm:mb-8 overflow-hidden">
               {/* Desktop Layout */}
               <div className="hidden lg:block relative p-6">
                 {/* Share Button - Top Right Corner (Desktop) */}
@@ -156,7 +155,7 @@ const ConcertDetail = () => {
                       <img
                         src={artistImage || concert.image_url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop"}
                         alt={concert.artists?.name || concert.title}
-                        className="w-full aspect-square object-cover rounded-xl"
+                        className="w-full aspect-square object-cover rounded-[20px] ring-1 ring-linea"
                       />
                       {/* Favorite Button - Overlay on image */}
                       <div className="absolute top-3 right-3">
@@ -169,15 +168,15 @@ const ConcertDetail = () => {
                   <div className="flex-1 space-y-4">
                     {/* Badge & Title */}
                     <div>
-                      <Badge className={isUpcoming ? "bg-green-500 text-white mb-3" : "bg-muted text-muted-foreground mb-3"}>
+                      <span className={`inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] mb-3 ${isUpcoming ? 'border-verde/30 bg-noche/80 backdrop-blur-sm text-verde' : 'border-linea bg-noche/80 backdrop-blur-sm text-texto-2'}`}>
                         {isUpcoming ? 'Próximo' : 'Finalizado'}
-                      </Badge>
-                      <h1 className="text-4xl font-bold text-foreground mb-2">
+                      </span>
+                      <h1 className="font-display uppercase text-4xl xl:text-5xl font-black tracking-[0.01em] leading-[0.95] text-foreground mb-2">
                         {concert.title}
                       </h1>
                       {concert.artists && (
                         <Link to={`/artists/${concert.artists.slug}`}>
-                          <p className="text-xl text-primary hover:underline font-medium">
+                          <p className="text-xl text-periwinkle hover:underline font-medium">
                             {concert.artists.name}
                           </p>
                         </Link>
@@ -187,7 +186,7 @@ const ConcertDetail = () => {
                     {/* Quick Info - Date & Venue */}
                     <div className="space-y-3 pt-2">
                       <div className="flex items-center gap-3">
-                        <Calendar className="h-5 w-5 text-primary flex-shrink-0" />
+                        <Calendar className="h-5 w-5 text-periwinkle flex-shrink-0" />
                         <span className="text-base text-foreground capitalize">
                           {formatDate(concert.date)}
                         </span>
@@ -195,7 +194,7 @@ const ConcertDetail = () => {
 
                       {concert.venues && (
                         <div className="flex items-start gap-3">
-                          <MapPin className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                          <MapPin className="h-5 w-5 text-periwinkle flex-shrink-0 mt-0.5" />
                           <div className="text-base text-foreground">
                             <div className="font-medium">{concert.venues.name}</div>
                             {concert.venues.cities && (
@@ -219,14 +218,14 @@ const ConcertDetail = () => {
               {/* Mobile Layout - Completely Redesigned */}
               <div className="lg:hidden">
                 {/* Top Section: Image + Share */}
-                <div className="relative bg-gradient-to-b from-background/10 to-transparent p-4">
+                <div className="relative p-4">
                   <div className="flex items-start gap-4">
                     {/* Artist Image - Small, Left-aligned */}
                     <div className="relative w-20 h-20 flex-shrink-0">
                       <img
                         src={artistImage || concert.image_url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop"}
                         alt={concert.artists?.name || concert.title}
-                        className="w-full h-full object-cover rounded-lg"
+                        className="w-full h-full object-cover rounded-xl ring-1 ring-linea"
                       />
                     </div>
 
@@ -244,19 +243,19 @@ const ConcertDetail = () => {
                 <div className="p-4 pt-2 space-y-3">
                   {/* Title */}
                   <div>
-                    <h1 className="text-xl font-bold text-foreground leading-tight mb-1">
+                    <h1 className="font-display uppercase text-2xl font-black tracking-[0.01em] leading-[0.95] text-foreground mb-1">
                       {concert.title}
                     </h1>
                     {concert.artists && (
                       <div className="space-y-2">
                         <Link to={`/artists/${concert.artists.slug}`}>
-                          <p className="text-base text-primary hover:underline font-medium">
+                          <p className="text-base text-periwinkle hover:underline font-medium">
                             {concert.artists.name}
                           </p>
                         </Link>
-                        <Badge className={isUpcoming ? "bg-green-500 text-white" : "bg-muted text-muted-foreground"}>
+                        <span className={`inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] ${isUpcoming ? 'border-verde/30 bg-noche/80 backdrop-blur-sm text-verde' : 'border-linea bg-noche/80 backdrop-blur-sm text-texto-2'}`}>
                           {isUpcoming ? 'Próximo' : 'Finalizado'}
-                        </Badge>
+                        </span>
                       </div>
                     )}
                   </div>
@@ -264,7 +263,7 @@ const ConcertDetail = () => {
                   {/* Event Info - Compact */}
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-primary flex-shrink-0" />
+                      <Calendar className="h-4 w-4 text-periwinkle flex-shrink-0" />
                       <span className="text-sm text-foreground capitalize">
                         {formatDate(concert.date)}
                       </span>
@@ -272,7 +271,7 @@ const ConcertDetail = () => {
 
                     {concert.venues && (
                       <div className="flex items-start gap-2">
-                        <MapPin className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                        <MapPin className="h-4 w-4 text-periwinkle flex-shrink-0 mt-0.5" />
                         <div className="text-sm text-foreground">
                           <div className="font-medium">{concert.venues.name}</div>
                           {concert.venues.cities && (
@@ -296,13 +295,13 @@ const ConcertDetail = () => {
             {/* Mobile Layout: Stack everything */}
             <div className="lg:hidden space-y-4">
               {/* 1. Detalles del evento */}
-              <Card>
+              <Card className="rounded-[20px] border-linea bg-superficie">
                 <CardContent className="p-4 space-y-3">
                   <h3 className="font-bold text-base">Detalles del evento</h3>
 
                   <div className="space-y-2.5">
                     <div className="flex items-start gap-3">
-                      <Calendar className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <Calendar className="h-4 w-4 text-periwinkle mt-0.5 flex-shrink-0" />
                       <div className="min-w-0">
                         <p className="font-medium text-sm">Fecha</p>
                         <p className="text-xs text-muted-foreground capitalize">
@@ -314,7 +313,7 @@ const ConcertDetail = () => {
                     {concert.venues && (
                       <>
                         <div className="flex items-start gap-3">
-                          <MapPin className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                          <MapPin className="h-4 w-4 text-periwinkle mt-0.5 flex-shrink-0" />
                           <div className="min-w-0">
                             <p className="font-medium text-sm">Venue</p>
                             <p className="text-xs text-muted-foreground">
@@ -325,7 +324,7 @@ const ConcertDetail = () => {
 
                         {concert.venues.cities && (
                           <div className="flex items-start gap-3">
-                            <Globe className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                            <Globe className="h-4 w-4 text-periwinkle mt-0.5 flex-shrink-0" />
                             <div className="min-w-0">
                               <p className="font-medium text-sm">Ubicación</p>
                               <p className="text-xs text-muted-foreground">
@@ -340,7 +339,7 @@ const ConcertDetail = () => {
 
                     {concert.promoters && (
                       <div className="flex items-start gap-3">
-                        <Users className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        <Users className="h-4 w-4 text-periwinkle mt-0.5 flex-shrink-0" />
                         <div className="min-w-0">
                           <p className="font-medium text-sm">Promotor</p>
                           <p className="text-xs text-muted-foreground">
@@ -352,7 +351,7 @@ const ConcertDetail = () => {
                   </div>
 
                   {isUpcoming && concert.ticket_url && (
-                    <Button className="w-full mt-3" size="sm" asChild>
+                    <Button className="w-full mt-3 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95" size="sm" asChild>
                       <a
                         href={withTicketTracking(concert.ticket_url)}
                         target="_blank"
@@ -371,7 +370,7 @@ const ConcertDetail = () => {
 
               {/* Ticket Prices */}
               {concert.ticket_prices_html && (
-                <Card>
+                <Card className="rounded-[20px] border-linea bg-superficie">
                   <CardContent className="p-4">
                     <div
                       className="ticket-prices-content prose prose-sm max-w-none dark:prose-invert"
@@ -383,10 +382,10 @@ const ConcertDetail = () => {
 
               {/* Spotify Embed */}
               {concert.spotify_embed_url && (
-                <Card>
+                <Card className="rounded-[20px] border-linea bg-superficie">
                   <CardContent className="p-4">
                     <h3 className="font-bold text-base mb-3 flex items-center gap-2">
-                      <Music className="h-4 w-4 text-primary" />
+                      <Music className="h-4 w-4 text-periwinkle" />
                       Escucha en Spotify
                     </h3>
                     <div className="rounded-lg overflow-hidden">
@@ -406,7 +405,7 @@ const ConcertDetail = () => {
 
               {/* Description */}
               {concert.description && (
-                <Card>
+                <Card className="rounded-[20px] border-linea bg-superficie">
                   <CardContent className="p-4">
                     <h2 className="text-base font-bold mb-3">Acerca del evento</h2>
                     <p className="text-sm text-muted-foreground whitespace-pre-line">
@@ -418,16 +417,16 @@ const ConcertDetail = () => {
 
               {/* Setlist Preview */}
               {setlist.length > 0 && (
-                <Card>
+                <Card className="rounded-[20px] border-linea bg-superficie">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-3">
                       <h2 className="text-base font-bold flex items-center gap-2">
-                        <ListMusic className="h-4 w-4 text-primary" />
+                        <ListMusic className="h-4 w-4 text-periwinkle" />
                         Setlist
                       </h2>
                       {setlistUrl && (
                         <Link to={setlistUrl}>
-                          <Button variant="outline" size="sm">
+                          <Button variant="outline" size="sm" className="rounded-full border-linea bg-transparent hover:bg-superficie-2">
                             Ver completo
                           </Button>
                         </Link>
@@ -436,7 +435,7 @@ const ConcertDetail = () => {
                     <ul className="space-y-1.5">
                       {setlist.slice(0, 8).map((song) => (
                         <li key={song.id} className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <span className="text-primary">•</span>
+                          <span className="text-periwinkle">•</span>
                           <span className="truncate">{song.song_name}</span>
                           {song.is_official && (
                             <Badge variant="outline" className="text-[10px] flex-shrink-0">Oficial</Badge>
@@ -460,7 +459,7 @@ const ConcertDetail = () => {
               <div className="col-span-2 space-y-8">
                 {/* Ticket Prices */}
                 {concert.ticket_prices_html && (
-                  <Card>
+                  <Card className="rounded-[20px] border-linea bg-superficie">
                     <CardContent className="p-6">
                       <div
                         className="ticket-prices-content prose max-w-none dark:prose-invert"
@@ -472,7 +471,7 @@ const ConcertDetail = () => {
 
                 {/* Description */}
                 {concert.description && (
-                  <Card>
+                  <Card className="rounded-[20px] border-linea bg-superficie">
                     <CardContent className="p-6">
                       <h2 className="text-xl font-bold mb-4">Acerca del evento</h2>
                       <p className="text-muted-foreground whitespace-pre-line">
@@ -484,16 +483,16 @@ const ConcertDetail = () => {
 
                 {/* Setlist Preview */}
                 {setlist.length > 0 && (
-                  <Card>
+                  <Card className="rounded-[20px] border-linea bg-superficie">
                     <CardContent className="p-6">
                       <div className="flex items-center justify-between mb-4">
                         <h2 className="text-xl font-bold flex items-center gap-2">
-                          <ListMusic className="h-5 w-5 text-primary" />
+                          <ListMusic className="h-5 w-5 text-periwinkle" />
                           Setlist
                         </h2>
                         {setlistUrl && (
                           <Link to={setlistUrl}>
-                            <Button variant="outline" size="sm">
+                            <Button variant="outline" size="sm" className="rounded-full border-linea bg-transparent hover:bg-superficie-2">
                               Ver completo
                             </Button>
                           </Link>
@@ -502,7 +501,7 @@ const ConcertDetail = () => {
                       <ul className="space-y-2">
                         {setlist.slice(0, 10).map((song) => (
                           <li key={song.id} className="flex items-center gap-3 text-muted-foreground">
-                            <span className="text-primary">•</span>
+                            <span className="text-periwinkle">•</span>
                             <span>{song.song_name}</span>
                             {song.is_official && (
                               <Badge variant="outline" className="text-xs">Oficial</Badge>
@@ -524,10 +523,10 @@ const ConcertDetail = () => {
 
                 {/* Spotify Embed */}
                 {concert.spotify_embed_url && (
-                  <Card>
+                  <Card className="rounded-[20px] border-linea bg-superficie">
                     <CardContent className="p-6">
                       <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                        <Music className="h-5 w-5 text-primary" />
+                        <Music className="h-5 w-5 text-periwinkle" />
                         Escucha en Spotify
                       </h2>
                       <div className="rounded-lg overflow-hidden">
@@ -549,13 +548,13 @@ const ConcertDetail = () => {
               {/* Sidebar */}
               <div className="space-y-6">
                 {/* 1. Event Details Card */}
-                <Card>
+                <Card className="rounded-[20px] border-linea bg-superficie">
                   <CardContent className="p-6 space-y-4">
                     <h3 className="font-bold text-lg">Detalles del evento</h3>
 
                     <div className="space-y-3">
                       <div className="flex items-start gap-3">
-                        <Calendar className="h-5 w-5 text-primary mt-0.5" />
+                        <Calendar className="h-5 w-5 text-periwinkle mt-0.5" />
                         <div>
                           <p className="font-medium">Fecha</p>
                           <p className="text-sm text-muted-foreground capitalize">
@@ -567,7 +566,7 @@ const ConcertDetail = () => {
                       {concert.venues && (
                         <>
                           <div className="flex items-start gap-3">
-                            <MapPin className="h-5 w-5 text-primary mt-0.5" />
+                            <MapPin className="h-5 w-5 text-periwinkle mt-0.5" />
                             <div>
                               <p className="font-medium">Venue</p>
                               <p className="text-sm text-muted-foreground">
@@ -578,7 +577,7 @@ const ConcertDetail = () => {
 
                           {concert.venues.cities && (
                             <div className="flex items-start gap-3">
-                              <Globe className="h-5 w-5 text-primary mt-0.5" />
+                              <Globe className="h-5 w-5 text-periwinkle mt-0.5" />
                               <div>
                                 <p className="font-medium">Ubicación</p>
                                 <p className="text-sm text-muted-foreground">
@@ -593,7 +592,7 @@ const ConcertDetail = () => {
 
                       {concert.promoters && (
                         <div className="flex items-start gap-3">
-                          <Users className="h-5 w-5 text-primary mt-0.5" />
+                          <Users className="h-5 w-5 text-periwinkle mt-0.5" />
                           <div>
                             <p className="font-medium">Promotor</p>
                             <p className="text-sm text-muted-foreground">
@@ -605,7 +604,7 @@ const ConcertDetail = () => {
                     </div>
 
                     {isUpcoming && concert.ticket_url && (
-                      <Button className="w-full mt-4" asChild>
+                      <Button className="w-full mt-4 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95" asChild>
                         <a
                           href={withTicketTracking(concert.ticket_url)}
                           target="_blank"

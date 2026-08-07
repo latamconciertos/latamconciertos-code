@@ -57,7 +57,7 @@ export default function Setlists() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="dark font-fira min-h-screen bg-noche text-texto flex flex-col">
         <Header />
         <main className="flex-1 container mx-auto px-4 py-16">
           <LoadingSpinnerInline message="Cargando setlists..." />
@@ -96,7 +96,8 @@ export default function Setlists() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    /* "Evolución Nocturna": la página vive sobre la noche, como la home */
+    <div className="dark font-fira min-h-screen bg-noche text-texto">
       <SEO
         title={
           searchTerm
@@ -114,10 +115,10 @@ export default function Setlists() {
       <main className="container mx-auto px-4 pt-24 md:pt-28 pb-16">
         {/* Editorial Hero */}
         <header className="text-center mt-6 mb-10 md:mb-14">
-          <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-3">
+          <span className="eyebrow-nocturno justify-center mb-3">
             El archivo de la música en vivo
-          </p>
-          <h1 className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.015em] leading-[0.92] text-foreground text-balance mb-4">
+          </span>
+          <h1 className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[0.01em] leading-[0.92] text-foreground text-balance mb-4">
             Setlists
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -126,7 +127,7 @@ export default function Setlists() {
           {concerts.length > 0 && (
             <div className="flex flex-wrap justify-center gap-x-10 md:gap-x-14 gap-y-4 mt-8 md:mt-10">
               <div className="flex flex-col items-center min-w-[80px]">
-                <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+                <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-[0.01em] leading-none">
                   {concerts.length}
                 </span>
                 <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
@@ -135,7 +136,7 @@ export default function Setlists() {
               </div>
               {setlistCount > 0 && (
                 <div className="flex flex-col items-center min-w-[80px]">
-                  <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-tight leading-none">
+                  <span className="font-display text-3xl md:text-4xl font-black text-foreground tracking-[0.01em] leading-none">
                     {setlistCount}
                   </span>
                   <span className="text-[11px] md:text-xs font-semibold uppercase tracking-[0.15em] text-muted-foreground mt-1.5">
@@ -156,7 +157,7 @@ export default function Setlists() {
               placeholder="Buscar por artista..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full h-11 text-sm pl-11 rounded-full bg-card border-border/60 focus-visible:ring-primary/30"
+              className="w-full h-11 text-sm pl-11 rounded-full bg-superficie border-linea focus-visible:ring-periwinkle"
             />
           </div>
 
@@ -182,7 +183,7 @@ export default function Setlists() {
                   {label}
                   <span
                     className={`absolute left-0 right-0 -bottom-px h-0.5 transition-colors ${
-                      isActive ? 'bg-primary' : 'bg-transparent'
+                      isActive ? 'bg-verde' : 'bg-transparent'
                     }`}
                     aria-hidden="true"
                   />
@@ -193,11 +194,11 @@ export default function Setlists() {
         </div>
 
         {concerts.length === 0 ? (
-          <Card>
+          <Card className="rounded-[20px] border-linea bg-superficie">
             <CardContent className="py-12">
               <div className="text-center">
-                <Music className="w-16 h-16 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-xl font-bold text-foreground mb-2">No se encontraron setlists</h3>
+                <Music className="w-16 h-16 mx-auto text-periwinkle/40 mb-4" />
+                <h3 className="font-display text-2xl font-extrabold uppercase tracking-[0.01em] text-foreground mb-2">No se encontraron setlists</h3>
                 <p className="text-muted-foreground">
                   {searchTerm
                     ? `No hay conciertos de "${searchTerm}" para este filtro`
@@ -209,7 +210,7 @@ export default function Setlists() {
         ) : (
           <>
             {/* Setlists list — setlist.fm / Songkick pattern */}
-            <div className="max-w-4xl mx-auto divide-y divide-border/60 border-y border-border/60">
+            <div className="max-w-4xl mx-auto divide-y divide-linea border-y border-linea">
               {paginatedConcerts.map((concert) => {
                 const imageUrl = concert.artist?.photo_url || concert.image_url || getDefaultImage();
                 const hasSetlist = concert.setlist_count > 0;
@@ -222,20 +223,20 @@ export default function Setlists() {
                   <Link
                     key={concert.id}
                     to={generateSetlistUrl(concert)}
-                    className="group flex items-center gap-4 sm:gap-6 py-5 px-2 sm:px-4 hover:bg-muted/40 transition-colors focus:outline-none"
+                    className="group flex items-center gap-4 sm:gap-6 py-5 px-2 sm:px-4 hover:bg-superficie transition-colors focus:outline-none"
                   >
                     {/* Date column */}
                     <time
                       dateTime={concert.date || ''}
                       className="flex-shrink-0 w-14 sm:w-16 text-center"
                     >
-                      <div className="font-display text-3xl sm:text-4xl font-black text-foreground leading-none">{day}</div>
-                      <div className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.15em] text-primary mt-1">{month}</div>
+                      <div className="font-display text-3xl sm:text-4xl font-black text-verde leading-none">{day}</div>
+                      <div className="font-fira text-[10px] sm:text-xs font-bold uppercase tracking-[0.15em] text-texto-2 mt-1">{month}</div>
                       {year && <div className="text-[10px] text-muted-foreground/70 mt-0.5">{year}</div>}
                     </time>
 
                     {/* Thumbnail — small, square, ringed */}
-                    <div className="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-muted ring-1 ring-border/40">
+                    <div className="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-lg overflow-hidden bg-superficie-2 ring-1 ring-linea">
                       <img
                         src={imageUrl}
                         alt=""
@@ -248,11 +249,11 @@ export default function Setlists() {
                     {/* Main content */}
                     <div className="flex-1 min-w-0">
                       {concert.artist && (
-                        <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] text-primary mb-1 truncate">
+                        <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.18em] text-periwinkle mb-1 truncate">
                           {concert.artist.name}
                         </p>
                       )}
-                      <h3 className="text-sm sm:text-base font-bold leading-snug text-foreground group-hover:text-primary transition-colors truncate">
+                      <h3 className="text-sm sm:text-base font-bold leading-snug text-foreground group-hover:text-periwinkle transition-colors truncate">
                         {concert.title}
                       </h3>
                       {concert.venue && (
@@ -270,7 +271,7 @@ export default function Setlists() {
                     <div className="flex-shrink-0 hidden sm:flex flex-col items-end gap-1">
                       {hasSetlist ? (
                         <>
-                          <span className="font-display text-xl font-black text-foreground leading-none">
+                          <span className="font-display text-2xl font-black text-verde leading-none">
                             {concert.setlist_count}
                           </span>
                           <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
@@ -278,7 +279,7 @@ export default function Setlists() {
                           </span>
                         </>
                       ) : (
-                        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground bg-muted px-2 py-1 rounded-full">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-texto-2 bg-superficie border border-linea px-2 py-1 rounded-full">
                           Sin setlist
                         </span>
                       )}
@@ -288,7 +289,7 @@ export default function Setlists() {
                     <div className="flex-shrink-0 sm:hidden">
                       {hasSetlist ? (
                         <div className="text-right">
-                          <div className="font-display text-lg font-black text-foreground leading-none">
+                          <div className="font-display text-2xl font-black text-verde leading-none">
                             {concert.setlist_count}
                           </div>
                           <div className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground mt-0.5">
@@ -303,7 +304,7 @@ export default function Setlists() {
                     </div>
 
                     {/* Arrow */}
-                    <span className="flex-shrink-0 text-muted-foreground/40 group-hover:text-primary group-hover:translate-x-1 transition-all" aria-hidden="true">
+                    <span className="flex-shrink-0 text-muted-foreground/40 group-hover:text-periwinkle group-hover:translate-x-1 transition-all" aria-hidden="true">
                       →
                     </span>
                   </Link>

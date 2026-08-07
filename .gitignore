@@ -64,3 +64,6 @@ coverage/
 
 # Supabase CLI cache (project refs, pooler URLs — not for VCS)
 supabase/.temp/
+
+# Claude Code local settings
+.claude/settings.local.json

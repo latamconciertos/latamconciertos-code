@@ -39,19 +39,20 @@ export interface FestivalDetailDialogProps {
 export const FestivalDetailDialog = ({ festival, onClose }: FestivalDetailDialogProps) => {
   return (
     <Dialog open={!!festival} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+      {/* "Evolución Nocturna": el diálogo se monta en un portal, así que lleva su propio contexto oscuro */}
+      <DialogContent className="dark font-fira max-w-5xl max-h-[90vh] overflow-y-auto rounded-[20px] border-linea bg-noche text-texto">
         {festival && (
           <>
             <DialogHeader>
-              <DialogTitle className="text-2xl">{festival.name}</DialogTitle>
+              <DialogTitle className="font-display text-2xl md:text-3xl font-extrabold uppercase tracking-[0.01em] text-texto">{festival.name}</DialogTitle>
               {festival.edition && (
-                <p className="text-lg text-muted-foreground">Edición {festival.edition}</p>
+                <p className="text-sm font-bold uppercase tracking-[0.18em] text-verde">Edición {festival.edition}</p>
               )}
             </DialogHeader>
 
             <div className="grid md:grid-cols-2 gap-6">
               {/* Festival Image - Square */}
-              <div className="relative w-full aspect-square rounded-lg overflow-hidden">
+              <div className="relative w-full aspect-square rounded-[20px] border border-linea bg-superficie-2 overflow-hidden">
                 <img
                   src={optimizeUnsplashUrl(
                     festival.image_url || getDefaultImage(),
@@ -70,18 +71,28 @@ export const FestivalDetailDialog = ({ festival, onClose }: FestivalDetailDialog
                 </div>
 
                 <Tabs defaultValue="details" className="w-full">
-                  <TabsList className="grid w-full grid-cols-3">
-                    <TabsTrigger value="details">Detalles</TabsTrigger>
-                    <TabsTrigger value="lineup">Lineup</TabsTrigger>
-                    <TabsTrigger value="community">Comunidad</TabsTrigger>
+                  <TabsList className="grid w-full grid-cols-3 h-auto rounded-none bg-transparent p-0 border-b border-linea">
+                    {[
+                      { value: 'details', label: 'Detalles' },
+                      { value: 'lineup', label: 'Lineup' },
+                      { value: 'community', label: 'Comunidad' },
+                    ].map(({ value, label }) => (
+                      <TabsTrigger
+                        key={value}
+                        value={value}
+                        className="rounded-none border-b-2 border-transparent px-3 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] text-texto-2 data-[state=active]:border-verde data-[state=active]:bg-transparent data-[state=active]:text-texto data-[state=active]:shadow-none"
+                      >
+                        {label}
+                      </TabsTrigger>
+                    ))}
                   </TabsList>
 
                   <TabsContent value="details" className="space-y-4 pt-4">
                     {festival.start_date && (
                       <div>
-                        <h3 className="text-sm font-semibold text-muted-foreground mb-1">Fecha</h3>
+                        <h3 className="text-sm font-semibold text-texto-2 mb-1">Fecha</h3>
                         <div className="flex items-center gap-2">
-                          <Calendar className="h-5 w-5 text-primary" />
+                          <Calendar className="h-5 w-5 text-periwinkle" />
                           <p className="text-lg">
                             {formatDateRange(festival.start_date, festival.end_date)}
                           </p>
@@ -92,18 +103,18 @@ export const FestivalDetailDialog = ({ festival, onClose }: FestivalDetailDialog
                     {festival.venues && (
                       <>
                         <div>
-                          <h3 className="text-sm font-semibold text-muted-foreground mb-1">Venue</h3>
+                          <h3 className="text-sm font-semibold text-texto-2 mb-1">Venue</h3>
                           <div className="flex items-center gap-2">
-                            <MapPin className="h-5 w-5 text-primary" />
+                            <MapPin className="h-5 w-5 text-periwinkle" />
                             <p className="text-lg">{festival.venues.name}</p>
                           </div>
                         </div>
 
                         {festival.venues.cities && (
                           <div>
-                            <h3 className="text-sm font-semibold text-muted-foreground mb-1">Ubicación</h3>
+                            <h3 className="text-sm font-semibold text-texto-2 mb-1">Ubicación</h3>
                             <div className="flex items-center gap-2">
-                              <Globe className="h-5 w-5 text-primary" />
+                              <Globe className="h-5 w-5 text-periwinkle" />
                               <p className="text-lg">
                                 {festival.venues.cities.name}
                                 {festival.venues.cities.countries?.name &&
@@ -117,26 +128,26 @@ export const FestivalDetailDialog = ({ festival, onClose }: FestivalDetailDialog
 
                     {festival.description && (
                       <div>
-                        <h3 className="text-sm font-semibold text-muted-foreground mb-1">Descripción</h3>
-                        <p className="text-muted-foreground">{festival.description}</p>
+                        <h3 className="text-sm font-semibold text-texto-2 mb-1">Descripción</h3>
+                        <p className="text-texto-2">{festival.description}</p>
                       </div>
                     )}
 
                     {festival.ticket_url && (
                       <Button
-                        className="w-full"
+                        className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
                         size="lg"
                         onClick={() => window.open(festival.ticket_url!, '_blank')}
                       >
                         <Ticket className="h-5 w-5 mr-2" />
-                        Comprar Entradas
+                        Comprar entradas
                       </Button>
                     )}
 
                     {festival.website_url && (
                       <Button
                         variant="outline"
-                        className="w-full"
+                        className="w-full rounded-full border-linea bg-transparent text-texto hover:bg-superficie-2 hover:text-texto"
                         size="lg"
                         onClick={() => window.open(festival.website_url!, '_blank')}
                       >
@@ -149,7 +160,7 @@ export const FestivalDetailDialog = ({ festival, onClose }: FestivalDetailDialog
                     <Link to={`/festivals/${festival.slug}`} className="block">
                       <Button
                         variant="outline"
-                        className="w-full gap-2"
+                        className="w-full gap-2 rounded-full border-linea bg-transparent text-texto hover:bg-superficie-2 hover:text-texto"
                         size="lg"
                       >
                         <Info className="h-5 w-5" />
@@ -164,24 +175,24 @@ export const FestivalDetailDialog = ({ festival, onClose }: FestivalDetailDialog
                         {festival.lineup_artists.map((artist, index) => (
                           <div
                             key={index}
-                            className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+                            className="flex items-center gap-3 p-3 rounded-2xl border border-linea bg-superficie hover:bg-superficie-2 transition-colors"
                           >
-                            <span className="text-sm font-semibold text-muted-foreground w-8">{index + 1}.</span>
-                            <p className="font-semibold">{artist}</p>
+                            <span className="font-display text-2xl font-extrabold text-verde w-8 leading-none">{index + 1}</span>
+                            <p className="font-semibold text-texto">{artist}</p>
                           </div>
                         ))}
                       </div>
                     ) : (
                       <div className="text-center py-8">
-                        <Users className="h-16 w-16 text-muted-foreground mx-auto mb-3 opacity-50" />
-                        <p className="text-muted-foreground">Lineup por confirmar</p>
+                        <Users className="h-16 w-16 text-periwinkle/40 mx-auto mb-3" />
+                        <p className="text-texto-2">Lineup por confirmar</p>
                       </div>
                     )}
                   </TabsContent>
 
                   <TabsContent value="community" className="pt-4">
                     <div className="text-center py-8">
-                      <p className="text-muted-foreground">
+                      <p className="text-texto-2">
                         La funcionalidad de comunidad estará disponible próximamente
                       </p>
                     </div>

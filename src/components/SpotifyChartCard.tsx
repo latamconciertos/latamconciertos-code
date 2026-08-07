@@ -27,7 +27,7 @@ export const SpotifyChartCard = ({ item, type }: SpotifyChartCardProps) => {
       className="group flex-shrink-0 w-[160px] sm:w-[180px]"
     >
       {/* Image */}
-      <div className="relative aspect-square rounded-xl overflow-hidden bg-muted mb-2.5 shadow-sm">
+      <div className="relative aspect-square rounded-xl overflow-hidden bg-superficie border border-linea group-hover:border-[rgba(89,124,255,.35)] transition-colors mb-2.5">
         <img
           src={imageUrl}
           alt={title}
@@ -49,7 +49,7 @@ export const SpotifyChartCard = ({ item, type }: SpotifyChartCardProps) => {
       </div>
 
       {/* Info */}
-      <h3 className="text-sm font-semibold text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+      <h3 className="text-sm font-semibold text-foreground line-clamp-1 group-hover:text-periwinkle transition-colors">
         {title}
       </h3>
       <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">

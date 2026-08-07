@@ -2,27 +2,28 @@ import { useEffect, useState, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { Button } from './ui/button';
 import logo from '@/assets/logo.png';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { StadiumArcs } from '@/components/newhome/StadiumArcs';
+
 interface HeroLandingProps {
   onScrollPastHero: (isPast: boolean) => void;
 }
+
 const HeroLanding = ({
   onScrollPastHero
 }: HeroLandingProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [windowHeight, setWindowHeight] = useState(0);
-  const isMobile = useIsMobile(); // Detect mobile for performance optimizations
+  const isMobile = useIsMobile();
 
-  const {
-    scrollY
-  } = useScroll();
+  const { scrollY } = useScroll();
 
   // Parallax effects - optimized for smoother transition
   const y = useTransform(scrollY, [0, windowHeight], [0, windowHeight * 0.2]);
   const opacity = useTransform(scrollY, [0, windowHeight * 0.7], [1, 0]);
   const contentOpacity = useTransform(scrollY, [0, windowHeight * 0.6], [1, 0]);
+
   useEffect(() => {
     setWindowHeight(window.innerHeight);
     const handleResize = () => {
@@ -39,6 +40,7 @@ const HeroLanding = ({
     });
     return () => unsubscribe();
   }, [scrollY, windowHeight, onScrollPastHero]);
+
   const scrollToContent = () => {
     window.scrollTo({
       top: windowHeight,
@@ -46,51 +48,29 @@ const HeroLanding = ({
     });
   };
 
-  // Reduce animation duration on mobile for snappier feel
   const animDuration = isMobile ? 0.4 : 0.8;
 
-  return <motion.div ref={containerRef} className="fixed top-0 left-0 right-0 h-screen w-full overflow-hidden z-0" style={{
-    y
-  }}>
-    {/* Background - matching AuroraBackground */}
-    <motion.div className="absolute inset-0 bg-[#0c1a3d]" style={{
-      opacity
-    }} />
+  return <motion.div ref={containerRef} className="fixed top-0 left-0 right-0 h-screen w-full overflow-hidden z-0 bg-noche" style={{ y }}>
+    {/* Glow de escenario: cobalto en radial, nunca plano */}
+    <motion.div
+      className="absolute left-1/2 top-[36%] h-[420px] w-[min(760px,90vw)] -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
+      style={{
+        opacity,
+        background: 'radial-gradient(closest-side, rgba(0,74,173,.45), transparent 70%)',
+        filter: isMobile ? 'blur(70px)' : 'blur(110px)'
+      }}
+    />
 
-    {/* Aurora effect - simplified for mobile performance */}
-    <motion.div className="absolute inset-0 overflow-hidden pointer-events-none" style={{ opacity }}>
-      <div
-        className={`
-            [--white-gradient:repeating-linear-gradient(100deg,var(--white)_0%,var(--white)_7%,var(--transparent)_10%,var(--transparent)_12%,var(--white)_16%)]
-            [--dark-gradient:repeating-linear-gradient(100deg,hsl(220,60%,15%)_0%,hsl(220,60%,15%)_7%,var(--transparent)_10%,var(--transparent)_12%,hsl(220,60%,15%)_16%)]
-            [--aurora:repeating-linear-gradient(100deg,var(--blue-500)_10%,var(--indigo-300)_15%,var(--blue-300)_20%,var(--violet-200)_25%,var(--blue-400)_30%)]
-            [--aurora-dark:repeating-linear-gradient(100deg,hsl(220,70%,35%)_10%,hsl(220,80%,45%)_15%,hsl(230,70%,40%)_20%,hsl(220,75%,50%)_25%,hsl(210,80%,40%)_30%)]
-            [background-image:var(--dark-gradient),var(--aurora-dark)]
-            [background-size:300%,_200%]
-            [background-position:50%_50%,50%_50%]
-            ${isMobile ? 'blur-[5px]' : 'blur-[10px]'}
-            after:content-[""] after:absolute after:inset-0
-            after:[background-image:var(--dark-gradient),var(--aurora-dark)]
-            after:[background-size:200%,_100%] 
-            after:animate-aurora after:[background-attachment:fixed] after:mix-blend-difference
-            absolute -inset-[10px] ${isMobile ? 'opacity-40' : 'opacity-70'}
-            ${isMobile ? '' : 'will-change-transform'}
-            [mask-image:radial-gradient(ellipse_at_100%_0%,black_20%,var(--transparent)_70%)]
-          `}
-      />
+    {/* Elemento firma: arcos del isotipo como luz saliendo del horizonte */}
+    <motion.div className="absolute inset-x-0 bottom-0 h-[55vh] pointer-events-none" style={{ opacity }}>
+      <StadiumArcs className="w-full h-full" />
     </motion.div>
 
-    {/* Subtle radial glow effect */}
-    <motion.div className="absolute inset-0" style={{
-      opacity,
-      background: 'radial-gradient(ellipse at 30% 40%, rgba(59, 130, 246, 0.25) 0%, transparent 50%)'
-    }} />
-
-    {/* Content container - no blur on mobile for better performance */}
+    {/* Content container */}
     <motion.div className="relative z-10 flex flex-col items-center justify-center h-full px-4" style={{
       opacity: contentOpacity
     }}>
-      {/* Logo - faster animation on mobile */}
+      {/* Logo */}
       <motion.div initial={{
         opacity: 0,
         y: -20
@@ -100,17 +80,30 @@ const HeroLanding = ({
       }} transition={{
         duration: animDuration,
         delay: 0.2
-      }} className="mb-10 md:mb-12">
+      }} className="mb-8 md:mb-10">
         <img
           src={logo}
           alt="Conciertos LATAM"
-          className="h-44 sm:h-28 md:h-32 w-auto object-contain"
+          className="h-36 sm:h-24 md:h-28 w-auto object-contain"
           loading="eager"
           decoding="async"
         />
       </motion.div>
 
-      {/* Main title - faster animation on mobile */}
+      {/* Badge en vivo */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: animDuration, delay: 0.3 }}
+        className="mb-6 flex items-center gap-2.5 rounded-full border border-linea bg-superficie/60 px-4 py-1.5"
+      >
+        <span className="h-2 w-2 rounded-full bg-verde punto-vivo" />
+        <span className="font-fira text-[11px] font-bold uppercase tracking-[0.14em] text-azul-claro">
+          Música en vivo en toda Latinoamérica
+        </span>
+      </motion.div>
+
+      {/* Titular: Big Shoulders, cartel de gira */}
       <motion.h1 initial={{
         opacity: 0,
         y: 30
@@ -120,20 +113,22 @@ const HeroLanding = ({
       }} transition={{
         duration: animDuration,
         delay: 0.4
-      }} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center font-fira leading-tight">
-        <span className="text-white">Todos los conciertos</span>
+      }} className="font-display font-black uppercase tracking-[0.01em] text-center leading-[0.92] text-texto text-[clamp(48px,8.5vw,116px)]">
+        Todos los conciertos
         <br />
-        <span className="text-[hsl(120,45%,55%)]">de Latinoamérica</span>
+        <span className="bg-gradient-to-r from-periwinkle to-verde bg-clip-text text-transparent">
+          de Latinoamérica
+        </span>
       </motion.h1>
 
-      {/* Una sola línea de apoyo, muda y corta */}
+      {/* Una sola línea de apoyo */}
       <motion.p
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: animDuration, delay: 0.5 }}
-        className="mt-7 text-center font-fira text-base sm:text-lg text-white/55"
+        className="mt-6 text-center font-fira text-base sm:text-lg text-texto-2 max-w-xl"
       >
-        Fechas, entradas y setlists en un solo lugar.
+        Fechas, entradas, setlists y las historias detrás de cada show.
       </motion.p>
 
       {/* Un solo CTA */}
@@ -146,20 +141,18 @@ const HeroLanding = ({
       }} transition={{
         duration: animDuration,
         delay: 0.6
-      }} className="mt-12 md:mt-14">
-        <Link to="/concerts">
-          <Button className="bg-[hsl(120,45%,55%)] text-[#0c1a3d] hover:bg-[hsl(120,50%,62%)] text-base sm:text-lg font-fira font-semibold px-10 py-3.5 h-auto rounded-full transition-colors">
-            Ver próximos conciertos <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
+      }} className="mt-10 md:mt-12">
+        <Link to="/concerts" className="btn-nocturno px-10 text-base sm:text-lg">
+          Ver próximos conciertos <ArrowRight className="h-5 w-5" />
         </Link>
       </motion.div>
     </motion.div>
 
-    {/* Bottom fade gradient - enhanced for smoother transition */}
-    <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-[#0c1a3d] via-[#0c1a3d]/80 to-transparent pointer-events-none" />
+    {/* Fade inferior hacia la noche */}
+    <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-noche via-noche/80 to-transparent pointer-events-none" />
 
     {/* Scroll indicator */}
-    <motion.button onClick={scrollToContent} className="absolute bottom-8 left-0 right-0 mx-auto w-12 h-12 flex items-center justify-center text-white/60 hover:text-white/90 transition-colors z-20" initial={{
+    <motion.button onClick={scrollToContent} aria-label="Bajar al contenido" className="absolute bottom-8 left-0 right-0 mx-auto w-12 h-12 flex items-center justify-center text-periwinkle/60 hover:text-periwinkle transition-colors z-20" initial={{
       opacity: 0
     }} animate={{
       opacity: 1,

@@ -112,7 +112,7 @@ const Concerts = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="dark font-fira min-h-screen bg-noche text-texto flex flex-col">
         <Header />
         <main className="flex-1 container mx-auto px-4 py-16">
           <LoadingSpinnerInline message="Cargando conciertos..." />
@@ -133,7 +133,8 @@ const Concerts = () => {
         url="/concerts"
         structuredData={[...structuredData, breadcrumbData]}
       />
-      <div className="min-h-screen bg-background">
+      {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-28 pb-16" itemScope itemType="https://schema.org/CollectionPage">
@@ -188,7 +189,7 @@ const Concerts = () => {
                 placeholder="Buscar conciertos, artistas o venues..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full h-11 text-sm pl-11 rounded-full bg-card border-border/60 focus-visible:ring-primary/30"
+                className="w-full h-11 text-sm pl-11 rounded-full bg-superficie border-linea focus-visible:ring-periwinkle"
               />
             </div>
 
@@ -290,7 +291,7 @@ const Concerts = () => {
                             {label}
                             <span
                               className={`absolute left-0 right-0 -bottom-px h-0.5 transition-colors ${
-                                isActive ? 'bg-primary' : 'bg-transparent'
+                                isActive ? 'bg-verde' : 'bg-transparent'
                               }`}
                               aria-hidden="true"
                             />
@@ -314,7 +315,7 @@ const Concerts = () => {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger className="h-12 rounded-full bg-superficie border-linea focus:ring-periwinkle">
                       <SelectValue placeholder="Seleccionar país" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50">
@@ -332,7 +333,7 @@ const Concerts = () => {
                     onValueChange={setSelectedCity}
                     disabled={selectedCountry === 'all'}
                   >
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger className="h-12 rounded-full bg-superficie border-linea focus:ring-periwinkle">
                       <SelectValue placeholder="Seleccionar ciudad" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50">
@@ -365,7 +366,7 @@ const Concerts = () => {
                         {label}
                         <span
                           className={`absolute left-0 right-0 -bottom-px h-0.5 transition-colors ${
-                            isActive ? 'bg-primary' : 'bg-transparent'
+                            isActive ? 'bg-verde' : 'bg-transparent'
                           }`}
                           aria-hidden="true"
                         />
@@ -415,9 +416,9 @@ const Concerts = () => {
           {/* Empty state */}
           {concerts.length === 0 && (
             <div className="text-center py-12">
-              <Music className="h-24 w-24 text-muted-foreground mx-auto mb-4" aria-hidden="true" />
-              <h2 className="text-2xl font-bold text-foreground mb-2">No hay conciertos disponibles</h2>
-              <p className="text-muted-foreground">Próximamente añadiremos increíbles eventos musicales.</p>
+              <Music className="h-24 w-24 text-periwinkle/40 mx-auto mb-4" aria-hidden="true" />
+              <h2 className="font-display text-2xl font-extrabold uppercase tracking-[0.01em] text-foreground mb-2">No hay conciertos disponibles</h2>
+              <p className="text-muted-foreground">Muy pronto anunciaremos nuevos shows.</p>
             </div>
           )}
 

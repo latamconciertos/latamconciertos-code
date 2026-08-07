@@ -87,7 +87,7 @@ export default function SetlistDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
         <main className="container mx-auto px-4 pt-24">
           <LoadingSpinner message="Cargando setlist..." />
@@ -99,14 +99,14 @@ export default function SetlistDetail() {
 
   if (!concert) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
-        <main className="container mx-auto px-4 py-6">
+        <main className="container mx-auto px-4 py-6 pt-28">
           <div className="text-center py-10">
-            <h2 className="text-xl font-bold mb-3">Setlist no encontrado</h2>
-            <Button size="sm" asChild>
-              <Link to="/setlists">Ver todos los setlists</Link>
-            </Button>
+            <h2 className="font-display text-2xl font-extrabold uppercase tracking-[0.01em] mb-6">Setlist no encontrado</h2>
+            <Link to="/setlists" className="btn-nocturno-secundario">
+              Ver todos los setlists
+            </Link>
           </div>
         </main>
         <Footer />
@@ -115,7 +115,8 @@ export default function SetlistDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    /* "Evolución Nocturna": la página vive sobre la noche, como la home */
+    <div className="dark font-fira min-h-screen bg-noche text-texto">
       <SEO
         title={`Setlist ${concert.artist?.name || ''} - ${concert.venue?.name || ''}, ${concert.venue?.location || ''} ${concert.date ? new Date(concert.date).toLocaleDateString('es', { year: 'numeric', month: 'long', day: 'numeric' }) : ''} | Lista de Canciones`}
         description={`Lista completa de canciones del concierto de ${concert.artist?.name || 'artista'} en ${concert.venue?.name || 'venue'}, ${concert.venue?.location || 'ciudad'} el ${concert.date ? new Date(concert.date).toLocaleDateString('es', { year: 'numeric', month: 'long', day: 'numeric' }) : 'fecha'}. ${songs.length} canciones interpretadas. Setlist oficial y contribuciones de la comunidad.`}
@@ -131,7 +132,7 @@ export default function SetlistDetail() {
           {/* Concert Header */}
           <div className="mb-6">
             {concert.image_url && (
-              <div className="aspect-video mb-4 rounded-lg overflow-hidden">
+              <div className="aspect-video mb-4 rounded-[20px] overflow-hidden bg-superficie-2 ring-1 ring-linea">
                 <img
                   src={concert.image_url}
                   alt={concert.title}
@@ -140,7 +141,7 @@ export default function SetlistDetail() {
               </div>
             )}
 
-            <h1 className="text-2xl md:text-3xl font-bold mb-3">{concert.title}</h1>
+            <h1 className="font-display uppercase text-3xl md:text-4xl font-black tracking-[0.01em] leading-[0.95] mb-3">{concert.title}</h1>
 
             <div className="flex flex-wrap gap-3 text-sm text-muted-foreground mb-3">
               {concert.artist && (
@@ -169,9 +170,9 @@ export default function SetlistDetail() {
               )}
             </div>
 
-            <Badge variant="secondary" className="text-xs">
+            <span className="inline-flex items-center rounded-full border border-verde/30 bg-superficie px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-verde">
               {songs.length} {songs.length === 1 ? 'canción' : 'canciones'}
-            </Badge>
+            </span>
           </div>
 
           {/* Social Share */}
@@ -183,7 +184,7 @@ export default function SetlistDetail() {
           </div>
 
           {/* Setlist */}
-          <Card className="mb-6">
+          <Card className="mb-6 rounded-[20px] border-linea bg-superficie">
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Setlist</CardTitle>
             </CardHeader>
@@ -192,8 +193,8 @@ export default function SetlistDetail() {
                 {songs.map((song) => {
                   const albumImage = song.spotify_track_id ? trackImages[song.spotify_track_id] : undefined;
                   return (
-                  <div key={song.id} className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent transition-colors">
-                    <div className="h-10 w-10 flex-shrink-0 rounded overflow-hidden bg-muted flex items-center justify-center">
+                  <div key={song.id} className="flex items-start gap-3 p-2 rounded-lg hover:bg-superficie-2 transition-colors">
+                    <div className="h-10 w-10 flex-shrink-0 rounded overflow-hidden bg-superficie-2 flex items-center justify-center">
                       {albumImage ? (
                         <img
                           src={albumImage}
@@ -209,11 +210,11 @@ export default function SetlistDetail() {
                       <div className="text-sm font-medium flex items-center gap-1.5 flex-wrap">
                         {song.song_name}
                         {song.is_official ? (
-                          <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-700 text-[10px] px-1.5 py-0">
+                          <Badge variant="secondary" className="bg-verde/15 text-verde border border-verde/30 text-[10px] px-1.5 py-0">
                             Oficial
                           </Badge>
                         ) : (
-                          <Badge variant="secondary" className="bg-blue-500/20 text-blue-700 text-[10px] px-1.5 py-0">
+                          <Badge variant="secondary" className="bg-periwinkle/15 text-periwinkle border border-periwinkle/30 text-[10px] px-1.5 py-0">
                             Community
                           </Badge>
                         )}
@@ -257,13 +258,13 @@ export default function SetlistDetail() {
 
           {/* Contribute Section */}
           {user ? (
-            <Card>
+            <Card className="rounded-[20px] border-linea bg-superficie">
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">Contribuir al Setlist</CardTitle>
               </CardHeader>
               <CardContent>
                 {!showContributeForm ? (
-                  <Button size="sm" onClick={() => setShowContributeForm(true)}>
+                  <Button size="sm" onClick={() => setShowContributeForm(true)} className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95">
                     <Plus className="w-3.5 h-3.5 mr-1.5" />
                     Agregar una canción
                   </Button>
@@ -276,7 +277,7 @@ export default function SetlistDetail() {
                         value={formData.song_name}
                         onChange={(e) => setFormData({ ...formData, song_name: e.target.value })}
                         required
-                        className="h-9 text-sm"
+                        className="h-9 text-sm rounded-full bg-superficie border-linea focus-visible:ring-periwinkle"
                       />
                     </div>
                     <div>
@@ -285,7 +286,7 @@ export default function SetlistDetail() {
                         id="artist_name"
                         value={formData.artist_name}
                         onChange={(e) => setFormData({ ...formData, artist_name: e.target.value })}
-                        className="h-9 text-sm"
+                        className="h-9 text-sm rounded-full bg-superficie border-linea focus-visible:ring-periwinkle"
                       />
                     </div>
                     <div>
@@ -295,11 +296,11 @@ export default function SetlistDetail() {
                         value={formData.notes}
                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                         rows={2}
-                        className="text-sm"
+                        className="text-sm rounded-2xl bg-superficie border-linea focus-visible:ring-periwinkle"
                       />
                     </div>
                     <div className="flex gap-2">
-                      <Button type="submit" size="sm" disabled={contributeMutation.isPending}>
+                      <Button type="submit" size="sm" disabled={contributeMutation.isPending} className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95">
                         {contributeMutation.isPending ? 'Enviando...' : 'Enviar Contribución'}
                       </Button>
                       <Button
@@ -307,6 +308,7 @@ export default function SetlistDetail() {
                         variant="outline"
                         size="sm"
                         onClick={() => setShowContributeForm(false)}
+                        className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                       >
                         Cancelar
                       </Button>
@@ -316,13 +318,13 @@ export default function SetlistDetail() {
               </CardContent>
             </Card>
           ) : (
-            <Card>
+            <Card className="rounded-[20px] border-linea bg-superficie">
               <CardContent className="py-6">
                 <div className="text-center">
                   <p className="text-sm text-muted-foreground mb-3">
                     Inicia sesión para contribuir canciones al setlist
                   </p>
-                  <Button size="sm" asChild>
+                  <Button size="sm" asChild className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95">
                     <Link to="/auth">Iniciar Sesión</Link>
                   </Button>
                 </div>

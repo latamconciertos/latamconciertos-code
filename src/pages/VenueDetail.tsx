@@ -1,8 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { Building, Calendar, MapPin, Users, ArrowLeft } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -19,7 +17,7 @@ const VenueDetail = () => {
 
     if (venueLoading) {
         return (
-            <div className="min-h-screen bg-background">
+            <div className="dark font-fira min-h-screen bg-noche text-texto">
                 <Header />
                 <LoadingSpinner message="Cargando venue..." />
                 <Footer />
@@ -29,17 +27,15 @@ const VenueDetail = () => {
 
     if (!venue) {
         return (
-            <div className="min-h-screen bg-background">
+            <div className="dark font-fira min-h-screen bg-noche text-texto">
                 <Header />
                 <div className="container mx-auto px-4 py-16">
                     <div className="text-center">
-                        <Building className="h-24 w-24 text-muted-foreground mx-auto mb-4" />
-                        <h2 className="text-2xl font-bold text-foreground mb-2">Venue no encontrado</h2>
-                        <Link to="/venues">
-                            <Button>
-                                <ArrowLeft className="h-4 w-4 mr-2" />
-                                Volver a venues
-                            </Button>
+                        <Building className="h-24 w-24 text-periwinkle/40 mx-auto mb-4" aria-hidden="true" />
+                        <h2 className="font-display text-2xl font-extrabold uppercase tracking-[0.01em] text-foreground mb-6">Venue no encontrado</h2>
+                        <Link to="/venues" className="btn-nocturno-secundario">
+                            <ArrowLeft className="h-4 w-4" />
+                            Volver a venues
                         </Link>
                     </div>
                 </div>
@@ -84,7 +80,8 @@ const VenueDetail = () => {
                 url={`/venues/${venue.cities?.slug}/${venue.slug}`}
                 structuredData={structuredData}
             />
-            <div className="min-h-screen bg-background">
+            {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+            <div className="dark font-fira min-h-screen bg-noche text-texto">
                 <Header />
 
                 <main className="pt-24 pb-12">
@@ -98,8 +95,8 @@ const VenueDetail = () => {
 
                     {/* Hero Section */}
                     <div className="relative">
-                        {/* Background Banner */}
-                        <div className="h-64 md:h-80 bg-gradient-to-br from-primary/20 via-primary/10 to-background overflow-hidden">
+                        {/* Background Banner — glow cobalto sobre la noche, nunca cobalto plano */}
+                        <div className="relative h-64 md:h-80 bg-noche overflow-hidden">
                             {venue.image_url && (
                                 <div className="absolute inset-0 opacity-20">
                                     <img
@@ -109,18 +106,23 @@ const VenueDetail = () => {
                                     />
                                 </div>
                             )}
+                            <div
+                                className="absolute inset-0 pointer-events-none"
+                                style={{ background: 'linear-gradient(180deg, rgba(0,74,173,.3), rgba(7,13,31,.4) 55%, #070D1F)' }}
+                                aria-hidden="true"
+                            />
                         </div>
 
                         {/* Venue Card Floating */}
                         <div className="container mx-auto px-4">
                             <div className="relative -mt-52 md:-mt-64 mb-8">
-                                <Card className="overflow-hidden shadow-2xl border-2">
+                                <Card className="overflow-hidden rounded-[20px] border-linea bg-superficie shadow-[0_20px_50px_rgba(0,0,0,.5)]">
                                     <CardContent className="p-6 md:p-8">
                                         <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-start">
                                             {/* Venue Icon/Image */}
                                             <div className="flex-shrink-0">
                                                 {venue.image_url ? (
-                                                    <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-lg overflow-hidden ring-4 ring-primary/20 shadow-xl">
+                                                    <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-2xl overflow-hidden ring-1 ring-linea bg-superficie-2">
                                                         <img
                                                             src={venue.image_url}
                                                             alt={venue.name}
@@ -128,26 +130,26 @@ const VenueDetail = () => {
                                                         />
                                                     </div>
                                                 ) : (
-                                                    <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-lg overflow-hidden ring-4 ring-primary/20 shadow-xl bg-primary/10 flex items-center justify-center">
-                                                        <Building className="h-24 w-24 text-primary" />
+                                                    <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-2xl overflow-hidden ring-1 ring-linea bg-periwinkle/10 flex items-center justify-center">
+                                                        <Building className="h-24 w-24 text-periwinkle" aria-hidden="true" />
                                                     </div>
                                                 )}
-                                                <Badge className="mt-4 w-full justify-center py-2">
-                                                    <Building className="h-4 w-4 mr-2" />
+                                                <span className="mt-4 w-full inline-flex items-center justify-center gap-2 rounded-full border border-verde/30 bg-noche/80 px-3 py-2 text-[10px] font-bold uppercase tracking-[0.12em] text-verde">
+                                                    <Building className="h-4 w-4" aria-hidden="true" />
                                                     Venue Verificado
-                                                </Badge>
+                                                </span>
                                             </div>
 
                                             {/* Venue Info */}
                                             <div className="flex-1 text-center md:text-left">
-                                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-3">
+                                                <h1 className="font-display uppercase text-3xl md:text-4xl lg:text-5xl font-black tracking-[0.01em] leading-[0.95] text-texto mb-3">
                                                     {venue.name}
                                                 </h1>
 
                                                 <div className="space-y-2 mb-6">
                                                     {venue.cities && (
                                                         <div className="flex items-center gap-2 justify-center md:justify-start text-lg">
-                                                            <MapPin className="h-5 w-5 text-primary" />
+                                                            <MapPin className="h-5 w-5 text-periwinkle" aria-hidden="true" />
                                                             <span className="font-medium">
                                                                 {venue.cities.name}
                                                                 {venue.cities.countries && `, ${venue.cities.countries.name}`}
@@ -155,7 +157,7 @@ const VenueDetail = () => {
                                                         </div>
                                                     )}
                                                     {venue.address && (
-                                                        <p className="text-muted-foreground">
+                                                        <p className="text-texto-2">
                                                             {venue.address}
                                                         </p>
                                                     )}
@@ -164,18 +166,18 @@ const VenueDetail = () => {
                                                 {/* Quick Stats */}
                                                 <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                                                     {venue.capacity && (
-                                                        <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
-                                                            <Users className="h-4 w-4 text-primary" />
+                                                        <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-linea bg-superficie-2">
+                                                            <Users className="h-4 w-4 text-periwinkle" aria-hidden="true" />
                                                             <span className="text-sm font-semibold">
-                                                                Capacidad: {venue.capacity.toLocaleString()} personas
+                                                                Capacidad: <span className="text-verde">{venue.capacity.toLocaleString()}</span> personas
                                                             </span>
                                                         </div>
                                                     )}
                                                     {upcomingConcerts.length > 0 && (
-                                                        <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full">
-                                                            <Calendar className="h-4 w-4 text-primary" />
+                                                        <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-linea bg-superficie-2">
+                                                            <Calendar className="h-4 w-4 text-periwinkle" aria-hidden="true" />
                                                             <span className="text-sm font-semibold">
-                                                                {upcomingConcerts.length} {upcomingConcerts.length === 1 ? 'Concierto Próximo' : 'Conciertos Próximos'}
+                                                                <span className="text-verde">{upcomingConcerts.length}</span> {upcomingConcerts.length === 1 ? 'Concierto Próximo' : 'Conciertos Próximos'}
                                                             </span>
                                                         </div>
                                                     )}
@@ -192,7 +194,7 @@ const VenueDetail = () => {
                     <div className="container mx-auto px-4">
                         {upcomingConcerts.length > 0 && (
                             <div className="mb-12">
-                                <h2 className="text-2xl md:text-3xl font-bold mb-6">Próximos Conciertos</h2>
+                                <h2 className="font-display uppercase text-2xl md:text-3xl font-extrabold tracking-[0.01em] leading-none mb-6">Próximos Conciertos</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {upcomingConcerts.map((concert) => {
                                         const monthShort = formatInBogota(concert.date, 'MMM').toUpperCase();
@@ -200,35 +202,40 @@ const VenueDetail = () => {
 
                                         return (
                                             <Link key={concert.id} to={`/concerts/${concert.slug}`}>
-                                                <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border-0">
-                                                    <div className="relative overflow-hidden">
+                                                <Card className="group overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full">
+                                                    <div className="relative overflow-hidden bg-superficie-2">
                                                         <img
                                                             src={concert.image_url || concert.artists?.photo_url || "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=300&fit=crop"}
                                                             alt={concert.title}
                                                             className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
                                                             loading="lazy"
                                                         />
-                                                        {/* Date Badge - Top Right */}
-                                                        <div className="absolute top-4 right-4 bg-background/95 backdrop-blur-sm rounded-lg px-3 py-2 text-center shadow-lg border border-border">
-                                                            <div className="text-2xl font-bold leading-none">{day}</div>
-                                                            <div className="text-xs font-medium text-muted-foreground mt-0.5">{monthShort}</div>
+                                                        {/* Overlay oscuro desde abajo para que el texto respire */}
+                                                        <div
+                                                            className="absolute inset-0"
+                                                            style={{ background: 'linear-gradient(180deg, transparent 40%, rgba(7,13,31,.85))' }}
+                                                        />
+                                                        {/* Chip de fecha: número grande en verde, Big Shoulders */}
+                                                        <div className="absolute top-3 right-3 rounded-2xl border border-linea bg-noche/80 backdrop-blur-sm px-3 py-2 text-center min-w-[56px]">
+                                                            <div className="font-display text-2xl font-extrabold text-verde leading-none">{day}</div>
+                                                            <div className="font-fira text-[10px] uppercase tracking-[0.12em] text-texto-2 mt-0.5">{monthShort}</div>
                                                         </div>
 
                                                     </div>
                                                     <CardContent className="p-5 space-y-3">
                                                         {/* Artist Name */}
                                                         {concert.artists && (
-                                                            <p className="text-xs font-semibold text-primary uppercase tracking-wide">
+                                                            <p className="text-xs font-semibold text-periwinkle uppercase tracking-[0.14em]">
                                                                 {concert.artists.name}
                                                             </p>
                                                         )}
                                                         {/* Concert Title */}
-                                                        <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors line-clamp-2">
+                                                        <h3 className="font-bold text-lg text-texto group-hover:text-periwinkle transition-colors line-clamp-2">
                                                             {concert.title}
                                                         </h3>
                                                         {/* Location */}
-                                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                            <MapPin className="h-4 w-4 flex-shrink-0" />
+                                                        <div className="flex items-center gap-2 text-sm text-texto-2">
+                                                            <MapPin className="h-4 w-4 flex-shrink-0 text-periwinkle" aria-hidden="true" />
                                                             <span className="truncate">{venue.cities?.name}</span>
                                                         </div>
                                                     </CardContent>
@@ -242,13 +249,13 @@ const VenueDetail = () => {
 
                         {pastConcerts.length > 0 && (
                             <div>
-                                <h2 className="text-2xl md:text-3xl font-bold mb-6">Conciertos Pasados</h2>
+                                <h2 className="font-display uppercase text-2xl md:text-3xl font-extrabold tracking-[0.01em] leading-none mb-6">Conciertos Pasados</h2>
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {pastConcerts.slice(0, 6).map((concert) => (
                                         <Link key={concert.id} to={`/concerts/${concert.slug}`}>
-                                            <Card className="group overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer opacity-75 hover:opacity-100">
+                                            <Card className="group overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-all duration-300 cursor-pointer opacity-75 hover:opacity-100">
                                                 <div className="flex gap-4 p-4">
-                                                    <div className="relative w-24 h-24 flex-shrink-0 rounded overflow-hidden">
+                                                    <div className="relative w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden bg-superficie-2">
                                                         <img
                                                             src={concert.image_url || concert.artists?.photo_url || "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=200&h=200&fit=crop"}
                                                             alt={concert.title}
@@ -256,17 +263,17 @@ const VenueDetail = () => {
                                                         />
                                                     </div>
                                                     <div className="flex-1 min-w-0">
-                                                        <h4 className="font-semibold text-foreground line-clamp-2 mb-1">
+                                                        <h4 className="font-semibold text-texto line-clamp-2 mb-1">
                                                             {concert.title}
                                                         </h4>
                                                         {concert.artists && (
-                                                            <p className="text-sm text-muted-foreground mb-1">
+                                                            <p className="text-sm text-texto-2 mb-1">
                                                                 {concert.artists.name}
                                                             </p>
                                                         )}
-                                                        <Badge variant="secondary" className="text-xs">
+                                                        <span className="inline-flex items-center rounded-full border border-linea bg-superficie-2 px-2.5 py-1 text-xs text-texto-2">
                                                             {formatDisplayDate(concert.date)}
-                                                        </Badge>
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </Card>
@@ -278,8 +285,8 @@ const VenueDetail = () => {
 
                         {concerts.length === 0 && (
                             <div className="text-center py-12">
-                                <Calendar className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                                <h3 className="text-xl font-bold text-foreground mb-2">No hay conciertos registrados</h3>
+                                <Calendar className="h-16 w-16 text-periwinkle/40 mx-auto mb-4" aria-hidden="true" />
+                                <h3 className="font-display text-2xl font-extrabold uppercase tracking-[0.01em] text-foreground mb-2">No hay conciertos registrados</h3>
                                 <p className="text-muted-foreground">
                                     Aún no hay conciertos programados en este venue.
                                 </p>

@@ -28,11 +28,11 @@ export const ConcertGenreFilter = ({
     <div className="mb-4">
       <div className="flex items-center justify-between mb-3 px-1">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-primary/10">
-            <Music className="h-4 w-4 text-primary" />
+          <div className="p-1.5 rounded-full bg-periwinkle/10">
+            <Music className="h-4 w-4 text-periwinkle" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-foreground">Géneros Musicales</h3>
+            <h3 className="text-sm font-semibold text-foreground">Géneros musicales</h3>
             <p className="text-xs text-muted-foreground">
               {selectedGenre ? `Filtrando: ${selectedGenre}` : 'Filtra por género'}
             </p>
@@ -62,15 +62,12 @@ export const ConcertGenreFilter = ({
                   relative px-4 py-2 rounded-full text-sm font-medium
                   transition-all duration-200 flex-shrink-0
                   ${isSelected
-                    ? 'bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-lg shadow-primary/25 scale-105'
-                    : 'bg-card border border-border hover:border-primary/50 hover:bg-primary/5 text-foreground'
+                    ? 'bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)]'
+                    : 'bg-superficie border border-linea hover:border-[rgba(89,124,255,.35)] hover:bg-superficie-2 text-texto'
                   }
                 `}
               >
-                <span className="relative z-10">{genre.name}</span>
-                {isSelected && (
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary/20 to-transparent blur-xl" />
-                )}
+                {genre.name}
               </button>
             );
           })}

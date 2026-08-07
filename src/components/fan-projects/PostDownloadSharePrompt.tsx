@@ -144,8 +144,8 @@ export const PostDownloadSharePrompt = ({
 
     return (
         <AlertDialog open={open} onOpenChange={onOpenChange}>
-            <AlertDialogContent className="max-w-sm mx-auto p-0 overflow-hidden">
-                <div className="relative bg-background">
+            <AlertDialogContent className="dark font-fira max-w-sm mx-auto p-0 overflow-hidden rounded-[20px] border-linea text-texto">
+                <div className="relative bg-noche">
                     {/* Close button */}
                     <button
                         onClick={handleDismiss}
@@ -158,7 +158,7 @@ export const PostDownloadSharePrompt = ({
                     {/* Header */}
                     <div className="p-6 pb-4 text-center">
                         <div className="flex justify-center mb-3">
-                            <Sparkles className="h-8 w-8 text-yellow-500" />
+                            <Sparkles className="h-8 w-8 text-verde" />
                         </div>
                         <h2 className="text-xl font-bold mb-2">
                             ¡Comparte tu emoción!
@@ -170,10 +170,10 @@ export const PostDownloadSharePrompt = ({
 
                     {/* Image Preview */}
                     <div className="px-6 pb-4">
-                        <div className="relative aspect-[9/16] bg-muted rounded-2xl overflow-hidden border max-h-[45vh] mx-auto max-w-[280px]">
+                        <div className="relative aspect-[9/16] bg-superficie-2 rounded-2xl overflow-hidden border border-linea max-h-[45vh] mx-auto max-w-[280px]">
                             {isGenerating ? (
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent" />
+                                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-periwinkle border-t-transparent" />
                                 </div>
                             ) : imagePreviewUrl ? (
                                 <img
@@ -224,7 +224,7 @@ export const PostDownloadSharePrompt = ({
                     </div>
 
                     {/* Follow Section */}
-                    <div className="px-6 pb-4 border-t pt-4">
+                    <div className="px-6 pb-4 border-t border-linea pt-4">
                         <button
                             onClick={handleFollowInstagram}
                             className="w-full flex items-center justify-center gap-2 py-3 rounded-lg hover:bg-muted transition-colors"

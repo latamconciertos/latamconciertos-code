@@ -187,54 +187,58 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
 
     return (
         <motion.div
-            whileHover={{ y: -8, scale: 1.02 }}
+            whileHover={{ y: -4 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
             className="h-full"
         >
             <Card
-                className="overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-border/50 bg-card h-full flex flex-col"
+                className="overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300 cursor-pointer h-full flex flex-col"
                 onClick={onClick}
             >
                 {/* Image Section with Date Badge */}
-                <div className="relative h-72 overflow-hidden bg-muted flex-shrink-0">
+                <div className="relative aspect-[16/10] overflow-hidden bg-superficie-2 flex-shrink-0">
                     <img
                         src={imageUrl}
                         alt={concert.title}
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                         loading="lazy"
                         decoding="async"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                    {/* Overlay oscuro desde abajo para que el texto respire */}
+                    <div
+                        className="absolute inset-0"
+                        style={{ background: 'linear-gradient(180deg, transparent 40%, rgba(7,13,31,.85))' }}
+                    />
 
-                    {/* Date Badge */}
-                    <div className="absolute top-3 right-3 bg-white dark:bg-gray-900 rounded-xl p-2.5 shadow-lg text-center min-w-[60px]">
-                        <div className="text-2xl font-bold text-foreground leading-none">{day}</div>
-                        <div className="text-xs uppercase text-muted-foreground font-semibold mt-0.5">{month}</div>
+                    {/* Chip de fecha: número grande en verde, Big Shoulders */}
+                    <div className="absolute top-3 right-3 rounded-2xl border border-linea bg-noche/80 backdrop-blur-sm px-3 py-2 text-center min-w-[56px]">
+                        <div className="font-display text-2xl font-extrabold text-verde leading-none">{day}</div>
+                        <div className="font-fira text-[10px] uppercase tracking-[0.12em] text-texto-2 mt-0.5">{month}</div>
                     </div>
                 </div>
 
                 {/* Content Section */}
-                <div className="p-4 space-y-2 flex-1 flex flex-col">
+                <div className="p-5 space-y-2 flex-1 flex flex-col">
                     <div className="flex items-center gap-2">
-                        <Music className="h-4 w-4 text-primary" />
-                        <p className="text-sm text-primary font-semibold uppercase tracking-wide">
+                        <Music className="h-3.5 w-3.5 text-periwinkle" />
+                        <p className="font-fira text-xs text-periwinkle font-semibold uppercase tracking-[0.14em]">
                             {artistName}
                         </p>
                     </div>
 
-                    <h3 className="text-xl font-bold text-foreground line-clamp-2 leading-tight font-fira">
+                    <h3 className="text-xl font-bold text-texto line-clamp-2 leading-tight font-fira">
                         {/* Enlace real y crawleable al detalle; el resto de la tarjeta abre el quick view */}
                         <Link
                             to={`/concerts/${concert.slug || concert.id}`}
-                            className="hover:text-primary transition-colors"
+                            className="hover:text-periwinkle transition-colors"
                             onClick={(e) => e.stopPropagation()}
                         >
                             {concert.title}
                         </Link>
                     </h3>
 
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin className="h-4 w-4" />
+                    <div className="flex items-center gap-2 text-texto-2">
+                        <MapPin className="h-4 w-4 text-periwinkle" />
                         <p className="text-sm">{location}</p>
                     </div>
 
@@ -246,7 +250,7 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
                                 <Button
                                     variant={isSaved ? "default" : "outline"}
                                     size="icon"
-                                    className={`rounded-full transition-colors ${isSaved ? 'bg-primary text-primary-foreground' : 'hover:bg-primary hover:text-primary-foreground'}`}
+                                    className={`rounded-full transition-colors ${isSaved ? 'border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white' : 'border-linea bg-transparent text-texto hover:bg-superficie-2 hover:text-texto'}`}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                     }}
@@ -289,7 +293,7 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    className="rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
+                                    className="rounded-full border-linea bg-transparent text-texto hover:bg-superficie-2 hover:text-texto transition-colors"
                                     onClick={handleShare}
                                 >
                                     <Share2 className="h-4 w-4" />

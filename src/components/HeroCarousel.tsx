@@ -6,7 +6,6 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { queryKeys } from '@/hooks/queries';
 import { formatDisplayDate } from '@/lib/timezone';
-import { Badge } from './ui/badge';
 
 interface NewsArticle {
     id: string;
@@ -78,10 +77,10 @@ export const HeroCarousel = () => {
 
     if (isLoading || articles.length === 0) {
         return (
-            <section className="relative w-full h-[600px] md:h-[700px] overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-[#004aad] via-[#0062cc] to-[#6b7280] opacity-90" />
+            <section className="relative w-full h-[600px] md:h-[700px] overflow-hidden bg-noche">
+                <div className="absolute inset-0 bg-superficie/60" />
                 <div className="relative h-full flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-periwinkle"></div>
                 </div>
             </section>
         );
@@ -117,14 +116,21 @@ export const HeroCarousel = () => {
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover/hero:scale-[1.02]"
                                 />
                             </picture>
-                            {/* Dark overlay across entire image for text readability */}
-                            <div className="absolute inset-0 bg-black/50" />
-                            {/* Additional gradient at bottom for extra emphasis */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                            {/* Overlay nocturno para que el texto respire sobre la foto */}
+                            <div className="absolute inset-0 bg-noche/45" />
+                            <div
+                                className="absolute inset-0"
+                                style={{ background: 'linear-gradient(180deg, transparent 40%, rgba(7,13,31,.85))' }}
+                            />
                         </>
                     ) : (
-                        // Fallback gradient when no image
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#004aad] via-[#0062cc] to-[#6b7280]" />
+                        // Fallback cuando no hay imagen: superficie con glow cobalto
+                        <div className="absolute inset-0 bg-superficie">
+                            <div
+                                className="absolute left-1/2 top-1/2 h-[400px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full"
+                                style={{ background: 'radial-gradient(closest-side, rgba(0,74,173,.45), transparent 70%)', filter: 'blur(110px)' }}
+                            />
+                        </div>
                     )}
                 </motion.div>
             </AnimatePresence>
@@ -173,16 +179,16 @@ export const HeroCarousel = () => {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.2 }}
-                                className="mb-4"
+                                className="mb-5"
                             >
-                                <Badge className="bg-primary text-primary-foreground font-bold">
+                                <span className="inline-flex items-center rounded-full border border-verde/30 bg-noche/70 backdrop-blur-sm px-3.5 py-1.5 font-fira text-[11px] font-bold uppercase tracking-[0.14em] text-verde">
                                     {currentArticle.categories.name}
-                                </Badge>
+                                </span>
                             </motion.div>
                         )}
 
                         <motion.h1
-                            className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-6 font-fira leading-tight"
+                            className="font-display font-extrabold uppercase tracking-[0.01em] text-4xl md:text-6xl lg:text-7xl text-texto mb-6 leading-[0.95]"
                             initial={{ opacity: 0, y: 30 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.3, duration: 0.6 }}
@@ -192,7 +198,7 @@ export const HeroCarousel = () => {
 
                         {currentArticle.meta_description && (
                             <motion.p
-                                className="text-base md:text-xl text-white/90 mb-8 leading-relaxed max-w-2xl mx-auto line-clamp-3"
+                                className="font-fira text-base md:text-lg text-texto/85 mb-8 leading-relaxed max-w-2xl mx-auto line-clamp-3"
                                 initial={{ opacity: 0, y: 30 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.4, duration: 0.6 }}
@@ -209,7 +215,7 @@ export const HeroCarousel = () => {
                         >
                             <Link
                                 to={articleHref}
-                                className="inline-flex items-center gap-2 bg-white text-primary hover:bg-white/90 font-semibold px-8 py-3 md:py-4 text-base md:text-lg rounded-lg transition-all hover:scale-105 group/cta"
+                                className="btn-nocturno px-8 text-base md:text-lg group/cta"
                             >
                                 Leer historia
                                 <ChevronRight className="h-4 w-4 transition-transform group-hover/cta:translate-x-0.5" />
@@ -217,7 +223,7 @@ export const HeroCarousel = () => {
                         </motion.div>
 
                         <motion.p
-                            className="text-sm text-white/70 mt-6"
+                            className="font-fira text-sm text-texto-2 mt-6"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.6 }}
@@ -235,8 +241,8 @@ export const HeroCarousel = () => {
                         key={index}
                         onClick={() => goToSlide(index)}
                         className={`h-2 rounded-full transition-all min-h-0 min-w-0 ${index === currentSlide
-                                ? 'w-8 bg-white'
-                                : 'w-2 bg-white/50 hover:bg-white/70'
+                                ? 'w-8 bg-verde'
+                                : 'w-2 bg-white/40 hover:bg-white/60'
                             }`}
                         aria-label={`Ir a noticia ${index + 1}`}
                     />

@@ -1,8 +1,7 @@
 import { memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, MapPin, Ticket, Globe } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { optimizeUnsplashUrl, getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
 import type { FestivalWithRelations } from '@/types/entities/festival';
@@ -58,36 +57,42 @@ export const FestivalCard = memo(({ festival, onClick }: FestivalCardProps) => {
 
   return (
     <Card
-      className="group relative overflow-hidden hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer festival-card"
+      className="group relative overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 cursor-pointer festival-card h-full flex flex-col"
       onClick={onClick}
     >
-      <div className="relative overflow-hidden">
+      {/* Image Section with Date Badge */}
+      <div className="relative aspect-[16/10] overflow-hidden bg-superficie-2 flex-shrink-0">
         <img
           src={optimizedImageUrl}
           alt={`${festival.name} - Festival de música`}
-          className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           loading="lazy"
           decoding="async"
         />
+        {/* Overlay oscuro desde abajo para que el texto respire */}
+        <div
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(180deg, transparent 40%, rgba(7,13,31,.85))' }}
+        />
 
-        {festival.edition && (
-          <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground text-sm font-bold px-4 py-2">
-            Edición {festival.edition}
-          </Badge>
-        )}
-
-        <div className="absolute bottom-4 right-4 bg-primary text-primary-foreground rounded-full w-20 h-20 flex flex-col items-center justify-center text-center shadow-lg">
-          <span className="text-xs font-medium uppercase">{dateInfo.month}</span>
-          <span className="text-2xl font-bold leading-none">{dateInfo.day}</span>
+        {/* Chip de categoría/edición: verde solo como chispa */}
+        <div className="absolute top-3 left-3">
+          <span className="inline-flex items-center rounded-full border border-verde/30 bg-noche/80 backdrop-blur-sm px-3 py-1 font-fira text-[10px] font-bold uppercase tracking-[0.12em] text-verde">
+            {festival.edition ? `Edición ${festival.edition}` : 'Festival'}
+          </span>
         </div>
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        {/* Chip de fecha: número grande en verde, Big Shoulders */}
+        <div className="absolute top-3 right-3 rounded-2xl border border-linea bg-noche/80 backdrop-blur-sm px-3 py-2 text-center min-w-[56px]">
+          <span className="block font-display text-2xl font-extrabold text-verde leading-none">{dateInfo.day}</span>
+          <span className="block font-fira text-[10px] uppercase tracking-[0.12em] text-texto-2 mt-0.5">{dateInfo.month}</span>
+        </div>
       </div>
 
-      <CardContent className="p-6 flex flex-col h-[240px]">
+      <div className="p-5 flex-1 flex flex-col">
         <div className="flex-1 space-y-3">
           <div>
-            <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
+            <h3 className="font-fira font-bold text-xl text-texto leading-tight mb-2 line-clamp-2">
               {/* Stretched link: enlace real crawleable al detalle del festival */}
               <Link
                 to={`/festivals/${festival.slug}`}
@@ -98,7 +103,7 @@ export const FestivalCard = memo(({ festival, onClick }: FestivalCardProps) => {
               </Link>
             </h3>
             {festival.description && (
-              <p className="text-muted-foreground text-sm line-clamp-2">
+              <p className="text-texto-2 text-sm line-clamp-2">
                 {festival.description}
               </p>
             )}
@@ -106,8 +111,8 @@ export const FestivalCard = memo(({ festival, onClick }: FestivalCardProps) => {
 
           <div className="space-y-2">
             {festival.venues?.name && (
-              <div className="flex items-center text-muted-foreground text-sm">
-                <MapPin className="h-4 w-4 mr-2 text-primary flex-shrink-0" />
+              <div className="flex items-center text-texto-2 text-sm">
+                <MapPin className="h-4 w-4 mr-2 text-periwinkle flex-shrink-0" aria-hidden="true" />
                 <span className="truncate font-medium">
                   {festival.venues.name}
                 </span>
@@ -115,8 +120,8 @@ export const FestivalCard = memo(({ festival, onClick }: FestivalCardProps) => {
             )}
 
             {festival.venues?.cities && (
-              <div className="flex items-center text-muted-foreground text-sm">
-                <Globe className="h-4 w-4 mr-2 text-primary flex-shrink-0" />
+              <div className="flex items-center text-texto-2 text-sm">
+                <Globe className="h-4 w-4 mr-2 text-periwinkle flex-shrink-0" aria-hidden="true" />
                 <span className="truncate">
                   {festival.venues.cities.name}
                   {festival.venues.cities.countries?.name &&
@@ -125,32 +130,39 @@ export const FestivalCard = memo(({ festival, onClick }: FestivalCardProps) => {
               </div>
             )}
 
-            <div className="flex items-center text-muted-foreground text-sm">
-              <Calendar className="h-4 w-4 mr-2 text-primary flex-shrink-0" />
+            <div className="flex items-center text-texto-2 text-sm">
+              <Calendar className="h-4 w-4 mr-2 text-periwinkle flex-shrink-0" aria-hidden="true" />
               <span>{dateRange}</span>
             </div>
           </div>
         </div>
 
         {festival.ticket_url ? (
-          <Button className="relative z-[2] w-full group/btn mt-4" asChild>
+          <Button
+            className="relative z-[2] w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95 group/btn mt-4"
+            asChild
+          >
             <a
               href={withTicketTracking(festival.ticket_url)}
               target="_blank"
               rel="sponsored noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
             >
-              <Ticket className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
-              Ver Entradas
+              <Ticket className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" aria-hidden="true" />
+              Ver entradas
             </a>
           </Button>
         ) : (
-          <Button className="relative z-[2] w-full mt-4" disabled>
-            <Ticket className="h-4 w-4 mr-2" />
+          <Button
+            variant="outline"
+            className="relative z-[2] w-full rounded-full border-linea bg-transparent text-texto-2 mt-4"
+            disabled
+          >
+            <Ticket className="h-4 w-4 mr-2" aria-hidden="true" />
             Próximamente
           </Button>
         )}
-      </CardContent>
+      </div>
     </Card>
   );
 }, (prevProps, nextProps) => {

@@ -40,7 +40,9 @@ const NewHome = () => {
     };
 
     return (
-        <>
+        // "Evolución Nocturna": la home siempre vive sobre la noche,
+        // independiente del toggle de tema — por eso el wrapper .dark
+        <div className="dark font-fira">
             <SEO
                 title="Conciertos y Festivales en Latinoamérica 2026 | Calendario, Entradas y Setlists"
                 description="Encuentra todos los conciertos y festivales en América Latina 2026. Calendario actualizado, precios de entradas, setlists, venues y comunidad de fans en Colombia, México, Argentina, Chile y más. Tu guía #1 de música en vivo."
@@ -52,8 +54,8 @@ const NewHome = () => {
             {/* Hero Landing - Primera interacción (exactly as in Index) */}
             <HeroLanding onScrollPastHero={setShowHeader} />
 
-            {/* Main content with parallax reveal - No aurora background, just solid color */}
-            <div className="relative z-10 mt-[100vh] bg-background">
+            {/* Main content with parallax reveal */}
+            <div className="relative z-10 mt-[100vh] bg-noche text-texto">
                 {/* News Headlines Carousel - Outside AuroraBackground for clean, crisp display */}
                 <HeroCarousel />
 
@@ -139,7 +141,7 @@ const NewHome = () => {
 
                 <Footer />
             </div>
-        </>
+        </div>
     );
 };
 

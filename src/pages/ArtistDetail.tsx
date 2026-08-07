@@ -18,7 +18,7 @@ import { humanizeArtistBio } from '@/lib/artistBio';
 
 const VERIFIED_BADGE = (
   <svg className="h-5 w-5 flex-shrink-0" viewBox="0 0 24 24" aria-label="Verificado">
-    <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .494.083.964.237 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z" fill="hsl(var(--primary))" />
+    <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .494.083.964.237 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z" fill="#597CFF" />
   </svg>
 );
 
@@ -72,7 +72,7 @@ const ArtistDetail = () => {
 
   if (artistLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
         <LoadingSpinner message="Cargando artista..." />
         <Footer />
@@ -82,12 +82,12 @@ const ArtistDetail = () => {
 
   if (!artist) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
         <div className="flex flex-col items-center justify-center py-32">
           <Music className="h-16 w-16 text-muted-foreground/30 mb-4" />
-          <h2 className="text-xl font-bold mb-4">Artista no encontrado</h2>
-          <Link to="/artists"><Button>Volver a artistas</Button></Link>
+          <h2 className="font-display uppercase text-2xl font-extrabold tracking-[0.01em] mb-4">Artista no encontrado</h2>
+          <Link to="/artists" className="btn-nocturno-secundario">Volver a artistas</Link>
         </div>
         <Footer />
       </div>
@@ -169,11 +169,12 @@ const ArtistDetail = () => {
         type="profile"
         structuredData={structuredData}
       />
-      <div className="min-h-screen bg-background">
+      {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
 
         {/* Hero — Spotify/Apple Music style full-bleed atmospheric */}
-        <section className="relative overflow-hidden bg-neutral-950">
+        <section className="relative overflow-hidden bg-noche">
           {/* Blurred backdrop derived from artist photo */}
           <div className="absolute inset-0" aria-hidden="true">
             <img
@@ -181,7 +182,8 @@ const ArtistDetail = () => {
               alt=""
               className="w-full h-full object-cover scale-110 blur-3xl opacity-50"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/60 to-background" />
+            {/* Overlay oscuro desde abajo: el hero se funde con la noche */}
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(180deg, rgba(7,13,31,.35), rgba(7,13,31,.6) 55%, #070D1F)' }} />
           </div>
 
           {/* Foreground */}
@@ -197,7 +199,7 @@ const ArtistDetail = () => {
               <div className="mt-8 md:mt-12 grid md:grid-cols-12 gap-8 md:gap-10 items-end">
                 {/* Artist Photo */}
                 <div className="md:col-span-4 lg:col-span-3 flex md:block justify-center">
-                  <div className="w-44 h-44 sm:w-52 sm:h-52 md:w-full md:h-auto md:aspect-square rounded-2xl overflow-hidden shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] ring-1 ring-white/15">
+                  <div className="w-44 h-44 sm:w-52 sm:h-52 md:w-full md:h-auto md:aspect-square rounded-[20px] overflow-hidden shadow-[0_30px_80px_-20px_rgba(0,0,0,0.8)] ring-1 ring-linea">
                     <img
                       src={heroImage}
                       alt={artist.name}
@@ -215,7 +217,7 @@ const ArtistDetail = () => {
                     </span>
                   </div>
 
-                  <h1 className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-[7.5rem] font-black tracking-[-0.015em] leading-[0.92] text-white text-balance mb-5 md:mb-6">
+                  <h1 className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-[7.5rem] font-black tracking-[0.01em] leading-[0.92] text-white text-balance mb-5 md:mb-6">
                     {artist.name}
                   </h1>
 
@@ -281,24 +283,24 @@ const ArtistDetail = () => {
         {/* Content */}
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
           <Tabs defaultValue="concerts" className="w-full mt-6">
-            <TabsList className="w-full h-auto p-0 bg-transparent border-b border-border rounded-none grid grid-cols-3 max-w-sm sm:max-w-md">
+            <TabsList className="w-full h-auto p-0 bg-transparent border-b border-linea rounded-none grid grid-cols-3 max-w-sm sm:max-w-md">
               <TabsTrigger
                 value="concerts"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground text-sm"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-verde data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground text-sm"
               >
                 <Calendar className="h-4 w-4" />
                 Conciertos
               </TabsTrigger>
               <TabsTrigger
                 value="music"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground text-sm"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-verde data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground text-sm"
               >
                 <Music className="h-4 w-4" />
                 Música
               </TabsTrigger>
               <TabsTrigger
                 value="news"
-                className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground text-sm"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-verde data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground text-sm"
               >
                 <Newspaper className="h-4 w-4" />
                 Noticias
@@ -317,16 +319,16 @@ const ArtistDetail = () => {
                       <button
                         key={concert.id}
                         onClick={() => navigate(`/concerts/${concert.slug}`)}
-                        className="flex items-center gap-4 w-full p-3 sm:p-4 rounded-xl hover:bg-muted/50 transition-colors text-left group"
+                        className="flex items-center gap-4 w-full p-3 sm:p-4 rounded-xl hover:bg-superficie-2 transition-colors text-left group"
                       >
                         {/* Date */}
                         <div className="flex-shrink-0 w-12 text-center">
-                          <p className="text-lg font-bold text-primary leading-none">{day}</p>
-                          <p className="text-[11px] text-muted-foreground uppercase mt-0.5">{month}</p>
+                          <p className="font-display text-2xl font-extrabold text-verde leading-none">{day}</p>
+                          <p className="text-[11px] text-muted-foreground uppercase tracking-[0.1em] mt-0.5">{month}</p>
                         </div>
                         {/* Info */}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-semibold text-foreground truncate group-hover:text-primary transition-colors">
+                          <p className="text-sm font-semibold text-foreground truncate group-hover:text-periwinkle transition-colors">
                             {concert.title}
                           </p>
                           <div className="flex items-center gap-1 text-xs text-muted-foreground mt-0.5">
@@ -359,7 +361,7 @@ const ArtistDetail = () => {
                   {topTracks.map((track, index) => (
                     <div
                       key={track.id}
-                      className="flex items-center gap-3 sm:gap-4 p-2 sm:p-3 rounded-xl hover:bg-muted/50 transition-colors group"
+                      className="flex items-center gap-3 sm:gap-4 p-2 sm:p-3 rounded-xl hover:bg-superficie-2 transition-colors group"
                     >
                       {/* Number */}
                       <span className="text-sm font-medium text-muted-foreground w-5 text-right flex-shrink-0">
@@ -418,7 +420,7 @@ const ArtistDetail = () => {
                         <div className="grid md:grid-cols-12 gap-5 md:gap-8 items-center">
                           {featured.featured_image && (
                             <div className="md:col-span-7 lg:col-span-7">
-                              <div className="aspect-[16/10] overflow-hidden rounded-xl bg-muted ring-1 ring-border/40">
+                              <div className="aspect-[16/10] overflow-hidden rounded-[20px] bg-superficie-2 ring-1 ring-linea">
                                 <img
                                   src={featured.featured_image}
                                   alt={featured.title}
@@ -430,13 +432,13 @@ const ArtistDetail = () => {
                           )}
                           <div className={featured.featured_image ? 'md:col-span-5 lg:col-span-5' : 'md:col-span-12'}>
                             <div className="flex items-center gap-2 mb-3">
-                              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
+                              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-verde">
                                 {featured.categories?.name || 'Noticias'}
                               </span>
                               <span className="text-muted-foreground/40">·</span>
                               <span className="text-xs text-muted-foreground">Última publicación</span>
                             </div>
-                            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight leading-[1.15] text-foreground group-hover:text-primary transition-colors mb-3">
+                            <h3 className="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight leading-[1.15] text-foreground group-hover:text-periwinkle transition-colors mb-3">
                               {featured.title}
                             </h3>
                             {featured.meta_description && (
@@ -458,7 +460,7 @@ const ArtistDetail = () => {
 
                   {/* Rest as enriched list */}
                   {news.length > 1 && (
-                    <div className="border-t border-border/50 pt-6 md:pt-8">
+                    <div className="border-t border-linea pt-6 md:pt-8">
                       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-5">
                         Más sobre {artist.name}
                       </p>
@@ -470,7 +472,7 @@ const ArtistDetail = () => {
                             className="group flex gap-4"
                           >
                             {article.featured_image && (
-                              <div className="flex-shrink-0 w-28 sm:w-32 aspect-[4/3] overflow-hidden rounded-lg bg-muted ring-1 ring-border/40">
+                              <div className="flex-shrink-0 w-28 sm:w-32 aspect-[4/3] overflow-hidden rounded-lg bg-superficie-2 ring-1 ring-linea">
                                 <img
                                   src={article.featured_image}
                                   alt={article.title}
@@ -480,10 +482,10 @@ const ArtistDetail = () => {
                               </div>
                             )}
                             <div className="flex-1 min-w-0">
-                              <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary">
+                              <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-verde">
                                 {article.categories?.name || 'Noticias'}
                               </span>
-                              <h4 className="text-sm md:text-base font-semibold leading-snug text-foreground line-clamp-3 group-hover:text-primary transition-colors mt-1.5 mb-2">
+                              <h4 className="text-sm md:text-base font-semibold leading-snug text-foreground line-clamp-3 group-hover:text-periwinkle transition-colors mt-1.5 mb-2">
                                 {article.title}
                               </h4>
                               <time
@@ -537,7 +539,7 @@ function EmptyState({
       <p className="text-sm text-muted-foreground mt-2 max-w-md">{message}</p>
       {cta && (
         <Link to={cta.to} className="mt-5">
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" className="rounded-full border-linea bg-transparent hover:bg-superficie-2">
             {cta.label}
           </Button>
         </Link>

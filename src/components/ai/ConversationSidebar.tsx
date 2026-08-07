@@ -49,10 +49,10 @@ const ConversationSidebar = ({
 
   return (
     <>
-      <div className={isMobile ? "p-4 border-b border-border shrink-0" : "p-4 border-b border-border"}>
+      <div className={isMobile ? "p-4 border-b border-linea shrink-0" : "p-4 border-b border-linea"}>
         <Button
           onClick={onCreateNew}
-          className="w-full"
+          className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
           disabled={isDisabled}
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -65,7 +65,7 @@ const ConversationSidebar = ({
             {conversations.map((conv) => (
               <div
                 key={conv.id}
-                className={`relative group p-3 rounded-lg hover:bg-accent transition-colors ${activeConversationId === conv.id ? 'bg-accent' : ''}`}
+                className={`relative group p-3 rounded-lg hover:bg-superficie-2 transition-colors ${activeConversationId === conv.id ? 'bg-superficie-2' : ''}`}
                 {...(isMobile && onLongPressStart && onLongPressEnd ? {
                   onTouchStart: () => onLongPressStart(conv.id, conv.title),
                   onTouchEnd: onLongPressEnd,
@@ -83,12 +83,13 @@ const ConversationSidebar = ({
                         if (e.key === 'Enter') onRenameSubmit(conv.id);
                         if (e.key === 'Escape') onRenameCancel();
                       }}
-                      className="h-8 text-sm"
+                      className="h-8 text-sm rounded-full bg-superficie border-linea focus-visible:ring-periwinkle"
                       autoFocus
                     />
                     <Button
                       size="sm"
                       onClick={() => onRenameSubmit(conv.id)}
+                      className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white hover:opacity-95"
                     >
                       <Pencil className="h-3 w-3" />
                     </Button>

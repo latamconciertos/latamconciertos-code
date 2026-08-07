@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Music, Globe, MapPin, Building2, Calendar } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
@@ -18,6 +17,11 @@ import { formatDisplayDate } from '@/lib/timezone';
 import { usePromotersPage, usePromoterConcerts, useCountries, type PromoterWithCountry } from '@/hooks/queries';
 import { LoadingSpinnerInline, LoadingSpinnerMini } from '@/components/ui/loading-spinner';
 import { useIsMobile } from '@/hooks/use-mobile';
+
+// Pills de filtro "Evolución Nocturna": seleccionada con gradiente firma, resto sobre superficie
+const pillBase = 'rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition-all duration-300';
+const pillActive = `${pillBase} bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)]`;
+const pillInactive = `${pillBase} bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(89,124,255,.35)]`;
 
 const Promoters = () => {
   const [selectedCountry, setSelectedCountry] = useState<string>('all');
@@ -56,7 +60,8 @@ const Promoters = () => {
         url="/promoters"
         structuredData={structuredData}
       />
-      <div className="min-h-screen bg-background">
+      {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
 
         <main className="container mx-auto px-4 pt-24 md:pt-28 pb-16">
@@ -64,12 +69,11 @@ const Promoters = () => {
 
           {/* Header Section */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
-              <Building2 className="h-5 w-5 text-primary" />
-              <span className="text-primary font-semibold">Organizadores Profesionales</span>
-            </div>
-            <h1 className="page-title mb-4">Promotoras de Conciertos</h1>
-            <p className="page-subtitle max-w-3xl mx-auto">
+            <span className="eyebrow-nocturno mb-3">Organizadores profesionales</span>
+            <h1 className="font-display uppercase text-4xl md:text-5xl lg:text-6xl font-black tracking-[0.01em] leading-[0.95] text-foreground mb-4">
+              Promotoras de Conciertos
+            </h1>
+            <p className="text-muted-foreground text-base md:text-lg max-w-3xl mx-auto">
               Las principales empresas organizadoras de eventos musicales en América Latina
             </p>
           </div>
@@ -79,46 +83,44 @@ const Promoters = () => {
             {isMobile ? (
               <div className="overflow-x-auto scrollbar-hide -mx-4 px-4">
                 <div className="flex gap-2 min-w-max pb-2">
-                  <Button
-                    variant={selectedCountry === 'all' ? 'default' : 'outline'}
-                    size="sm"
+                  <button
                     onClick={() => setSelectedCountry('all')}
-                    className="whitespace-nowrap"
+                    className={selectedCountry === 'all' ? pillActive : pillInactive}
+                    aria-pressed={selectedCountry === 'all'}
                   >
                     Todos
-                  </Button>
+                  </button>
                   {countries.map((country) => (
-                    <Button
+                    <button
                       key={country.id}
-                      variant={selectedCountry === country.id ? 'default' : 'outline'}
-                      size="sm"
                       onClick={() => setSelectedCountry(country.id)}
-                      className="whitespace-nowrap"
+                      className={selectedCountry === country.id ? pillActive : pillInactive}
+                      aria-pressed={selectedCountry === country.id}
                     >
                       {country.name}
-                    </Button>
+                    </button>
                   ))}
                 </div>
               </div>
             ) : (
               <div className="flex justify-center">
-                <div className="inline-flex flex-wrap gap-2 bg-muted p-2 rounded-lg">
-                  <Button
-                    variant={selectedCountry === 'all' ? 'default' : 'ghost'}
-                    size="sm"
+                <div className="inline-flex flex-wrap justify-center gap-2">
+                  <button
                     onClick={() => setSelectedCountry('all')}
+                    className={selectedCountry === 'all' ? pillActive : pillInactive}
+                    aria-pressed={selectedCountry === 'all'}
                   >
                     Todos los países
-                  </Button>
+                  </button>
                   {countries.map((country) => (
-                    <Button
+                    <button
                       key={country.id}
-                      variant={selectedCountry === country.id ? 'default' : 'ghost'}
-                      size="sm"
                       onClick={() => setSelectedCountry(country.id)}
+                      className={selectedCountry === country.id ? pillActive : pillInactive}
+                      aria-pressed={selectedCountry === country.id}
                     >
                       {country.name}
-                    </Button>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -133,26 +135,26 @@ const Promoters = () => {
               {promoters.map((promoter) => (
                 <Card
                   key={promoter.id}
-                  className="group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer"
+                  className="group overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
                   onClick={() => setSelectedPromoter(promoter)}
                 >
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
-                      <div className="bg-primary/10 p-3 rounded-lg">
-                        <Building2 className="h-8 w-8 text-primary" />
+                      <div className="bg-periwinkle/10 p-3 rounded-2xl">
+                        <Building2 className="h-8 w-8 text-periwinkle" aria-hidden="true" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors mb-2 truncate">
+                        <h3 className="font-bold text-xl text-texto group-hover:text-periwinkle transition-colors mb-2 truncate">
                           {promoter.name}
                         </h3>
                         {promoter.countries && (
-                          <div className="flex items-center gap-1 text-sm text-muted-foreground mb-3">
-                            <MapPin className="h-4 w-4" />
+                          <div className="flex items-center gap-1 text-sm text-texto-2 mb-3">
+                            <MapPin className="h-4 w-4 text-periwinkle" aria-hidden="true" />
                             <span>{promoter.countries.name}</span>
                           </div>
                         )}
                         {promoter.description && (
-                          <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
+                          <p className="text-sm text-texto-2 line-clamp-3 mb-4">
                             {promoter.description}
                           </p>
                         )}
@@ -160,13 +162,13 @@ const Promoters = () => {
                           <Button
                             size="sm"
                             variant="outline"
-                            className="gap-2"
+                            className="gap-2 rounded-full border-linea bg-transparent text-texto hover:bg-superficie-2 hover:text-texto"
                             onClick={(e) => {
                               e.stopPropagation();
                               window.open(promoter.website!, '_blank');
                             }}
                           >
-                            <Globe className="h-4 w-4" />
+                            <Globe className="h-4 w-4" aria-hidden="true" />
                             Sitio Web
                           </Button>
                         )}
@@ -178,8 +180,8 @@ const Promoters = () => {
             </div>
           ) : (
             <div className="text-center py-12">
-              <Building2 className="h-24 w-24 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-foreground mb-2">No hay promotoras disponibles</h3>
+              <Building2 className="h-24 w-24 text-periwinkle/40 mx-auto mb-4" aria-hidden="true" />
+              <h3 className="font-display text-2xl font-extrabold uppercase tracking-[0.01em] text-foreground mb-2">No hay promotoras disponibles</h3>
               <p className="text-muted-foreground">
                 {selectedCountry !== 'all'
                   ? 'No se encontraron promotoras en este país.'
@@ -193,14 +195,15 @@ const Promoters = () => {
 
         {/* Promoter Details Dialog */}
         <Dialog open={!!selectedPromoter} onOpenChange={() => setSelectedPromoter(null)}>
-          <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+          {/* "Evolución Nocturna": el diálogo se monta en un portal, así que lleva su propio contexto oscuro */}
+          <DialogContent className="dark font-fira max-w-4xl max-h-[80vh] overflow-y-auto rounded-[20px] border-linea bg-noche text-texto">
             <DialogHeader>
-              <DialogTitle className="text-2xl flex items-center gap-2">
-                <Building2 className="h-6 w-6 text-primary" />
+              <DialogTitle className="font-display text-2xl md:text-3xl font-extrabold uppercase tracking-[0.01em] text-texto flex items-center gap-2">
+                <Building2 className="h-6 w-6 text-periwinkle" aria-hidden="true" />
                 {selectedPromoter?.name}
               </DialogTitle>
               {selectedPromoter?.description && (
-                <DialogDescription className="text-base mt-2">
+                <DialogDescription className="text-base text-texto-2 mt-2">
                   {selectedPromoter.description}
                 </DialogDescription>
               )}
@@ -209,7 +212,7 @@ const Promoters = () => {
             <div className="space-y-6 mt-4">
               {selectedPromoter?.countries && (
                 <div className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-primary" />
+                  <MapPin className="h-5 w-5 text-periwinkle" aria-hidden="true" />
                   <span className="text-lg font-semibold">{selectedPromoter.countries.name}</span>
                 </div>
               )}
@@ -217,17 +220,17 @@ const Promoters = () => {
               {selectedPromoter?.website && (
                 <Button
                   variant="outline"
-                  className="gap-2"
+                  className="gap-2 rounded-full border-linea bg-transparent text-texto hover:bg-superficie-2 hover:text-texto"
                   onClick={() => window.open(selectedPromoter.website!, '_blank')}
                 >
-                  <Globe className="h-4 w-4" />
+                  <Globe className="h-4 w-4" aria-hidden="true" />
                   Visitar Sitio Web
                 </Button>
               )}
 
-              <div className="border-t pt-6">
+              <div className="border-t border-linea pt-6">
                 <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                  <Calendar className="h-5 w-5 text-primary" />
+                  <Calendar className="h-5 w-5 text-periwinkle" aria-hidden="true" />
                   Conciertos Organizados
                 </h3>
 
@@ -236,9 +239,9 @@ const Promoters = () => {
                 ) : promoterConcerts.length > 0 ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {promoterConcerts.map((concert) => (
-                      <Card key={concert.id} className="overflow-hidden hover:shadow-md transition-shadow">
+                      <Card key={concert.id} className="overflow-hidden rounded-[20px] border-linea bg-superficie hover:bg-superficie-2 transition-colors">
                         <div className="flex gap-4 p-4">
-                          <div className="relative w-24 h-24 flex-shrink-0 rounded overflow-hidden">
+                          <div className="relative w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden bg-superficie-2">
                             <img
                               src={concert.image_url || concert.artists?.photo_url || getDefaultImage()}
                               alt={concert.title}
@@ -246,21 +249,21 @@ const Promoters = () => {
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-semibold text-foreground line-clamp-2 mb-1">
+                            <h4 className="font-semibold text-texto line-clamp-2 mb-1">
                               {concert.title}
                             </h4>
                             {concert.artists && (
-                              <p className="text-sm text-muted-foreground mb-1">
+                              <p className="text-sm text-texto-2 mb-1">
                                 {concert.artists.name}
                               </p>
                             )}
                             {concert.date && (
-                              <Badge variant="secondary" className="text-xs">
+                              <span className="inline-flex items-center rounded-full border border-linea bg-superficie-2 px-2.5 py-1 text-xs text-texto-2">
                                 {formatDisplayDate(concert.date)}
-                              </Badge>
+                              </span>
                             )}
                             {concert.venues && (
-                              <p className="text-xs text-muted-foreground mt-1">
+                              <p className="text-xs text-texto-2 mt-1">
                                 {concert.venues.name}
                               </p>
                             )}
@@ -271,8 +274,8 @@ const Promoters = () => {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <Music className="h-16 w-16 text-muted-foreground mx-auto mb-3" />
-                    <p className="text-muted-foreground">No hay conciertos registrados para esta promotora</p>
+                    <Music className="h-16 w-16 text-periwinkle/40 mx-auto mb-3" aria-hidden="true" />
+                    <p className="text-texto-2">No hay conciertos registrados para esta promotora</p>
                   </div>
                 )}
               </div>

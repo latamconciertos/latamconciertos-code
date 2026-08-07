@@ -27,11 +27,11 @@ export const WrappedBanner = () => {
       <div className="max-w-5xl mx-auto">
         <Link to={banner.link || '/wrapped'}>
           <motion.div
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ y: -4 }}
             whileTap={{ scale: 0.98 }}
-            className="relative overflow-hidden rounded-3xl p-6 sm:p-8 shadow-2xl cursor-pointer"
+            className="relative overflow-hidden rounded-[20px] border border-linea p-6 sm:p-8 shadow-[0_8px_32px_rgba(0,74,173,.4)] cursor-pointer"
             style={{
-              background: `linear-gradient(135deg, ${banner.bg_color_from || '#004aad'}, ${banner.bg_color_to || '#003080'})`,
+              background: `linear-gradient(95deg, ${banner.bg_color_from || '#004AAD'}, ${banner.bg_color_to || '#597CFF'})`,
             }}
           >
             {/* Subtle animated glow */}

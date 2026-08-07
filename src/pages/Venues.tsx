@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Users, Building } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -16,6 +14,11 @@ import {
 import type { CountryBasic } from '@/types/entities';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
 import { useIsMobile } from '@/hooks/use-mobile';
+
+// Pills de filtro "Evolución Nocturna": seleccionada con gradiente firma, resto sobre superficie
+const pillBase = 'rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition-all duration-300';
+const pillActive = `${pillBase} bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)]`;
+const pillInactive = `${pillBase} bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(89,124,255,.35)]`;
 
 const Venues = () => {
     const [selectedCountry, setSelectedCountry] = useState<string>('all');
@@ -59,7 +62,8 @@ const Venues = () => {
                 url="/venues"
                 structuredData={structuredData}
             />
-            <div className="min-h-screen bg-background">
+            {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+            <div className="dark font-fira min-h-screen bg-noche text-texto">
                 <Header />
 
                 <main className="container mx-auto px-4 pt-24 md:pt-28 pb-16">
@@ -67,12 +71,11 @@ const Venues = () => {
 
                     {/* Header Section */}
                     <div className="text-center mb-12">
-                        <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-4">
-                            <Building className="h-5 w-5 text-primary" />
-                            <span className="text-primary font-semibold">Recintos Musicales</span>
-                        </div>
-                        <h1 className="page-title mb-4">Venues de Conciertos</h1>
-                        <p className="page-subtitle max-w-3xl mx-auto">
+                        <span className="eyebrow-nocturno mb-3">Recintos musicales</span>
+                        <h1 className="font-display uppercase text-4xl md:text-5xl lg:text-6xl font-black tracking-[0.01em] leading-[0.95] text-foreground mb-4">
+                            Venues de Conciertos
+                        </h1>
+                        <p className="text-muted-foreground text-base md:text-lg max-w-3xl mx-auto">
                             Los principales estadios, arenas, teatros y foros de eventos musicales en América Latina
                         </p>
                     </div>
@@ -82,46 +85,44 @@ const Venues = () => {
                         {isMobile ? (
                             <div className="overflow-x-auto scrollbar-hide -mx-4 px-4">
                                 <div className="flex gap-2 min-w-max pb-2">
-                                    <Button
-                                        variant={selectedCountry === 'all' ? 'default' : 'outline'}
-                                        size="sm"
+                                    <button
                                         onClick={() => handleCountryChange('all')}
-                                        className="whitespace-nowrap"
+                                        className={selectedCountry === 'all' ? pillActive : pillInactive}
+                                        aria-pressed={selectedCountry === 'all'}
                                     >
                                         Todos
-                                    </Button>
+                                    </button>
                                     {countries.map((country) => (
-                                        <Button
+                                        <button
                                             key={country.id}
-                                            variant={selectedCountry === country.id ? 'default' : 'outline'}
-                                            size="sm"
                                             onClick={() => handleCountryChange(country.id)}
-                                            className="whitespace-nowrap"
+                                            className={selectedCountry === country.id ? pillActive : pillInactive}
+                                            aria-pressed={selectedCountry === country.id}
                                         >
                                             {country.name}
-                                        </Button>
+                                        </button>
                                     ))}
                                 </div>
                             </div>
                         ) : (
                             <div className="flex justify-center">
-                                <div className="inline-flex flex-wrap gap-2 bg-muted p-2 rounded-lg">
-                                    <Button
-                                        variant={selectedCountry === 'all' ? 'default' : 'ghost'}
-                                        size="sm"
+                                <div className="inline-flex flex-wrap justify-center gap-2">
+                                    <button
                                         onClick={() => handleCountryChange('all')}
+                                        className={selectedCountry === 'all' ? pillActive : pillInactive}
+                                        aria-pressed={selectedCountry === 'all'}
                                     >
                                         Todos los países
-                                    </Button>
+                                    </button>
                                     {countries.map((country) => (
-                                        <Button
+                                        <button
                                             key={country.id}
-                                            variant={selectedCountry === country.id ? 'default' : 'ghost'}
-                                            size="sm"
                                             onClick={() => handleCountryChange(country.id)}
+                                            className={selectedCountry === country.id ? pillActive : pillInactive}
+                                            aria-pressed={selectedCountry === country.id}
                                         >
                                             {country.name}
-                                        </Button>
+                                        </button>
                                     ))}
                                 </div>
                             </div>
@@ -134,46 +135,44 @@ const Venues = () => {
                             {isMobile ? (
                                 <div className="overflow-x-auto scrollbar-hide -mx-4 px-4">
                                     <div className="flex gap-2 min-w-max pb-2">
-                                        <Button
-                                            variant={selectedCity === 'all' ? 'default' : 'outline'}
-                                            size="sm"
+                                        <button
                                             onClick={() => setSelectedCity('all')}
-                                            className="whitespace-nowrap"
+                                            className={selectedCity === 'all' ? pillActive : pillInactive}
+                                            aria-pressed={selectedCity === 'all'}
                                         >
                                             Todas las ciudades
-                                        </Button>
+                                        </button>
                                         {cities.map((city) => (
-                                            <Button
+                                            <button
                                                 key={city.id}
-                                                variant={selectedCity === city.id ? 'default' : 'outline'}
-                                                size="sm"
                                                 onClick={() => setSelectedCity(city.id)}
-                                                className="whitespace-nowrap"
+                                                className={selectedCity === city.id ? pillActive : pillInactive}
+                                                aria-pressed={selectedCity === city.id}
                                             >
                                                 {city.name}
-                                            </Button>
+                                            </button>
                                         ))}
                                     </div>
                                 </div>
                             ) : (
                                 <div className="flex justify-center">
-                                    <div className="inline-flex flex-wrap gap-2 bg-muted/50 p-2 rounded-lg">
-                                        <Button
-                                            variant={selectedCity === 'all' ? 'default' : 'ghost'}
-                                            size="sm"
+                                    <div className="inline-flex flex-wrap justify-center gap-2">
+                                        <button
                                             onClick={() => setSelectedCity('all')}
+                                            className={selectedCity === 'all' ? pillActive : pillInactive}
+                                            aria-pressed={selectedCity === 'all'}
                                         >
                                             Todas las ciudades
-                                        </Button>
+                                        </button>
                                         {cities.map((city) => (
-                                            <Button
+                                            <button
                                                 key={city.id}
-                                                variant={selectedCity === city.id ? 'default' : 'ghost'}
-                                                size="sm"
                                                 onClick={() => setSelectedCity(city.id)}
+                                                className={selectedCity === city.id ? pillActive : pillInactive}
+                                                aria-pressed={selectedCity === city.id}
                                             >
                                                 {city.name}
-                                            </Button>
+                                            </button>
                                         ))}
                                     </div>
                                 </div>
@@ -191,37 +190,41 @@ const Venues = () => {
                                     key={venue.id}
                                     to={`/venues/${venue.cities?.slug || 'venue'}/${venue.slug}`}
                                 >
-                                    <Card className="group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer h-full">
+                                    <Card className="group overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full">
                                         {venue.image_url && (
-                                            <div className="relative h-40 overflow-hidden">
+                                            <div className="relative h-40 overflow-hidden bg-superficie-2">
                                                 <img
                                                     src={venue.image_url}
                                                     alt={venue.name}
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                 />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                                                {/* Overlay oscuro desde abajo para que el texto respire */}
+                                                <div
+                                                    className="absolute inset-0"
+                                                    style={{ background: 'linear-gradient(180deg, transparent 40%, rgba(7,13,31,.85))' }}
+                                                />
                                                 {venue.capacity && (
-                                                    <Badge className="absolute bottom-3 right-3 bg-primary/90">
-                                                        <Users className="h-3 w-3 mr-1" />
+                                                    <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full border border-linea bg-noche/80 backdrop-blur-sm px-2.5 py-1 text-xs font-semibold text-verde">
+                                                        <Users className="h-3 w-3" aria-hidden="true" />
                                                         {venue.capacity.toLocaleString()}
-                                                    </Badge>
+                                                    </span>
                                                 )}
                                             </div>
                                         )}
                                         <CardContent className="p-5">
                                             <div className="flex items-start gap-4">
                                                 {!venue.image_url && (
-                                                    <div className="bg-primary/10 p-3 rounded-lg flex-shrink-0">
-                                                        <Building className="h-8 w-8 text-primary" />
+                                                    <div className="bg-periwinkle/10 p-3 rounded-2xl flex-shrink-0">
+                                                        <Building className="h-8 w-8 text-periwinkle" aria-hidden="true" />
                                                     </div>
                                                 )}
                                                 <div className="flex-1 min-w-0">
-                                                    <h3 className="font-bold text-lg text-foreground group-hover:text-primary transition-colors mb-2 truncate">
+                                                    <h3 className="font-bold text-lg text-texto group-hover:text-periwinkle transition-colors mb-2 truncate">
                                                         {venue.name}
                                                     </h3>
                                                     {venue.cities && (
-                                                        <div className="flex items-center gap-1 text-sm text-muted-foreground mb-2">
-                                                            <MapPin className="h-4 w-4 flex-shrink-0" />
+                                                        <div className="flex items-center gap-1 text-sm text-texto-2 mb-2">
+                                                            <MapPin className="h-4 w-4 flex-shrink-0 text-periwinkle" aria-hidden="true" />
                                                             <span className="truncate">
                                                                 {venue.cities.name}
                                                                 {venue.cities.countries && `, ${venue.cities.countries.name}`}
@@ -229,16 +232,16 @@ const Venues = () => {
                                                         </div>
                                                     )}
                                                     {venue.address && (
-                                                        <p className="text-sm text-muted-foreground line-clamp-2 mb-3">
+                                                        <p className="text-sm text-texto-2 line-clamp-2 mb-3">
                                                             {venue.address}
                                                         </p>
                                                     )}
                                                     <div className="flex items-center gap-3">
                                                         {venue.capacity && !venue.image_url && (
-                                                            <Badge variant="secondary" className="text-xs">
-                                                                <Users className="h-3 w-3 mr-1" />
-                                                                {venue.capacity.toLocaleString()} personas
-                                                            </Badge>
+                                                            <span className="inline-flex items-center gap-1 rounded-full border border-linea bg-superficie-2 px-2.5 py-1 text-xs font-semibold text-texto-2">
+                                                                <Users className="h-3 w-3 text-verde" aria-hidden="true" />
+                                                                <span className="text-verde">{venue.capacity.toLocaleString()}</span> personas
+                                                            </span>
                                                         )}
                                                     </div>
                                                 </div>
@@ -250,8 +253,8 @@ const Venues = () => {
                         </div>
                     ) : (
                         <div className="text-center py-12">
-                            <Building className="h-24 w-24 text-muted-foreground mx-auto mb-4" />
-                            <h3 className="text-2xl font-bold text-foreground mb-2">No hay venues disponibles</h3>
+                            <Building className="h-24 w-24 text-periwinkle/40 mx-auto mb-4" aria-hidden="true" />
+                            <h3 className="font-display text-2xl font-extrabold uppercase tracking-[0.01em] text-foreground mb-2">No hay venues disponibles</h3>
                             <p className="text-muted-foreground">
                                 {selectedCountry !== 'all' || selectedCity !== 'all'
                                     ? 'No se encontraron venues con los filtros seleccionados.'

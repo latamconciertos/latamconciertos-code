@@ -348,29 +348,29 @@ const FanProjectDetail = () => {
 
   if (loading) {
     return (
-      <>
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
         <div className="min-h-screen flex items-center justify-center pt-20">
           <p className="text-muted-foreground">Cargando...</p>
         </div>
-      </>
+      </div>
     );
   }
 
   if (!project) {
     return (
-      <>
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
         <div className="min-h-screen flex flex-col items-center justify-center pt-20 px-4">
           <div className="text-center space-y-3">
-            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-muted mb-4">
-              <Lightbulb className="h-8 w-8 sm:h-10 sm:w-10 text-muted-foreground/50" />
+            <div className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-superficie border border-linea mb-4">
+              <Lightbulb className="h-8 w-8 sm:h-10 sm:w-10 text-periwinkle/40" />
             </div>
             <p className="text-lg sm:text-xl font-semibold text-foreground">Proyecto no encontrado</p>
             <p className="text-sm text-muted-foreground">El proyecto que buscas no existe o fue eliminado</p>
           </div>
         </div>
-      </>
+      </div>
     );
   }
 
@@ -381,7 +381,8 @@ const FanProjectDetail = () => {
         description={project.description || ''}
       />
 
-      <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-background/95">
+      {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+      <div className="dark font-fira min-h-screen flex flex-col bg-noche text-texto">
         <Header />
 
         <main className="flex-1 container mx-auto px-4 py-8 pt-28 sm:pt-32 pb-20 min-h-[calc(100vh-200px)]">
@@ -390,21 +391,21 @@ const FanProjectDetail = () => {
             <div className="space-y-3 sm:space-y-4">
               <div className="flex items-start justify-between gap-3 sm:gap-4">
                 <div className="space-y-2 min-w-0 flex-1">
-                  <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-tight">
+                  <h1 className="font-display uppercase text-3xl sm:text-4xl md:text-5xl font-black tracking-[0.01em] leading-[0.95]">
                     {project.name}
                   </h1>
-                  <p className="text-base sm:text-lg text-primary font-semibold truncate">
+                  <p className="text-base sm:text-lg text-periwinkle font-semibold truncate">
                     {project.concert.title}
                   </p>
                 </div>
                 <div className="shrink-0">
-                  <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-primary/10">
-                    <Lightbulb className="h-6 w-6 sm:h-7 sm:w-7 text-primary" />
+                  <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-superficie border border-linea">
+                    <Lightbulb className="h-6 w-6 sm:h-7 sm:w-7 text-periwinkle" />
                   </div>
                 </div>
               </div>
 
-              <Card className="border-2 hover:border-primary/20 transition-colors">
+              <Card className="rounded-[20px] border border-linea bg-superficie transition-colors">
                 <CardHeader className="p-4 sm:p-6">
                   <CardTitle className="text-lg sm:text-xl">Instrucciones</CardTitle>
                 </CardHeader>
@@ -413,7 +414,7 @@ const FanProjectDetail = () => {
                     {project.instructions || project.description}
                   </p>
 
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-br from-primary/5 to-muted rounded-xl border-2">
+                  <div className="flex items-center justify-between p-4 bg-superficie-2 rounded-2xl border border-linea">
                     <div className="min-w-0 flex-1">
                       <p className="text-sm sm:text-base font-semibold text-foreground mb-1">Tu localidad:</p>
                       <p className="text-xs sm:text-sm text-muted-foreground truncate">
@@ -426,7 +427,7 @@ const FanProjectDetail = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="shrink-0 ml-3 h-9 sm:h-10"
+                      className="shrink-0 ml-3 h-9 sm:h-10 rounded-full border-linea bg-transparent hover:bg-superficie-2"
                       onClick={() => setShowSectionModal(true)}
                     >
                       <Edit className="h-4 w-4 mr-1 sm:mr-2" />
@@ -440,19 +441,19 @@ const FanProjectDetail = () => {
 
             {/* Songs Section - Mobile optimized */}
             <div className="space-y-4 sm:space-y-5">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold">Canciones</h2>
+              <h2 className="font-display uppercase text-2xl sm:text-3xl font-extrabold tracking-[0.01em]">Canciones</h2>
 
               <div className="grid gap-3 sm:gap-4">
                 {songs.map((song) => {
                   const preloaded = preloadedSongs.has(song.id);
 
                   return (
-                    <Card key={song.id} className="border-2 hover:border-primary/20 transition-colors">
+                    <Card key={song.id} className="rounded-[20px] border border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-colors">
                       <CardContent className="p-4 sm:p-6">
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <Music className="h-5 w-5 text-primary shrink-0" />
+                              <Music className="h-5 w-5 text-periwinkle shrink-0" />
                               <h3 className="font-semibold text-base sm:text-lg truncate">
                                 {song.song_name}
                               </h3>
@@ -473,7 +474,11 @@ const FanProjectDetail = () => {
                               size="lg"
                               onClick={() => handlePreload(song.id)}
                               disabled={!selectedSection}
-                              className="w-full sm:w-auto h-12 font-semibold text-base"
+                              className={`w-full sm:w-auto h-12 font-semibold text-base rounded-full ${
+                                preloaded
+                                  ? 'border border-verde/30 bg-superficie-2 text-verde hover:bg-superficie-2/80'
+                                  : 'border-linea bg-transparent hover:bg-superficie-2'
+                              }`}
                             >
                               {preloaded ? (
                                 <>
@@ -492,7 +497,7 @@ const FanProjectDetail = () => {
                               size="lg"
                               onClick={() => navigate(`/fan-projects/${projectId}/song/${song.id}/light`)}
                               disabled={!preloaded}
-                              className="w-full sm:w-auto h-12 font-semibold text-base"
+                              className="w-full sm:w-auto h-12 font-semibold text-base rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
                             >
                               Entrar
                             </Button>

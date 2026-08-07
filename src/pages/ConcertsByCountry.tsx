@@ -143,13 +143,13 @@ const ConcertsByCountry = () => {
 
   if (!countryInfo) {
     return (
-      <>
+      <div className="dark font-fira bg-noche text-texto">
         <Header />
         <main className="min-h-screen pt-20 flex items-center justify-center">
           <p className="text-muted-foreground">País no encontrado</p>
         </main>
         <Footer />
-      </>
+      </div>
     );
   }
 
@@ -370,18 +370,22 @@ const ConcertsByCountry = () => {
         to={`/concerts/${concert.slug}`}
         className="group block focus:outline-none"
       >
-        <div className="relative aspect-[4/5] sm:aspect-[3/4] overflow-hidden rounded-xl bg-muted ring-1 ring-border/50 group-hover:ring-primary/40 transition-all duration-300">
+        <div className="relative aspect-[4/5] sm:aspect-[3/4] overflow-hidden rounded-[20px] bg-superficie-2 ring-1 ring-linea group-hover:ring-[rgba(89,124,255,.5)] group-hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300">
           <img
             src={concert.artist_image_url || '/placeholder.svg'}
             alt={`${concert.artists?.name || concert.title} en ${concert.venues?.cities?.name || countryInfo.name}`}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             loading="lazy"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+          {/* Overlay oscuro desde abajo para que el texto respire */}
+          <div
+            className="absolute inset-0"
+            style={{ background: 'linear-gradient(180deg, transparent 35%, rgba(7,13,31,.9))' }}
+          />
 
-          {/* Festival badge — only when relevant */}
+          {/* Festival badge — chip verde, solo cuando aplica */}
           {isFestival && (
-            <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-[0.15em] bg-primary text-primary-foreground px-2.5 py-1 rounded-full">
+            <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-[0.15em] border border-verde/30 bg-noche/80 backdrop-blur-sm text-verde px-2.5 py-1 rounded-full">
               Festival
             </span>
           )}
@@ -390,20 +394,20 @@ const ConcertsByCountry = () => {
           {dateObj && (
             <time
               dateTime={concert.date || ''}
-              className="absolute top-3 right-3 bg-background/95 backdrop-blur rounded-lg px-2.5 py-1.5 text-center min-w-[48px]"
+              className="absolute top-3 right-3 rounded-2xl border border-linea bg-noche/80 backdrop-blur-sm px-2.5 py-1.5 text-center min-w-[48px]"
             >
-              <span className="block font-display text-xl font-black text-foreground leading-none">{day}</span>
-              <span className="block text-[9px] uppercase font-bold tracking-[0.1em] text-muted-foreground mt-0.5">{month}</span>
+              <span className="block font-display text-xl font-extrabold text-verde leading-none">{day}</span>
+              <span className="block text-[9px] uppercase font-bold tracking-[0.1em] text-texto-2 mt-0.5">{month}</span>
             </time>
           )}
 
           {/* Title + meta over image bottom */}
           <div className="absolute inset-x-0 bottom-0 p-3 sm:p-4">
-            <h3 className="font-bold text-sm sm:text-base text-white leading-tight line-clamp-2 mb-1.5">
+            <h3 className="font-bold text-sm sm:text-base text-texto leading-tight line-clamp-2 mb-1.5 group-hover:text-periwinkle transition-colors">
               {concert.title}
             </h3>
             {concert.venues && (
-              <p className="text-[11px] sm:text-xs text-white/80 truncate">
+              <p className="text-[11px] sm:text-xs text-texto-2 truncate">
                 {concert.venues.name}
                 {concert.venues.cities?.name ? ` · ${concert.venues.cities.name}` : ''}
               </p>
@@ -429,20 +433,22 @@ const ConcertsByCountry = () => {
         noindex={isEmptyPage}
       />
       
+      {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
       <Header />
 
-      <main className="min-h-screen pt-24 md:pt-28 pb-12 sm:pb-16">
+      <main className="pt-24 md:pt-28 pb-12 sm:pb-16">
         <div className="container mx-auto px-4">
           {/* Editorial Hero — keyword-rich h1 for SEO */}
           <header className="text-center mt-6 mb-10 md:mb-14">
-            <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-3">
+            <span className="eyebrow-nocturno justify-center mb-3">
               Música en vivo · {countryInfo.name}
-            </p>
-            <h1 className="font-display uppercase font-black tracking-[-0.015em] leading-[0.92] text-foreground text-balance mb-4">
-              <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-muted-foreground/70 mb-1 md:mb-2">
+            </span>
+            <h1 className="font-display uppercase font-black tracking-[0.01em] leading-[0.92] text-foreground text-balance mb-4">
+              <span className="block text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-texto-2 mb-1 md:mb-2">
                 Conciertos en
               </span>
-              <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-8xl">
+              <span className="block text-5xl sm:text-6xl md:text-7xl lg:text-8xl bg-gradient-to-r from-periwinkle to-verde bg-clip-text text-transparent">
                 {countryInfo.name} {yearText}
               </span>
             </h1>
@@ -493,10 +499,10 @@ const ConcertsByCountry = () => {
               {upcomingConcerts.length > 0 && (
                 <section className="mb-12 sm:mb-16" aria-labelledby="upcoming-concerts">
                   <div className="mb-6 md:mb-8">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-2">
+                    <span className="eyebrow-nocturno mb-2">
                       Próximamente
-                    </p>
-                    <h2 id="upcoming-concerts" className="font-display uppercase text-3xl md:text-4xl font-black tracking-tight leading-[0.95] text-foreground">
+                    </span>
+                    <h2 id="upcoming-concerts" className="font-display uppercase text-3xl md:text-4xl font-black tracking-[0.01em] leading-[0.95] text-foreground">
                       En cartelera
                     </h2>
                   </div>
@@ -513,18 +519,18 @@ const ConcertsByCountry = () => {
                 <Collapsible open={isPastConcertsOpen} onOpenChange={setIsPastConcertsOpen}>
                   <CollapsibleTrigger asChild>
                     <button
-                      className="w-full flex items-center justify-between py-4 border-y border-border/60 hover:border-primary/40 transition-colors group mb-4"
+                      className="w-full flex items-center justify-between py-4 border-y border-linea hover:border-[rgba(89,124,255,.35)] transition-colors group mb-4"
                       aria-labelledby="past-concerts"
                     >
                       <div className="flex items-center gap-3">
                         <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                           Archivo
                         </span>
-                        <span className="h-3 w-px bg-border/60" />
-                        <h2 id="past-concerts" className="font-display uppercase text-xl md:text-2xl font-black tracking-tight text-foreground">
+                        <span className="h-3 w-px bg-linea" />
+                        <h2 id="past-concerts" className="font-display uppercase text-xl md:text-2xl font-black tracking-[0.01em] text-foreground">
                           Pasados
                         </h2>
-                        <span className="font-display text-base md:text-lg font-black text-primary">
+                        <span className="font-display text-base md:text-lg font-black text-verde">
                           {pastConcerts.length}
                         </span>
                       </div>
@@ -547,9 +553,9 @@ const ConcertsByCountry = () => {
                   <p className="text-muted-foreground mb-4">
                     No hay conciertos registrados en {countryInfo.name} por el momento.
                   </p>
-                  <Link 
+                  <Link
                     to="/concerts"
-                    className="inline-flex items-center gap-2 text-primary hover:underline"
+                    className="inline-flex items-center gap-2 text-periwinkle hover:underline"
                   >
                     Ver todos los conciertos
                     <ChevronRight className="w-4 h-4" />
@@ -562,10 +568,10 @@ const ConcertsByCountry = () => {
           {/* Top Cities — pills, editorial */}
           {topCities.length > 0 && (
             <section className="mt-16 sm:mt-20 text-center" aria-labelledby="top-cities">
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-3">
+              <span className="eyebrow-nocturno justify-center mb-3">
                 Explora por ciudad
-              </p>
-              <h2 id="top-cities" className="font-display uppercase text-2xl md:text-3xl font-black tracking-tight leading-[0.95] text-foreground mb-6">
+              </span>
+              <h2 id="top-cities" className="font-display uppercase text-2xl md:text-3xl font-black tracking-[0.01em] leading-[0.95] text-foreground mb-6">
                 Conciertos en {countryInfo.name} por ciudad
               </h2>
               <div className="flex flex-wrap justify-center gap-1.5 max-w-3xl mx-auto">
@@ -574,12 +580,12 @@ const ConcertsByCountry = () => {
                     key={city.slug}
                     to={`/concerts?city=${city.slug}`}
                     aria-label={`Conciertos en ${city.name}, ${countryInfo.name}`}
-                    className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/60 text-muted-foreground hover:text-foreground hover:border-border transition-colors"
+                    className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(89,124,255,.35)] transition-colors"
                   >
                     <span className="text-[11px] font-bold uppercase tracking-[0.15em]">
                       {city.name}
                     </span>
-                    <span className="text-[10px] font-black text-primary group-hover:text-primary tabular-nums">
+                    <span className="text-[10px] font-black text-verde tabular-nums">
                       {city.count}
                     </span>
                   </Link>
@@ -592,14 +598,14 @@ const ConcertsByCountry = () => {
           {topVenues.length > 0 && (
             <section className="mt-12 sm:mt-16" aria-labelledby="top-venues">
               <div className="mb-6 md:mb-8 max-w-3xl mx-auto text-center">
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-2">
+                <span className="eyebrow-nocturno justify-center mb-2">
                   Venues principales
-                </p>
-                <h2 id="top-venues" className="font-display uppercase text-2xl md:text-3xl font-black tracking-tight leading-[0.95] text-foreground">
+                </span>
+                <h2 id="top-venues" className="font-display uppercase text-2xl md:text-3xl font-black tracking-[0.01em] leading-[0.95] text-foreground">
                   Los venues más activos de {countryInfo.name}
                 </h2>
               </div>
-              <ul className="max-w-3xl mx-auto divide-y divide-border/60 border-y border-border/60">
+              <ul className="max-w-3xl mx-auto divide-y divide-linea border-y border-linea">
                 {topVenues.map((venue) => (
                   <li key={venue.slug} className="py-4 px-2 flex items-center justify-between gap-4">
                     <div className="min-w-0">
@@ -613,7 +619,7 @@ const ConcertsByCountry = () => {
                       )}
                     </div>
                     <div className="flex-shrink-0 text-right">
-                      <span className="font-display text-xl font-black text-foreground leading-none">
+                      <span className="font-display text-xl font-black text-verde leading-none">
                         {venue.count}
                       </span>
                       <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground mt-0.5">
@@ -628,10 +634,10 @@ const ConcertsByCountry = () => {
 
           {/* SEO Editorial Section */}
           <section className="mt-16 sm:mt-20 max-w-3xl mx-auto">
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-3">
+            <span className="eyebrow-nocturno mb-3">
               Guía editorial
-            </p>
-            <h2 className="font-display uppercase text-2xl md:text-3xl font-black tracking-tight leading-[0.95] text-foreground mb-5">
+            </span>
+            <h2 className="font-display uppercase text-2xl md:text-3xl font-black tracking-[0.01em] leading-[0.95] text-foreground mb-5">
               {eventTypeText} en {countryInfo.name}
             </h2>
             <p className="text-base text-muted-foreground leading-relaxed mb-4">
@@ -656,13 +662,13 @@ const ConcertsByCountry = () => {
 
           {/* FAQ Section — drives FAQPage schema rich result */}
           <section className="mt-16 sm:mt-20 max-w-3xl mx-auto" aria-labelledby="faq-title">
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-3">
+            <span className="eyebrow-nocturno mb-3">
               Preguntas frecuentes
-            </p>
-            <h2 id="faq-title" className="font-display uppercase text-2xl md:text-3xl font-black tracking-tight leading-[0.95] text-foreground mb-8">
+            </span>
+            <h2 id="faq-title" className="font-display uppercase text-2xl md:text-3xl font-black tracking-[0.01em] leading-[0.95] text-foreground mb-8">
               Conciertos en {countryInfo.name}: lo que más preguntan
             </h2>
-            <div className="divide-y divide-border/60 border-y border-border/60">
+            <div className="divide-y divide-linea border-y border-linea">
               {faqs.map((faq, i) => (
                 <details key={i} className="group py-5">
                   <summary className="flex items-center justify-between cursor-pointer list-none">
@@ -680,11 +686,11 @@ const ConcertsByCountry = () => {
           </section>
 
           {/* Internal Links Navigation — country pills */}
-          <nav className="mt-16 sm:mt-20 pt-10 border-t border-border/60 text-center" aria-label="Otros países">
-            <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-3">
+          <nav className="mt-16 sm:mt-20 pt-10 border-t border-linea text-center" aria-label="Otros países">
+            <span className="eyebrow-nocturno justify-center mb-3">
               Sigue explorando
-            </p>
-            <h3 className="font-display uppercase text-2xl md:text-3xl font-black tracking-tight leading-[0.95] text-foreground mb-6">
+            </span>
+            <h3 className="font-display uppercase text-2xl md:text-3xl font-black tracking-[0.01em] leading-[0.95] text-foreground mb-6">
               Conciertos en otros países
             </h3>
             <div className="flex flex-wrap justify-center gap-1.5 max-w-3xl mx-auto">
@@ -694,7 +700,7 @@ const ConcertsByCountry = () => {
                   <Link
                     key={slug}
                     to={`/conciertos/${slug}`}
-                    className="px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] bg-card border border-border/60 text-muted-foreground hover:text-foreground hover:border-border transition-colors"
+                    className="px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(89,124,255,.35)] transition-colors"
                   >
                     {data.name}
                   </Link>
@@ -703,8 +709,9 @@ const ConcertsByCountry = () => {
           </nav>
         </div>
       </main>
-      
+
       <Footer />
+      </div>
     </>
   );
 };

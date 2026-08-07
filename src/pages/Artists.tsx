@@ -79,7 +79,7 @@ const Artists = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="dark font-fira min-h-screen bg-noche text-texto flex flex-col">
         <Header />
         <main className="flex-1 container mx-auto px-4 py-16">
           <LoadingSpinnerInline message="Cargando artistas..." />
@@ -143,7 +143,8 @@ const Artists = () => {
         url="/artists"
         structuredData={structuredData}
       />
-      <div className="min-h-screen bg-background">
+      {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 md:pt-28 pb-16">
@@ -151,14 +152,14 @@ const Artists = () => {
 
           {/* Header Section */}
           <div className="text-center mt-6 mb-10 md:mb-14">
-            <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-3">
+            <span className="eyebrow-nocturno justify-center mb-3">
               Directorio de música latina
-            </p>
-            <h1 className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.015em] leading-[0.92] text-foreground text-balance mb-4">
+            </span>
+            <h1 className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[0.01em] leading-[0.92] text-foreground text-balance mb-4">
               Artistas
             </h1>
             <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-              Biografías, conciertos en LATAM, top tracks y noticias de los artistas que están sonando.
+              Biografías, conciertos en LATAM, top tracks y noticias de tus artistas favoritos.
             </p>
           </div>
 
@@ -170,7 +171,7 @@ const Artists = () => {
               placeholder="Buscar artistas..."
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
-              className="w-full h-11 text-sm pl-11 rounded-full bg-card border-border/60 focus-visible:ring-primary/30"
+              className="w-full h-11 text-sm pl-11 rounded-full bg-superficie border-linea focus-visible:ring-periwinkle"
             />
           </div>
 
@@ -183,8 +184,8 @@ const Artists = () => {
                     onClick={() => setSelectedGenre(null)}
                     className={`px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] transition-colors flex-shrink-0 ${
                       !selectedGenre
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-card border border-border/60 text-muted-foreground hover:text-foreground hover:border-border'
+                        ? 'bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)]'
+                        : 'bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(89,124,255,.35)]'
                     }`}
                     aria-pressed={!selectedGenre}
                   >
@@ -198,8 +199,8 @@ const Artists = () => {
                         onClick={() => handleGenreClick(genre)}
                         className={`px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] transition-colors flex-shrink-0 ${
                           isSelected
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-card border border-border/60 text-muted-foreground hover:text-foreground hover:border-border'
+                            ? 'bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)]'
+                            : 'bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(89,124,255,.35)]'
                         }`}
                         aria-pressed={isSelected}
                       >
@@ -244,7 +245,7 @@ const Artists = () => {
                     to={`/artists/${artist.slug}`}
                     className="group text-left focus:outline-none flex flex-col transition-transform duration-300 hover:-translate-y-1"
                   >
-                    <div className="aspect-square rounded-2xl overflow-hidden bg-muted mb-3 relative ring-1 ring-border/50 shadow-sm group-hover:ring-primary/40 group-hover:shadow-xl transition-all duration-300">
+                    <div className="aspect-square rounded-[20px] overflow-hidden bg-superficie-2 mb-3 relative ring-1 ring-linea group-hover:ring-[rgba(89,124,255,.5)] group-hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300">
                       <img
                         src={artist.photo_url || getDefaultImage()}
                         alt={
@@ -255,10 +256,13 @@ const Artists = () => {
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         loading="lazy"
                       />
-                      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <div
+                        className="absolute inset-x-0 bottom-0 h-1/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                        style={{ background: 'linear-gradient(180deg, transparent, rgba(7,13,31,.6))' }}
+                      />
                     </div>
                     <div className="flex items-center gap-1 px-0.5">
-                      <h3 className="font-semibold text-sm md:text-[15px] text-foreground group-hover:text-primary transition-colors truncate">
+                      <h3 className="font-semibold text-sm md:text-[15px] text-foreground group-hover:text-periwinkle transition-colors truncate">
                         {artist.name}
                       </h3>
                       {artist.is_verified === true && (
@@ -339,9 +343,9 @@ const Artists = () => {
             </>
           ) : (
             <div className="text-center py-12">
-              <Music className="h-24 w-24 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-2xl font-bold text-foreground mb-2">No hay artistas disponibles</h3>
-              <p className="text-muted-foreground">Próximamente añadiremos más artistas increíbles.</p>
+              <Music className="h-24 w-24 text-periwinkle/40 mx-auto mb-4" />
+              <h3 className="font-display text-2xl font-extrabold uppercase tracking-[0.01em] text-foreground mb-2">No hay artistas disponibles</h3>
+              <p className="text-muted-foreground">Muy pronto sumaremos más artistas.</p>
             </div>
           )}
         </main>

@@ -55,16 +55,17 @@ export const NewHomeSpotifyCharts = () => {
     }, [selectedCountry]);
 
     return (
-        <section className="py-10 md:py-16">
+        <section className="py-12 md:py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header */}
-                <div className="flex flex-col items-center sm:items-start sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
-                    <div className="text-center sm:text-left">
-                        <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+                <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5 mb-8">
+                    <div className="max-w-2xl">
+                        <span className="eyebrow-nocturno mb-3">Charts</span>
+                        <h2 className="font-display font-extrabold uppercase tracking-[0.01em] text-3xl md:text-4xl leading-none text-texto">
                             Top 10 en {selectedCountry.name} {selectedCountry.flag}
                         </h2>
-                        <p className="text-sm text-muted-foreground mt-1">
-                            Lo más escuchado en Spotify
+                        <p className="mt-3 font-fira text-base text-texto-2">
+                            Lo más escuchado en Spotify esta semana.
                         </p>
                     </div>
                     <Select
@@ -74,7 +75,7 @@ export const NewHomeSpotifyCharts = () => {
                             if (c) setSelectedCountry(c);
                         }}
                     >
-                        <SelectTrigger className="w-52 h-9 text-sm">
+                        <SelectTrigger className="w-52 h-10 text-sm rounded-full border-linea bg-superficie focus:ring-periwinkle">
                             <SelectValue>
                                 <span className="flex items-center gap-2">
                                     <span>{selectedCountry.flag}</span>

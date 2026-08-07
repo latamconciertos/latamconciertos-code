@@ -38,11 +38,11 @@ const ChatMessageList = ({ messages, isLoading, onSuggestionClick, messagesEndRe
                     <Button
                       key={index}
                       variant="outline"
-                      className="text-left justify-start h-auto py-3 px-4 hover:bg-accent"
+                      className="text-left justify-start h-auto py-3 px-4 rounded-2xl bg-superficie border-linea text-texto-2 hover:text-texto hover:bg-superficie-2 hover:border-[rgba(89,124,255,.35)]"
                       onClick={() => onSuggestionClick(suggestion)}
                       disabled={isLoading}
                     >
-                      <span className="text-sm text-muted-foreground">{suggestion}</span>
+                      <span className="text-sm">{suggestion}</span>
                     </Button>
                   ))}
                 </div>
@@ -57,13 +57,13 @@ const ChatMessageList = ({ messages, isLoading, onSuggestionClick, messagesEndRe
                 >
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-3 ${message.role === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-card border border-border'
+                      ? 'bg-superficie-2 border border-[rgba(89,124,255,.25)] text-texto'
+                      : 'bg-superficie border border-linea'
                       }`}
                   >
                     {message.role === 'bot' ? (
                       <div
-                        className="text-sm whitespace-pre-wrap prose prose-sm max-w-none"
+                        className="text-sm whitespace-pre-wrap prose prose-sm dark:prose-invert max-w-none prose-a:text-periwinkle"
                         dangerouslySetInnerHTML={{
                           __html: linkifyText(message.content.replace(/\*\*/g, ''))
                         }}
@@ -76,8 +76,8 @@ const ChatMessageList = ({ messages, isLoading, onSuggestionClick, messagesEndRe
               ))}
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-card border border-border rounded-2xl px-4 py-3">
-                    <Loader2 className="h-5 w-5 animate-spin text-primary" />
+                  <div className="bg-superficie border border-linea rounded-2xl px-4 py-3">
+                    <Loader2 className="h-5 w-5 animate-spin text-periwinkle" />
                   </div>
                 </div>
               )}

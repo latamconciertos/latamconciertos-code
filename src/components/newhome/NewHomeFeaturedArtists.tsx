@@ -1,7 +1,6 @@
-import { Music } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useFeaturedArtists } from '@/hooks/useFeaturedArtists';
-import { Badge } from '@/components/ui/badge';
+import { SectionHeader } from './SectionHeader';
 
 /**
  * NewHomeFeaturedArtists Component
@@ -17,14 +16,14 @@ export const NewHomeFeaturedArtists = () => {
 
     if (loading) {
         return (
-            <section className="py-12 bg-background">
+            <section className="py-12">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="h-8 bg-muted/20 rounded w-64 mb-8 animate-pulse"></div>
+                    <div className="h-8 bg-superficie rounded w-64 mb-8 animate-pulse"></div>
                     <div className="flex gap-6 overflow-x-auto pb-4">
                         {[...Array(10)].map((_, i) => (
                             <div key={i} className="flex-shrink-0 flex flex-col items-center gap-3">
-                                <div className="w-24 h-24 rounded-full bg-muted/20 animate-pulse"></div>
-                                <div className="h-4 bg-muted/20 rounded w-16 animate-pulse"></div>
+                                <div className="w-24 h-24 rounded-full bg-superficie animate-pulse"></div>
+                                <div className="h-4 bg-superficie rounded w-16 animate-pulse"></div>
                             </div>
                         ))}
                     </div>
@@ -38,32 +37,25 @@ export const NewHomeFeaturedArtists = () => {
     }
 
     return (
-        <section className="py-4 bg-background">
+        <section className="py-12 md:py-16">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Section Header - Centered like concerts section */}
-                <div className="text-center mb-8">
-                    <Badge className="bg-primary text-primary-foreground hover:bg-primary text-base px-4 py-1.5 font-bold font-fira mb-4">
-                        <Music className="h-4 w-4 mr-2" />
-                        Artistas Destacados
-                    </Badge>
-                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 font-fira">
-                        Conciertos Destacados
-                    </h2>
-                    <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-                        Explora las giras más populares del momento
-                    </p>
-                </div>
+                <SectionHeader
+                    eyebrow="Artistas"
+                    title="Las giras del momento"
+                    subtitle="Tus artistas favoritos que están recorriendo la región."
+                    action={{ label: 'Ver todos los artistas', to: '/artists' }}
+                />
 
                 {/* Artists Grid - Horizontal Scroll */}
-                <div className="flex gap-4 overflow-x-auto pb-2 pt-2 scrollbar-hide md:justify-center">
+                <div className="flex gap-5 overflow-x-auto pb-2 pt-2 scrollbar-hide">
                     {artists.map((artist) => (
                         <Link
                             key={artist.id}
                             to={`/artists/${artist.slug}`}
-                            className="flex-shrink-0 flex flex-col items-center gap-2"
+                            className="group flex-shrink-0 flex flex-col items-center gap-2"
                         >
                             <div className="relative">
-                                <div className="w-[68px] h-[68px] rounded-full overflow-hidden ring-2 ring-primary p-0.5">
+                                <div className="w-[76px] h-[76px] rounded-full overflow-hidden ring-1 ring-linea group-hover:ring-2 group-hover:ring-periwinkle transition-all p-0.5">
                                     <img
                                         src={artist.photo_url || getDefaultImage()}
                                         alt={artist.name}
@@ -72,7 +64,7 @@ export const NewHomeFeaturedArtists = () => {
                                     />
                                 </div>
                             </div>
-                            <span className="text-xs text-foreground text-center max-w-[76px] truncate">
+                            <span className="font-fira text-xs text-texto-2 group-hover:text-texto transition-colors text-center max-w-[84px] truncate">
                                 {artist.name}
                             </span>
                         </Link>

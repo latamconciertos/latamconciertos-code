@@ -49,7 +49,7 @@ export const ConcertCard = memo(({ concert, isPast = false }: ConcertCardProps) 
 
   return (
     <Card
-      className={`group relative overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border-border/50 bg-card concert-card h-full flex flex-col ${isPast ? 'opacity-75' : ''}`}
+      className={`group relative overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 concert-card h-full flex flex-col ${isPast ? 'opacity-75' : ''}`}
     >
       {/* Hidden SEO metadata */}
       <meta itemProp="name" content={concert.title} />
@@ -58,41 +58,45 @@ export const ConcertCard = memo(({ concert, isPast = false }: ConcertCardProps) 
       <link itemProp="url" href={`${SITE_URL}${detailUrl}`} />
 
       {/* Image Section with Date Badge */}
-      <div className="relative h-72 overflow-hidden bg-muted flex-shrink-0">
+      <div className="relative aspect-[16/10] overflow-hidden bg-superficie-2 flex-shrink-0">
         <img
           src={optimizedImageUrl}
           alt={`${concert.artists?.name || 'Artista'} - ${concert.title} - Concierto en ${concert.venues?.cities?.name || 'América Latina'}`}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           itemProp="image"
           loading="lazy"
           decoding="async"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+        {/* Overlay oscuro desde abajo para que el texto respire */}
+        <div
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(180deg, transparent 40%, rgba(7,13,31,.85))' }}
+        />
 
-        {/* Date Badge */}
+        {/* Chip de fecha: número grande en verde, Big Shoulders */}
         <time
           dateTime={concert.date || ''}
-          className="absolute top-3 right-3 bg-white dark:bg-gray-900 rounded-xl p-2.5 shadow-lg text-center min-w-[60px]"
+          className="absolute top-3 right-3 rounded-2xl border border-linea bg-noche/80 backdrop-blur-sm px-3 py-2 text-center min-w-[56px]"
           itemProp="startDate"
         >
-          <span className="block text-2xl font-bold text-foreground leading-none">{dateInfo.day}</span>
-          <span className="block text-xs uppercase text-muted-foreground font-semibold mt-0.5">{dateInfo.month}</span>
+          <span className="block font-display text-2xl font-extrabold text-verde leading-none">{dateInfo.day}</span>
+          <span className="block font-fira text-[10px] uppercase tracking-[0.12em] text-texto-2 mt-0.5">{dateInfo.month}</span>
         </time>
       </div>
 
       {/* Content Section */}
-      <div className="p-4 flex-1 flex flex-col" itemProp="location" itemScope itemType="https://schema.org/Place">
+      <div className="p-5 flex-1 flex flex-col" itemProp="location" itemScope itemType="https://schema.org/Place">
         <div className="space-y-2">
           {concert.artists?.name && (
             <div className="flex items-center gap-2" itemProp="performer" itemScope itemType="https://schema.org/MusicGroup">
-              <Music className="h-4 w-4 text-primary" aria-hidden="true" />
-              <p className="text-sm text-primary font-semibold uppercase tracking-wide">
+              <Music className="h-3.5 w-3.5 text-periwinkle" aria-hidden="true" />
+              <p className="font-fira text-xs text-periwinkle font-semibold uppercase tracking-[0.14em]">
                 <span itemProp="name">{concert.artists.name}</span>
               </p>
             </div>
           )}
 
-          <h3 className="text-xl font-bold text-foreground line-clamp-2 leading-tight font-fira">
+          <h3 className="text-xl font-bold text-texto line-clamp-2 leading-tight font-fira">
             {/* Stretched link: toda la tarjeta navega, pero con un <a> real que Google puede seguir */}
             <Link
               to={detailUrl}
@@ -102,8 +106,8 @@ export const ConcertCard = memo(({ concert, isPast = false }: ConcertCardProps) 
             </Link>
           </h3>
 
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <MapPin className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
+          <div className="flex items-center gap-2 text-texto-2">
+            <MapPin className="h-4 w-4 flex-shrink-0 text-periwinkle" aria-hidden="true" />
             <p className="text-sm line-clamp-1">
               <span itemProp="name">{location}</span>
             </p>
@@ -114,7 +118,7 @@ export const ConcertCard = memo(({ concert, isPast = false }: ConcertCardProps) 
         {!isPast && (
           <div className="pt-4 mt-auto">
             {concert.ticket_url ? (
-              <Button asChild className="relative z-[2] w-full group/btn">
+              <Button asChild className="relative z-[2] w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95 group/btn">
                 <a
                   href={withTicketTracking(concert.ticket_url)}
                   target="_blank"
@@ -122,11 +126,11 @@ export const ConcertCard = memo(({ concert, isPast = false }: ConcertCardProps) 
                   aria-label={`Comprar entradas para ${concert.title}`}
                 >
                   <Ticket className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" aria-hidden="true" />
-                  Ver Entradas
+                  Ver entradas
                 </a>
               </Button>
             ) : (
-              <Button className="relative z-[2] w-full" disabled aria-label="Entradas próximamente disponibles">
+              <Button variant="outline" className="relative z-[2] w-full rounded-full border-linea bg-transparent text-texto-2" disabled aria-label="Entradas próximamente disponibles">
                 <Ticket className="h-4 w-4 mr-2" aria-hidden="true" />
                 Próximamente
               </Button>

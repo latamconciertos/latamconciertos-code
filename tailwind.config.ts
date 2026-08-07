@@ -68,7 +68,22 @@ export default {
 				brand: {
 					blue: '#004aad',
 					white: '#ffffff'
-				}
+				},
+				// Evolución Nocturna — tokens de la dirección de diseño
+				noche: '#070D1F',
+				superficie: {
+					DEFAULT: '#0E1830',
+					2: '#131F3D'
+				},
+				cobalto: '#004AAD',
+				periwinkle: '#597CFF',
+				'azul-claro': '#83B4FF',
+				verde: '#37C563',
+				texto: {
+					DEFAULT: '#F2F5FC',
+					2: '#94A0BD'
+				},
+				linea: 'rgba(131,180,255,.12)'
 			},
 			fontFamily: {
 				'sans': ['"DM Sans"', 'system-ui', 'sans-serif'],

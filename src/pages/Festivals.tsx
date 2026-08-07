@@ -141,7 +141,7 @@ const Festivals = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="dark font-fira min-h-screen bg-noche text-texto flex flex-col">
         <Header />
         <main className="flex-1 container mx-auto px-4 py-16">
           <LoadingSpinnerInline message="Cargando festivales..." />
@@ -163,7 +163,8 @@ const Festivals = () => {
         structuredData={structuredData}
         noindex={totalCount === 0}
       />
-      <div className="min-h-screen bg-background">
+      {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
 
         <main className="container mx-auto px-4 pt-24 md:pt-28 pb-16">
@@ -203,13 +204,13 @@ const Festivals = () => {
           <div className="max-w-4xl mx-auto mb-12 space-y-4">
             {/* Search Bar */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Buscar festivales..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full h-12 text-lg pl-10"
+                className="w-full h-11 text-sm pl-11 rounded-full bg-superficie border-linea focus-visible:ring-periwinkle"
               />
             </div>
 
@@ -290,30 +291,34 @@ const Festivals = () => {
                     </div>
                   </MobileFiltersSheet>
 
-                  {/* Status filter as scrollable tabs on mobile */}
+                  {/* Status filter as editorial tab bar on mobile */}
                   <div className="flex-1 overflow-x-auto scrollbar-hide">
-                    <div className="flex gap-2 min-w-max">
-                      <Button
-                        size="sm"
-                        variant={filterStatus === 'upcoming' ? 'default' : 'outline'}
-                        onClick={() => setFilterStatus('upcoming')}
-                      >
-                        Próximos
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={filterStatus === 'past' ? 'default' : 'outline'}
-                        onClick={() => setFilterStatus('past')}
-                      >
-                        Pasados
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={filterStatus === 'all' ? 'default' : 'outline'}
-                        onClick={() => setFilterStatus('all')}
-                      >
-                        Todos
-                      </Button>
+                    <div className="flex items-center gap-1 min-w-max border-b border-border/60">
+                      {[
+                        { value: 'upcoming' as const, label: 'Próximos' },
+                        { value: 'past' as const, label: 'Pasados' },
+                        { value: 'all' as const, label: 'Todos' },
+                      ].map(({ value, label }) => {
+                        const isActive = filterStatus === value;
+                        return (
+                          <button
+                            key={value}
+                            onClick={() => setFilterStatus(value)}
+                            className={`relative px-4 py-2.5 text-[11px] font-bold uppercase tracking-[0.18em] transition-colors ${
+                              isActive ? 'text-foreground' : 'text-muted-foreground'
+                            }`}
+                            aria-pressed={isActive}
+                          >
+                            {label}
+                            <span
+                              className={`absolute left-0 right-0 -bottom-px h-0.5 transition-colors ${
+                                isActive ? 'bg-verde' : 'bg-transparent'
+                              }`}
+                              aria-hidden="true"
+                            />
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -331,7 +336,7 @@ const Festivals = () => {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger className="h-12 rounded-full bg-superficie border-linea focus:ring-periwinkle">
                       <SelectValue placeholder="Seleccionar país" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50">
@@ -349,7 +354,7 @@ const Festivals = () => {
                     onValueChange={setSelectedCity}
                     disabled={selectedCountry === 'all'}
                   >
-                    <SelectTrigger className="h-12">
+                    <SelectTrigger className="h-12 rounded-full bg-superficie border-linea focus:ring-periwinkle">
                       <SelectValue placeholder="Seleccionar ciudad" />
                     </SelectTrigger>
                     <SelectContent className="bg-popover z-50">
@@ -363,25 +368,32 @@ const Festivals = () => {
                   </Select>
                 </div>
 
-                <div className="flex justify-center gap-2">
-                  <Button
-                    variant={filterStatus === 'upcoming' ? 'default' : 'outline'}
-                    onClick={() => setFilterStatus('upcoming')}
-                  >
-                    Próximos
-                  </Button>
-                  <Button
-                    variant={filterStatus === 'past' ? 'default' : 'outline'}
-                    onClick={() => setFilterStatus('past')}
-                  >
-                    Pasados
-                  </Button>
-                  <Button
-                    variant={filterStatus === 'all' ? 'default' : 'outline'}
-                    onClick={() => setFilterStatus('all')}
-                  >
-                    Todos
-                  </Button>
+                <div className="flex items-center justify-center gap-1 sm:gap-2 border-b border-border/60">
+                  {[
+                    { value: 'upcoming' as const, label: 'Próximos' },
+                    { value: 'past' as const, label: 'Pasados' },
+                    { value: 'all' as const, label: 'Todos' },
+                  ].map(({ value, label }) => {
+                    const isActive = filterStatus === value;
+                    return (
+                      <button
+                        key={value}
+                        onClick={() => setFilterStatus(value)}
+                        className={`relative px-5 py-3 text-xs font-bold uppercase tracking-[0.18em] transition-colors ${
+                          isActive ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+                        }`}
+                        aria-pressed={isActive}
+                      >
+                        {label}
+                        <span
+                          className={`absolute left-0 right-0 -bottom-px h-0.5 transition-colors ${
+                            isActive ? 'bg-verde' : 'bg-transparent'
+                          }`}
+                          aria-hidden="true"
+                        />
+                      </button>
+                    );
+                  })}
                 </div>
               </>
             )}
@@ -393,7 +405,7 @@ const Festivals = () => {
               <h2 className="sr-only">
                 {filterStatus === 'upcoming' ? 'Próximos festivales' : filterStatus === 'past' ? 'Festivales pasados' : 'Todos los festivales'}
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredFestivals.map((festival) => (
                   <article key={festival.id}>
                     <FestivalCard
@@ -407,12 +419,16 @@ const Festivals = () => {
           ) : (
             <>
               <EventEmptyState
-                icon={<PartyPopper className="h-16 w-16 text-muted-foreground" />}
+                icon={<PartyPopper className="h-16 w-16 text-periwinkle/40" />}
                 title="No se encontraron festivales"
                 message="Intenta ajustar tus filtros de búsqueda"
               />
               <div className="text-center mb-6">
-                <Button onClick={handleClearAllFilters}>
+                <Button
+                  variant="outline"
+                  onClick={handleClearAllFilters}
+                  className="rounded-full border-linea bg-transparent text-texto hover:bg-superficie-2 hover:text-texto"
+                >
                   Limpiar filtros
                 </Button>
               </div>

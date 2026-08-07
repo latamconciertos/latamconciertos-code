@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Play, X, Video } from 'lucide-react';
+import { Play, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useFeaturedVideos } from '@/hooks/queries';
-import { Badge } from '@/components/ui/badge';
+import { SectionHeader } from '@/components/newhome/SectionHeader';
 import { sanitizeEmbedCode } from '@/lib/sanitize';
 
 interface MediaItem {
@@ -48,12 +48,12 @@ const FeaturedVideosSection = () => {
 
   if (isLoading) {
     return (
-      <section className="py-16 bg-gradient-to-br from-background via-background to-muted/20">
+      <section className="py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center h-64">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-              <p className="text-muted-foreground animate-pulse">Cargando videos destacados...</p>
+              <div className="w-12 h-12 border-4 border-periwinkle/30 border-t-periwinkle rounded-full animate-spin" />
+              <p className="text-texto-2 animate-pulse">Cargando videos destacados...</p>
             </div>
           </div>
         </div>
@@ -68,29 +68,13 @@ const FeaturedVideosSection = () => {
 
   return (
     <>
-      <section className="py-8 md:py-12 bg-background">
-
-
+      <section className="py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Section Header - Styled like other sections in new home */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <Badge className="bg-primary text-primary-foreground hover:bg-primary text-base px-4 py-1.5 font-bold font-fira mb-4">
-              <Video className="h-4 w-4 mr-2" />
-              Videos Destacados
-            </Badge>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 font-fira">
-              Videos Destacados
-            </h2>
-            <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-              Los mejores momentos de conciertos y festivales en América Latina
-            </p>
-          </motion.div>
+          <SectionHeader
+            eyebrow="Videos"
+            title="Los mejores momentos"
+            subtitle="Revive los shows de conciertos y festivales en América Latina."
+          />
 
           {/* Videos Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -105,22 +89,25 @@ const FeaturedVideosSection = () => {
                 className="group cursor-pointer"
                 onClick={() => setSelectedVideo(video)}
               >
-                <div className="relative aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-muted to-muted/50 shadow-lg group-hover:shadow-2xl transition-all duration-300">
+                <div className="relative aspect-video rounded-[20px] overflow-hidden border border-linea bg-superficie group-hover:border-[rgba(89,124,255,.35)] group-hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300">
                   {/* Thumbnail */}
                   <img
                     src={getThumbnail(video)}
                     alt={video.title}
                     loading="lazy"
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
                   />
 
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300" />
+                  {/* Overlay oscuro desde abajo */}
+                  <div
+                    className="absolute inset-0"
+                    style={{ background: 'linear-gradient(180deg, rgba(7,13,31,.15) 0%, rgba(7,13,31,.35) 40%, rgba(7,13,31,.9) 100%)' }}
+                  />
 
                   {/* Play Button */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center transform scale-100 group-hover:scale-110 transition-transform duration-300 shadow-xl">
-                      <Play className="h-8 w-8 text-primary-foreground ml-1" fill="currentColor" />
+                    <div className="w-16 h-16 rounded-full bg-[linear-gradient(95deg,#004AAD,#597CFF)] shadow-[0_8px_32px_rgba(0,74,173,.4)] flex items-center justify-center transform scale-100 group-hover:scale-110 transition-transform duration-300">
+                      <Play className="h-8 w-8 text-white ml-1" fill="currentColor" />
                     </div>
                   </div>
 

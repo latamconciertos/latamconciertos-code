@@ -23,13 +23,13 @@ const WelcomeScreen = ({ userName, onCreateConversation, isDisabled, onOpenSideb
       {/* Contenido centrado */}
       <div className="flex-1 flex items-center justify-center">
         <div className="text-center px-6 max-w-sm mx-auto">
-          <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-6">
-            <MessageCircle className="h-5 w-5 text-primary" />
-            <span className="text-primary font-semibold">Asistente IA</span>
+          <div className="inline-flex items-center gap-2 rounded-full border border-linea bg-superficie px-4 py-2 mb-6">
+            <MessageCircle className="h-5 w-5 text-periwinkle" />
+            <span className="text-periwinkle font-semibold">Asistente IA</span>
           </div>
 
           {/* Saludo simple y limpio */}
-          <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+          <h1 className="font-display uppercase text-3xl md:text-4xl font-black tracking-[0.01em] text-foreground mb-3">
             ¡Hola{userName ? ` ${userName.includes('@') ? userName.split('@')[0] : userName}` : ''}!
           </h1>
 
@@ -41,7 +41,7 @@ const WelcomeScreen = ({ userName, onCreateConversation, isDisabled, onOpenSideb
             onClick={onCreateConversation}
             size="lg"
             disabled={isDisabled}
-            className="px-8"
+            className="px-8 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
           >
             <Plus className="h-5 w-5 mr-2" />
             Iniciar conversación

@@ -27,11 +27,11 @@ export const EventHeroSection = ({
 }: EventHeroSectionProps) => {
   return (
     <header className="text-center mt-6 mb-10 md:mb-14">
-      <p className="text-[11px] md:text-xs font-bold uppercase tracking-[0.22em] text-primary mb-3">
+      <span className="eyebrow-nocturno justify-center mb-3">
         {badgeText}
-      </p>
+      </span>
       <h1
-        className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.015em] leading-[0.92] text-foreground text-balance mb-5 md:mb-6"
+        className="font-display uppercase text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[0.01em] leading-[0.92] text-foreground text-balance mb-5 md:mb-6"
         itemProp={itemPropName ? "name" : undefined}
       >
         {title}

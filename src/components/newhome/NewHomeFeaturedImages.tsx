@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Image as ImageIcon, X, ZoomIn } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { X, ZoomIn } from 'lucide-react';
+import { SectionHeader } from './SectionHeader';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -41,12 +41,12 @@ export const NewHomeFeaturedImages = () => {
 
     if (isLoading) {
         return (
-            <section className="py-8 md:py-12 bg-background">
+            <section className="py-12 md:py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-center h-64">
                         <div className="flex flex-col items-center gap-4">
-                            <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-                            <p className="text-muted-foreground animate-pulse">Cargando galería...</p>
+                            <div className="w-12 h-12 border-4 border-periwinkle/30 border-t-periwinkle rounded-full animate-spin" />
+                            <p className="text-texto-2 animate-pulse">Cargando galería...</p>
                         </div>
                     </div>
                 </div>
@@ -60,27 +60,13 @@ export const NewHomeFeaturedImages = () => {
 
     return (
         <>
-            <section className="py-8 md:py-12 bg-background">
+            <section className="py-12 md:py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* Section Header */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
-                        className="text-center mb-12"
-                    >
-                        <Badge className="bg-primary text-primary-foreground hover:bg-primary text-base px-4 py-1.5 font-bold font-fira mb-4">
-                            <ImageIcon className="h-4 w-4 mr-2" />
-                            Galería de Momentos
-                        </Badge>
-                        <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4 font-fira">
-                            Galería de Momentos Inolvidables
-                        </h2>
-                        <p className="text-base text-muted-foreground max-w-2xl mx-auto">
-                            Revive los mejores momentos capturados en conciertos y festivales
-                        </p>
-                    </motion.div>
+                    <SectionHeader
+                        eyebrow="Galería"
+                        title="La noche en fotos"
+                        subtitle="Los momentos capturados dentro del venue."
+                    />
 
                     {/* Masonry Grid */}
                     <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
@@ -94,35 +80,33 @@ export const NewHomeFeaturedImages = () => {
                                 className="break-inside-avoid group cursor-pointer"
                                 onClick={() => setSelectedImage(image)}
                             >
-                                <div className="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500">
+                                <div className="relative overflow-hidden rounded-[20px] border border-linea group-hover:border-[rgba(89,124,255,.35)] group-hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-500">
                                     {/* Image */}
                                     <img
                                         src={image.image_url}
                                         alt={image.title}
-                                        className="w-full h-auto object-cover transform group-hover:scale-110 transition-transform duration-700"
+                                        className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
                                         loading="lazy"
                                     />
 
-                                    {/* Gradient Overlay */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    {/* Overlay oscuro desde abajo */}
+                                    <div
+                                        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                                        style={{ background: 'linear-gradient(180deg, transparent 40%, rgba(7,13,31,.85))' }}
+                                    />
 
                                     {/* Zoom Icon */}
                                     <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        <div className="w-10 h-10 rounded-full bg-primary/90 backdrop-blur-sm flex items-center justify-center shadow-lg">
-                                            <ZoomIn className="h-5 w-5 text-primary-foreground" />
+                                        <div className="w-10 h-10 rounded-full border border-linea bg-noche/80 backdrop-blur-sm flex items-center justify-center">
+                                            <ZoomIn className="h-5 w-5 text-periwinkle" />
                                         </div>
                                     </div>
 
                                     {/* Title Overlay */}
                                     <div className="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                                        <h3 className="text-white font-bold text-base leading-tight line-clamp-2">
+                                        <h3 className="text-texto font-fira font-bold text-base leading-tight line-clamp-2">
                                             {image.title}
                                         </h3>
-                                    </div>
-
-                                    {/* Shine effect */}
-                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                                     </div>
                                 </div>
                             </motion.div>
