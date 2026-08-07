@@ -1,11 +1,13 @@
 import { memo } from 'react';
+import { Link } from 'react-router-dom';
 import { MapPin, Music, Ticket } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import type { ConcertPageItem } from '@/hooks/queries/useConcertsPage';
 import { optimizeUnsplashUrl, getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
+import { withTicketTracking } from '@/lib/ticketUrl';
 
-const SITE_URL = 'https://www.conciertoslatam.app';
+const SITE_URL = 'https://www.conciertoslatam.com';
 
 export const formatDate = (dateString: string | null) => {
   if (!dateString) return { day: '', month: '', year: '', fullDate: 'Fecha por confirmar' };
@@ -30,11 +32,11 @@ const getDefaultImage = () => getDefaultImageUtil('concert');
 export interface ConcertCardProps {
   concert: ConcertPageItem;
   isPast?: boolean;
-  onClick: (concert: ConcertPageItem) => void;
 }
 
-export const ConcertCard = memo(({ concert, isPast = false, onClick }: ConcertCardProps) => {
+export const ConcertCard = memo(({ concert, isPast = false }: ConcertCardProps) => {
   const dateInfo = formatDate(concert.date);
+  const detailUrl = `/concerts/${concert.slug}`;
 
   // Optimize image URL for better performance
   const optimizedImageUrl = concert.artist_image_url
@@ -47,14 +49,13 @@ export const ConcertCard = memo(({ concert, isPast = false, onClick }: ConcertCa
 
   return (
     <Card
-      className={`group overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer border-border/50 bg-card concert-card h-full flex flex-col ${isPast ? 'opacity-75' : ''}`}
-      onClick={() => onClick(concert)}
+      className={`group relative overflow-hidden rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 border-border/50 bg-card concert-card h-full flex flex-col ${isPast ? 'opacity-75' : ''}`}
     >
       {/* Hidden SEO metadata */}
       <meta itemProp="name" content={concert.title} />
       <meta itemProp="startDate" content={concert.date || ''} />
       {concert.description && <meta itemProp="description" content={concert.description} />}
-      <link itemProp="url" href={`${SITE_URL}/concerts?id=${concert.slug}`} />
+      <link itemProp="url" href={`${SITE_URL}${detailUrl}`} />
 
       {/* Image Section with Date Badge */}
       <div className="relative h-72 overflow-hidden bg-muted flex-shrink-0">
@@ -92,7 +93,13 @@ export const ConcertCard = memo(({ concert, isPast = false, onClick }: ConcertCa
           )}
 
           <h3 className="text-xl font-bold text-foreground line-clamp-2 leading-tight font-fira">
-            {concert.title}
+            {/* Stretched link: toda la tarjeta navega, pero con un <a> real que Google puede seguir */}
+            <Link
+              to={detailUrl}
+              className="after:absolute after:inset-0 after:z-[1] focus-visible:outline-none"
+            >
+              {concert.title}
+            </Link>
           </h3>
 
           <div className="flex items-center gap-2 text-muted-foreground">
@@ -106,28 +113,30 @@ export const ConcertCard = memo(({ concert, isPast = false, onClick }: ConcertCa
         {/* Ticket Button */}
         {!isPast && (
           <div className="pt-4 mt-auto">
-            <Button
-              className="w-full group/btn"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (concert.ticket_url) {
-                  window.open(concert.ticket_url, '_blank');
-                }
-              }}
-              disabled={!concert.ticket_url}
-              aria-label={concert.ticket_url ? `Comprar entradas para ${concert.title}` : 'Entradas próximamente disponibles'}
-            >
-              <Ticket className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" aria-hidden="true" />
-              {concert.ticket_url ? 'Ver Entradas' : 'Próximamente'}
-            </Button>
+            {concert.ticket_url ? (
+              <Button asChild className="relative z-[2] w-full group/btn">
+                <a
+                  href={withTicketTracking(concert.ticket_url)}
+                  target="_blank"
+                  rel="sponsored noopener noreferrer"
+                  aria-label={`Comprar entradas para ${concert.title}`}
+                >
+                  <Ticket className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" aria-hidden="true" />
+                  Ver Entradas
+                </a>
+              </Button>
+            ) : (
+              <Button className="relative z-[2] w-full" disabled aria-label="Entradas próximamente disponibles">
+                <Ticket className="h-4 w-4 mr-2" aria-hidden="true" />
+                Próximamente
+              </Button>
+            )}
           </div>
         )}
       </div>
     </Card>
   );
 }, (prevProps, nextProps) => {
-  // Custom comparison function for memo
-  // Only re-render if concert id or relevant fields change
   return prevProps.concert.id === nextProps.concert.id &&
     prevProps.concert.artist_image_url === nextProps.concert.artist_image_url &&
     prevProps.isPast === nextProps.isPast;

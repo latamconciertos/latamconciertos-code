@@ -238,7 +238,7 @@ const WrappedContainer = ({ data, onClose, userName, logoSrc }: WrappedContainer
         <div className="fixed bottom-6 left-0 right-0 z-50 flex flex-col items-center gap-1 pointer-events-none">
           <img src={logoSrc} alt="" className="h-5 w-auto opacity-30" />
           <span className="text-[10px] tracking-wider text-white/20">
-            conciertoslatam.app
+            conciertoslatam.com
           </span>
         </div>
       )}

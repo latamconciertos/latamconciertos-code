@@ -48,7 +48,7 @@ const WrappedShareButton = ({ data }: WrappedShareButtonProps) => {
           await navigator.share({
             files: [file],
             title: `Mi ${data.year} en Conciertos`,
-            text: `Fui a ${data.totalConcerts} conciertos este ano. Descubre tu Wrapped en conciertoslatam.app/wrapped`,
+            text: `Fui a ${data.totalConcerts} conciertos este ano. Descubre tu Wrapped en conciertoslatam.com/wrapped`,
           });
           return;
         } catch {
@@ -83,7 +83,7 @@ const WrappedShareButton = ({ data }: WrappedShareButtonProps) => {
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText('https://conciertoslatam.app/wrapped');
+      await navigator.clipboard.writeText('https://conciertoslatam.com/wrapped');
     } catch {
       // Silently ignore
     }
@@ -91,7 +91,7 @@ const WrappedShareButton = ({ data }: WrappedShareButtonProps) => {
 
   const shareToWhatsApp = () => {
     const text = encodeURIComponent(
-      `Fui a ${data.totalConcerts} conciertos en ${data.year}! Descubre tu Wrapped: conciertoslatam.app/wrapped`
+      `Fui a ${data.totalConcerts} conciertos en ${data.year}! Descubre tu Wrapped: conciertoslatam.com/wrapped`
     );
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
@@ -100,12 +100,12 @@ const WrappedShareButton = ({ data }: WrappedShareButtonProps) => {
     const text = encodeURIComponent(
       `Fui a ${data.totalConcerts} conciertos en ${data.year}! #ConciertosLatam #Wrapped`
     );
-    window.open(`https://x.com/intent/tweet?text=${text}&url=${encodeURIComponent('https://conciertoslatam.app/wrapped')}`, '_blank');
+    window.open(`https://x.com/intent/tweet?text=${text}&url=${encodeURIComponent('https://conciertoslatam.com/wrapped')}`, '_blank');
   };
 
   const shareToFacebook = () => {
     window.open(
-      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://conciertoslatam.app/wrapped')}`,
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent('https://conciertoslatam.com/wrapped')}`,
       '_blank'
     );
   };

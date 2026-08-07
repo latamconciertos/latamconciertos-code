@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 const About = () => {
-  const SITE_URL = 'https://www.conciertoslatam.app';
+  const SITE_URL = 'https://www.conciertoslatam.com';
   const ORG_ID = `${SITE_URL}/#organization`;
   const JULIAN_ID = `${SITE_URL}/about#julian-felipe-diaz`;
   const JUAN_ID = `${SITE_URL}/about#juan-pablo-contreras`;
@@ -404,10 +404,10 @@ const About = () => {
                 Hablemos
               </p>
               <h2 className="font-display uppercase text-3xl md:text-4xl font-black tracking-tight leading-[0.95] text-foreground mb-4">
-                ¿Querés colaborar?
+                ¿Quieres colaborar?
               </h2>
               <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-8 max-w-xl mx-auto">
-                Si tenés preguntas, sugerencias, una historia para contar, o querés sumarte al equipo de Conciertos Latam, nos encantaría saber de vos.
+                Si tienes preguntas, sugerencias, una historia para contar, o quieres sumarte al equipo de Conciertos Latam, nos encantaría saber de ti.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 items-center justify-center">
                 <a

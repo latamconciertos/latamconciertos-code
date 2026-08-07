@@ -38,7 +38,7 @@ Deno.serve(async (req) => {
 
     console.log(`Found ${validArticles.length} published articles for blog sitemap`);
 
-    const baseUrl = 'https://www.conciertoslatam.app';
+    const baseUrl = 'https://www.conciertoslatam.com';
     const today = new Date().toISOString().split('T')[0];
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);

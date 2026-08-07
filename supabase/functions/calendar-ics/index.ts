@@ -172,7 +172,7 @@ serve(async (req) => {
       if (a.notes) descParts.push(`Notas: ${a.notes}`);
 
       lines.push('BEGIN:VEVENT');
-      lines.push(`UID:accred-${a.id}@conciertoslatam.app`);
+      lines.push(`UID:accred-${a.id}@conciertoslatam.com`);
       lines.push(`DTSTAMP:${utcStamp(now)}`);
       lines.push(`DTSTART;VALUE=DATE:${dateOnly(deadlineDate)}`);
       lines.push(`DTEND;VALUE=DATE:${dateOnly(nextDay)}`);
@@ -180,7 +180,7 @@ serve(async (req) => {
       lines.push(`DESCRIPTION:${escapeIcs(descParts.join('\n'))}`);
       if (a.venue_name) lines.push(`LOCATION:${escapeIcs(a.venue_name)}`);
       lines.push(`STATUS:${a.status === 'rejected' ? 'CANCELLED' : 'CONFIRMED'}`);
-      lines.push(`URL:https://www.conciertoslatam.app/admin/operations`);
+      lines.push(`URL:https://www.conciertoslatam.com/admin/operations`);
       lines.push('CATEGORIES:Acreditación');
 
       // Reminders — fire native phone alerts

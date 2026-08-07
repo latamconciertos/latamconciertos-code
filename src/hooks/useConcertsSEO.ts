@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import type { ConcertPageItem } from '@/hooks/queries/useConcertsPage';
 import { getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
 
-const SITE_URL = 'https://www.conciertoslatam.app';
+const SITE_URL = 'https://www.conciertoslatam.com';
 const getDefaultImage = () => getDefaultImageUtil('concert');
 
 interface UseConcertsSEOOptions {

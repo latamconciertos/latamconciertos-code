@@ -72,11 +72,11 @@ export default function Setlists() {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "@id": "https://www.conciertoslatam.app/setlists#collection",
+    "@id": "https://www.conciertoslatam.com/setlists#collection",
     "name": "Setlists de Conciertos en América Latina",
     "description": "Catálogo de setlists de conciertos en Latinoamérica: canciones, orden de show, venues y fechas.",
-    "url": "https://www.conciertoslatam.app/setlists",
-    "isPartOf": { "@id": "https://www.conciertoslatam.app/#website" },
+    "url": "https://www.conciertoslatam.com/setlists",
+    "isPartOf": { "@id": "https://www.conciertoslatam.com/#website" },
     "inLanguage": "es-419",
     "mainEntity": {
       "@type": "ItemList",
@@ -87,7 +87,7 @@ export default function Setlists() {
         "position": i + 1,
         "name": c.title,
         "startDate": c.date || undefined,
-        "url": `https://www.conciertoslatam.app${generateSetlistUrl(c)}`,
+        "url": `https://www.conciertoslatam.com${generateSetlistUrl(c)}`,
         "performer": c.artist ? { "@type": "MusicGroup", "name": c.artist.name } : undefined,
         "location": c.venue ? { "@type": "MusicVenue", "name": c.venue.name } : undefined,
         "image": c.image_url || c.artist?.photo_url || undefined,

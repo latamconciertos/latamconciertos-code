@@ -14,6 +14,7 @@ import {
   useArtistNews,
   useArtistSpotifyTracks,
 } from '@/hooks/queries/useArtistDetail';
+import { humanizeArtistBio } from '@/lib/artistBio';
 
 const VERIFIED_BADGE = (
   <svg className="h-5 w-5 flex-shrink-0" viewBox="0 0 24 24" aria-label="Verificado">
@@ -95,7 +96,7 @@ const ArtistDetail = () => {
 
   const heroImage = artist.photo_url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&h=600&fit=crop";
 
-  const SITE_URL = 'https://www.conciertoslatam.app';
+  const SITE_URL = 'https://www.conciertoslatam.com';
   const artistUrl = `${SITE_URL}/artists/${artist.slug}`;
   const sameAs = artist.social_links && typeof artist.social_links === 'object'
     ? Object.values(artist.social_links).filter(
@@ -124,8 +125,11 @@ const ArtistDetail = () => {
     return event;
   });
 
-  const seoDescription = artist.bio
-    ? artist.bio.slice(0, 200)
+  // Bio legible: si la almacenada es un dump de la API de Spotify, se humaniza
+  const displayBio = humanizeArtistBio({ bio: artist.bio, name: artist.name, genres: artist.genres });
+
+  const seoDescription = displayBio
+    ? displayBio.slice(0, 200)
     : `Descubre conciertos de ${artist.name} en América Latina. ${concerts.length > 0 ? `${concerts.length} fechas próximas, ` : ''}top tracks, noticias y redes sociales en Conciertos Latam.`;
 
   const structuredData = {
@@ -263,9 +267,9 @@ const ArtistDetail = () => {
                   )}
 
                   {/* Bio */}
-                  {artist.bio && (
+                  {displayBio && (
                     <p className="text-sm md:text-base text-white/75 max-w-2xl mx-auto md:mx-0 leading-relaxed">
-                      {artist.bio}
+                      {displayBio}
                     </p>
                   )}
                 </div>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Music, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
@@ -8,35 +8,48 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-import { useArtists, useAllGenres } from '@/hooks/queries';
+import { useArtists, useMainGenres, useSpotifyGenresForMainGenre } from '@/hooks/queries';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
+import { formatGenreList } from '@/lib/genres';
 
 const Artists = () => {
-  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
+
+  // Página actual en la URL (?page=N) para que la paginación sea crawleable
+  const pageFromUrl = parseInt(searchParams.get('page') || '1', 10);
+  const currentPage = Number.isFinite(pageFromUrl) && pageFromUrl >= 1 ? pageFromUrl : 1;
+  const setCurrentPage = (page: number) => {
+    setSearchParams(page > 1 ? { page: String(page) } : {}, { preventScrollReset: false });
+  };
 
   // Debounce search term - increased to 700ms for better performance
   useEffect(() => {
     const timer = setTimeout(() => {
-      setDebouncedSearchTerm(searchTerm);
-      setCurrentPage(1);
+      if (searchTerm !== debouncedSearchTerm) {
+        setDebouncedSearchTerm(searchTerm);
+        setCurrentPage(1);
+      }
     }, 700);
 
     return () => clearTimeout(timer);
-  }, [searchTerm]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchTerm, debouncedSearchTerm]);
+
+  // Género principal curado → lista de géneros Spotify equivalentes (tabla genre_mappings)
+  const { data: spotifyGenres = [] } = useSpotifyGenresForMainGenre(selectedGenre);
 
   const { data, isLoading } = useArtists({
     search: debouncedSearchTerm || undefined,
-    genre: selectedGenre || undefined,
+    genres: selectedGenre && spotifyGenres.length > 0 ? spotifyGenres : undefined,
     limit: itemsPerPage,
     offset: (currentPage - 1) * itemsPerPage,
   });
 
-  const { data: allGenres = [], isLoading: isLoadingGenres } = useAllGenres();
+  const { data: mainGenres = [], isLoading: isLoadingGenres } = useMainGenres();
 
   const artists = data?.data || [];
   const totalCount = data?.count || 0;
@@ -56,8 +69,8 @@ const Artists = () => {
     return validLinks;
   };
 
-  // Extract unique genres from all artists
-  const uniqueGenres = allGenres;
+  // Géneros principales curados (en español), no los 60+ strings crudos de Spotify
+  const uniqueGenres = mainGenres.map((g: { name: string }) => g.name);
 
   const handleGenreClick = (genre: string) => {
     setSelectedGenre(selectedGenre === genre ? null : genre);
@@ -79,13 +92,13 @@ const Artists = () => {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    "@id": "https://www.conciertoslatam.app/artists#collection",
+    "@id": "https://www.conciertoslatam.com/artists#collection",
     "name": selectedGenre
       ? `Artistas de ${selectedGenre} en América Latina`
       : "Artistas Musicales de América Latina",
     "description": "Directorio completo de artistas y bandas de música latina, con biografías, conciertos y noticias",
-    "url": "https://www.conciertoslatam.app/artists",
-    "isPartOf": { "@id": "https://www.conciertoslatam.app/#website" },
+    "url": "https://www.conciertoslatam.com/artists",
+    "isPartOf": { "@id": "https://www.conciertoslatam.com/#website" },
     "inLanguage": "es-419",
     "mainEntity": {
       "@type": "ItemList",
@@ -98,7 +111,7 @@ const Artists = () => {
           "@type": "MusicGroup",
           "position": (currentPage - 1) * itemsPerPage + index + 1,
           "name": artist.name,
-          "url": `https://www.conciertoslatam.app/artists/${artist.slug}`,
+          "url": `https://www.conciertoslatam.com/artists/${artist.slug}`,
           "image": artist.photo_url || getDefaultImage(),
         };
         if (artist.bio) item.description = artist.bio;
@@ -226,17 +239,17 @@ const Artists = () => {
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 gap-y-7 sm:gap-x-5 sm:gap-y-8">
                 {artists.map((artist: any) => (
-                  <button
+                  <Link
                     key={artist.id}
+                    to={`/artists/${artist.slug}`}
                     className="group text-left focus:outline-none flex flex-col transition-transform duration-300 hover:-translate-y-1"
-                    onClick={() => navigate(`/artists/${artist.slug}`)}
                   >
                     <div className="aspect-square rounded-2xl overflow-hidden bg-muted mb-3 relative ring-1 ring-border/50 shadow-sm group-hover:ring-primary/40 group-hover:shadow-xl transition-all duration-300">
                       <img
                         src={artist.photo_url || getDefaultImage()}
                         alt={
                           artist.genres && artist.genres.length > 0
-                            ? `${artist.name} — artista de ${artist.genres.slice(0, 2).join(', ')}`
+                            ? `${artist.name} — artista de ${formatGenreList(artist.genres, 2)}`
                             : `${artist.name} — artista`
                         }
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
@@ -254,12 +267,12 @@ const Artists = () => {
                         </svg>
                       )}
                     </div>
-                    <p className="text-[11px] md:text-xs text-muted-foreground truncate mt-1 capitalize px-0.5 min-h-[1rem]">
+                    <p className="text-[11px] md:text-xs text-muted-foreground truncate mt-1 px-0.5 min-h-[1rem]">
                       {artist.genres && artist.genres.length > 0
-                        ? artist.genres.slice(0, 2).join(', ')
+                        ? formatGenreList(artist.genres, 2)
                         : 'Artista'}
                     </p>
-                  </button>
+                  </Link>
                 ))}
               </div>
 
@@ -270,7 +283,7 @@ const Artists = () => {
                     <PaginationContent>
                       <PaginationItem>
                         <PaginationPrevious
-                          href="#"
+                          href={currentPage > 2 ? `/artists?page=${currentPage - 1}` : '/artists'}
                           onClick={e => {
                             e.preventDefault();
                             if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -286,7 +299,7 @@ const Artists = () => {
                           return (
                             <PaginationItem key={pageNum}>
                               <PaginationLink
-                                href="#"
+                                href={pageNum > 1 ? `/artists?page=${pageNum}` : '/artists'}
                                 onClick={e => {
                                   e.preventDefault();
                                   setCurrentPage(pageNum);
@@ -309,7 +322,7 @@ const Artists = () => {
 
                       <PaginationItem>
                         <PaginationNext
-                          href="#"
+                          href={`/artists?page=${Math.min(currentPage + 1, Math.ceil(totalCount / itemsPerPage))}`}
                           onClick={e => {
                             e.preventDefault();
                             if (currentPage < Math.ceil(totalCount / itemsPerPage)) {

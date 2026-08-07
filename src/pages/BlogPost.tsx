@@ -72,6 +72,7 @@ const BlogPost = () => {
           slug,
           content,
           featured_image,
+          featured_image_mobile,
           photo_credit,
           published_at,
           updated_at,
@@ -213,7 +214,7 @@ const BlogPost = () => {
     );
   }
 
-  const SITE_URL = 'https://www.conciertoslatam.app';
+  const SITE_URL = 'https://www.conciertoslatam.com';
   const LOGO_URL =
     'https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/social-images/social-1757981020072-Logo Principal transparente.png';
   const articleUrl = `${SITE_URL}/blog/${article.slug}`;
@@ -387,12 +388,13 @@ const BlogPost = () => {
             )}
           </article>
 
+
           {/* Share rail */}
           <div className="mt-12 pt-6 border-t border-border/60">
             <div className="flex items-center gap-4">
               <span className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">Compartir</span>
               <SocialShare
-                url={`https://www.conciertoslatam.app/blog/${article.slug}`}
+                url={`https://www.conciertoslatam.com/blog/${article.slug}`}
                 title={article.title}
               />
             </div>

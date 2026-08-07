@@ -11,6 +11,7 @@ import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import FestivalAttendanceButtons from '@/components/FestivalAttendanceButtons';
 import { SocialShare } from '@/components/SocialShare';
 import { useFestivalDetail } from '@/hooks/queries/useFestivalDetail';
+import { withTicketTracking } from '@/lib/ticketUrl';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -108,7 +109,7 @@ const FestivalDetail = () => {
         "organizer": {
             "@type": "Organization",
             "name": "Conciertos Latam",
-            "url": "https://www.conciertoslatam.app"
+            "url": "https://www.conciertoslatam.com"
         },
         "offers": festival.ticket_url ? {
             "@type": "Offer",
@@ -125,7 +126,6 @@ const FestivalDetail = () => {
                 keywords={`${festival.name}, festival, entradas, ${festival.venues?.cities?.name || ''}`}
                 image={festival.image_url || undefined}
                 url={`/festivals/${festival.slug}`}
-                type="music.song"
                 structuredData={structuredData}
             />
             <div className="min-h-screen bg-background">
@@ -270,13 +270,15 @@ const FestivalDetail = () => {
                                     </div>
 
                                     {isUpcoming && festival.ticket_url && (
-                                        <Button
-                                            className="w-full mt-3"
-                                            size="sm"
-                                            onClick={() => window.open(festival.ticket_url!, '_blank')}
-                                        >
-                                            <Ticket className="h-4 w-4 mr-2" />
-                                            Comprar Entradas
+                                        <Button className="w-full mt-3" size="sm" asChild>
+                                            <a
+                                                href={withTicketTracking(festival.ticket_url)}
+                                                target="_blank"
+                                                rel="sponsored noopener noreferrer"
+                                            >
+                                                <Ticket className="h-4 w-4 mr-2" />
+                                                Comprar Entradas
+                                            </a>
                                         </Button>
                                     )}
                                 </CardContent>
@@ -296,7 +298,7 @@ const FestivalDetail = () => {
                                     <h3 className="font-bold text-base mb-3">Compartir</h3>
                                     <SocialShare
                                         title={festival.name}
-                                        url={`https://www.conciertoslatam.app/festivals/${festival.slug}`}
+                                        url={`https://www.conciertoslatam.com/festivals/${festival.slug}`}
                                     />
                                 </CardContent>
                             </Card>
@@ -431,12 +433,15 @@ const FestivalDetail = () => {
                                         </div>
 
                                         {isUpcoming && festival.ticket_url && (
-                                            <Button
-                                                className="w-full mt-4"
-                                                onClick={() => window.open(festival.ticket_url!, '_blank')}
-                                            >
-                                                <Ticket className="h-4 w-4 mr-2" />
-                                                Comprar Entradas
+                                            <Button className="w-full mt-4" asChild>
+                                                <a
+                                                    href={withTicketTracking(festival.ticket_url)}
+                                                    target="_blank"
+                                                    rel="sponsored noopener noreferrer"
+                                                >
+                                                    <Ticket className="h-4 w-4 mr-2" />
+                                                    Comprar Entradas
+                                                </a>
                                             </Button>
                                         )}
                                     </CardContent>
@@ -456,7 +461,7 @@ const FestivalDetail = () => {
                                         <h3 className="font-bold text-lg mb-4">Compartir</h3>
                                         <SocialShare
                                             title={festival.name}
-                                            url={`https://www.conciertoslatam.app/festivals/${festival.slug}`}
+                                            url={`https://www.conciertoslatam.com/festivals/${festival.slug}`}
                                         />
                                     </CardContent>
                                 </Card>

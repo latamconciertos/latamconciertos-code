@@ -36,6 +36,7 @@ export const HeroCarousel = () => {
           title,
           slug,
           featured_image,
+          featured_image_mobile,
           published_at,
           meta_description,
           categories:category_id (
@@ -48,7 +49,7 @@ export const HeroCarousel = () => {
                 .limit(6);
 
             if (error) throw error;
-            return (data || []) as NewsArticle[];
+            return (data || []) as unknown as NewsArticle[];
         },
         staleTime: 5 * 60 * 1000, // 5 minutes
     });

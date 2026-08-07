@@ -13,6 +13,7 @@ import type { Artist } from '@/types/entities';
 interface ArtistFilterOptions {
   search?: string;
   genre?: string;
+  genres?: string[];
   limit?: number;
   offset?: number;
 }

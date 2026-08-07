@@ -30,7 +30,7 @@ const NewHome = () => {
         "@type": "WebPage",
         "name": "Conciertos Latam - La Comunidad de Conciertos en Vivo",
         "description": "La plataforma líder de conciertos y eventos musicales de América Latina. Descubre conciertos, festivales, setlists y conecta con otros fans.",
-        "url": "https://www.conciertoslatam.app/",
+        "url": "https://www.conciertoslatam.com/",
         "publisher": {
             "@type": "Organization",
             "name": "Conciertos Latam"
@@ -59,8 +59,19 @@ const NewHome = () => {
                 <Header visible={showHeader} />
 
                 <motion.main className="pt-0" style={{ opacity: contentOpacity }}>
+                    {/* Próximos conciertos primero: es lo que la gente viene a buscar */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 60 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true, margin: "-100px" }}
+                        transition={{ duration: 0.8, ease: "easeOut" }}
+                    >
+                        <NewHomeUpcomingConcerts />
+                    </motion.div>
+
                     {/* News by Category Section */}
                     <FeatureCards />
+
 
                     {/* Featured Artists Section with modern design and parallax scroll reveal */}
                     <motion.div
@@ -70,16 +81,6 @@ const NewHome = () => {
                         transition={{ duration: 0.8, ease: "easeOut" }}
                     >
                         <NewHomeFeaturedArtists />
-                    </motion.div>
-
-                    {/* Upcoming Concerts Section with modern design and parallax scroll reveal */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 60 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-100px" }}
-                        transition={{ duration: 0.8, ease: "easeOut" }}
-                    >
-                        <NewHomeUpcomingConcerts />
                     </motion.div>
 
                     {/* Wrapped Banner CTA */}

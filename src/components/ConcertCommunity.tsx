@@ -146,7 +146,10 @@ const ConcertCommunity = ({ concertId, concertTitle }: ConcertCommunityProps) =>
         <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">
           <div className="text-center space-y-3 sm:space-y-4">
             <p className="text-xs sm:text-sm text-muted-foreground">
-              {memberCount} {memberCount === 1 ? 'miembro' : 'miembros'} en la comunidad
+              {/* Con pocos miembros no mostramos el número: es prueba social negativa */}
+              {memberCount >= 10
+                ? `${memberCount} miembros en la comunidad`
+                : 'Coordina transporte, filas y proyectos de fans con otros asistentes'}
             </p>
             <Button onClick={joinCommunity} disabled={loading} className="w-full" size="sm">
               Unirse a la Comunidad
@@ -171,7 +174,9 @@ const ConcertCommunity = ({ concertId, concertTitle }: ConcertCommunityProps) =>
           </Button>
         </CardTitle>
         <CardDescription className="text-xs sm:text-sm">
-          {memberCount} {memberCount === 1 ? 'miembro' : 'miembros'} en la comunidad
+          {memberCount >= 10
+            ? `${memberCount} miembros en la comunidad`
+            : 'Ya eres parte de la comunidad de este concierto'}
         </CardDescription>
       </CardHeader>
       <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0">

@@ -19,6 +19,8 @@ import { handleServiceCall, handleServiceCallArray, getTodayDate, SELECT_QUERIES
 export interface ArtistFilterOptions {
   search?: string;
   genre?: string;
+  /** Filtra artistas cuyo array de géneros intersecte con esta lista (p. ej. géneros Spotify de un género principal) */
+  genres?: string[];
   limit?: number;
   offset?: number;
   withConcertCount?: boolean;
@@ -41,6 +43,10 @@ class ArtistServiceClass {
 
       if (options?.genre) {
         query = query.contains('genres', [options.genre]);
+      }
+
+      if (options?.genres && options.genres.length > 0) {
+        query = query.overlaps('genres', options.genres);
       }
 
       if (options?.limit) {

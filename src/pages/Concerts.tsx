@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Navigate } from 'react-router-dom';
 import { Calendar, MapPin, Music, Star, Globe, Search, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,10 +11,9 @@ import { ConcertsFAQ } from '@/components/ConcertsFAQ';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
 import { MobileFiltersSheet, ActiveFiltersChips, FilterLabel } from '@/components/filters';
 import { useIsMobile } from '@/hooks/use-mobile';
-import WelcomePopup from '@/components/WelcomePopup';
 
 // React Query hooks
-import { useConcertsPage, useConcertBySlugDirect, type ConcertPageItem } from '@/hooks/queries/useConcertsPage';
+import { useConcertsPage } from '@/hooks/queries/useConcertsPage';
 import { useCountryOptions, useCitiesByCountry } from '@/hooks/queries/useGeography';
 import { useMainGenres } from '@/hooks/queries';
 
@@ -27,19 +25,17 @@ import { useConcertsSEO } from '@/hooks/useConcertsSEO';
 import { EventListPagination } from '@/components/events/EventListPagination';
 import { EventHeroSection } from '@/components/events/EventHeroSection';
 import { ConcertCard } from '@/components/concerts/ConcertCard';
-import { ConcertDetailDialog } from '@/components/concerts/ConcertDetailDialog';
 import { ConcertGenreFilter } from '@/components/concerts/ConcertGenreFilter';
 import { ConcertsCountryGrid } from '@/components/concerts/ConcertsCountryGrid';
 
 const ITEMS_PER_PAGE = 12;
 
 const Concerts = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedConcert, setSelectedConcert] = useState<ConcertPageItem | null>(null);
+  const [searchParams] = useSearchParams();
 
   const isMobile = useIsMobile();
 
-  // Get concert slug from URL for direct loading
+  // Legacy URL support: /concerts?id=slug era la URL duplicada del detalle
   const concertSlugFromUrl = searchParams.get('id');
 
   // Shared filter state
@@ -70,9 +66,6 @@ const Concerts = () => {
 
   const activeFilters = getActiveFilters(countries, cities);
 
-  // Direct concert query when URL has id parameter (bypasses pagination)
-  const { data: directConcert } = useConcertBySlugDirect(concertSlugFromUrl);
-
   // Concerts query with all filters
   const { data: concertsData, isLoading } = useConcertsPage({
     status: filterStatus,
@@ -89,24 +82,6 @@ const Concerts = () => {
 
   const concerts = concertsData?.concerts || [];
   const totalCount = concertsData?.totalCount || 0;
-
-  // Handle URL parameter to open specific concert - uses direct query result
-  useEffect(() => {
-    if (concertSlugFromUrl && directConcert && !selectedConcert) {
-      setSelectedConcert(directConcert);
-    }
-  }, [concertSlugFromUrl, directConcert, selectedConcert]);
-
-  // Memoized handler to prevent unnecessary re-renders
-  const handleConcertClick = useCallback((concert: ConcertPageItem) => {
-    setSelectedConcert(concert);
-    setSearchParams({ id: concert.slug });
-  }, [setSearchParams]);
-
-  const handleCloseDialog = useCallback(() => {
-    setSelectedConcert(null);
-    setSearchParams({});
-  }, [setSearchParams]);
 
   // Get selected country/city names for SEO
   const selectedCountryName = selectedCountry !== 'all'
@@ -127,6 +102,11 @@ const Concerts = () => {
     selectedCountry,
     selectedCity,
   });
+
+  // Redirect legacy /concerts?id=slug → /concerts/slug (única URL del detalle)
+  if (concertSlugFromUrl) {
+    return <Navigate to={`/concerts/${concertSlugFromUrl}`} replace />;
+  }
 
   if (isLoading) {
     return (
@@ -151,7 +131,6 @@ const Concerts = () => {
         url="/concerts"
         structuredData={[...structuredData, breadcrumbData]}
       />
-      <WelcomePopup />
       <div className="min-h-screen bg-background">
         <Header />
 
@@ -414,7 +393,6 @@ const Concerts = () => {
                     <ConcertCard
                       concert={concert}
                       isPast={filterStatus === 'past'}
-                      onClick={handleConcertClick}
                     />
                   </article>
                 ))}
@@ -441,6 +419,7 @@ const Concerts = () => {
             </div>
           )}
 
+
           {/* Conciertos por País - Cards con Banderas */}
           <ConcertsCountryGrid />
         </main>
@@ -448,12 +427,6 @@ const Concerts = () => {
         <ConcertsFAQ countryName={selectedCountryName || undefined} cityName={selectedCityName || undefined} />
 
         <Footer />
-
-        {/* Concert Details Dialog */}
-        <ConcertDetailDialog
-          concert={selectedConcert}
-          onClose={handleCloseDialog}
-        />
       </div>
     </>
   );

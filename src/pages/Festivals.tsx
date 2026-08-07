@@ -161,6 +161,7 @@ const Festivals = () => {
         keywords={seoData.keywords}
         url="/festivals"
         structuredData={structuredData}
+        noindex={totalCount === 0}
       />
       <div className="min-h-screen bg-background">
         <Header />
@@ -191,11 +192,11 @@ const Festivals = () => {
                   ? `El calendario más completo de festivales de música en ${selectedCountryName}. No te pierdas ningún evento.`
                   : 'La guía definitiva de festivales de música en toda Latinoamérica. Descubre los mejores eventos, compra tus entradas y vive la música.'
             }
-            stats={[
-              { icon: <Music className="h-4 w-4 text-primary" />, value: `${totalCount}+`, label: 'Festivales' },
-              { icon: <MapPin className="h-4 w-4 text-primary" />, value: `${countries.length}+`, label: 'Países' },
+            stats={totalCount > 0 ? [
+              { icon: <Music className="h-4 w-4 text-primary" />, value: `${totalCount}`, label: totalCount === 1 ? 'Festival' : 'Festivales' },
+              { icon: <MapPin className="h-4 w-4 text-primary" />, value: `${countries.length}`, label: 'Países' },
               { icon: <Users className="h-4 w-4 text-primary" />, value: 'Miles', label: 'de fans' },
-            ]}
+            ] : []}
           />
 
           {/* Search and Filters */}

@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
     console.log(`Found ${articles?.length || 0} recent articles`);
 
     // Generar XML del sitemap de noticias
-    const siteUrl = 'https://www.conciertoslatam.app';
+    const siteUrl = 'https://www.conciertoslatam.com';
     const xmlContent = generateNewsSitemapXML(articles || [], siteUrl);
 
     return new Response(xmlContent, {

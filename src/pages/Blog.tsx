@@ -10,7 +10,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { useBlogArticles, useBlogCategories, type BlogArticle } from '@/hooks/queries';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
 
-const SITE_URL = 'https://www.conciertoslatam.app';
+const SITE_URL = 'https://www.conciertoslatam.com';
 const LOGO_URL = 'https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/social-images/social-1757981020072-Logo Principal transparente.png';
 
 const stripHtml = (html: string | null | undefined) =>

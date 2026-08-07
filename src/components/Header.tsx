@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Search, User, Settings, Moon, Sun, Calendar, LogOut, Home, Mic2, Music2, BookOpen, ListMusic, Lightbulb, Users, ChevronDown, Bot, Sparkles, Bell } from "lucide-react";
 import { PushSubscribeDialog } from "@/components/admin/PushSubscribeDialog";
 import { useAuth } from "@/hooks/useAuth";
@@ -116,12 +116,22 @@ const Header = ({ visible = true }: HeaderProps) => {
     };
   }, []);
 
+  // "Inicio" no va en el menú de escritorio: el logo ya lleva al home
   const mainNavItems = [
-    { name: "Inicio", path: "/", icon: Home },
     { name: "Conciertos", path: "/concerts", icon: Music2 },
     { name: "Artistas", path: "/artists", icon: Mic2 },
     { name: "Noticias", path: "/blog", icon: BookOpen },
   ];
+
+  const mobileNavItems = [{ name: "Inicio", path: "/", icon: Home }, ...mainNavItems];
+
+  const location = useLocation();
+  const isActivePath = (path: string) => {
+    if (path === "/") return location.pathname === "/";
+    if (path === "/concerts")
+      return location.pathname.startsWith("/concerts") || location.pathname.startsWith("/conciertos");
+    return location.pathname.startsWith(path);
+  };
 
   const experienciasItems = [
     { name: "Asistente IA", path: "/ai-assistant", icon: Bot },
@@ -137,38 +147,58 @@ const Header = ({ visible = true }: HeaderProps) => {
   return (
     <header
       className={cn(
-        "fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-7xl transition-all duration-500",
+        "fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500",
         visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
       )}
     >
-      <nav className={cn("bg-gradient-to-r from-primary/95 to-primary/80 backdrop-blur-lg supports-[backdrop-filter]:bg-primary/85 shadow-2xl dark:from-primary/90 dark:to-primary/70 border border-white/20 px-4 sm:px-6 lg:px-8", isMenuOpen ? "rounded-3xl" : "rounded-full")}>
-        <div className="flex h-16 items-center justify-between">
+      <nav className="bg-gradient-to-r from-primary/95 to-primary/80 backdrop-blur-lg supports-[backdrop-filter]:bg-primary/85 shadow-lg dark:from-primary/90 dark:to-primary/70 border-b border-white/15 px-4 sm:px-6 lg:px-8">
+        {/* Grilla de 3 columnas: el menú central queda centrado respecto a la barra,
+            sin importar cuánto pesen el logo (izq) o los iconos (der) */}
+        <div className="max-w-7xl mx-auto grid grid-cols-[1fr_auto_1fr] h-16 items-center">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-3 group">
+          {/* El logo sobresale un poco por debajo de la barra (self-start evita que
+              se recorte contra el borde superior de la pantalla) */}
+          <Link to="/" className="flex items-start space-x-3 group justify-self-start self-start">
             <img
               src={logo}
               alt="Conciertos LATAM"
-              className="h-20 lg:h-[5.25rem] w-auto object-contain transition-transform group-hover:scale-110"
+              className="h-[4.5rem] w-auto object-contain transition-transform group-hover:scale-110"
             />
           </Link>
 
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-1">
-            {mainNavItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className="text-sm font-fira font-medium text-white/90 hover:text-white hover:bg-white/10 px-4 py-2 rounded-lg transition-all"
-              >
-                {item.name}
-              </Link>
-            ))}
+            {mainNavItems.map((item) => {
+              const isActive = isActivePath(item.path);
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  aria-current={isActive ? "page" : undefined}
+                  className={cn(
+                    "relative text-sm font-fira font-medium px-4 py-2 rounded-lg transition-all",
+                    isActive
+                      ? "text-white after:absolute after:left-4 after:right-4 after:bottom-0.5 after:h-0.5 after:rounded-full after:bg-[hsl(120,45%,55%)]"
+                      : "text-white/90 hover:text-white hover:bg-white/10"
+                  )}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
 
             {/* Experiencias con hover */}
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="bg-transparent text-sm font-fira font-medium text-white/90 hover:text-white hover:bg-white/10 data-[state=open]:bg-white/10 px-4 py-2 h-auto">
+                  <NavigationMenuTrigger
+                    className={cn(
+                      "relative bg-transparent text-sm font-fira font-medium hover:text-white hover:bg-white/10 data-[state=open]:bg-white/10 px-4 py-2 h-auto",
+                      experienciasItems.some((i) => isActivePath(i.path)) || location.pathname.startsWith("/setlist")
+                        ? "text-white after:absolute after:left-4 after:right-4 after:bottom-0.5 after:h-0.5 after:rounded-full after:bg-[hsl(120,45%,55%)]"
+                        : "text-white/90"
+                    )}
+                  >
                     Experiencias
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>
@@ -194,7 +224,7 @@ const Header = ({ visible = true }: HeaderProps) => {
           </div>
 
           {/* Auth Section */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 justify-self-end">
             <Button
               variant="ghost"
               size="icon"
@@ -300,16 +330,21 @@ const Header = ({ visible = true }: HeaderProps) => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="lg:hidden py-4 border-t border-white/10 bg-primary/95 rounded-b-3xl">
+          <div className="lg:hidden py-4 border-t border-white/10">
             <div className="flex flex-col space-y-1">
               {/* Main Nav Items */}
-              {mainNavItems.map((item) => {
+              {mobileNavItems.map((item) => {
                 const Icon = item.icon;
+                const isActive = isActivePath(item.path);
                 return (
                   <Link
                     key={item.path}
                     to={item.path}
-                    className="text-sm font-fira font-medium text-white hover:bg-white/10 px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2"
+                    aria-current={isActive ? "page" : undefined}
+                    className={cn(
+                      "text-sm font-fira font-medium text-white px-4 py-2.5 rounded-lg transition-colors flex items-center gap-2",
+                      isActive ? "bg-white/15" : "hover:bg-white/10"
+                    )}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <Icon className="h-4 w-4" />

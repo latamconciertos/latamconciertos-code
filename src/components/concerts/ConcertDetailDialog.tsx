@@ -141,7 +141,7 @@ export const ConcertDetailDialog = ({ concert, onClose }: ConcertDetailDialogPro
                     ) : setlist && setlist.length > 0 ? (
                       <div className="space-y-4">
                         <SocialShare
-                          url={`https://www.conciertoslatam.app/concerts#${concert.slug}`}
+                          url={`https://www.conciertoslatam.com/concerts#${concert.slug}`}
                           title={`Setlist de ${concert.title}`}
                         />
                         <div className="space-y-2">

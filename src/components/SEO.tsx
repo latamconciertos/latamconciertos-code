@@ -17,6 +17,8 @@ interface SEOProps {
   };
   structuredData?: object;
   language?: string;
+  /** Marca la página como noindex (p. ej. listados sin contenido, thin content) */
+  noindex?: boolean;
 }
 
 export const SEO = ({
@@ -29,8 +31,9 @@ export const SEO = ({
   article,
   structuredData,
   language = 'es',
+  noindex = false,
 }: SEOProps) => {
-  const siteUrl = 'https://www.conciertoslatam.app';
+  const siteUrl = 'https://www.conciertoslatam.com';
   const fullUrl = url ? `${siteUrl}${url}` : siteUrl;
   const fullTitle = title.includes('Conciertos Latam') ? title : `${title} | Conciertos Latam`;
   
@@ -68,7 +71,10 @@ export const SEO = ({
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
       <meta name="author" content={article?.author || 'Conciertos Latam'} />
-      <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+      <meta
+        name="robots"
+        content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'}
+      />
       <meta name="referrer" content="no-referrer-when-downgrade" />
       <link rel="canonical" href={fullUrl} />
       
@@ -144,7 +150,7 @@ export const SEO = ({
           {article.tags?.map((tag, index) => (
             <meta key={index} property="article:tag" content={tag} />
           ))}
-          <meta property="article:publisher" content="https://www.conciertoslatam.app" />
+          <meta property="article:publisher" content="https://www.conciertoslatam.com" />
         </>
       )}
 

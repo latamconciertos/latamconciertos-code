@@ -25,23 +25,15 @@
       })();
     </script>
 
+    <!--
+      IMPORTANTE (SEO): no añadir aquí canonical, description ni og:* estáticos.
+      Cada página los inyecta dinámicamente vía <SEO /> (react-helmet-async);
+      un canonical estático apuntando al home desindexa todo el sitio.
+    -->
     <title>Conciertos Latam - Tu guía de música en vivo</title>
-    <meta name="description" content="Descubre los mejores conciertos y eventos musicales de América Latina. Noticias, entrevistas y entradas para shows en vivo.">
     <meta name="author" content="Conciertos Latam" />
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
-    <link rel="canonical" href="https://www.conciertoslatam.app/" />
-
-    <meta property="og:title" content="Conciertos Latam - Tu guía de música en vivo" />
-    <meta property="og:description" content="Descubre los mejores conciertos y eventos musicales de América Latina" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://www.conciertoslatam.app/" />
-    <meta property="og:site_name" content="Conciertos Latam" />
-    <meta property="og:locale" content="es_419" />
-    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/social-images/social-1757981020072-Logo Principal transparente.png">
-
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@conciertoslatam" />
-    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/social-images/social-1757981020072-Logo Principal transparente.png">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -57,9 +49,9 @@
       "@graph": [
         {
           "@type": "Organization",
-          "@id": "https://www.conciertoslatam.app/#organization",
+          "@id": "https://www.conciertoslatam.com/#organization",
           "name": "Conciertos Latam",
-          "url": "https://www.conciertoslatam.app/",
+          "url": "https://www.conciertoslatam.com/",
           "logo": {
             "@type": "ImageObject",
             "url": "https://storage.googleapis.com/gpt-engineer-file-uploads/Z29vckhx3OX2dJbEXJylHmg3SB23/social-images/social-1757981020072-Logo Principal transparente.png",
@@ -73,11 +65,11 @@
         },
         {
           "@type": "WebSite",
-          "@id": "https://www.conciertoslatam.app/#website",
-          "url": "https://www.conciertoslatam.app/",
+          "@id": "https://www.conciertoslatam.com/#website",
+          "url": "https://www.conciertoslatam.com/",
           "name": "Conciertos Latam",
           "description": "Tu guía de música en vivo en América Latina",
-          "publisher": { "@id": "https://www.conciertoslatam.app/#organization" },
+          "publisher": { "@id": "https://www.conciertoslatam.com/#organization" },
           "inLanguage": "es-419"
         }
       ]

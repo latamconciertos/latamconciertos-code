@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
 import type { FestivalWithRelations } from '@/types/entities/festival';
 
-const SITE_URL = 'https://www.conciertoslatam.app';
+const SITE_URL = 'https://www.conciertoslatam.com';
 const getDefaultImage = () => getDefaultImageUtil('festival');
 
 interface UseFestivalsSEOOptions {

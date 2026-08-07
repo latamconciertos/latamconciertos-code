@@ -54,7 +54,7 @@ Deno.serve(async (req) => {
       countriesWithConcerts?.map(c => [c.iso_code, c.updated_at]) || []
     );
 
-    const baseUrl = 'https://www.conciertoslatam.app';
+    const baseUrl = 'https://www.conciertoslatam.com';
     const today = new Date().toISOString().split('T')[0];
     
     const urlEntries = LATAM_COUNTRIES.map(country => {

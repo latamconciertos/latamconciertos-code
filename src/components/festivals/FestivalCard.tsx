@@ -1,4 +1,5 @@
 import { memo } from 'react';
+import { Link } from 'react-router-dom';
 import { Calendar, MapPin, Ticket, Globe } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,6 +8,7 @@ import { optimizeUnsplashUrl, getDefaultImage as getDefaultImageUtil } from '@/l
 import type { FestivalWithRelations } from '@/types/entities/festival';
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { withTicketTracking } from '@/lib/ticketUrl';
 
 const getDefaultImage = () => getDefaultImageUtil('festival');
 
@@ -56,7 +58,7 @@ export const FestivalCard = memo(({ festival, onClick }: FestivalCardProps) => {
 
   return (
     <Card
-      className="group overflow-hidden hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer festival-card"
+      className="group relative overflow-hidden hover:shadow-2xl transition-all duration-500 border-0 bg-gradient-to-br from-card to-muted/30 cursor-pointer festival-card"
       onClick={onClick}
     >
       <div className="relative overflow-hidden">
@@ -86,7 +88,14 @@ export const FestivalCard = memo(({ festival, onClick }: FestivalCardProps) => {
         <div className="flex-1 space-y-3">
           <div>
             <h3 className="font-bold text-xl text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
-              {festival.name}
+              {/* Stretched link: enlace real crawleable al detalle del festival */}
+              <Link
+                to={`/festivals/${festival.slug}`}
+                className="after:absolute after:inset-0 after:z-[1] focus-visible:outline-none"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {festival.name}
+              </Link>
             </h3>
             {festival.description && (
               <p className="text-muted-foreground text-sm line-clamp-2">
@@ -123,19 +132,24 @@ export const FestivalCard = memo(({ festival, onClick }: FestivalCardProps) => {
           </div>
         </div>
 
-        <Button
-          className="w-full group/btn mt-4"
-          onClick={(e) => {
-            e.stopPropagation();
-            if (festival.ticket_url) {
-              window.open(festival.ticket_url, '_blank');
-            }
-          }}
-          disabled={!festival.ticket_url}
-        >
-          <Ticket className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
-          {festival.ticket_url ? 'Ver Entradas' : 'Próximamente'}
-        </Button>
+        {festival.ticket_url ? (
+          <Button className="relative z-[2] w-full group/btn mt-4" asChild>
+            <a
+              href={withTicketTracking(festival.ticket_url)}
+              target="_blank"
+              rel="sponsored noopener noreferrer"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Ticket className="h-4 w-4 mr-2 group-hover/btn:rotate-12 transition-transform" />
+              Ver Entradas
+            </a>
+          </Button>
+        ) : (
+          <Button className="relative z-[2] w-full mt-4" disabled>
+            <Ticket className="h-4 w-4 mr-2" />
+            Próximamente
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

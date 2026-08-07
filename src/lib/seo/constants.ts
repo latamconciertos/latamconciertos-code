@@ -6,7 +6,7 @@
 
 export const SEO_CONFIG = {
     siteName: 'Conciertos LATAM',
-    siteUrl: 'https://www.conciertoslatam.app',
+    siteUrl: 'https://www.conciertoslatam.com',
     defaultImage: '/og-image.png',
     twitterHandle: '@conciertoslatam',
 
@@ -14,8 +14,8 @@ export const SEO_CONFIG = {
         '@context': 'https://schema.org',
         '@type': 'Organization',
         name: 'Conciertos LATAM',
-        url: 'https://www.conciertoslatam.app',
-        logo: 'https://www.conciertoslatam.app/logo.png',
+        url: 'https://www.conciertoslatam.com',
+        logo: 'https://www.conciertoslatam.com/logo.png',
         description: 'La plataforma líder de conciertos y festivales en Latinoamérica',
         sameAs: [
             // Add social media URLs when available

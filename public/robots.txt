@@ -2,6 +2,9 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /auth
+Disallow: /profile
+Disallow: /my-calendar
+Disallow: /friends
 
 User-agent: Googlebot
 Allow: /
@@ -25,13 +28,13 @@ User-agent: facebookexternalhit
 Allow: /
 
 # Main Sitemap Index
-Sitemap: https://www.conciertoslatam.app/sitemap.xml
+Sitemap: https://www.conciertoslatam.com/sitemap.xml
 
-# Individual Sitemaps
-Sitemap: https://www.conciertoslatam.app/sitemap-pages.xml
-Sitemap: https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-news-sitemap
-Sitemap: https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-artists-sitemap
-Sitemap: https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-concerts-sitemap
-Sitemap: https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-promoters-sitemap
-Sitemap: https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-festivals-sitemap
-
+# Individual Sitemaps (served from this domain via Vercel rewrites)
+Sitemap: https://www.conciertoslatam.com/sitemap-pages.xml
+Sitemap: https://www.conciertoslatam.com/sitemaps/news.xml
+Sitemap: https://www.conciertoslatam.com/sitemaps/blog.xml
+Sitemap: https://www.conciertoslatam.com/sitemaps/artists.xml
+Sitemap: https://www.conciertoslatam.com/sitemaps/concerts.xml
+Sitemap: https://www.conciertoslatam.com/sitemaps/festivals.xml
+Sitemap: https://www.conciertoslatam.com/sitemaps/countries.xml

@@ -39,14 +39,14 @@ const Venues = () => {
         "@type": "ItemList",
         "name": "Venues de Conciertos en América Latina",
         "description": "Directorio de venues y recintos de eventos musicales en América Latina",
-        "url": "https://www.conciertoslatam.app/venues",
+        "url": "https://www.conciertoslatam.com/venues",
         "numberOfItems": venues.length,
         "itemListElement": venues.slice(0, 10).map((venue, index) => ({
             "@type": "MusicVenue",
             "position": index + 1,
             "name": venue.name,
             "address": venue.address || venue.location,
-            "url": `https://www.conciertoslatam.app/venues/${venue.cities?.slug || 'venue'}/${venue.slug}`
+            "url": `https://www.conciertoslatam.com/venues/${venue.cities?.slug || 'venue'}/${venue.slug}`
         }))
     };
 

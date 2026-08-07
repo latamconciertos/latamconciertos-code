@@ -36,7 +36,7 @@ const Promoters = () => {
     "@type": "ItemList",
     "name": "Promotoras de Conciertos en América Latina",
     "description": "Directorio de promotoras de eventos musicales en América Latina",
-    "url": "https://www.conciertoslatam.app/promoters",
+    "url": "https://www.conciertoslatam.com/promoters",
     "numberOfItems": promoters.length,
     "itemListElement": promoters.slice(0, 10).map((promoter, index) => ({
       "@type": "Organization",

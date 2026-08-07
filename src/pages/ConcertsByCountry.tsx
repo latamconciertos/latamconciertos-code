@@ -262,7 +262,7 @@ const ConcertsByCountry = () => {
     },
     {
       q: `¿Dónde comprar entradas para conciertos en ${countryInfo.name}?`,
-      a: `En cada concierto listado encontrás el botón "Ver entradas" que te lleva al sitio oficial de venta autorizado por la promotora del evento. Conciertos Latam no vende entradas directamente — solo te conectamos con la fuente oficial para evitar reventa y estafas.`,
+      a: `En cada concierto listado encontrarás el botón "Ver entradas" que te lleva al sitio oficial de venta autorizado por la promotora del evento. Conciertos Latam no vende entradas directamente — solo te conectamos con la fuente oficial para evitar reventa y estafas.`,
     },
     ...(topCities.length > 0 ? [{
       q: `¿En qué ciudades de ${countryInfo.name} hay más conciertos?`,
@@ -279,7 +279,7 @@ const ConcertsByCountry = () => {
   ];
 
   // Structured data — multi-schema graph for max ranking signal
-  const SITE_URL = 'https://www.conciertoslatam.app';
+  const SITE_URL = 'https://www.conciertoslatam.com';
   const pageUrl = `${SITE_URL}/conciertos/${countrySlug}`;
 
   const structuredData = [
@@ -414,6 +414,10 @@ const ConcertsByCountry = () => {
     );
   };
 
+  // Sin eventos (ni próximos ni pasados) la página es thin content: noindex
+  // hasta que tenga datos, para no arrastrar la autoridad del dominio.
+  const isEmptyPage = !isLoading && upcomingConcerts.length === 0 && pastConcerts.length === 0;
+
   return (
     <>
       <SEO
@@ -422,6 +426,7 @@ const ConcertsByCountry = () => {
         keywords={keywords}
         url={`/conciertos/${countrySlug}`}
         structuredData={structuredData}
+        noindex={isEmptyPage}
       />
       
       <Header />
@@ -558,7 +563,7 @@ const ConcertsByCountry = () => {
           {topCities.length > 0 && (
             <section className="mt-16 sm:mt-20 text-center" aria-labelledby="top-cities">
               <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary mb-3">
-                Explorá por ciudad
+                Explora por ciudad
               </p>
               <h2 id="top-cities" className="font-display uppercase text-2xl md:text-3xl font-black tracking-tight leading-[0.95] text-foreground mb-6">
                 Conciertos en {countryInfo.name} por ciudad
@@ -630,16 +635,22 @@ const ConcertsByCountry = () => {
               {eventTypeText} en {countryInfo.name}
             </h2>
             <p className="text-base text-muted-foreground leading-relaxed mb-4">
-              {countryInfo.name} es uno de los destinos más importantes para la música en vivo en América Latina.
-              {upcomingConcerts.length > 0 && ` Este ${currentYear}${hasNextYearConcerts ? ` y ${nextYear}` : ''}, hay ${upcomingConcerts.length} eventos programados`}
-              {featuredArtists.length > 0 && `, incluyendo shows de ${featuredArtists.slice(0, 3).join(', ')}${featuredArtists.length > 3 ? ' y más artistas' : ''}`}.
-              {' '}En Conciertos Latam te mantenemos actualizado con toda la información sobre fechas,
-              lugares y venta de entradas para que no te pierdas ningún show.
+              {[
+                `${countryInfo.name} es uno de los destinos más importantes para la música en vivo en América Latina.`,
+                upcomingConcerts.length > 0
+                  ? `Este ${currentYear}${hasNextYearConcerts ? ` y ${nextYear}` : ''} hay ${upcomingConcerts.length} eventos programados${featuredArtists.length > 0 ? `, incluyendo shows de ${featuredArtists.slice(0, 3).join(', ')}${featuredArtists.length > 3 ? ' y más artistas' : ''}` : ''}.`
+                  : '',
+                'En Conciertos Latam te mantenemos al día con fechas, lugares y venta de entradas para que no te pierdas ningún show.',
+              ].filter(Boolean).join(' ')}
             </p>
             <p className="text-base text-muted-foreground leading-relaxed">
-              Cubrimos toda la oferta de conciertos en {countryInfo.name}: giras internacionales, festivales, residencias de artistas locales y shows en venues de todo el país.
-              {topCities.length > 0 && ` Las ciudades con mayor actividad son ${topCities.slice(0, 3).map(c => c.name).join(', ')}, que concentran la mayoría de eventos.`}
-              {' '}Si querés saber qué pasa con un artista en particular, visitá su perfil; si te interesa un venue específico, podés filtrar la cartelera por ciudad.
+              {[
+                `Cubrimos toda la oferta de conciertos en ${countryInfo.name}: giras internacionales, festivales, residencias de artistas locales y shows en venues de todo el país.`,
+                topCities.length > 0
+                  ? `Las ciudades con mayor actividad son ${topCities.slice(0, 3).map(c => c.name).join(', ')}, que concentran la mayoría de eventos.`
+                  : '',
+                'Si quieres seguir a un artista en particular, visita su perfil; y si te interesa un venue específico, filtra la cartelera por ciudad.',
+              ].filter(Boolean).join(' ')}
             </p>
           </section>
 

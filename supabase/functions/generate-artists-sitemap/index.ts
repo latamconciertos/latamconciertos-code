@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
 
     console.log(`Found ${artists?.length || 0} artists`);
 
-    const baseUrl = 'https://www.conciertoslatam.app';
+    const baseUrl = 'https://www.conciertoslatam.com';
     
     const urlEntries = artists?.map(artist => {
       const lastmod = new Date(artist.updated_at).toISOString().split('T')[0];

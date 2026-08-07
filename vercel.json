@@ -1,5 +1,65 @@
 {
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.conciertoslatam.app" }],
+      "destination": "https://www.conciertoslatam.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "conciertoslatam.app" }],
+      "destination": "https://www.conciertoslatam.com/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
+    {
+      "source": "/sitemaps/countries.xml",
+      "destination": "https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-countries-sitemap"
+    },
+    {
+      "source": "/sitemaps/blog.xml",
+      "destination": "https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-blog-sitemap"
+    },
+    {
+      "source": "/sitemaps/news.xml",
+      "destination": "https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-news-sitemap"
+    },
+    {
+      "source": "/sitemaps/artists.xml",
+      "destination": "https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-artists-sitemap"
+    },
+    {
+      "source": "/sitemaps/concerts.xml",
+      "destination": "https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-concerts-sitemap"
+    },
+    {
+      "source": "/sitemaps/festivals.xml",
+      "destination": "https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-festivals-sitemap"
+    },
+    {
+      "source": "/:page(concerts|artists|blog|festivals|setlists|venues|promoters)",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(googlebot|bingbot|duckduckbot|yandexbot|baiduspider|gptbot|chatgpt-user|oai-searchbot|perplexitybot|claudebot|claude-web|anthropic-ai|amazonbot|applebot|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot|slackbot|discordbot|pinterest|google-inspectiontool).*"
+        }
+      ],
+      "destination": "https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/prerender/:page"
+    },
+    {
+      "source": "/:section(concerts|artists|blog|festivals|setlist|venues|conciertos)/:rest*",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(googlebot|bingbot|duckduckbot|yandexbot|baiduspider|gptbot|chatgpt-user|oai-searchbot|perplexitybot|claudebot|claude-web|anthropic-ai|amazonbot|applebot|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot|slackbot|discordbot|pinterest|google-inspectiontool).*"
+        }
+      ],
+      "destination": "https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/prerender/:section/:rest*"
+    },
     {
       "source": "/(.*)",
       "destination": "/"

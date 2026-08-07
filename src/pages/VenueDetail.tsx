@@ -62,7 +62,7 @@ const VenueDetail = () => {
             "streetAddress": venue.address
         },
         "maximumAttendeeCapacity": venue.capacity,
-        "url": `https://www.conciertoslatam.app/venues/${venue.cities?.slug}/${venue.slug}`,
+        "url": `https://www.conciertoslatam.com/venues/${venue.cities?.slug}/${venue.slug}`,
         "event": upcomingConcerts.map(concert => ({
             "@type": "MusicEvent",
             "name": concert.title,

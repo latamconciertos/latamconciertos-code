@@ -45,7 +45,7 @@ Deno.serve(async (req) => {
 
     console.log(`Found ${validConcerts.length} valid concerts for sitemap`);
 
-    const baseUrl = 'https://www.conciertoslatam.app';
+    const baseUrl = 'https://www.conciertoslatam.com';
     const today = new Date().toISOString().split('T')[0];
     
     const urlEntries = validConcerts.map(concert => {

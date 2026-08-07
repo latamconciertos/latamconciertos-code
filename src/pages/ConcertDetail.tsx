@@ -14,6 +14,7 @@ import ConcertCommunity from '@/components/ConcertCommunity';
 import { SocialShare } from '@/components/SocialShare';
 import { formatInBogota } from '@/lib/timezone';
 import { useConcertDetail } from '@/hooks/queries/useConcertDetail';
+import { withTicketTracking } from '@/lib/ticketUrl';
 
 const ConcertDetail = () => {
   const { slug } = useParams();
@@ -103,7 +104,7 @@ const ConcertDetail = () => {
     "organizer": {
       "@type": "Organization",
       "name": "Conciertos Latam",
-      "url": "https://www.conciertoslatam.app"
+      "url": "https://www.conciertoslatam.com"
     },
     "offers": concert.ticket_url ? {
       "@type": "Offer",
@@ -122,7 +123,6 @@ const ConcertDetail = () => {
         keywords={`${concert.title}, ${concert.artists?.name || ''}, concierto, entradas, ${concert.venues?.cities?.name || ''}`}
         image={concert.image_url || artistImage || undefined}
         url={`/concerts/${concert.slug}`}
-        type="music.song"
         structuredData={structuredData}
       />
       <div className="min-h-screen bg-background">
@@ -350,13 +350,15 @@ const ConcertDetail = () => {
                   </div>
 
                   {isUpcoming && concert.ticket_url && (
-                    <Button
-                      className="w-full mt-3"
-                      size="sm"
-                      onClick={() => window.open(concert.ticket_url!, '_blank')}
-                    >
-                      <Ticket className="h-4 w-4 mr-2" />
-                      Comprar Entradas
+                    <Button className="w-full mt-3" size="sm" asChild>
+                      <a
+                        href={withTicketTracking(concert.ticket_url)}
+                        target="_blank"
+                        rel="sponsored noopener noreferrer"
+                      >
+                        <Ticket className="h-4 w-4 mr-2" />
+                        Comprar Entradas
+                      </a>
                     </Button>
                   )}
                 </CardContent>
@@ -601,12 +603,15 @@ const ConcertDetail = () => {
                     </div>
 
                     {isUpcoming && concert.ticket_url && (
-                      <Button
-                        className="w-full mt-4"
-                        onClick={() => window.open(concert.ticket_url!, '_blank')}
-                      >
-                        <Ticket className="h-4 w-4 mr-2" />
-                        Comprar Entradas
+                      <Button className="w-full mt-4" asChild>
+                        <a
+                          href={withTicketTracking(concert.ticket_url)}
+                          target="_blank"
+                          rel="sponsored noopener noreferrer"
+                        >
+                          <Ticket className="h-4 w-4 mr-2" />
+                          Comprar Entradas
+                        </a>
                       </Button>
                     )}
                   </CardContent>
@@ -617,6 +622,7 @@ const ConcertDetail = () => {
 
               </div>
             </div>
+
           </div>
         </main>
 

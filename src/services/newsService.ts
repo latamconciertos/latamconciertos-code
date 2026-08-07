@@ -93,7 +93,7 @@ class NewsServiceClass {
       return supabase
         .from('news_articles')
         .select(`
-          id, title, slug, featured_image, meta_description, content,
+          id, title, slug, featured_image, featured_image_mobile, meta_description, content,
           published_at, created_at,
           artists (name, photo_url)
         `)
@@ -111,7 +111,7 @@ class NewsServiceClass {
       return supabase
         .from('news_articles')
         .select(`
-          id, title, slug, featured_image, meta_description, content,
+          id, title, slug, featured_image, featured_image_mobile, meta_description, content,
           published_at, created_at,
           artists (name, photo_url),
           categories (name, slug)

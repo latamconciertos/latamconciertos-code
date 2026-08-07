@@ -8,6 +8,7 @@ import { ModernConcertCard } from './ModernConcertCard';
 import { useUpcomingConcerts } from '@/hooks/queries';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
 import { Link } from 'react-router-dom';
+import { withTicketTracking } from '@/lib/ticketUrl';
 import { spotifyService } from '@/lib/spotify';
 import { getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
 import ConcertAttendanceButtons from '@/components/ConcertAttendanceButtons';
@@ -137,15 +138,16 @@ export const NewHomeUpcomingConcerts = () => {
                                 </div>
                             </DialogTrigger>
 
-                            <DialogContent className="max-w-[100vw] sm:max-w-lg md:max-w-2xl h-[100dvh] sm:h-auto sm:max-h-[92vh] overflow-hidden p-0 gap-0 rounded-none sm:rounded-2xl bg-background border-0 sm:border">
+                            <DialogContent className="flex flex-col max-w-[100vw] sm:max-w-lg md:max-w-2xl h-[100dvh] sm:h-auto sm:max-h-[92vh] overflow-hidden p-0 gap-0 rounded-none sm:rounded-2xl bg-background border-0 sm:border">
                                 <DialogTitle className="sr-only">
                                     {selectedConcert?.title}
                                 </DialogTitle>
 
                                 {selectedConcert && (
-                                    <div className="flex flex-col h-full sm:h-auto">
-                                        {/* Hero image — aspect ratio preserved */}
-                                        <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] overflow-hidden shrink-0">
+                                    <div className="flex flex-col flex-1 min-h-0">
+                                        {/* Hero image — aspect ratio preserved; capped so en pantallas
+                                            bajas (13") los botones queden visibles sin scroll */}
+                                        <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] sm:max-h-[38vh] overflow-hidden shrink-0">
                                             <img
                                                 src={selectedConcert.artist_image_url || getDefaultImage()}
                                                 alt={selectedConcert.artists?.name || selectedConcert.title}
@@ -182,7 +184,7 @@ export const NewHomeUpcomingConcerts = () => {
                                         </div>
 
                                         {/* Scrollable content */}
-                                        <div className="flex-1 overflow-y-auto">
+                                        <div className="flex-1 min-h-0 overflow-y-auto">
                                             {/* Attendance + Actions */}
                                             <div className="px-5 py-4 space-y-4">
                                                 <ConcertAttendanceButtons concertId={selectedConcert.id} compact />
@@ -199,12 +201,15 @@ export const NewHomeUpcomingConcerts = () => {
                                                         </Link>
                                                     </Button>
                                                     {selectedConcert.ticket_url && (
-                                                        <Button
-                                                            className="flex-1 rounded-xl h-11 text-sm font-semibold"
-                                                            onClick={() => window.open(selectedConcert.ticket_url!, '_blank')}
-                                                        >
-                                                            <Ticket className="h-4 w-4 mr-1.5" />
-                                                            Entradas
+                                                        <Button className="flex-1 rounded-xl h-11 text-sm font-semibold" asChild>
+                                                            <a
+                                                                href={withTicketTracking(selectedConcert.ticket_url)}
+                                                                target="_blank"
+                                                                rel="sponsored noopener noreferrer"
+                                                            >
+                                                                <Ticket className="h-4 w-4 mr-1.5" />
+                                                                Entradas
+                                                            </a>
                                                         </Button>
                                                     )}
                                                 </div>

@@ -7,7 +7,7 @@ import { parseISO, format } from 'date-fns';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { canShareNatively } from '@/utils/socialShare';
 
 interface ModernConcertCardProps {
@@ -223,7 +223,14 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
                     </div>
 
                     <h3 className="text-xl font-bold text-foreground line-clamp-2 leading-tight font-fira">
-                        {concert.title}
+                        {/* Enlace real y crawleable al detalle; el resto de la tarjeta abre el quick view */}
+                        <Link
+                            to={`/concerts/${concert.slug || concert.id}`}
+                            className="hover:text-primary transition-colors"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            {concert.title}
+                        </Link>
                     </h3>
 
                     <div className="flex items-center gap-2 text-muted-foreground">

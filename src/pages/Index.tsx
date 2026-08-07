@@ -51,13 +51,13 @@ const Index = () => {
     "@type": "WebSite",
     "name": "Conciertos Latam",
     "alternateName": "Conciertos América Latina",
-    "url": "https://www.conciertoslatam.app",
+    "url": "https://www.conciertoslatam.com",
     "description": "La plataforma líder de conciertos y eventos musicales de América Latina. Encuentra artistas, venues, setlists y noticias.",
     "potentialAction": {
       "@type": "SearchAction",
       "target": {
         "@type": "EntryPoint",
-        "urlTemplate": "https://www.conciertoslatam.app/concerts?q={search_term_string}"
+        "urlTemplate": "https://www.conciertoslatam.com/concerts?q={search_term_string}"
       },
       "query-input": "required name=search_term_string"
     },

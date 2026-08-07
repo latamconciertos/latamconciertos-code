@@ -120,7 +120,7 @@ const SlideSummary = ({ data, userName, logoSrc }: SlideSummaryProps) => {
         className="mt-8 flex items-center gap-2"
       >
         {logoSrc && <img src={logoSrc} alt="" className="h-4 w-auto opacity-30" />}
-        <span className="text-[10px] tracking-wider text-indigo-300/30">conciertoslatam.app</span>
+        <span className="text-[10px] tracking-wider text-indigo-300/30">conciertoslatam.com</span>
       </motion.div>
     </div>
   );

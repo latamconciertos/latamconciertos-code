@@ -2,141 +2,141 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <!-- Home -->
   <url>
-    <loc>https://www.conciertoslatam.app/</loc>
+    <loc>https://www.conciertoslatam.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 
   <!-- Concerts -->
   <url>
-    <loc>https://www.conciertoslatam.app/concerts</loc>
+    <loc>https://www.conciertoslatam.com/concerts</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
 
   <!-- Blog / Noticias -->
   <url>
-    <loc>https://www.conciertoslatam.app/blog</loc>
+    <loc>https://www.conciertoslatam.com/blog</loc>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
 
   <!-- Artists -->
   <url>
-    <loc>https://www.conciertoslatam.app/artists</loc>
+    <loc>https://www.conciertoslatam.com/artists</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <!-- Promoters -->
   <url>
-    <loc>https://www.conciertoslatam.app/promoters</loc>
+    <loc>https://www.conciertoslatam.com/promoters</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <!-- AI Assistant -->
   <url>
-    <loc>https://www.conciertoslatam.app/ai-assistant</loc>
+    <loc>https://www.conciertoslatam.com/ai-assistant</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 
   <!-- About Pages -->
   <url>
-    <loc>https://www.conciertoslatam.app/about</loc>
+    <loc>https://www.conciertoslatam.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://www.conciertoslatam.app/privacy</loc>
+    <loc>https://www.conciertoslatam.com/privacy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://www.conciertoslatam.app/terms</loc>
+    <loc>https://www.conciertoslatam.com/terms</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://www.conciertoslatam.app/editorial-guidelines</loc>
+    <loc>https://www.conciertoslatam.com/editorial-guidelines</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <url>
-    <loc>https://www.conciertoslatam.app/advertising</loc>
+    <loc>https://www.conciertoslatam.com/advertising</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
 
   <!-- Country Concert Pages (High Priority - Primary Keywords) -->
   <url>
-    <loc>https://www.conciertoslatam.app/conciertos/colombia</loc>
+    <loc>https://www.conciertoslatam.com/conciertos/colombia</loc>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
-    <loc>https://www.conciertoslatam.app/conciertos/mexico</loc>
+    <loc>https://www.conciertoslatam.com/conciertos/mexico</loc>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
-    <loc>https://www.conciertoslatam.app/conciertos/argentina</loc>
+    <loc>https://www.conciertoslatam.com/conciertos/argentina</loc>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
-    <loc>https://www.conciertoslatam.app/conciertos/chile</loc>
+    <loc>https://www.conciertoslatam.com/conciertos/chile</loc>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
-    <loc>https://www.conciertoslatam.app/conciertos/peru</loc>
+    <loc>https://www.conciertoslatam.com/conciertos/peru</loc>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
-    <loc>https://www.conciertoslatam.app/conciertos/brasil</loc>
+    <loc>https://www.conciertoslatam.com/conciertos/brasil</loc>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
-    <loc>https://www.conciertoslatam.app/conciertos/ecuador</loc>
+    <loc>https://www.conciertoslatam.com/conciertos/ecuador</loc>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
-    <loc>https://www.conciertoslatam.app/conciertos/uruguay</loc>
+    <loc>https://www.conciertoslatam.com/conciertos/uruguay</loc>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
-    <loc>https://www.conciertoslatam.app/conciertos/paraguay</loc>
+    <loc>https://www.conciertoslatam.com/conciertos/paraguay</loc>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
 
   <url>
-    <loc>https://www.conciertoslatam.app/conciertos/venezuela</loc>
+    <loc>https://www.conciertoslatam.com/conciertos/venezuela</loc>
     <changefreq>daily</changefreq>
     <priority>0.95</priority>
   </url>
 
   <!-- Festivals -->
   <url>
-    <loc>https://www.conciertoslatam.app/festivales</loc>
+    <loc>https://www.conciertoslatam.com/festivales</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>

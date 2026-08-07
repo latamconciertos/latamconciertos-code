@@ -101,7 +101,7 @@ const WrappedShareCard = forwardRef<HTMLDivElement, WrappedShareCardProps>(
             bottom: 50,
           }}
         >
-          conciertoslatam.app/wrapped
+          conciertoslatam.com/wrapped
         </div>
       </div>
     );
