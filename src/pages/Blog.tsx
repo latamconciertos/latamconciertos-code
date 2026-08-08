@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search, Calendar, Clock } from 'lucide-react';
+import { SectionHeader } from '@/components/newhome/SectionHeader';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -24,8 +26,15 @@ const getReadingTime = (content: string | null | undefined) => {
 
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('newest');
+
+  // La categoría vive en la URL (?category=slug): los enlaces desde la home
+  // funcionan y cada vista filtrada es enlazable e indexable
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedCategory = searchParams.get('category') || 'all';
+  const setSelectedCategory = (slug: string) => {
+    setSearchParams(slug === 'all' ? {} : { category: slug }, { preventScrollReset: true });
+  };
 
   const { data: articles = [], isLoading: loadingArticles } = useBlogArticles();
   const { data: categories = [], isLoading: loadingCategories } = useBlogCategories();
@@ -148,6 +157,85 @@ const Blog = () => {
 
   const featuredArticle = filteredArticles[0];
   const restArticles = filteredArticles.slice(1);
+
+  // Vista principal (sin filtros): destacado + secciones por categoría,
+  // con Lanzamientos primero. Con filtros o búsqueda: grilla plana filtrada.
+  const isDefaultView = selectedCategory === 'all' && !searchTerm && sortBy === 'newest';
+  const SECTION_EYEBROWS: Record<string, string> = {
+    lanzamientos: 'Nueva música',
+    conciertos: 'En vivo',
+    festivales: 'Temporada de festivales',
+    anuncios: 'Lo que viene',
+  };
+  const orderedCategories = [...categories].sort(
+    (a, b) => (a.slug === 'lanzamientos' ? -1 : 0) - (b.slug === 'lanzamientos' ? -1 : 0)
+  );
+  const categorySections = isDefaultView
+    ? orderedCategories
+        .map((cat) => ({
+          cat,
+          items: articles
+            .filter((a) => a.category_id === cat.id && a.id !== featuredArticle?.id)
+            .sort(
+              (a, b) =>
+                new Date(b.published_at || b.created_at).getTime() -
+                new Date(a.published_at || a.created_at).getTime()
+            )
+            .slice(0, 3),
+        }))
+        .filter((s) => s.items.length > 0)
+    : [];
+
+  const renderArticleCard = (article: BlogArticle) => {
+    const readTime = getReadingTime(article.content);
+    return (
+      <a key={article.id} href={`/blog/${article.slug}`} className="group block focus:outline-none">
+        <Card className="overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] group-hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
+          <div className="relative aspect-[16/10] overflow-hidden bg-superficie-2">
+            <img
+              src={getArticleImage(article)}
+              alt={article.title}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              loading="lazy"
+              decoding="async"
+            />
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{ background: 'linear-gradient(180deg, transparent 60%, rgba(7,13,31,.45))' }}
+            />
+          </div>
+
+          <CardContent className="p-5 flex-1 flex flex-col">
+            {getCategoryById(article.category_id) && (
+              <span className="inline-block text-[10px] font-bold uppercase tracking-[0.18em] text-verde mb-2">
+                {getCategoryById(article.category_id)?.name}
+              </span>
+            )}
+            <h3 className="font-bold text-base md:text-lg text-foreground mb-2 group-hover:text-periwinkle transition-colors line-clamp-3 leading-snug">
+              {article.title}
+            </h3>
+            {article.meta_description && (
+              <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+                {article.meta_description}
+              </p>
+            )}
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-auto">
+              <Calendar className="h-3 w-3" />
+              <time dateTime={article.published_at || article.created_at}>
+                {formatDate(article.published_at || article.created_at)}
+              </time>
+              {readTime > 0 && (
+                <>
+                  <span className="text-muted-foreground/40">·</span>
+                  <span>{readTime} min</span>
+                </>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </a>
+    );
+  };
 
   return (
     <>
@@ -360,73 +448,36 @@ const Blog = () => {
               </a>
             )}
 
-            {/* Rest of the grid */}
-            {restArticles.length > 0 && (
-              <>
-                <div className="flex items-center gap-3 mb-6 md:mb-8 pt-2">
-                  <span className="h-px flex-1 bg-border/60" aria-hidden="true" />
-                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-                    {filterCategoryName ? `Más en ${filterCategoryName}` : 'Más historias'}
-                  </p>
-                  <span className="h-px flex-1 bg-border/60" aria-hidden="true" />
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                  {restArticles.map((article) => {
-                    const readTime = getReadingTime(article.content);
-                    return (
-                      <a
-                        key={article.id}
-                        href={`/blog/${article.slug}`}
-                        className="group block focus:outline-none"
-                      >
-                        <Card className="overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] group-hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
-                          <div className="relative aspect-[16/10] overflow-hidden bg-superficie-2">
-                            <img
-                              src={getArticleImage(article)}
-                              alt={article.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                              loading="lazy"
-                              decoding="async"
-                            />
-                            <div
-                              className="absolute inset-0 pointer-events-none"
-                              style={{ background: 'linear-gradient(180deg, transparent 60%, rgba(7,13,31,.45))' }}
-                            />
-                          </div>
-
-                          <CardContent className="p-5 flex-1 flex flex-col">
-                            {getCategoryById(article.category_id) && (
-                              <span className="inline-block text-[10px] font-bold uppercase tracking-[0.18em] text-verde mb-2">
-                                {getCategoryById(article.category_id)?.name}
-                              </span>
-                            )}
-                            <h3 className="font-bold text-base md:text-lg text-foreground mb-2 group-hover:text-periwinkle transition-colors line-clamp-3 leading-snug">
-                              {article.title}
-                            </h3>
-                            {article.meta_description && (
-                              <p className="text-sm text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
-                                {article.meta_description}
-                              </p>
-                            )}
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-auto">
-                              <Calendar className="h-3 w-3" />
-                              <time dateTime={article.published_at || article.created_at}>
-                                {formatDate(article.published_at || article.created_at)}
-                              </time>
-                              {readTime > 0 && (
-                                <>
-                                  <span className="text-muted-foreground/40">·</span>
-                                  <span>{readTime} min</span>
-                                </>
-                              )}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </a>
-                    );
-                  })}
-                </div>
-              </>
+            {/* Vista principal: secciones por categoría (Lanzamientos primero).
+                Con filtros o búsqueda: grilla plana filtrada. */}
+            {isDefaultView && categorySections.length > 0 ? (
+              categorySections.map(({ cat, items }) => (
+                <section key={cat.id} className="mt-14 md:mt-20">
+                  <SectionHeader
+                    eyebrow={SECTION_EYEBROWS[cat.slug] || 'Sección'}
+                    title={cat.name}
+                    action={{ label: `Ver todo en ${cat.name}`, to: `/blog?category=${cat.slug}` }}
+                  />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    {items.map(renderArticleCard)}
+                  </div>
+                </section>
+              ))
+            ) : (
+              restArticles.length > 0 && (
+                <>
+                  <div className="flex items-center gap-3 mb-6 md:mb-8 pt-2">
+                    <span className="h-px flex-1 bg-linea" aria-hidden="true" />
+                    <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                      {filterCategoryName ? `Más en ${filterCategoryName}` : 'Más historias'}
+                    </p>
+                    <span className="h-px flex-1 bg-linea" aria-hidden="true" />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                    {restArticles.map(renderArticleCard)}
+                  </div>
+                </>
+              )
             )}
           </>
         ) : (

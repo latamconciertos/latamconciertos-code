@@ -9,7 +9,7 @@ interface NewsArticle {
   slug: string;
   title: string;
   published_at: string;
-  meta_keywords: string | null;
+  keywords: string | null;
   categories: { name: string } | null;
 }
 
@@ -35,7 +35,7 @@ Deno.serve(async (req) => {
         slug,
         title,
         published_at,
-        meta_keywords,
+        keywords,
         categories:category_id (name)
       `)
       .eq('status', 'published')
@@ -76,7 +76,7 @@ function generateNewsSitemapXML(articles: NewsArticle[], siteUrl: string): strin
   const urlEntries = articles.map((article) => {
     const fullUrl = `${siteUrl}/blog/${article.slug}`;
     const publishDate = new Date(article.published_at).toISOString();
-    const keywords = article.meta_keywords || article.categories?.name || 'música, conciertos';
+    const keywords = article.keywords || article.categories?.name || 'música, conciertos';
 
     return `  <url>
     <loc>${escapeXml(fullUrl)}</loc>

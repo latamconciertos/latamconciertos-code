@@ -34,7 +34,7 @@ export const FeatureCards = () => {
                 .from('categories')
                 .select('*')
                 .order('name')
-                .limit(3);
+                .limit(4);
 
             if (error) throw error;
             return (data || []) as Category[];
@@ -114,8 +114,8 @@ export const FeatureCards = () => {
                     action={{ label: 'Ver todas las noticias', to: '/blog' }}
                 />
 
-                {/* Category Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                {/* Category Cards Grid: 2x2 en pantallas medianas, 4 columnas en anchas */}
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8">
                     {categoriesWithArticles.map((category, index) => (
                         <motion.div
                             key={category.id}
