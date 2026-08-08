@@ -52,13 +52,13 @@ const ProfileCompletionDialog = ({
     return (
         <Dialog open={open} modal>
             <DialogContent
-                className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto"
+                className="dark font-fira sm:max-w-[500px] max-h-[90vh] overflow-y-auto rounded-[20px] bg-noche border-linea text-texto"
                 onInteractOutside={(e) => e.preventDefault()}
                 onEscapeKeyDown={(e) => e.preventDefault()}
             >
                 <DialogHeader className="text-left pb-4">
                     <DialogTitle className="flex items-center gap-2 text-2xl">
-                        <Sparkles className="h-6 w-6 text-primary" />
+                        <Sparkles className="h-6 w-6 text-periwinkle" />
                         ¡Bienvenido a LATAM Conciertos!
                     </DialogTitle>
                     <DialogDescription className="text-base">
@@ -70,7 +70,7 @@ const ProfileCompletionDialog = ({
                     {/* Información Personal */}
                     <div className="space-y-4">
                         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                            <User className="h-4 w-4 text-primary" />
+                            <User className="h-4 w-4 text-periwinkle" />
                             Información Personal
                             <span className="text-xs text-muted-foreground font-normal">(Requerido)</span>
                         </h3>
@@ -137,7 +137,7 @@ const ProfileCompletionDialog = ({
                     {/* Ubicación */}
                     <div className="space-y-4">
                         <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                            <MapPin className="h-4 w-4 text-primary" />
+                            <MapPin className="h-4 w-4 text-periwinkle" />
                             Ubicación
                             <span className="text-xs text-muted-foreground font-normal">(Opcional)</span>
                         </h3>
@@ -192,7 +192,7 @@ const ProfileCompletionDialog = ({
                     <Button
                         onClick={handleSave}
                         disabled={isSaving || !isFormValid}
-                        className="w-full h-12 gap-2 text-base font-semibold"
+                        className="w-full h-12 gap-2 text-base font-semibold rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
                     >
                         <Save className="h-5 w-5" />
                         {isSaving ? 'Guardando...' : 'Completar Perfil'}

@@ -68,7 +68,7 @@ const BadgesDisplay = ({ userId }: BadgesDisplayProps) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-periwinkle"></div>
       </div>
     );
   }
@@ -89,10 +89,10 @@ const BadgesDisplay = ({ userId }: BadgesDisplayProps) => {
         return (
           <Card
             key={badge.id}
-            className={`p-4 text-center transition-all ${
+            className={`p-4 text-center rounded-[20px] bg-superficie transition-all ${
               earned
-                ? 'bg-primary/10 border-primary'
-                : 'opacity-50 grayscale'
+                ? 'border-[rgba(89,124,255,.5)]'
+                : 'border-linea opacity-50 grayscale'
             }`}
           >
             <div className="text-4xl mb-2">{badge.icon}</div>
@@ -102,7 +102,7 @@ const BadgesDisplay = ({ userId }: BadgesDisplayProps) => {
             </p>
             {earned && (
               <div className="mt-2">
-                <span className="inline-block bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full">
+                <span className="inline-block rounded-full border border-verde/30 bg-verde/10 text-verde text-xs px-2 py-1">
                   ✓ Desbloqueada
                 </span>
               </div>

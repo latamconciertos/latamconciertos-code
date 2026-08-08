@@ -25,14 +25,15 @@ const ConcertGrid = ({ concerts, emptyMessage, emptyIcon = 'calendar' }: Concert
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         {emptyIcon === 'calendar' ? (
-          <Calendar className="h-14 w-14 text-muted-foreground/30 mb-4" />
+          <Calendar className="h-14 w-14 text-periwinkle/30 mb-4" />
         ) : (
-          <Music className="h-14 w-14 text-muted-foreground/30 mb-4" />
+          <Music className="h-14 w-14 text-periwinkle/30 mb-4" />
         )}
         <p className="text-sm text-muted-foreground mb-4">{emptyMessage}</p>
         <Button
           variant="outline"
           size="sm"
+          className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
           onClick={() => navigate('/concerts')}
         >
           Explorar conciertos
@@ -53,16 +54,16 @@ const ConcertGrid = ({ concerts, emptyMessage, emptyIcon = 'calendar' }: Concert
         return (
           <Card
             key={concert.id}
-            className="overflow-hidden border-border/50 hover:border-primary/30 transition-colors cursor-pointer"
+            className="overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-colors cursor-pointer"
             onClick={() => navigate(`/concerts/${concert.slug}`)}
           >
             <CardContent className="p-0">
               <div className="flex items-stretch">
                 {/* Date column */}
                 {dateInfo && (
-                  <div className="flex-shrink-0 w-14 sm:w-16 bg-primary/5 flex flex-col items-center justify-center py-3 border-r border-border/30">
-                    <span className="text-lg sm:text-xl font-bold text-primary leading-none">{dateInfo.day}</span>
-                    <span className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">{dateInfo.month}</span>
+                  <div className="flex-shrink-0 w-14 sm:w-16 bg-superficie-2 flex flex-col items-center justify-center py-3 border-r border-linea">
+                    <span className="font-display text-xl font-extrabold text-verde leading-none">{dateInfo.day}</span>
+                    <span className="font-fira text-[10px] uppercase tracking-[0.12em] text-texto-2 mt-0.5">{dateInfo.month}</span>
                   </div>
                 )}
 
@@ -74,14 +75,14 @@ const ConcertGrid = ({ concerts, emptyMessage, emptyIcon = 'calendar' }: Concert
 
                   {concert.artist?.name && (
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-0.5">
-                      <Music className="h-3 w-3 flex-shrink-0 text-primary" />
+                      <Music className="h-3 w-3 flex-shrink-0 text-periwinkle" />
                       <span className="truncate">{concert.artist.name}</span>
                     </div>
                   )}
 
                   {locationStr && (
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                      <MapPin className="h-3 w-3 flex-shrink-0" />
+                      <MapPin className="h-3 w-3 flex-shrink-0 text-periwinkle" />
                       <span className="truncate">{locationStr}</span>
                     </div>
                   )}

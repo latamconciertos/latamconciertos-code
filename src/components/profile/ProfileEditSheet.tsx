@@ -95,10 +95,11 @@ const ProfileEditSheet = ({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
+      {/* Portal: lleva su propio contexto nocturno */}
+      <SheetContent side="bottom" className="dark font-fira h-[85vh] rounded-t-[20px] bg-noche border-linea text-texto">
         <SheetHeader className="text-left pb-4">
           <SheetTitle className="flex items-center gap-2">
-            <User className="h-5 w-5 text-primary" />
+            <User className="h-5 w-5 text-periwinkle" />
             Editar perfil
           </SheetTitle>
           <SheetDescription>
@@ -115,11 +116,11 @@ const ProfileEditSheet = ({
               onClick={() => fileInputRef.current?.click()}
               disabled={uploadingAvatar}
             >
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/20 via-primary/30 to-primary/50 flex items-center justify-center ring-[3px] ring-primary/30 overflow-hidden">
+              <div className="w-24 h-24 rounded-full bg-superficie-2 flex items-center justify-center ring-[3px] ring-periwinkle/40 overflow-hidden">
                 {localProfile.avatar_url ? (
                   <img src={localProfile.avatar_url} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  <User className="h-12 w-12 text-primary" />
+                  <User className="h-12 w-12 text-periwinkle" />
                 )}
               </div>
               <div className="absolute inset-0 rounded-full bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -129,8 +130,8 @@ const ProfileEditSheet = ({
                   <Camera className="h-6 w-6 text-white" />
                 )}
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 bg-primary rounded-full p-1.5 shadow-md">
-                <Camera className="h-3.5 w-3.5 text-primary-foreground" />
+              <div className="absolute -bottom-0.5 -right-0.5 rounded-full p-1.5 bg-[linear-gradient(95deg,#004AAD,#597CFF)] shadow-[0_4px_16px_rgba(0,74,173,.4)]">
+                <Camera className="h-3.5 w-3.5 text-white" />
               </div>
             </button>
             <input
@@ -145,7 +146,7 @@ const ProfileEditSheet = ({
           {/* Información Personal */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
-              <User className="h-4 w-4 text-primary" />
+              <User className="h-4 w-4 text-periwinkle" />
               Información Personal
             </h3>
 
@@ -217,7 +218,7 @@ const ProfileEditSheet = ({
           {/* Ubicación */}
           <div className="space-y-4">
             <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-primary" />
+              <MapPin className="h-4 w-4 text-periwinkle" />
               Ubicación
             </h3>
 
@@ -271,7 +272,7 @@ const ProfileEditSheet = ({
           <Button
             onClick={onSave}
             disabled={isSaving}
-            className="w-full h-12 gap-2"
+            className="w-full h-12 gap-2 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
           >
             <Save className="h-4 w-4" />
             {isSaving ? 'Guardando...' : 'Guardar cambios'}

@@ -62,7 +62,7 @@ export const NewHomeSpotifyCharts = () => {
                     <div className="max-w-2xl">
                         <span className="eyebrow-nocturno mb-3">Charts</span>
                         <h2 className="font-display font-extrabold uppercase tracking-[0.01em] text-3xl md:text-4xl leading-none text-texto">
-                            Top 10 en {selectedCountry.name} {selectedCountry.flag}
+                            Top 10 en {selectedCountry.name}
                         </h2>
                         <p className="mt-3 font-fira text-base text-texto-2">
                             Lo más escuchado en Spotify esta semana.
@@ -99,12 +99,18 @@ export const NewHomeSpotifyCharts = () => {
                 {/* Tabs */}
                 <Tabs defaultValue="tracks" className="w-full">
                     <div className="flex justify-center sm:justify-start mb-6">
-                    <TabsList className="w-fit h-9 p-0.5">
-                        <TabsTrigger value="tracks" className="text-xs sm:text-sm gap-1.5 px-4">
+                    <TabsList className="w-fit h-10 p-1 rounded-full bg-superficie border border-linea">
+                        <TabsTrigger
+                            value="tracks"
+                            className="text-xs sm:text-sm gap-1.5 px-4 rounded-full text-texto-2 data-[state=active]:bg-[linear-gradient(95deg,#004AAD,#597CFF)] data-[state=active]:text-white data-[state=active]:shadow-[0_8px_32px_rgba(0,74,173,.4)]"
+                        >
                             <Music2 className="w-3.5 h-3.5" />
                             Canciones
                         </TabsTrigger>
-                        <TabsTrigger value="artists" className="text-xs sm:text-sm gap-1.5 px-4">
+                        <TabsTrigger
+                            value="artists"
+                            className="text-xs sm:text-sm gap-1.5 px-4 rounded-full text-texto-2 data-[state=active]:bg-[linear-gradient(95deg,#004AAD,#597CFF)] data-[state=active]:text-white data-[state=active]:shadow-[0_8px_32px_rgba(0,74,173,.4)]"
+                        >
                             <TrendingUp className="w-3.5 h-3.5" />
                             Artistas
                         </TabsTrigger>

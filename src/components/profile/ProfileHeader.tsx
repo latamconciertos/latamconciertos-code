@@ -18,29 +18,31 @@ const ProfileHeader = ({ displayName, username, location, bio, avatarUrl, stats 
     <div className="space-y-3">
       {/* Top row: Avatar + Stats */}
       <div className="flex items-center gap-6 sm:gap-8">
-        {/* Avatar */}
+        {/* Avatar con anillo de gradiente firma */}
         <div className="flex-shrink-0">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary/20 via-primary/30 to-primary/50 flex items-center justify-center ring-[3px] ring-primary/30 overflow-hidden">
-            {avatarUrl ? (
-              <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
-            ) : (
-              <User className="h-10 w-10 sm:h-12 sm:w-12 text-primary" />
-            )}
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full p-[3px] bg-[linear-gradient(135deg,#004AAD,#597CFF)]">
+            <div className="w-full h-full rounded-full bg-superficie-2 flex items-center justify-center overflow-hidden">
+              {avatarUrl ? (
+                <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+              ) : (
+                <User className="h-10 w-10 sm:h-12 sm:w-12 text-periwinkle" />
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Stats */}
+        {/* Stats: números en Big Shoulders con verde de acento */}
         <div className="flex flex-1 justify-around">
           <div className="text-center">
-            <p className="text-lg sm:text-xl font-bold text-foreground leading-none">{stats.concerts}</p>
+            <p className="font-display text-2xl font-extrabold text-verde leading-none">{stats.concerts}</p>
             <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">Conciertos</p>
           </div>
           <div className="text-center">
-            <p className="text-lg sm:text-xl font-bold text-foreground leading-none">{stats.artists}</p>
+            <p className="font-display text-2xl font-extrabold text-verde leading-none">{stats.artists}</p>
             <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">Artistas</p>
           </div>
           <div className="text-center">
-            <p className="text-lg sm:text-xl font-bold text-foreground leading-none">{stats.friends}</p>
+            <p className="font-display text-2xl font-extrabold text-verde leading-none">{stats.friends}</p>
             <p className="text-[11px] sm:text-xs text-muted-foreground mt-1">Amigos</p>
           </div>
         </div>
@@ -57,7 +59,7 @@ const ProfileHeader = ({ displayName, username, location, bio, avatarUrl, stats 
         )}
         {location && (
           <div className="flex items-center gap-1 text-sm text-muted-foreground pt-0.5">
-            <MapPin className="h-3.5 w-3.5" />
+            <MapPin className="h-3.5 w-3.5 text-periwinkle" />
             <span>{location}</span>
           </div>
         )}

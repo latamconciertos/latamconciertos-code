@@ -182,12 +182,16 @@ const Profile = () => {
   const locationString = [selectedCity?.name, selectedCountry?.name].filter(Boolean).join(', ') || null;
 
   if (profileLoading || !userId) {
-    return <LoadingSpinner message="Cargando perfil..." />;
+    return (
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
+        <LoadingSpinner message="Cargando perfil..." />
+      </div>
+    );
   }
 
   if (!profile || !localProfile) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="dark font-fira min-h-screen bg-noche text-texto flex items-center justify-center">
         <p className="text-muted-foreground">No se pudo cargar el perfil</p>
       </div>
     );
@@ -201,8 +205,10 @@ const Profile = () => {
         title="Mi Perfil"
         description="Administra tu información personal y preferencias musicales"
       />
+      {/* "Evolución Nocturna": la página vive sobre la noche, como la home */}
+      <div className="dark font-fira bg-noche text-texto">
       <Header />
-      <main className="min-h-screen bg-background pt-24 sm:pt-28 pb-8">
+      <main className="min-h-screen pt-24 sm:pt-28 pb-8">
         <div className="mx-auto px-4 max-w-lg sm:max-w-xl lg:max-w-4xl">
           {/* Profile Header */}
           <ProfileHeader
@@ -222,14 +228,14 @@ const Profile = () => {
           <div className="flex gap-2 mt-4">
             <Button
               variant="secondary"
-              className="flex-1 h-9 text-sm font-semibold rounded-lg"
+              className="flex-1 h-9 text-sm font-semibold rounded-full border border-linea bg-superficie hover:bg-superficie-2"
               onClick={() => setEditSheetOpen(true)}
             >
               Editar perfil
             </Button>
             <Button
               variant="secondary"
-              className="flex-1 h-9 text-sm font-semibold rounded-lg"
+              className="flex-1 h-9 text-sm font-semibold rounded-full border border-linea bg-superficie hover:bg-superficie-2"
               onClick={() => setArtistsSheetOpen(true)}
             >
               Artistas favoritos
@@ -237,7 +243,7 @@ const Profile = () => {
             <Button
               variant="secondary"
               size="icon"
-              className="h-9 w-9 flex-shrink-0 rounded-lg"
+              className="h-9 w-9 flex-shrink-0 rounded-full border border-linea bg-superficie hover:bg-superficie-2"
               onClick={async () => {
                 const profileUrl = `${window.location.origin}/profile/${localProfile.username}`;
                 if (navigator.share) {
@@ -256,31 +262,31 @@ const Profile = () => {
 
           {/* Tabs - Instagram style with top border */}
           <Tabs defaultValue="upcoming" className="w-full mt-6">
-            <TabsList className="w-full h-auto p-0 bg-transparent border-t border-border rounded-none grid grid-cols-4">
+            <TabsList className="w-full h-auto p-0 bg-transparent border-t border-linea rounded-none grid grid-cols-4">
               <TabsTrigger
                 value="upcoming"
-                className="rounded-none border-t-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground"
+                className="rounded-none border-t-2 border-transparent data-[state=active]:border-verde data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground"
               >
                 <Calendar className="h-5 w-5" />
                 <span className="text-xs hidden sm:inline">Próximos</span>
               </TabsTrigger>
               <TabsTrigger
                 value="attended"
-                className="rounded-none border-t-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground"
+                className="rounded-none border-t-2 border-transparent data-[state=active]:border-verde data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground"
               >
                 <CheckCircle className="h-5 w-5" />
                 <span className="text-xs hidden sm:inline">Asistidos</span>
               </TabsTrigger>
               <TabsTrigger
                 value="favorites"
-                className="rounded-none border-t-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground"
+                className="rounded-none border-t-2 border-transparent data-[state=active]:border-verde data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground"
               >
                 <Heart className="h-5 w-5" />
                 <span className="text-xs hidden sm:inline">Favoritos</span>
               </TabsTrigger>
               <TabsTrigger
                 value="badges"
-                className="rounded-none border-t-2 border-transparent data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground"
+                className="rounded-none border-t-2 border-transparent data-[state=active]:border-verde data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 gap-1.5 text-muted-foreground data-[state=active]:text-foreground"
               >
                 <Trophy className="h-5 w-5" />
                 <span className="text-xs hidden sm:inline">Insignias</span>
@@ -331,6 +337,7 @@ const Profile = () => {
         </div>
       </main>
       <Footer />
+      </div>
 
       {/* Edit Profile Sheet */}
       <ProfileEditSheet

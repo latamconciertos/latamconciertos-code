@@ -164,8 +164,10 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
   const hasQuery = searchQuery.length >= 2;
 
   const content = (
+    // Portal en document.body: lleva su propio contexto nocturno porque
+    // escapa del wrapper .dark de la página
     <div
-      className="fixed inset-0 bg-background"
+      className="dark font-fira fixed inset-0 bg-noche text-texto"
       style={{ zIndex: 9999 }}
     >
       <div className="h-full flex flex-col max-w-2xl mx-auto">
@@ -181,7 +183,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Buscar..."
-                className="w-full h-10 pl-10 pr-9 rounded-xl bg-muted text-sm border-0 outline-none focus:ring-2 focus:ring-primary/20 placeholder:text-muted-foreground/50"
+                className="w-full h-10 pl-10 pr-9 rounded-full bg-superficie text-sm border border-linea outline-none focus:ring-2 focus:ring-periwinkle placeholder:text-texto-2/60"
               />
               {searchQuery && (
                 <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
@@ -189,7 +191,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
                 </button>
               )}
             </div>
-            <button onClick={handleClose} className="text-sm font-medium text-primary flex-shrink-0">
+            <button onClick={handleClose} className="text-sm font-medium text-periwinkle hover:text-azul-claro transition-colors flex-shrink-0">
               Cancelar
             </button>
           </div>
@@ -205,7 +207,9 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
                   onClick={() => setActiveTab(tab.key)}
                   className={cn(
                     "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex-shrink-0",
-                    active ? "bg-primary text-primary-foreground shadow-sm" : "bg-muted text-muted-foreground hover:text-foreground"
+                    active
+                      ? "border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)]"
+                      : "bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(89,124,255,.35)]"
                   )}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -215,7 +219,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
             })}
           </div>
 
-          <div className="border-b border-border" />
+          <div className="border-b border-linea" />
         </div>
 
         {/* ── Results ── */}
@@ -242,10 +246,10 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
 
           {/* Artists */}
           {results.artists.length > 0 && (
-            <Section title="Artistas" color="text-violet-600 dark:text-violet-400">
+            <Section title="Artistas">
               {results.artists.map(a => (
                 <ResultRow key={a.id} onClick={() => goTo(`/artists/${a.slug}`)}>
-                  <Thumbnail src={a.photo_url} fallback={<Mic2 className="h-5 w-5 text-violet-500" />} fallbackBg="bg-violet-500/10" round />
+                  <Thumbnail src={a.photo_url} fallback={<Mic2 className="h-5 w-5 text-periwinkle" />} round />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-foreground truncate">{a.name}</p>
                     <p className="text-xs text-muted-foreground">Artista</p>
@@ -257,10 +261,10 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
 
           {/* Concerts */}
           {results.concerts.length > 0 && (
-            <Section title="Conciertos" color="text-primary">
+            <Section title="Conciertos">
               {results.concerts.map(c => (
                 <ResultRow key={c.id} onClick={() => goTo(`/concerts/${c.slug}`)}>
-                  <Thumbnail src={c.image_url} fallback={<Music2 className="h-5 w-5 text-primary" />} fallbackBg="bg-primary/10" />
+                  <Thumbnail src={c.image_url} fallback={<Music2 className="h-5 w-5 text-periwinkle" />} />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-foreground truncate">{c.title}</p>
                     <p className="text-xs text-muted-foreground truncate">
@@ -274,10 +278,10 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
 
           {/* News */}
           {results.news.length > 0 && (
-            <Section title="Noticias" color="text-amber-600 dark:text-amber-400">
+            <Section title="Noticias">
               {results.news.map(n => (
                 <ResultRow key={n.id} onClick={() => goTo(`/blog/${n.slug}`)}>
-                  <Thumbnail src={n.cover_image} fallback={<BookOpen className="h-5 w-5 text-amber-500" />} fallbackBg="bg-amber-500/10" />
+                  <Thumbnail src={n.cover_image} fallback={<BookOpen className="h-5 w-5 text-periwinkle" />} />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-foreground line-clamp-1">{n.title}</p>
                     <p className="text-xs text-muted-foreground">{n.published_at ? formatDisplayDate(n.published_at) : ""}</p>
@@ -289,14 +293,14 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
 
           {/* People */}
           {results.people.length > 0 && (
-            <Section title="Personas" color="text-emerald-600 dark:text-emerald-400">
+            <Section title="Personas">
               {results.people.map(p => {
                 const name = [p.first_name, p.last_name].filter(Boolean).join(" ") || p.username || "Usuario";
                 const sent = sentRequests.has(p.id);
                 return (
-                  <div key={p.id} className="flex items-center gap-3 py-2.5 px-1 rounded-xl hover:bg-muted/50 transition-colors">
+                  <div key={p.id} className="flex items-center gap-3 py-2.5 px-1 rounded-xl hover:bg-superficie transition-colors">
                     <button onClick={() => goTo(`/profile/${p.username || p.id}`)} className="flex items-center gap-3 flex-1 min-w-0 text-left">
-                      <Thumbnail src={p.avatar_url} fallback={<Users className="h-5 w-5 text-emerald-500" />} fallbackBg="bg-emerald-500/10" round />
+                      <Thumbnail src={p.avatar_url} fallback={<Users className="h-5 w-5 text-periwinkle" />} round />
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">{name}</p>
                         <p className="text-xs text-muted-foreground truncate">
@@ -308,7 +312,10 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
                       <Button
                         variant={sent ? "secondary" : "default"}
                         size="sm"
-                        className="h-8 rounded-lg text-xs gap-1.5 flex-shrink-0"
+                        className={cn(
+                          "h-8 rounded-full text-xs gap-1.5 flex-shrink-0",
+                          !sent && "border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white hover:opacity-95"
+                        )}
                         disabled={sendingRequest === p.id || sent}
                         onClick={() => handleAddFriend(p.id)}
                       >
@@ -338,10 +345,10 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
 
 /* ── Subcomponents ── */
 
-function Section({ title, color, children }: { title: string; color?: string; children: React.ReactNode }) {
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="py-3">
-      <p className={cn("text-[11px] font-semibold uppercase tracking-widest mb-1 px-1", color || "text-muted-foreground")}>{title}</p>
+      <p className="eyebrow-nocturno text-[11px] mb-1 px-1">{title}</p>
       <div>{children}</div>
     </div>
   );
@@ -349,16 +356,16 @@ function Section({ title, color, children }: { title: string; color?: string; ch
 
 function ResultRow({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
   return (
-    <button onClick={onClick} className="flex items-center gap-3 w-full py-2.5 px-1 rounded-xl hover:bg-muted/50 transition-colors text-left">
+    <button onClick={onClick} className="flex items-center gap-3 w-full py-2.5 px-1 rounded-xl hover:bg-superficie transition-colors text-left">
       {children}
     </button>
   );
 }
 
-function Thumbnail({ src, fallback, fallbackBg, round }: { src?: string | null; fallback: React.ReactNode; fallbackBg?: string; round?: boolean }) {
+function Thumbnail({ src, fallback, round }: { src?: string | null; fallback: React.ReactNode; round?: boolean }) {
   const shape = round ? "rounded-full" : "rounded-lg";
   if (src) {
-    return <img src={src} alt="" className={cn("h-11 w-11 object-cover flex-shrink-0", shape)} />;
+    return <img src={src} alt="" className={cn("h-11 w-11 object-cover flex-shrink-0 ring-1 ring-linea", shape)} />;
   }
-  return <div className={cn("h-11 w-11 flex items-center justify-center flex-shrink-0", shape, fallbackBg || "bg-primary/10")}>{fallback}</div>;
+  return <div className={cn("h-11 w-11 flex items-center justify-center flex-shrink-0 border border-linea bg-superficie-2", shape)}>{fallback}</div>;
 }

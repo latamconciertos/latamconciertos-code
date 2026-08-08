@@ -44,11 +44,12 @@ const FavoriteArtistsSheet = ({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl flex flex-col">
+      {/* Portal: lleva su propio contexto nocturno */}
+      <SheetContent side="bottom" className="dark font-fira h-[85vh] rounded-t-[20px] bg-noche border-linea text-texto flex flex-col">
         {/* Fixed Header */}
         <SheetHeader className="text-left pb-4">
           <SheetTitle className="flex items-center gap-2">
-            <Music className="h-5 w-5 text-primary" />
+            <Music className="h-5 w-5 text-periwinkle" />
             Artistas favoritos
           </SheetTitle>
           <SheetDescription>
@@ -109,7 +110,7 @@ const FavoriteArtistsSheet = ({
           <Button
             onClick={onSave}
             disabled={isSaving}
-            className="w-full h-12 gap-2"
+            className="w-full h-12 gap-2 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
           >
             <Save className="h-4 w-4" />
             {isSaving ? 'Guardando...' : 'Guardar artistas'}

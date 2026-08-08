@@ -82,8 +82,9 @@ export const ConcertCard = memo(({ concert, isPast = false }: ConcertCardProps) 
         <span className="block font-fira text-[9px] uppercase tracking-[0.12em] text-texto-2 mt-0.5">{dateInfo.month}</span>
       </time>
 
-      {/* Texto y CTA sobre la foto */}
-      <div className="absolute inset-x-0 bottom-0 p-3.5 sm:p-4 flex items-end justify-between gap-2.5" itemProp="location" itemScope itemType="https://schema.org/Place">
+      {/* Texto a lo ancho completo y CTA debajo: en cards angostas la fila
+          compartida con el botón truncaba artista, título y ciudad */}
+      <div className="absolute inset-x-0 bottom-0 p-3.5 sm:p-4 space-y-2.5" itemProp="location" itemScope itemType="https://schema.org/Place">
         <div className="min-w-0">
           {concert.artists?.name && (
             <div className="flex items-center gap-1.5" itemProp="performer" itemScope itemType="https://schema.org/MusicGroup">
@@ -112,9 +113,9 @@ export const ConcertCard = memo(({ concert, isPast = false }: ConcertCardProps) 
           </div>
         </div>
 
-        {/* Ticket CTA — esquina opuesta al texto */}
+        {/* Ticket CTA */}
         {!isPast && concert.ticket_url && (
-          <Button asChild size="sm" className="relative z-[2] shrink-0 h-9 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] px-3.5 text-xs font-semibold text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95 group/btn">
+          <Button asChild size="sm" className="relative z-[2] w-full h-9 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] px-3.5 text-xs font-semibold text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95 group/btn">
             <a
               href={withTicketTracking(concert.ticket_url)}
               target="_blank"

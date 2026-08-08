@@ -27,7 +27,7 @@ export const SpotifyChartCard = ({ item, type }: SpotifyChartCardProps) => {
       className="group flex-shrink-0 w-[160px] sm:w-[180px]"
     >
       {/* Image */}
-      <div className="relative aspect-square rounded-xl overflow-hidden bg-superficie border border-linea group-hover:border-[rgba(89,124,255,.35)] transition-colors mb-2.5">
+      <div className="relative aspect-square rounded-[20px] overflow-hidden bg-superficie border border-linea group-hover:border-[rgba(89,124,255,.35)] transition-colors mb-2.5">
         <img
           src={imageUrl}
           alt={title}
@@ -42,9 +42,9 @@ export const SpotifyChartCard = ({ item, type }: SpotifyChartCardProps) => {
           </div>
         </div>
 
-        {/* Position */}
-        <div className="absolute top-2 left-2 min-w-[24px] h-6 px-1.5 rounded-md bg-black/60 backdrop-blur-sm flex items-center justify-center">
-          <span className="text-xs font-bold text-white">#{item.position}</span>
+        {/* Position: número de acento en verde, como los chips de fecha */}
+        <div className="absolute top-2 left-2 min-w-[26px] h-6 px-2 rounded-full border border-linea bg-noche/80 backdrop-blur-sm flex items-center justify-center">
+          <span className="text-xs font-bold text-verde">#{item.position}</span>
         </div>
       </div>
 

@@ -46,8 +46,10 @@ export const NewHomeFeaturedArtists = () => {
                     action={{ label: 'Ver todos los artistas', to: '/artists' }}
                 />
 
-                {/* Artists Grid - Horizontal Scroll */}
-                <div className="flex gap-5 overflow-x-auto pb-2 pt-2 scrollbar-hide">
+                {/* Artists Grid - Horizontal Scroll.
+                    px-2/-mx-2: el anillo se dibuja fuera del círculo y el
+                    overflow del carrusel lo recortaba en el primero y el último */}
+                <div className="flex gap-5 overflow-x-auto py-2 px-2 -mx-2 scrollbar-hide">
                     {artists.map((artist) => (
                         <Link
                             key={artist.id}
