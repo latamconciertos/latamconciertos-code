@@ -86,12 +86,13 @@ export default {
 				linea: 'rgba(131,180,255,.12)'
 			},
 			fontFamily: {
-				'sans': ['"DM Sans"', 'system-ui', 'sans-serif'],
-				'display': ['"Big Shoulders Display"', '"DM Sans"', 'system-ui', 'sans-serif'],
-				'fira': ['"Fira Sans"', '"DM Sans"', 'sans-serif'],
-				// Legacy aliases — kept to avoid breaking older code; both resolve to DM Sans now
-				'spotify': ['"DM Sans"', 'system-ui', 'sans-serif'],
-				'roboto': ['"DM Sans"', 'sans-serif'],
+				// Evolución Nocturna: Fira Sans es la fuente de UI y cuerpo del manual
+				'sans': ['"Fira Sans"', 'system-ui', 'sans-serif'],
+				'display': ['"Big Shoulders Display"', '"Fira Sans"', 'system-ui', 'sans-serif'],
+				'fira': ['"Fira Sans"', 'system-ui', 'sans-serif'],
+				// Legacy aliases: kept to avoid breaking older code; resolven a Fira Sans
+				'spotify': ['"Fira Sans"', 'system-ui', 'sans-serif'],
+				'roboto': ['"Fira Sans"', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

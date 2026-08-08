@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import logo from '@/assets/logo-principal.png';
+import logo from '@/assets/logo.png';
 import { authSchema } from '@/lib/validation';
 import { z } from 'zod';
 import { Eye, EyeOff } from 'lucide-react';
