@@ -189,6 +189,24 @@ const Promoters = () => {
               </p>
             </div>
           )}
+
+          {/* CTA comercial: esta página la visitan las propias promotoras */}
+          <section aria-label="Publicidad para promotoras" className="mt-14">
+            <div className="relative overflow-hidden rounded-[20px] border border-linea bg-superficie p-6 md:p-8 flex flex-wrap items-center justify-between gap-5">
+              <div className="min-w-0 max-w-xl">
+                <span className="eyebrow-nocturno mb-2">¿Eres promotora?</span>
+                <h2 className="font-display uppercase text-2xl md:text-3xl font-extrabold tracking-[0.01em] leading-none text-foreground mb-2">
+                  Convierte Conciertos Latam en tu media partner
+                </h2>
+                <p className="text-sm text-texto-2">
+                  Cubrimos tu evento del anuncio al setlist: nota de anuncio, evento destacado, galería y comunidad de fans.
+                </p>
+              </div>
+              <a href="/publicidad" className="btn-nocturno shrink-0">
+                Pauta con nosotros
+              </a>
+            </div>
+          </section>
         </main>
 
         <Footer />

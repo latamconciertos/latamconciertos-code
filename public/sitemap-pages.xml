@@ -68,9 +68,9 @@
   </url>
 
   <url>
-    <loc>https://www.conciertoslatam.com/advertising</loc>
+    <loc>https://www.conciertoslatam.com/publicidad</loc>
     <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
+    <priority>0.8</priority>
   </url>
 
   <!-- Country Concert Pages (High Priority - Primary Keywords) -->

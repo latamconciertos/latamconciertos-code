@@ -194,7 +194,7 @@ const ConcertsByCountry = () => {
     const firstFormatted = format(parseISO(firstDate), 'MMM yyyy', { locale: es });
     const lastFormatted = format(parseISO(lastDate), 'MMM yyyy', { locale: es });
     
-    return firstFormatted === lastFormatted ? firstFormatted : `${firstFormatted} — ${lastFormatted}`;
+    return firstFormatted === lastFormatted ? firstFormatted : `${firstFormatted} a ${lastFormatted}`;
   };
   
   const dateRange = getDateRange();
@@ -262,7 +262,7 @@ const ConcertsByCountry = () => {
     },
     {
       q: `¿Dónde comprar entradas para conciertos en ${countryInfo.name}?`,
-      a: `En cada concierto listado encontrarás el botón "Ver entradas" que te lleva al sitio oficial de venta autorizado por la promotora del evento. Conciertos Latam no vende entradas directamente — solo te conectamos con la fuente oficial para evitar reventa y estafas.`,
+      a: `En cada concierto listado encontrarás el botón "Ver entradas" que te lleva al sitio oficial de venta autorizado por la promotora del evento. Conciertos Latam no vende entradas directamente: solo te conectamos con la fuente oficial para evitar reventa y estafas.`,
     },
     ...(topCities.length > 0 ? [{
       q: `¿En qué ciudades de ${countryInfo.name} hay más conciertos?`,
@@ -564,6 +564,24 @@ const ConcertsByCountry = () => {
               )}
             </>
           )}
+
+          {/* CTA comercial: las promotoras buscan sus propios eventos en esta página */}
+          <section aria-label="Publicidad para promotoras" className="mt-14 sm:mt-16">
+            <div className="relative overflow-hidden rounded-[20px] border border-linea bg-superficie p-6 md:p-8 flex flex-wrap items-center justify-between gap-5">
+              <div className="relative min-w-0 max-w-xl">
+                <span className="eyebrow-nocturno mb-2">¿Organizas shows en {countryInfo.name}?</span>
+                <h2 className="font-display uppercase text-2xl md:text-3xl font-extrabold tracking-[0.01em] leading-none text-foreground mb-2">
+                  Destaca tu evento donde los fans ya lo buscan
+                </h2>
+                <p className="text-sm text-texto-2">
+                  Eventos destacados, cobertura editorial y media partnerships para promotoras y venues.
+                </p>
+              </div>
+              <Link to="/publicidad" className="btn-nocturno shrink-0">
+                Pauta con nosotros
+              </Link>
+            </div>
+          </section>
 
           {/* Top Cities — pills, editorial */}
           {topCities.length > 0 && (

@@ -89,6 +89,7 @@ const Footer = () => {
               title="Conciertos Latam"
               items={[
                 { href: '/about', label: 'Acerca de' },
+                { href: '/publicidad', label: 'Pauta con nosotros' },
                 { href: '/editorial-guidelines', label: 'Lineamientos' },
                 { href: 'mailto:latamconciertos@gmail.com', label: 'Contacto', icon: <Mail className="h-3.5 w-3.5" /> },
               ]}
