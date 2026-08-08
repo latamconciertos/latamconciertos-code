@@ -141,11 +141,11 @@ export function AccreditationDetailSheet({ accreditation, open, onOpenChange }: 
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="w-full sm:max-w-xl overflow-y-auto p-0">
         {/* Header */}
-        <SheetHeader className="sticky top-0 bg-background border-b border-border px-6 py-5 z-10">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-2">
+        <SheetHeader className="sticky top-0 bg-background border-b border-linea px-6 py-5 z-10">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-azul-claro mb-2">
             Acreditación
           </p>
-          <SheetTitle className="font-display uppercase text-2xl md:text-3xl font-black tracking-tight leading-[0.95] text-foreground text-left">
+          <SheetTitle className="font-display uppercase text-2xl md:text-3xl font-black tracking-[0.01em] leading-[0.95] text-texto text-left">
             {accreditation.event_name}
           </SheetTitle>
           <SheetDescription className="sr-only">
@@ -155,13 +155,13 @@ export function AccreditationDetailSheet({ accreditation, open, onOpenChange }: 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 text-xs text-muted-foreground">
             {accreditation.venue_name && (
               <span className="flex items-center gap-1.5">
-                <MapPin className="h-3 w-3" />
+                <MapPin className="h-3 w-3 text-periwinkle" />
                 {accreditation.venue_name}
               </span>
             )}
             {accreditation.event_date && (
               <span className="flex items-center gap-1.5">
-                <Calendar className="h-3 w-3" />
+                <Calendar className="h-3 w-3 text-periwinkle" />
                 {new Date(accreditation.event_date + 'T12:00:00').toLocaleDateString('es', {
                   day: '2-digit',
                   month: 'short',
@@ -171,7 +171,7 @@ export function AccreditationDetailSheet({ accreditation, open, onOpenChange }: 
             )}
             {teamCount > 0 && (
               <span className="flex items-center gap-1.5">
-                <User className="h-3 w-3" />
+                <User className="h-3 w-3 text-periwinkle" />
                 {confirmedCount}/{teamCount} confirmados
               </span>
             )}
@@ -312,7 +312,7 @@ export function AccreditationDetailSheet({ accreditation, open, onOpenChange }: 
                 {accreditation.event_team_assignments!.map((t) => (
                   <li
                     key={t.id}
-                    className="flex items-center justify-between rounded-md border border-border/60 px-3 py-2"
+                    className="flex items-center justify-between rounded-[12px] border border-linea bg-superficie-2/40 px-3 py-2"
                   >
                     <span className="font-medium">
                       {[t.profiles?.first_name, t.profiles?.last_name]
@@ -324,7 +324,7 @@ export function AccreditationDetailSheet({ accreditation, open, onOpenChange }: 
                     <span
                       className={
                         t.confirmed
-                          ? 'text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-500'
+                          ? 'text-[10px] font-bold uppercase tracking-[0.15em] text-verde'
                           : 'text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground'
                       }
                     >
@@ -338,7 +338,7 @@ export function AccreditationDetailSheet({ accreditation, open, onOpenChange }: 
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 bg-background border-t border-border px-6 py-4 flex items-center justify-between gap-3">
+        <div className="sticky bottom-0 bg-background border-t border-linea px-6 py-4 flex items-center justify-between gap-3">
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
@@ -370,10 +370,20 @@ export function AccreditationDetailSheet({ accreditation, open, onOpenChange }: 
           </AlertDialog>
 
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+              onClick={() => onOpenChange(false)}
+            >
               Cancelar
             </Button>
-            <Button size="sm" onClick={handleSave} disabled={updateAccreditation.isPending}>
+            <Button
+              size="sm"
+              className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+              onClick={handleSave}
+              disabled={updateAccreditation.isPending}
+            >
               {updateAccreditation.isPending ? 'Guardando...' : 'Guardar cambios'}
             </Button>
           </div>
@@ -386,7 +396,7 @@ export function AccreditationDetailSheet({ accreditation, open, onOpenChange }: 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="space-y-3">
-      <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+      <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-azul-claro">
         {title}
       </h3>
       <div className="space-y-3">{children}</div>

@@ -18,21 +18,21 @@ const MONTHS = [
 ];
 
 const STATUS_DOT: Record<AccreditationStatus, string> = {
-  draft: 'bg-gray-400',
-  pending: 'bg-yellow-400',
-  submitted: 'bg-blue-400',
-  approved: 'bg-green-400',
-  rejected: 'bg-red-400',
-  expired: 'bg-gray-500',
+  draft: 'bg-texto-2',
+  pending: 'bg-amber-400',
+  submitted: 'bg-periwinkle',
+  approved: 'bg-verde',
+  rejected: 'bg-destructive',
+  expired: 'bg-texto-2/60',
 };
 
 const STATUS_COLORS: Record<AccreditationStatus, string> = {
-  draft: 'bg-gray-500/20 text-gray-400',
-  pending: 'bg-yellow-500/20 text-yellow-400',
-  submitted: 'bg-blue-500/20 text-blue-400',
-  approved: 'bg-green-500/20 text-green-400',
-  rejected: 'bg-red-500/20 text-red-400',
-  expired: 'bg-gray-500/20 text-gray-500',
+  draft: 'border-linea bg-superficie-2 text-texto-2',
+  pending: 'border-amber-500/30 bg-amber-500/10 text-amber-400',
+  submitted: 'border-periwinkle/30 bg-periwinkle/10 text-periwinkle',
+  approved: 'border-verde/30 bg-verde/10 text-verde',
+  rejected: 'border-destructive/30 bg-destructive/10 text-destructive',
+  expired: 'border-linea bg-superficie-2 text-texto-2/70',
 };
 
 interface DayEntry {
@@ -103,30 +103,32 @@ export const AccreditationsCalendar = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Calendario</h2>
-          <p className="text-muted-foreground">Deadlines y eventos del mes</p>
+          <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">
+            Calendario
+          </h2>
+          <p className="text-texto-2">Deadlines y eventos del mes</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Calendar grid */}
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="rounded-[20px] border-linea bg-superficie">
             <CardContent className="pt-5">
               {/* Month navigation */}
               <div className="flex items-center justify-between mb-5">
-                <Button variant="ghost" size="icon" onClick={prevMonth}>
+                <Button variant="ghost" size="icon" className="text-texto-2 hover:text-periwinkle" onClick={prevMonth}>
                   <ChevronLeft className="h-5 w-5" />
                 </Button>
                 <div className="flex items-center gap-3">
-                  <h3 className="text-lg font-semibold">
+                  <h3 className="font-display uppercase tracking-[0.01em] text-2xl font-extrabold text-texto">
                     {MONTHS[month]} {year}
                   </h3>
-                  <Button variant="outline" size="sm" className="text-xs h-7" onClick={goToday}>
+                  <Button variant="outline" size="sm" className="text-xs h-7 rounded-full border-linea bg-transparent hover:bg-superficie-2" onClick={goToday}>
                     Hoy
                   </Button>
                 </div>
-                <Button variant="ghost" size="icon" onClick={nextMonth}>
+                <Button variant="ghost" size="icon" className="text-texto-2 hover:text-periwinkle" onClick={nextMonth}>
                   <ChevronRight className="h-5 w-5" />
                 </Button>
               </div>
@@ -141,10 +143,10 @@ export const AccreditationsCalendar = () => {
               </div>
 
               {/* Day cells */}
-              <div className="grid grid-cols-7 border-t border-l">
+              <div className="grid grid-cols-7 border-t border-l border-linea">
                 {calendarDays.map((day, i) => {
                   if (!day) {
-                    return <div key={`empty-${i}`} className="border-r border-b bg-muted/20 min-h-[80px]" />;
+                    return <div key={`empty-${i}`} className="border-r border-b border-linea bg-superficie-2/30 min-h-[80px]" />;
                   }
 
                   const dateStr = fmt(day);
@@ -159,15 +161,15 @@ export const AccreditationsCalendar = () => {
                       key={dateStr}
                       onClick={() => setSelectedDate(isSelected ? null : dateStr)}
                       className={cn(
-                        'border-r border-b min-h-[80px] p-1.5 text-left transition-colors relative',
-                        isSelected && 'bg-primary/10 ring-1 ring-primary/30',
-                        !isSelected && 'hover:bg-muted/50',
+                        'border-r border-b border-linea min-h-[80px] p-1.5 text-left transition-colors relative',
+                        isSelected && 'bg-periwinkle/10 ring-1 ring-periwinkle/30',
+                        !isSelected && 'hover:bg-superficie-2/50',
                       )}
                     >
                       <span
                         className={cn(
                           'inline-flex items-center justify-center text-xs w-6 h-6 rounded-full',
-                          isToday && 'bg-primary text-primary-foreground font-bold',
+                          isToday && 'ring-2 ring-periwinkle text-periwinkle font-bold',
                           !isToday && 'text-foreground',
                         )}
                       >
@@ -179,7 +181,7 @@ export const AccreditationsCalendar = () => {
                           {deadlines.slice(0, 2).map((e, j) => (
                             <div
                               key={`d-${j}`}
-                              className="flex items-center gap-1 px-1 py-0.5 rounded text-[10px] bg-yellow-500/10 text-yellow-500 truncate"
+                              className="flex items-center gap-1 px-1 py-0.5 rounded text-[10px] bg-amber-500/10 text-amber-400 truncate"
                             >
                               <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${STATUS_DOT[e.accreditation.status]}`} />
                               <span className="truncate">{e.accreditation.event_name}</span>
@@ -188,7 +190,7 @@ export const AccreditationsCalendar = () => {
                           {events.slice(0, 2).map((e, j) => (
                             <div
                               key={`e-${j}`}
-                              className="flex items-center gap-1 px-1 py-0.5 rounded text-[10px] bg-blue-500/10 text-blue-400 truncate"
+                              className="flex items-center gap-1 px-1 py-0.5 rounded text-[10px] bg-periwinkle/10 text-periwinkle truncate"
                             >
                               <CalendarIcon className="w-2.5 h-2.5 shrink-0" />
                               <span className="truncate">{e.accreditation.event_name}</span>
@@ -209,11 +211,11 @@ export const AccreditationsCalendar = () => {
               {/* Legend */}
               <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-2 rounded-sm bg-yellow-500/20 border border-yellow-500/30" />
+                  <div className="w-3 h-2 rounded-sm bg-amber-500/20 border border-amber-500/30" />
                   Deadline
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <div className="w-3 h-2 rounded-sm bg-blue-500/20 border border-blue-500/30" />
+                  <div className="w-3 h-2 rounded-sm bg-periwinkle/20 border border-periwinkle/30" />
                   Evento
                 </div>
                 {Object.entries(STATUS_DOT).map(([status, color]) => (
@@ -229,7 +231,7 @@ export const AccreditationsCalendar = () => {
 
         {/* Day detail sidebar */}
         <div className="lg:col-span-1">
-          <Card className="sticky top-20">
+          <Card className="sticky top-20 rounded-[20px] border-linea bg-superficie">
             <CardContent className="pt-5">
               {selectedDate ? (
                 <>
@@ -249,7 +251,7 @@ export const AccreditationsCalendar = () => {
                       {selectedEntries.map((entry, i) => (
                         <div
                           key={i}
-                          className="p-3 rounded-lg border space-y-2"
+                          className="p-3 rounded-[12px] border border-linea bg-superficie-2/40 space-y-2"
                         >
                           <div className="flex items-start justify-between gap-2">
                             <div>
@@ -262,20 +264,20 @@ export const AccreditationsCalendar = () => {
                                 </p>
                               )}
                             </div>
-                            <Badge className={`text-[10px] shrink-0 ${STATUS_COLORS[entry.accreditation.status]}`}>
+                            <Badge variant="outline" className={`text-[10px] shrink-0 ${STATUS_COLORS[entry.accreditation.status]}`}>
                               {ACCREDITATION_STATUS_LABELS[entry.accreditation.status]}
                             </Badge>
                           </div>
                           <Badge
                             variant="outline"
-                            className={`text-[10px] ${entry.type === 'deadline' ? 'border-yellow-500/30 text-yellow-500' : 'border-blue-500/30 text-blue-400'}`}
+                            className={`text-[10px] ${entry.type === 'deadline' ? 'border-amber-500/30 bg-amber-500/10 text-amber-400' : 'border-periwinkle/30 bg-periwinkle/10 text-periwinkle'}`}
                           >
                             {entry.type === 'deadline' ? 'Deadline' : 'Evento'}
                           </Badge>
                           {(entry.accreditation.event_team_assignments?.length ?? 0) > 0 && (
                             <div className="flex flex-wrap gap-1">
                               {entry.accreditation.event_team_assignments!.map((t) => (
-                                <Badge key={t.id} variant="secondary" className="text-[10px]">
+                                <Badge key={t.id} variant="outline" className="text-[10px] border-linea bg-superficie-2 text-texto-2">
                                   {t.profiles?.first_name || t.profiles?.username || '?'}
                                 </Badge>
                               ))}

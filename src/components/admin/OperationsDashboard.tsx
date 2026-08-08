@@ -15,10 +15,6 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { useAccreditations } from '@/hooks/queries/useAccreditations';
-import {
-  ACCREDITATION_STATUS_LABELS,
-  type AccreditationWithTeam,
-} from '@/types/entities';
 
 interface OperationsDashboardProps {
   onNavigate: (tab: string) => void;
@@ -31,11 +27,11 @@ const daysBetween = (a: string, b: Date) => {
 
 const statusIcon = (status: string) => {
   switch (status) {
-    case 'approved': return <CheckCircle2 className="h-4 w-4 text-green-500" />;
-    case 'rejected': return <XCircle className="h-4 w-4 text-red-500" />;
-    case 'submitted': return <Send className="h-4 w-4 text-blue-500" />;
-    case 'expired': return <XCircle className="h-4 w-4 text-muted-foreground" />;
-    default: return <Clock className="h-4 w-4 text-yellow-500" />;
+    case 'approved': return <CheckCircle2 className="h-4 w-4 text-verde" />;
+    case 'rejected': return <XCircle className="h-4 w-4 text-destructive" />;
+    case 'submitted': return <Send className="h-4 w-4 text-periwinkle" />;
+    case 'expired': return <XCircle className="h-4 w-4 text-texto-2" />;
+    default: return <Clock className="h-4 w-4 text-amber-400" />;
   }
 };
 
@@ -43,9 +39,9 @@ const deadlineBadge = (deadline: string) => {
   const days = daysBetween(deadline, new Date());
   if (days < 0) return <Badge variant="destructive">Vencida</Badge>;
   if (days === 0) return <Badge variant="destructive">Hoy</Badge>;
-  if (days <= 3) return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">En {days} días</Badge>;
-  if (days <= 7) return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">En {days} días</Badge>;
-  return <Badge variant="secondary">En {days} días</Badge>;
+  if (days <= 3) return <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-400">En {days} días</Badge>;
+  if (days <= 7) return <Badge variant="outline" className="border-periwinkle/30 bg-periwinkle/10 text-periwinkle">En {days} días</Badge>;
+  return <Badge variant="outline" className="border-linea bg-superficie-2 text-texto-2">En {days} días</Badge>;
 };
 
 export const OperationsDashboard = ({ onNavigate }: OperationsDashboardProps) => {
@@ -85,8 +81,10 @@ export const OperationsDashboard = ({ onNavigate }: OperationsDashboardProps) =>
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Operaciones</h2>
-        <p className="text-muted-foreground">
+        <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">
+          Operaciones
+        </h2>
+        <p className="text-texto-2">
           Gestión de acreditaciones y equipo
         </p>
       </div>
@@ -117,39 +115,39 @@ export const OperationsDashboard = ({ onNavigate }: OperationsDashboardProps) =>
           title="Pendientes"
           value={stats.pending.length}
           icon={FileText}
-          color="text-yellow-500"
+          valueClass="text-amber-400"
         />
         <StatCard
           title="Enviadas"
           value={stats.submitted.length}
           icon={Send}
-          color="text-blue-500"
+          valueClass="text-texto"
         />
         <StatCard
           title="Aprobadas"
           value={stats.approved.length}
           icon={CheckCircle2}
-          color="text-green-500"
+          valueClass="text-verde"
         />
         <StatCard
           title="Próximos eventos"
           value={stats.upcoming.length}
           icon={Calendar}
-          color="text-purple-500"
+          valueClass="text-texto"
         />
       </div>
 
       {/* Two columns: pending deadlines + upcoming events */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Deadlines próximos */}
-        <Card>
+        <Card className="rounded-[20px] border-linea bg-superficie">
           <CardHeader className="pb-3 flex flex-row items-center justify-between">
             <CardTitle className="text-base">Próximos deadlines</CardTitle>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onNavigate('accreditations')}
-              className="text-xs"
+              className="text-xs text-texto-2 hover:text-periwinkle"
             >
               Ver todas
               <ArrowRight className="h-3 w-3 ml-1" />
@@ -165,7 +163,7 @@ export const OperationsDashboard = ({ onNavigate }: OperationsDashboardProps) =>
                 {stats.pending.slice(0, 5).map((a) => (
                   <div
                     key={a.id}
-                    className="flex items-center justify-between gap-3 py-2 border-b last:border-0"
+                    className="flex items-center justify-between gap-3 py-2 border-b border-linea last:border-0"
                   >
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium truncate">{a.event_name}</p>
@@ -186,7 +184,7 @@ export const OperationsDashboard = ({ onNavigate }: OperationsDashboardProps) =>
         </Card>
 
         {/* Próximos eventos con equipo */}
-        <Card>
+        <Card className="rounded-[20px] border-linea bg-superficie">
           <CardHeader className="pb-3">
             <CardTitle className="text-base">Eventos confirmados esta quincena</CardTitle>
           </CardHeader>
@@ -198,7 +196,7 @@ export const OperationsDashboard = ({ onNavigate }: OperationsDashboardProps) =>
             ) : (
               <div className="space-y-3">
                 {stats.upcoming.map((a) => (
-                  <div key={a.id} className="py-2 border-b last:border-0">
+                  <div key={a.id} className="py-2 border-b border-linea last:border-0">
                     <div className="flex items-center justify-between gap-3">
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium truncate">{a.event_name}</p>
@@ -211,8 +209,8 @@ export const OperationsDashboard = ({ onNavigate }: OperationsDashboardProps) =>
                           {a.venue_name && ` · ${a.venue_name}`}
                         </p>
                       </div>
-                      <Badge variant="outline" className="shrink-0">
-                        <Users className="h-3 w-3 mr-1" />
+                      <Badge variant="outline" className="shrink-0 border-linea text-texto-2">
+                        <Users className="h-3 w-3 mr-1 text-periwinkle" />
                         {a.event_team_assignments?.length ?? 0}
                       </Badge>
                     </div>
@@ -221,8 +219,12 @@ export const OperationsDashboard = ({ onNavigate }: OperationsDashboardProps) =>
                         {a.event_team_assignments!.map((t) => (
                           <Badge
                             key={t.id}
-                            variant={t.confirmed ? 'default' : 'secondary'}
-                            className="text-xs"
+                            variant="outline"
+                            className={`text-xs ${
+                              t.confirmed
+                                ? 'border-verde/30 bg-verde/10 text-verde'
+                                : 'border-linea bg-superficie-2 text-texto-2'
+                            }`}
                           >
                             {t.profiles?.first_name || t.profiles?.username || 'Sin nombre'}
                             {!t.confirmed && ' ?'}
@@ -245,24 +247,22 @@ function StatCard({
   title,
   value,
   icon: Icon,
-  color,
+  valueClass,
 }: {
   title: string;
   value: number;
   icon: React.ComponentType<{ className?: string }>;
-  color: string;
+  valueClass: string;
 }) {
   return (
-    <Card>
-      <CardContent className="pt-5 pb-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-2xl font-bold">{value}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{title}</p>
-          </div>
-          <Icon className={`h-8 w-8 ${color} opacity-60`} />
+    <div className="rounded-[20px] border border-linea bg-superficie p-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className={`font-display text-3xl font-extrabold ${valueClass}`}>{value}</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-texto-2 mt-0.5">{title}</p>
         </div>
-      </CardContent>
-    </Card>
+        <Icon className="h-7 w-7 text-periwinkle/70" />
+      </div>
+    </div>
   );
 }

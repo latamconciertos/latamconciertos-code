@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -64,12 +64,12 @@ import {
 } from '@/types/entities';
 
 const STATUS_COLORS: Record<AccreditationStatus, string> = {
-  draft: 'bg-gray-500/20 text-gray-400',
-  pending: 'bg-yellow-500/20 text-yellow-400',
-  submitted: 'bg-blue-500/20 text-blue-400',
-  approved: 'bg-green-500/20 text-green-400',
-  rejected: 'bg-red-500/20 text-red-400',
-  expired: 'bg-gray-500/20 text-gray-500',
+  draft: 'border-linea bg-superficie-2 text-texto-2',
+  pending: 'border-amber-500/30 bg-amber-500/10 text-amber-400',
+  submitted: 'border-periwinkle/30 bg-periwinkle/10 text-periwinkle',
+  approved: 'border-verde/30 bg-verde/10 text-verde',
+  rejected: 'border-destructive/30 bg-destructive/10 text-destructive',
+  expired: 'border-linea bg-superficie-2 text-texto-2/70',
 };
 
 const emptyForm: AccreditationInsert = {
@@ -267,12 +267,18 @@ export const AccreditationsAdmin = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Acreditaciones</h2>
-          <p className="text-muted-foreground">
+          <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">
+            Acreditaciones
+          </h2>
+          <p className="text-texto-2">
             Gestiona propuestas y asigna equipo a eventos
           </p>
         </div>
-        <Button onClick={openCreate} size="lg">
+        <Button
+          onClick={openCreate}
+          size="lg"
+          className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Nueva acreditación
         </Button>
@@ -360,16 +366,16 @@ export const AccreditationsAdmin = () => {
       {isLoading ? (
         <div className="text-center py-10 text-muted-foreground">Cargando...</div>
       ) : filtered.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
+        <Card className="rounded-[20px] border-linea bg-superficie">
+          <CardContent className="py-12 text-center text-texto-2">
             No hay acreditaciones
             {filterStatus !== 'all' && ' con ese estado'}
             {searchTerm && ' para esa búsqueda'}
           </CardContent>
         </Card>
       ) : (
-        <div className="border rounded-lg overflow-hidden bg-card">
-          <div className="grid grid-cols-12 gap-3 p-3 bg-muted/50 font-semibold text-xs uppercase tracking-wider text-muted-foreground">
+        <div className="rounded-[20px] border border-linea overflow-hidden bg-superficie">
+          <div className="grid grid-cols-12 gap-3 p-3 bg-superficie-2/60 font-semibold text-xs uppercase tracking-wider text-muted-foreground">
             <div className="col-span-3">Evento</div>
             <div className="col-span-2">Fecha evento</div>
             <div className="col-span-2">Deadline</div>
@@ -377,7 +383,7 @@ export const AccreditationsAdmin = () => {
             <div className="col-span-2">Equipo</div>
             <div className="col-span-2 text-right">Acciones</div>
           </div>
-          <div className="divide-y">
+          <div className="divide-y divide-linea">
             {filtered.map((a) => {
               const days = daysBetween(a.deadline);
               const isUrgent =
@@ -390,10 +396,10 @@ export const AccreditationsAdmin = () => {
                   key={a.id}
                   className={`grid grid-cols-12 gap-3 p-3 items-center transition-colors ${
                     isOverdue
-                      ? 'bg-red-500/5'
+                      ? 'bg-destructive/5'
                       : isUrgent
-                        ? 'bg-yellow-500/5'
-                        : 'hover:bg-muted/50'
+                        ? 'bg-amber-500/5'
+                        : 'hover:bg-superficie-2/50'
                   }`}
                 >
                   <div className="col-span-3">
@@ -411,7 +417,7 @@ export const AccreditationsAdmin = () => {
                           month: 'short',
                           year: 'numeric',
                         })
-                      : '—'}
+                      : 'Sin fecha'}
                   </div>
                   <div className="col-span-2">
                     <p className="text-sm">
@@ -421,16 +427,16 @@ export const AccreditationsAdmin = () => {
                       })}
                     </p>
                     {isOverdue && (
-                      <p className="text-xs text-red-500 font-medium">Vencida</p>
+                      <p className="text-xs text-destructive font-medium">Vencida</p>
                     )}
                     {isUrgent && (
-                      <p className="text-xs text-yellow-500 font-medium">
+                      <p className="text-xs text-amber-400 font-medium">
                         {days === 0 ? 'Hoy' : `En ${days} días`}
                       </p>
                     )}
                   </div>
                   <div className="col-span-1">
-                    <Badge className={STATUS_COLORS[a.status]}>
+                    <Badge variant="outline" className={STATUS_COLORS[a.status]}>
                       {ACCREDITATION_STATUS_LABELS[a.status]}
                     </Badge>
                   </div>
@@ -439,8 +445,12 @@ export const AccreditationsAdmin = () => {
                       {(a.event_team_assignments ?? []).map((t) => (
                         <Badge
                           key={t.id}
-                          variant={t.confirmed ? 'default' : 'outline'}
-                          className="text-xs"
+                          variant="outline"
+                          className={`text-xs ${
+                            t.confirmed
+                              ? 'border-verde/30 bg-verde/10 text-verde'
+                              : 'border-linea bg-superficie-2 text-texto-2'
+                          }`}
                         >
                           {t.profiles?.first_name || t.profiles?.username || '?'}
                         </Badge>
@@ -458,7 +468,7 @@ export const AccreditationsAdmin = () => {
                         onClick={() => window.open((a as any).proposal_url, '_blank')}
                         title="Ver propuesta"
                       >
-                        <ExternalLink className="h-4 w-4 text-blue-400" />
+                        <ExternalLink className="h-4 w-4 text-periwinkle" />
                       </Button>
                     )}
                     <Button
@@ -483,7 +493,7 @@ export const AccreditationsAdmin = () => {
                       onClick={() => setDeleteTarget(a)}
                       title="Eliminar"
                     >
-                      <Trash2 className="h-4 w-4 text-red-500" />
+                      <Trash2 className="h-4 w-4 text-destructive" />
                     </Button>
                   </div>
                 </div>
@@ -520,10 +530,11 @@ export const AccreditationsAdmin = () => {
                     const dateStr = e.date
                       ? e.date.split('-').reverse().join('/')
                       : 'Sin fecha';
-                    const typeLabel = e.type === 'festival' ? '🎪' : '🎵';
+                    const typeLabel = e.type === 'festival' ? 'Festival' : 'Concierto';
                     return (
                       <SelectItem key={`${e.type}-${e.id}`} value={e.id}>
-                        {typeLabel} {e.title} — {dateStr}
+                        <span className="text-texto-2">{typeLabel} · </span>
+                        {e.title} · {dateStr}
                       </SelectItem>
                     );
                   })}
@@ -533,7 +544,7 @@ export const AccreditationsAdmin = () => {
 
             {/* Auto-filled or manual fields */}
             {!isManualEvent && selectedConcertId ? (
-              <div className="rounded-lg bg-muted/50 p-3 space-y-1">
+              <div className="rounded-[12px] border border-linea bg-superficie-2/60 p-3 space-y-1">
                 <p className="text-sm font-medium">{formData.event_name}</p>
                 {formData.event_date && (
                   <p className="text-xs text-muted-foreground">
@@ -617,7 +628,7 @@ export const AccreditationsAdmin = () => {
                 </Select>
               </div>
             </div>
-            <div className="border-t pt-4">
+            <div className="border-t border-linea pt-4">
               <p className="text-sm font-medium mb-3">Contacto del evento</p>
               <div>
                 <Label>Contacto</Label>
@@ -661,7 +672,7 @@ export const AccreditationsAdmin = () => {
                       <SelectItem key={c.id} value={c.id}>
                         {c.name}
                         {c.promoters?.name ? ` · ${c.promoters.name}` : ''}
-                        {c.role ? ` — ${c.role}` : ''}
+                        {c.role ? ` · ${c.role}` : ''}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -669,7 +680,7 @@ export const AccreditationsAdmin = () => {
               </div>
 
               {formData.contact_name && (
-                <div className="mt-3 rounded-lg bg-muted/50 p-3 space-y-1">
+                <div className="mt-3 rounded-[12px] border border-linea bg-superficie-2/60 p-3 space-y-1">
                   <p className="text-sm font-medium">{formData.contact_name}</p>
                   {formData.contact_email && (
                     <p className="text-xs text-muted-foreground">{formData.contact_email}</p>
@@ -705,12 +716,16 @@ export const AccreditationsAdmin = () => {
               />
             </div>
             <div className="flex gap-2 pt-2">
-              <Button type="submit" className="flex-1">
+              <Button
+                type="submit"
+                className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+              >
                 {editingId ? 'Guardar cambios' : 'Crear acreditación'}
               </Button>
               <Button
                 type="button"
                 variant="outline"
+                className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                 onClick={() => setFormOpen(false)}
               >
                 Cancelar
@@ -728,7 +743,7 @@ export const AccreditationsAdmin = () => {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
-              Equipo — {teamDialogAccreditation?.event_name}
+              Equipo · {teamDialogAccreditation?.event_name}
             </DialogTitle>
           </DialogHeader>
 
@@ -742,7 +757,7 @@ export const AccreditationsAdmin = () => {
               teamDialogAccreditation!.event_team_assignments!.map((t) => (
                 <div
                   key={t.id}
-                  className="flex items-center justify-between gap-2 py-2 border-b"
+                  className="flex items-center justify-between gap-2 py-2 border-b border-linea"
                 >
                   <div className="flex items-center gap-2">
                     <button
@@ -756,7 +771,7 @@ export const AccreditationsAdmin = () => {
                       title={t.confirmed ? 'Confirmado' : 'Sin confirmar'}
                     >
                       {t.confirmed ? (
-                        <CheckCircle2 className="h-4 w-4 text-green-500" />
+                        <CheckCircle2 className="h-4 w-4 text-verde" />
                       ) : (
                         <Circle className="h-4 w-4 text-muted-foreground" />
                       )}
@@ -785,7 +800,7 @@ export const AccreditationsAdmin = () => {
           </div>
 
           {/* Add member */}
-          <div className="border-t pt-4 space-y-3">
+          <div className="border-t border-linea pt-4 space-y-3">
             <p className="text-sm font-medium">Agregar miembro</p>
             <div className="grid grid-cols-2 gap-2">
               <Select value={newMemberUserId} onValueChange={setNewMemberUserId}>
@@ -821,7 +836,7 @@ export const AccreditationsAdmin = () => {
             <Button
               onClick={handleAddMember}
               disabled={!newMemberUserId}
-              className="w-full"
+              className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
               size="sm"
             >
               <UserPlus className="h-4 w-4 mr-2" />
@@ -879,8 +894,8 @@ function FilterSelect({
       <SelectTrigger
         className={`h-8 text-xs gap-1.5 border-dashed rounded-full px-3 ${
           isActive
-            ? 'border-primary bg-primary/10 text-primary'
-            : 'text-muted-foreground'
+            ? 'border-periwinkle bg-periwinkle/10 text-periwinkle'
+            : 'border-linea text-muted-foreground hover:bg-superficie-2'
         }`}
         style={{ width: 'auto', minWidth: 0 }}
       >

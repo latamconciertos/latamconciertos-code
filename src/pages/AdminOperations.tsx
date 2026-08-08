@@ -50,8 +50,8 @@ const AdminOperations = () => {
 
   if (!isReady) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div>Cargando...</div>
+      <div className="min-h-screen flex items-center justify-center bg-noche font-fira">
+        <div className="text-texto-2">Cargando...</div>
       </div>
     );
   }
@@ -83,9 +83,9 @@ const AdminOperations = () => {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex flex-col w-full bg-background">
+      <div className="min-h-screen flex flex-col w-full bg-noche font-fira text-texto">
         {/* Full-width topbar — spans the entire viewport */}
-        <header className="h-[52px] border-b border-border/50 bg-background sticky top-0 z-20">
+        <header className="h-[52px] border-b border-linea bg-noche/90 backdrop-blur sticky top-0 z-20">
           <div className="h-full px-5 flex items-center gap-4">
             <Link
               to="/admin"
@@ -93,12 +93,12 @@ const AdminOperations = () => {
               aria-label="Ir al portal de administración"
             >
               <img src={adminLogo} alt="" className="h-7 w-7 object-contain" />
-              <span className="hidden sm:inline font-display text-lg font-black text-primary leading-none tracking-tight">
+              <span className="hidden sm:inline font-display text-2xl font-black text-periwinkle leading-none tracking-[0.01em]">
                 ADMIN
               </span>
             </Link>
 
-            <span className="hidden md:block h-5 w-px bg-border" aria-hidden="true" />
+            <span className="hidden md:block h-5 w-px bg-linea" aria-hidden="true" />
 
             <SidebarTrigger className="text-muted-foreground hover:text-foreground" />
 

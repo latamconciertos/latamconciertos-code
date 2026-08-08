@@ -37,7 +37,6 @@ import {
   Mail,
   MessageCircle,
   Building2,
-  User,
   Copy,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -148,12 +147,18 @@ export const ContactsAdmin = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Agenda de Contactos</h2>
-          <p className="text-muted-foreground">
+          <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">
+            Agenda de Contactos
+          </h2>
+          <p className="text-texto-2">
             Directorio de contactos de la industria
           </p>
         </div>
-        <Button onClick={openCreate} size="lg">
+        <Button
+          onClick={openCreate}
+          size="lg"
+          className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Nuevo contacto
         </Button>
@@ -188,15 +193,15 @@ export const ContactsAdmin = () => {
       {isLoading ? (
         <div className="text-center py-10 text-muted-foreground">Cargando...</div>
       ) : filtered.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
+        <Card className="rounded-[20px] border-linea bg-superficie">
+          <CardContent className="py-12 text-center text-texto-2">
             No hay contactos{searchTerm && ' para esa búsqueda'}
           </CardContent>
         </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((c) => (
-            <Card key={c.id} className="hover:border-primary/30 transition-colors">
+            <Card key={c.id} className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-colors">
               <CardContent className="pt-5 pb-4">
                 <div className="flex items-start justify-between mb-3">
                   <div className="min-w-0 flex-1">
@@ -206,11 +211,11 @@ export const ContactsAdmin = () => {
                     )}
                   </div>
                   <div className="flex gap-1 shrink-0 ml-2">
-                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => openEdit(c)}>
+                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-texto-2 hover:text-periwinkle" onClick={() => openEdit(c)}>
                       <Edit className="h-3.5 w-3.5" />
                     </Button>
                     <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => setDeleteTarget(c)}>
-                      <Trash2 className="h-3.5 w-3.5 text-red-500" />
+                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
                     </Button>
                   </div>
                 </div>
@@ -218,7 +223,7 @@ export const ContactsAdmin = () => {
                 {/* Promoter / Company */}
                 {(c.promoters?.name || c.company) && (
                   <div className="flex items-center gap-1.5 mb-3">
-                    <Building2 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                    <Building2 className="h-3.5 w-3.5 text-periwinkle shrink-0" />
                     <span className="text-sm truncate">
                       {c.promoters?.name || c.company}
                     </span>
@@ -235,7 +240,7 @@ export const ContactsAdmin = () => {
                       onClick={() => copyToClipboard(c.email!, 'Email')}
                       className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground w-full group"
                     >
-                      <Mail className="h-3.5 w-3.5 shrink-0" />
+                      <Mail className="h-3.5 w-3.5 shrink-0 text-periwinkle" />
                       <span className="truncate">{c.email}</span>
                       <Copy className="h-3 w-3 opacity-0 group-hover:opacity-100 shrink-0" />
                     </button>
@@ -245,7 +250,7 @@ export const ContactsAdmin = () => {
                       onClick={() => copyToClipboard(c.phone!, 'Teléfono')}
                       className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground w-full group"
                     >
-                      <Phone className="h-3.5 w-3.5 shrink-0" />
+                      <Phone className="h-3.5 w-3.5 shrink-0 text-periwinkle" />
                       <span>{c.phone}</span>
                       <Copy className="h-3 w-3 opacity-0 group-hover:opacity-100 shrink-0" />
                     </button>
@@ -255,7 +260,7 @@ export const ContactsAdmin = () => {
                       href={`https://wa.me/${c.whatsapp.replace(/\D/g, '')}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-sm text-green-500 hover:text-green-400"
+                      className="flex items-center gap-2 text-sm text-verde hover:text-verde/80"
                     >
                       <MessageCircle className="h-3.5 w-3.5 shrink-0" />
                       <span>WhatsApp</span>
@@ -264,7 +269,7 @@ export const ContactsAdmin = () => {
                 </div>
 
                 {c.notes && (
-                  <p className="text-xs text-muted-foreground mt-3 line-clamp-2 border-t pt-2">
+                  <p className="text-xs text-muted-foreground mt-3 line-clamp-2 border-t border-linea pt-2">
                     {c.notes}
                   </p>
                 )}
@@ -366,10 +371,18 @@ export const ContactsAdmin = () => {
               />
             </div>
             <div className="flex gap-2 pt-2">
-              <Button type="submit" className="flex-1">
+              <Button
+                type="submit"
+                className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+              >
                 {editingId ? 'Guardar' : 'Crear contacto'}
               </Button>
-              <Button type="button" variant="outline" onClick={() => setFormOpen(false)}>
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                onClick={() => setFormOpen(false)}
+              >
                 Cancelar
               </Button>
             </div>

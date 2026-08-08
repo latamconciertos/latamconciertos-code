@@ -64,7 +64,7 @@ export function OperationsSidebar({ activeTab, onTabChange }: OperationsSidebarP
     <Sidebar
       className={cn(
         isCollapsed ? 'w-[60px]' : 'w-72',
-        'bg-sidebar text-sidebar-foreground border-r border-sidebar-border'
+        'bg-sidebar text-sidebar-foreground border-r border-linea'
       )}
       collapsible="icon"
     >
@@ -89,7 +89,7 @@ export function OperationsSidebar({ activeTab, onTabChange }: OperationsSidebarP
                     <span
                       className={cn(
                         'font-display font-black text-2xl leading-none w-9 shrink-0 transition-colors',
-                        hasActiveItem ? 'text-primary' : 'text-sidebar-foreground/25'
+                        hasActiveItem ? 'text-azul-claro' : 'text-sidebar-foreground/25'
                       )}
                     >
                       {sectionNumber}
@@ -106,7 +106,7 @@ export function OperationsSidebar({ activeTab, onTabChange }: OperationsSidebarP
                   {!isCollapsed && (
                     <span
                       aria-hidden="true"
-                      className="absolute left-9 top-1 bottom-2 w-px bg-sidebar-border"
+                      className="absolute left-9 top-1 bottom-2 w-px bg-linea"
                     />
                   )}
                   {group.items.map((item) => {
@@ -118,9 +118,9 @@ export function OperationsSidebar({ activeTab, onTabChange }: OperationsSidebarP
                           isActive={isActive}
                           className={cn(
                             'group/item relative h-9 pl-3 pr-2.5 rounded-md transition-colors',
-                            'text-sidebar-foreground/55 hover:text-sidebar-foreground hover:bg-sidebar-accent/50',
-                            'data-[active=true]:text-sidebar-foreground data-[active=true]:bg-sidebar-accent',
-                            'before:absolute before:-left-[1px] before:top-1.5 before:bottom-1.5 before:w-px before:bg-primary before:opacity-0',
+                            'text-sidebar-foreground/55 hover:text-sidebar-foreground hover:bg-superficie-2/50',
+                            'data-[active=true]:text-periwinkle data-[active=true]:bg-superficie-2',
+                            'before:absolute before:-left-[1px] before:top-1.5 before:bottom-1.5 before:w-px before:bg-verde before:opacity-0',
                             'data-[active=true]:before:opacity-100 data-[active=true]:before:w-[2px]'
                           )}
                         >
@@ -128,12 +128,12 @@ export function OperationsSidebar({ activeTab, onTabChange }: OperationsSidebarP
                             className={cn(
                               'h-3.5 w-3.5 shrink-0 transition-colors',
                               isActive
-                                ? 'text-primary'
-                                : 'text-sidebar-foreground/40 group-hover/item:text-sidebar-foreground/70'
+                                ? 'text-periwinkle'
+                                : 'text-sidebar-foreground/50 group-hover/item:text-sidebar-foreground/80'
                             )}
                           />
                           {!isCollapsed && (
-                            <span className="font-sans text-[13.5px] font-medium tracking-tight truncate">
+                            <span className="font-fira text-[13.5px] font-medium tracking-tight truncate">
                               {item.title}
                             </span>
                           )}
@@ -148,11 +148,11 @@ export function OperationsSidebar({ activeTab, onTabChange }: OperationsSidebarP
         })}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-sidebar-border p-3">
+      <SidebarFooter className="border-t border-linea p-3">
         <Link
           to="/admin"
           className={cn(
-            'flex items-center gap-3 group/back rounded-md py-2 transition-colors text-sidebar-foreground/55 hover:text-sidebar-foreground',
+            'flex items-center gap-3 group/back rounded-md py-2 transition-colors text-sidebar-foreground/55 hover:text-periwinkle',
             isCollapsed ? 'justify-center px-0' : 'px-2'
           )}
         >

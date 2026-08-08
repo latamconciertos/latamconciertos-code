@@ -59,17 +59,17 @@ export function CalendarSubscribeDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 gap-1.5">
-          <CalendarPlus className="h-3.5 w-3.5" />
+        <Button variant="outline" size="sm" className="h-8 gap-1.5 rounded-full border-linea bg-transparent hover:bg-superficie-2">
+          <CalendarPlus className="h-3.5 w-3.5 text-periwinkle" />
           <span className="text-[11px] font-bold uppercase tracking-[0.15em]">Suscribir</span>
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-2">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-azul-claro mb-2">
             Calendario
           </p>
-          <DialogTitle className="font-display uppercase text-2xl md:text-3xl font-black tracking-tight leading-[0.95]">
+          <DialogTitle className="font-display uppercase text-2xl md:text-3xl font-black tracking-[0.01em] leading-[0.95] text-texto">
             Suscribir al calendario
           </DialogTitle>
           <DialogDescription className="pt-2">
@@ -98,11 +98,11 @@ export function CalendarSubscribeDialog() {
                 disabled={!feed || loading}
                 aria-label="Copiar URL"
               >
-                {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                {copied ? <Check className="h-4 w-4 text-verde" /> : <Copy className="h-4 w-4" />}
               </Button>
             </div>
             <p className="text-[11px] text-muted-foreground">
-              Esta URL es privada — guardala como guardarías una contraseña.
+              Esta URL es privada: guardala como guardarías una contraseña.
             </p>
           </div>
 
@@ -112,16 +112,16 @@ export function CalendarSubscribeDialog() {
               <Button
                 variant="outline"
                 size="sm"
-                className="justify-start gap-2 h-9"
+                className="justify-start gap-2 h-9 rounded-full border-linea bg-transparent hover:bg-superficie-2"
                 onClick={() => window.open(feed.webcalUrl, '_blank')}
               >
-                <ExternalLink className="h-3.5 w-3.5" />
+                <ExternalLink className="h-3.5 w-3.5 text-periwinkle" />
                 <span className="text-xs">iOS / Apple Calendar</span>
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="justify-start gap-2 h-9"
+                className="justify-start gap-2 h-9 rounded-full border-linea bg-transparent hover:bg-superficie-2"
                 onClick={() =>
                   window.open(
                     `https://calendar.google.com/calendar/u/0/r?cid=${encodeURIComponent(feed.url)}`,
@@ -136,7 +136,7 @@ export function CalendarSubscribeDialog() {
           )}
 
           {/* Instructions */}
-          <details className="group rounded-lg border border-border/60 bg-muted/30">
+          <details className="group rounded-[12px] border border-linea bg-superficie-2/40">
             <summary className="cursor-pointer px-4 py-3 text-xs font-semibold flex items-center justify-between">
               <span>Instrucciones manuales por plataforma</span>
               <span className="text-muted-foreground group-open:rotate-180 transition-transform">▾</span>
@@ -147,7 +147,7 @@ export function CalendarSubscribeDialog() {
                   iPhone / iPad
                 </p>
                 <ol className="list-decimal list-inside space-y-1 leading-relaxed">
-                  <li>Tocá el botón <strong>iOS / Apple Calendar</strong> arriba — Apple Calendar abrirá la URL automáticamente</li>
+                  <li>Tocá el botón <strong>iOS / Apple Calendar</strong> arriba: Apple Calendar abrirá la URL automáticamente</li>
                   <li>Confirmá <strong>"Suscribir"</strong> y elegí cada cuánto refrescar (recomendado: cada hora)</li>
                 </ol>
               </div>
@@ -156,7 +156,7 @@ export function CalendarSubscribeDialog() {
                   Android (Google Calendar)
                 </p>
                 <ol className="list-decimal list-inside space-y-1 leading-relaxed">
-                  <li>Tocá <strong>Google Calendar</strong> arriba — abrirá calendar.google.com con la URL</li>
+                  <li>Tocá <strong>Google Calendar</strong> arriba: abrirá calendar.google.com con la URL</li>
                   <li>Aceptá la suscripción. El calendario aparecerá en tu app de Google Calendar del celular</li>
                 </ol>
               </div>
@@ -172,7 +172,7 @@ export function CalendarSubscribeDialog() {
           </details>
 
           {/* Refresh note */}
-          <div className="text-[11px] text-muted-foreground bg-muted/40 rounded-md p-3 leading-relaxed">
+          <div className="text-[11px] text-muted-foreground bg-superficie-2/50 rounded-[12px] p-3 leading-relaxed">
             <strong className="text-foreground">Nota:</strong> Apple Calendar refresca cada ~hora,
             Google Calendar cada ~24 horas. Si cambiás un deadline, puede tardar un poco en reflejarse en el celular.
             Las alertas (7d, 3d, 1d antes) están incluidas en el feed y se disparan en tu celular sin internet.
