@@ -384,7 +384,7 @@ const Concerts = () => {
               <h2 className="sr-only">
                 {filterStatus === 'upcoming' ? 'Próximos conciertos' : filterStatus === 'past' ? 'Conciertos pasados' : 'Todos los conciertos'}
               </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" itemScope itemType="https://schema.org/ItemList">
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5" itemScope itemType="https://schema.org/ItemList">
                 {concerts.map((concert, index) => (
                   <article
                     key={concert.id}

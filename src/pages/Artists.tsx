@@ -238,44 +238,48 @@ const Artists = () => {
           {/* Artists Grid */}
           {artists.length > 0 ? (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-x-4 gap-y-7 sm:gap-x-5 sm:gap-y-8">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-5">
                 {artists.map((artist: any) => (
                   <Link
                     key={artist.id}
                     to={`/artists/${artist.slug}`}
-                    className="group text-left focus:outline-none flex flex-col transition-transform duration-300 hover:-translate-y-1"
+                    className="group relative block overflow-hidden rounded-[20px] border border-linea bg-superficie-2 aspect-[4/5] hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-periwinkle"
                   >
-                    <div className="aspect-square rounded-[20px] overflow-hidden bg-superficie-2 mb-3 relative ring-1 ring-linea group-hover:ring-[rgba(89,124,255,.5)] group-hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300">
-                      <img
-                        src={artist.photo_url || getDefaultImage()}
-                        alt={
-                          artist.genres && artist.genres.length > 0
-                            ? `${artist.name} — artista de ${formatGenreList(artist.genres, 2)}`
-                            : `${artist.name} — artista`
-                        }
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                      <div
-                        className="absolute inset-x-0 bottom-0 h-1/3 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        style={{ background: 'linear-gradient(180deg, transparent, rgba(7,13,31,.6))' }}
-                      />
+                    {/* Póster full-bleed: la foto ocupa toda la card, sin corte */}
+                    <img
+                      src={artist.photo_url || getDefaultImage()}
+                      alt={
+                        artist.genres && artist.genres.length > 0
+                          ? `${artist.name} — artista de ${formatGenreList(artist.genres, 2)}`
+                          : `${artist.name} — artista`
+                      }
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    {/* Overlay oscuro desde abajo para que el texto respire */}
+                    <div
+                      className="absolute inset-0"
+                      style={{ background: 'linear-gradient(180deg, transparent 45%, rgba(7,13,31,.9))' }}
+                    />
+
+                    {/* Género como eyebrow + nombre sobre la foto */}
+                    <div className="absolute inset-x-0 bottom-0 p-3 sm:p-3.5">
+                      <p className="font-fira text-[9px] sm:text-[10px] text-periwinkle font-semibold uppercase tracking-[0.14em] truncate">
+                        {artist.genres && artist.genres.length > 0
+                          ? formatGenreList(artist.genres, 2)
+                          : 'Artista'}
+                      </p>
+                      <div className="mt-1 flex items-center gap-1">
+                        <h3 className="font-fira text-sm sm:text-[15px] font-bold text-texto leading-tight truncate">
+                          {artist.name}
+                        </h3>
+                        {artist.is_verified === true && (
+                          <svg className="h-3.5 w-3.5 flex-shrink-0" viewBox="0 0 24 24" aria-label="Verificado">
+                            <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .494.083.964.237 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z" fill="hsl(var(--primary))" />
+                          </svg>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1 px-0.5">
-                      <h3 className="font-semibold text-sm md:text-[15px] text-foreground group-hover:text-periwinkle transition-colors truncate">
-                        {artist.name}
-                      </h3>
-                      {artist.is_verified === true && (
-                        <svg className="h-[15px] w-[15px] flex-shrink-0" viewBox="0 0 24 24" aria-label="Verificado">
-                          <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .494.083.964.237 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z" fill="hsl(var(--primary))" />
-                        </svg>
-                      )}
-                    </div>
-                    <p className="text-[11px] md:text-xs text-muted-foreground truncate mt-1 px-0.5 min-h-[1rem]">
-                      {artist.genres && artist.genres.length > 0
-                        ? formatGenreList(artist.genres, 2)
-                        : 'Artista'}
-                    </p>
                   </Link>
                 ))}
               </div>
