@@ -192,65 +192,65 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
             className="h-full"
         >
             <Card
-                className="overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300 cursor-pointer h-full flex flex-col"
+                className="group relative overflow-hidden rounded-[20px] border border-linea bg-superficie-2 aspect-[4/5] sm:aspect-[3/4] hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300 cursor-pointer h-full"
                 onClick={onClick}
             >
-                {/* Image Section with Date Badge */}
-                <div className="relative aspect-[16/10] overflow-hidden bg-superficie-2 flex-shrink-0">
-                    <img
-                        src={imageUrl}
-                        alt={concert.title}
-                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                        loading="lazy"
-                        decoding="async"
-                    />
-                    {/* Overlay oscuro desde abajo para que el texto respire */}
-                    <div
-                        className="absolute inset-0"
-                        style={{ background: 'linear-gradient(180deg, transparent 40%, rgba(7,13,31,.85))' }}
-                    />
+                {/* Póster full-bleed: la foto ocupa toda la card, sin corte */}
+                <img
+                    src={imageUrl}
+                    alt={concert.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                    decoding="async"
+                />
+                {/* Overlay oscuro desde abajo para que el texto respire */}
+                <div
+                    className="absolute inset-0"
+                    style={{ background: 'linear-gradient(180deg, transparent 35%, rgba(7,13,31,.92))' }}
+                />
 
-                    {/* Chip de fecha: número grande en verde, Big Shoulders */}
-                    <div className="absolute top-3 right-3 rounded-2xl border border-linea bg-noche/80 backdrop-blur-sm px-3 py-2 text-center min-w-[56px]">
-                        <div className="font-display text-2xl font-extrabold text-verde leading-none">{day}</div>
-                        <div className="font-fira text-[10px] uppercase tracking-[0.12em] text-texto-2 mt-0.5">{month}</div>
-                    </div>
+                {/* Chip de fecha: número grande en verde, Big Shoulders */}
+                <div className="absolute top-3 right-3 rounded-2xl border border-linea bg-noche/80 backdrop-blur-sm px-2.5 py-1.5 text-center min-w-[48px]">
+                    <div className="font-display text-xl font-extrabold text-verde leading-none">{day}</div>
+                    <div className="font-fira text-[9px] uppercase tracking-[0.12em] text-texto-2 mt-0.5">{month}</div>
                 </div>
 
-                {/* Content Section */}
-                <div className="p-5 space-y-2 flex-1 flex flex-col">
-                    <div className="flex items-center gap-2">
-                        <Music className="h-3.5 w-3.5 text-periwinkle" />
-                        <p className="font-fira text-xs text-periwinkle font-semibold uppercase tracking-[0.14em]">
-                            {artistName}
-                        </p>
+                {/* Texto y acciones sobre la foto */}
+                <div className="absolute inset-x-0 bottom-0 p-3.5 sm:p-4 flex items-end justify-between gap-2.5">
+                    <div className="min-w-0">
+                        <div className="flex items-center gap-1.5">
+                            <Music className="h-3 w-3 text-periwinkle flex-shrink-0" />
+                            <p className="font-fira text-[10px] sm:text-[11px] text-periwinkle font-semibold uppercase tracking-[0.14em] truncate">
+                                {artistName}
+                            </p>
+                        </div>
+
+                        <h3 className="mt-1 text-sm sm:text-base font-bold text-texto line-clamp-2 leading-tight font-fira">
+                            {/* Enlace real y crawleable al detalle; el resto de la tarjeta abre el quick view */}
+                            <Link
+                                to={`/concerts/${concert.slug || concert.id}`}
+                                className="hover:text-periwinkle transition-colors"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                {concert.title}
+                            </Link>
+                        </h3>
+
+                        <div className="mt-1 flex items-center gap-1.5 text-texto-2">
+                            <MapPin className="h-3.5 w-3.5 text-periwinkle flex-shrink-0" />
+                            <p className="text-xs sm:text-sm truncate">{location}</p>
+                        </div>
                     </div>
 
-                    <h3 className="text-xl font-bold text-texto line-clamp-2 leading-tight font-fira">
-                        {/* Enlace real y crawleable al detalle; el resto de la tarjeta abre el quick view */}
-                        <Link
-                            to={`/concerts/${concert.slug || concert.id}`}
-                            className="hover:text-periwinkle transition-colors"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {concert.title}
-                        </Link>
-                    </h3>
-
-                    <div className="flex items-center gap-2 text-texto-2">
-                        <MapPin className="h-4 w-4 text-periwinkle" />
-                        <p className="text-sm">{location}</p>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className="flex gap-3 pt-2 mt-auto">
+                    {/* Action Buttons — esquina opuesta al texto */}
+                    <div className="flex flex-col gap-1.5 shrink-0">
                         {/* Save/Bookmark Button */}
                         <Popover open={saveOpen} onOpenChange={setSaveOpen}>
                             <PopoverTrigger asChild>
                                 <Button
                                     variant={isSaved ? "default" : "outline"}
                                     size="icon"
-                                    className={`rounded-full transition-colors ${isSaved ? 'border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white' : 'border-linea bg-transparent text-texto hover:bg-superficie-2 hover:text-texto'}`}
+                                    className={`h-9 w-9 rounded-full transition-colors ${isSaved ? 'border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white' : 'border-linea bg-noche/70 backdrop-blur-sm text-texto hover:bg-superficie-2 hover:text-texto'}`}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                     }}
@@ -293,7 +293,7 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
                                 <Button
                                     variant="outline"
                                     size="icon"
-                                    className="rounded-full border-linea bg-transparent text-texto hover:bg-superficie-2 hover:text-texto transition-colors"
+                                    className="h-9 w-9 rounded-full border-linea bg-noche/70 backdrop-blur-sm text-texto hover:bg-superficie-2 hover:text-texto transition-colors"
                                     onClick={handleShare}
                                 >
                                     <Share2 className="h-4 w-4" />

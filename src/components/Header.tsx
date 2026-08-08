@@ -223,8 +223,9 @@ const Header = ({ visible = true }: HeaderProps) => {
             </NavigationMenu>
           </div>
 
-          {/* Auth Section */}
-          <div className="flex items-center space-x-2 justify-self-end">
+          {/* Auth Section — col-start-3 explícito: en móvil el nav central está
+              display:none y sin esto los iconos se auto-colocan en la columna central */}
+          <div className="col-start-3 flex items-center space-x-2 justify-self-end">
             <Button
               variant="ghost"
               size="icon"

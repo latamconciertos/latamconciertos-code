@@ -44,7 +44,7 @@ export const NewHomeUpcomingConcerts = () => {
     const [concertsWithImages, setConcertsWithImages] = useState<ConcertWithImage[]>([]);
     const [selectedConcert, setSelectedConcert] = useState<ConcertWithImage | null>(null);
 
-    const { data: concertsData, isLoading } = useUpcomingConcerts(6);
+    const { data: concertsData, isLoading } = useUpcomingConcerts(8);
     const concerts = concertsData ?? [];
 
     useEffect(() => {
@@ -122,7 +122,7 @@ export const NewHomeUpcomingConcerts = () => {
                     action={{ label: 'Ver todos los conciertos', to: '/concerts' }}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
                     {displayConcerts.map((concert) => (
                         <Dialog key={concert.id}>
                             <DialogTrigger asChild>
