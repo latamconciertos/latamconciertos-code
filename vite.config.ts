@@ -49,8 +49,8 @@ export default defineConfig(({ mode }) => ({
         name: 'Conciertos LATAM',
         short_name: 'Conciertos Latam',
         description: 'Plataforma de conciertos en América Latina',
-        theme_color: '#1e3a8a',
-        background_color: '#0f172a',
+        theme_color: '#070D1F',
+        background_color: '#070D1F',
         display: 'standalone',
         start_url: '/',
         icons: [

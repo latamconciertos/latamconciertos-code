@@ -2,13 +2,10 @@ import { useNavigate } from 'react-router-dom';
 import { useRequireAdmin } from '@/hooks/admin/useRequireAdmin';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { useTheme } from 'next-themes';
 import {
   Layers,
   ClipboardList,
   LogOut,
-  Sun,
-  Moon,
   Newspaper,
   Calendar,
   Music,
@@ -23,7 +20,6 @@ import logoPrincipal from '@/assets/logo-principal.png';
 const AdminPortal = () => {
   const { user, isReady } = useRequireAdmin();
   const { logout } = useAuth();
-  const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
 
   if (!isReady) {
@@ -52,14 +48,6 @@ const AdminPortal = () => {
             <span className="text-xs text-muted-foreground hidden sm:block">
               {user?.email}
             </span>
-            <Button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground h-8 w-8"
-            >
-              {theme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-            </Button>
             <Button
               variant="ghost"
               size="sm"

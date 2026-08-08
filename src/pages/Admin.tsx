@@ -4,8 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { User } from '@supabase/supabase-js';
-import { LogOut, Sun, Moon } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { LogOut } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AdminSidebar } from '@/components/AdminSidebar';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
@@ -42,7 +41,6 @@ const Admin = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { logout } = useAuth();
-  const { theme, setTheme } = useTheme();
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -177,15 +175,6 @@ const Admin = () => {
             <span className="text-xs text-muted-foreground hidden lg:block max-w-[200px] truncate">
               {user?.email}
             </span>
-            <Button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground h-8 w-8"
-              aria-label="Cambiar tema"
-            >
-              {theme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-            </Button>
             <Button
               onClick={handleLogout}
               variant="ghost"

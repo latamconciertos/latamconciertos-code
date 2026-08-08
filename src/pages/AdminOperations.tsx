@@ -1,8 +1,7 @@
 import { useState, lazy, Suspense } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { LogOut, Sun, Moon } from 'lucide-react';
-import { useTheme } from 'next-themes';
+import { LogOut } from 'lucide-react';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { OperationsSidebar } from '@/components/admin/OperationsSidebar';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
@@ -39,7 +38,6 @@ const ContactsAdmin = lazy(() =>
 const AdminOperations = () => {
   const { user, isReady } = useRequireAdmin();
   const { logout } = useAuth();
-  const { theme, setTheme } = useTheme();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(
     searchParams.get('tab') || 'dashboard',
@@ -115,15 +113,6 @@ const AdminOperations = () => {
             <span className="text-xs text-muted-foreground hidden lg:block max-w-[200px] truncate">
               {user?.email}
             </span>
-            <Button
-              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              variant="ghost"
-              size="icon"
-              className="text-muted-foreground hover:text-foreground h-8 w-8"
-              aria-label="Cambiar tema"
-            >
-              {theme === 'dark' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}
-            </Button>
             <Button
               onClick={() => logout('manual')}
               variant="ghost"

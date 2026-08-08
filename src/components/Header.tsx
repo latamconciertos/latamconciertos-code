@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Search, User, Settings, Moon, Sun, Calendar, LogOut, Home, Mic2, Music2, BookOpen, ListMusic, Lightbulb, Users, ChevronDown, Bot, Sparkles, Bell } from "lucide-react";
+import { Menu, X, Search, User, Settings, Calendar, LogOut, Home, Mic2, Music2, BookOpen, ListMusic, Lightbulb, Users, ChevronDown, Bot, Sparkles, Bell } from "lucide-react";
 import { PushSubscribeDialog } from "@/components/admin/PushSubscribeDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { User as SupabaseUser } from "@supabase/supabase-js";
-import { useTheme } from "next-themes";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "./ui/navigation-menu";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
@@ -29,7 +28,6 @@ const Header = ({ visible = true }: HeaderProps) => {
   const [experienciasOpen, setExperienciasOpen] = useState(false);
   const [miCuentaOpen, setMiCuentaOpen] = useState(false);
   const [wrappedActive, setWrappedActive] = useState(false);
-  const { theme, setTheme } = useTheme() || { theme: 'system', setTheme: () => { } };
   const { logout } = useAuth();
 
   useEffect(() => {
@@ -226,15 +224,6 @@ const Header = ({ visible = true }: HeaderProps) => {
           {/* Auth Section — col-start-3 explícito: en móvil el nav central está
               display:none y sin esto los iconos se auto-colocan en la columna central */}
           <div className="col-start-3 flex items-center space-x-2 justify-self-end">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-white hover:bg-white/10"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            >
-              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
-
             <Button
               variant="ghost"
               size="icon"

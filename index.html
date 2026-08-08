@@ -4,25 +4,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#004aad" />
-    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#070D1F" />
+    <meta name="color-scheme" content="dark" />
 
-    <!-- Theme: dark by default, persist user choice. Runs before paint to avoid FOUC. -->
+    <!-- Tema único oscuro (Evolución Nocturna): se aplica antes del paint para evitar FOUC -->
     <script>
-      (function () {
-        try {
-          var saved = localStorage.getItem('theme');
-          var resolved = saved || 'dark';
-          if (resolved === 'system') {
-            resolved = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-          }
-          document.documentElement.classList.add(resolved);
-          document.documentElement.style.colorScheme = resolved;
-        } catch (e) {
-          document.documentElement.classList.add('dark');
-          document.documentElement.style.colorScheme = 'dark';
-        }
-      })();
+      document.documentElement.classList.add('dark');
+      document.documentElement.style.colorScheme = 'dark';
     </script>
 
     <!--

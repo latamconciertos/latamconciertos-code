@@ -171,7 +171,7 @@ const AppContent = () => {
 const App = () => (
   <ErrorBoundary>
     <BrowserRouter>
-      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
+      <ThemeProvider attribute="class" defaultTheme="dark" forcedTheme="dark" enableSystem={false} disableTransitionOnChange>
         <TooltipProvider>
           <AppContent />
         </TooltipProvider>
