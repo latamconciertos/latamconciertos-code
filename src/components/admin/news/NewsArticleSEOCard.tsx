@@ -37,22 +37,22 @@ export const NewsArticleSEOCard = ({ metaDescLength }: NewsArticleSEOCardProps) 
 
   return (
     <Collapsible defaultOpen={hasContent}>
-      <div className="rounded-lg border bg-card overflow-hidden">
-        <CollapsibleTrigger className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/50 transition-colors">
+      <div className="rounded-[20px] border border-linea bg-superficie overflow-hidden">
+        <CollapsibleTrigger className="w-full px-4 py-3 flex items-center justify-between hover:bg-superficie-2/60 transition-colors">
           <div className="flex items-center gap-2">
-            <Globe className="h-4 w-4 text-muted-foreground" />
+            <Globe className="h-4 w-4 text-periwinkle" />
             <span className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               SEO
             </span>
             {isMetaDescOk && (
-              <span className="text-xs text-green-600 font-medium">OK</span>
+              <span className="text-xs text-verde font-medium">OK</span>
             )}
           </div>
           <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
         </CollapsibleTrigger>
 
         <CollapsibleContent>
-          <div className="px-4 pb-4 pt-1 space-y-4 border-t">
+          <div className="px-4 pb-4 pt-1 space-y-4 border-t border-linea">
             <FormField
               control={form.control}
               name="slug"
@@ -106,8 +106,8 @@ export const NewsArticleSEOCard = ({ metaDescLength }: NewsArticleSEOCardProps) 
                     <span
                       className={
                         isMetaDescOk
-                          ? 'text-green-600 font-medium'
-                          : 'text-yellow-600 font-medium'
+                          ? 'text-verde font-medium'
+                          : 'text-azul-claro font-medium'
                       }
                     >
                       {metaDescLength}

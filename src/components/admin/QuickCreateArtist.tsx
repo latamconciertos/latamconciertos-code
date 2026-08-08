@@ -75,7 +75,7 @@ export const QuickCreateArtist = ({ onArtistCreated }: QuickCreateArtistProps) =
                 variant="outline"
                 size="sm"
                 onClick={() => setOpen(true)}
-                className="shrink-0"
+                className="shrink-0 rounded-full border-linea bg-transparent hover:bg-superficie-2"
             >
                 <Plus className="w-4 h-4 mr-1" />
                 Nuevo
@@ -119,12 +119,17 @@ export const QuickCreateArtist = ({ onArtistCreated }: QuickCreateArtistProps) =
                             <Button
                                 type="button"
                                 variant="outline"
+                                className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                                 onClick={() => setOpen(false)}
                                 disabled={loading}
                             >
                                 Cancelar
                             </Button>
-                            <Button type="submit" disabled={loading}>
+                            <Button
+                                type="submit"
+                                disabled={loading}
+                                className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                            >
                                 {loading ? (
                                     <>
                                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />

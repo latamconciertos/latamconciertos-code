@@ -43,15 +43,15 @@ export const FestivalsTable = ({
     return (
         <div className="space-y-4">
             {/* Table */}
-            <div className="border rounded-lg overflow-hidden bg-card">
-                <div className="grid grid-cols-12 gap-4 px-4 py-2.5 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <div className="rounded-[20px] border border-linea overflow-hidden bg-superficie">
+                <div className="grid grid-cols-12 gap-4 px-4 py-2.5 bg-superficie-2/60 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     <div className="col-span-4">Festival</div>
                     <div className="col-span-3">Fechas</div>
                     <div className="col-span-3">Venue</div>
                     <div className="col-span-2 text-right">Acciones</div>
                 </div>
 
-                <div className="divide-y">
+                <div className="divide-y divide-linea">
                     {paginatedFestivals.length === 0 ? (
                         <div className="p-8 text-center text-sm text-muted-foreground">
                             No hay festivales para mostrar.
@@ -60,7 +60,7 @@ export const FestivalsTable = ({
                         paginatedFestivals.map((festival) => (
                             <div
                                 key={festival.id}
-                                className="grid grid-cols-12 gap-4 px-4 py-2.5 items-center hover:bg-muted/40 transition-colors cursor-pointer"
+                                className="grid grid-cols-12 gap-4 px-4 py-2.5 items-center hover:bg-superficie-2 transition-colors cursor-pointer"
                                 onClick={() => onEdit(festival)}
                             >
                                 <div className="col-span-4 min-w-0">
@@ -92,7 +92,7 @@ export const FestivalsTable = ({
                                     <Button
                                         size="icon"
                                         variant="ghost"
-                                        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                                        className="h-8 w-8 text-muted-foreground hover:text-periwinkle"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             onToggleFeatured(festival.id, !festival.is_featured);
@@ -101,13 +101,13 @@ export const FestivalsTable = ({
                                         aria-label={festival.is_featured ? 'Quitar destacado' : 'Marcar destacado'}
                                     >
                                         <Star
-                                            className={`w-4 h-4 ${festival.is_featured ? 'fill-yellow-400 text-yellow-400' : ''}`}
+                                            className={`w-4 h-4 ${festival.is_featured ? 'fill-azul-claro text-azul-claro' : ''}`}
                                         />
                                     </Button>
                                     <Button
                                         size="icon"
                                         variant="ghost"
-                                        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                                        className="h-8 w-8 text-muted-foreground hover:text-periwinkle"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             onManageLineup(festival);
@@ -119,7 +119,7 @@ export const FestivalsTable = ({
                                     <Button
                                         size="icon"
                                         variant="ghost"
-                                        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                                        className="h-8 w-8 text-muted-foreground hover:text-periwinkle"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             onEdit(festival);
@@ -180,6 +180,7 @@ export const FestivalsTable = ({
                                 <Button
                                     variant="outline"
                                     size="sm"
+                                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                     disabled={currentPage === 1}
                                 >
@@ -191,6 +192,7 @@ export const FestivalsTable = ({
                                 <Button
                                     variant="outline"
                                     size="sm"
+                                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                                     disabled={currentPage === totalPages}
                                 >

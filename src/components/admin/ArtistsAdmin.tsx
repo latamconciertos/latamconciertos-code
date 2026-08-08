@@ -162,10 +162,14 @@ export const ArtistsAdmin = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Gestión de Artistas</h2>
-          <p className="text-muted-foreground">Administra el catálogo de artistas</p>
+          <h2 className="font-display uppercase tracking-[0.01em] text-2xl font-extrabold text-texto">Gestión de Artistas</h2>
+          <p className="text-texto-2">Administra el catálogo de artistas</p>
         </div>
-        <Button onClick={() => setShowForm(true)} size="lg">
+        <Button
+          onClick={() => setShowForm(true)}
+          size="lg"
+          className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+        >
           <Plus className="w-4 h-4 mr-2" />
           Nuevo Artista
         </Button>

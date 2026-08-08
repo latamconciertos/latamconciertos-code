@@ -61,20 +61,20 @@ type ImportPhase = 'idle' | 'loading' | 'preview' | 'importing';
 function ConfidenceBadge({ confidence }: { confidence: SpotifyConfidence }) {
   if (confidence === 'exact') {
     return (
-      <Badge variant="secondary" className="gap-1 bg-emerald-500/15 text-emerald-400 border-emerald-500/30 text-xs">
+      <Badge variant="outline" className="gap-1 border-verde/30 bg-verde/10 text-verde text-xs">
         <CheckCircle2 className="w-3 h-3" /> Exacto
       </Badge>
     );
   }
   if (confidence === 'partial') {
     return (
-      <Badge variant="secondary" className="gap-1 bg-amber-500/15 text-amber-400 border-amber-500/30 text-xs">
+      <Badge variant="outline" className="gap-1 bg-amber-500/10 text-amber-400 border-amber-500/30 text-xs">
         <AlertCircle className="w-3 h-3" /> Parcial
       </Badge>
     );
   }
   return (
-    <Badge variant="secondary" className="gap-1 bg-red-500/15 text-red-400 border-red-500/30 text-xs">
+    <Badge variant="outline" className="gap-1 bg-destructive/10 text-destructive border-destructive/30 text-xs">
       <XCircle className="w-3 h-3" /> No encontrado
     </Badge>
   );
@@ -310,7 +310,7 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
       if (error) throw error;
 
       toast({
-        title: '✅ Setlist importado',
+        title: 'Setlist importado',
         description: `${toImport.length} canciones guardadas correctamente`,
       });
 
@@ -344,11 +344,11 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-xl font-bold flex items-center gap-2">
-            <Music className="w-5 h-5" />
-            Setlist — {concertTitle}
+          <h3 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto flex items-center gap-2">
+            <Music className="w-5 h-5 text-periwinkle" />
+            Setlist: {concertTitle}
           </h3>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-texto-2">
             {songs.length} {songs.length === 1 ? 'canción' : 'canciones'}
           </p>
         </div>
@@ -357,12 +357,16 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
             onClick={() => setShowImport(true)}
             size="sm"
             variant="outline"
-            className="border-purple-500/40 text-purple-400 hover:bg-purple-500/10 hover:border-purple-400"
+            className="rounded-full border-periwinkle/40 text-periwinkle bg-transparent hover:bg-periwinkle/10 hover:text-periwinkle hover:border-periwinkle"
           >
             <Download className="w-4 h-4 mr-2" />
             Importar de setlist.fm
           </Button>
-          <Button onClick={() => setShowForm(!showForm)} size="sm">
+          <Button
+            onClick={() => setShowForm(!showForm)}
+            size="sm"
+            className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+          >
             <Plus className="w-4 h-4 mr-2" />
             Agregar Canción
           </Button>
@@ -371,12 +375,18 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
 
       {/* Manual add form */}
       {showForm && (
-        <Card>
+        <Card className="rounded-[20px] border-linea bg-superficie">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>Nueva Canción</span>
-              <Button type="button" size="sm" variant="outline" onClick={() => setShowSearch(true)}>
-                <Search className="w-4 h-4 mr-2" />
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                onClick={() => setShowSearch(true)}
+              >
+                <Search className="w-4 h-4 mr-2 text-periwinkle" />
                 Buscar en Spotify
               </Button>
             </CardTitle>
@@ -433,8 +443,15 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
                 />
               </div>
               <div className="flex gap-2">
-                <Button type="submit">Agregar</Button>
-                <Button type="button" variant="outline" onClick={resetForm}>Cancelar</Button>
+                <Button type="submit" className="rounded-full">Agregar</Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                  onClick={resetForm}
+                >
+                  Cancelar
+                </Button>
               </div>
             </form>
           </CardContent>
@@ -444,16 +461,16 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
       {/* Song list */}
       <div className="space-y-2">
         {songs.length === 0 ? (
-          <Card>
-            <CardContent className="p-8 text-center text-muted-foreground">
-              <Music className="w-12 h-12 mx-auto mb-3 opacity-30" />
+          <Card className="rounded-[20px] border-linea bg-superficie">
+            <CardContent className="p-8 text-center text-texto-2">
+              <Music className="w-12 h-12 mx-auto mb-3 text-periwinkle/40" />
               <p className="font-medium mb-1">No hay canciones en el setlist</p>
               <p className="text-sm opacity-70">Importa desde setlist.fm o agrega manualmente</p>
             </CardContent>
           </Card>
         ) : (
           songs.map((song, index) => (
-            <Card key={song.id}>
+            <Card key={song.id} className="rounded-[20px] border-linea bg-superficie">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4 flex-1">
@@ -463,7 +480,7 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
                         variant="ghost"
                         onClick={() => handleMoveUp(song, index)}
                         disabled={index === 0}
-                        className="h-6 w-6 p-0"
+                        className="h-6 w-6 p-0 text-texto-2 hover:text-periwinkle"
                       >
                         <ChevronUp className="w-4 h-4" />
                       </Button>
@@ -472,7 +489,7 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
                         variant="ghost"
                         onClick={() => handleMoveDown(song, index)}
                         disabled={index === songs.length - 1}
-                        className="h-6 w-6 p-0"
+                        className="h-6 w-6 p-0 text-texto-2 hover:text-periwinkle"
                       >
                         <ChevronDown className="w-4 h-4" />
                       </Button>
@@ -502,7 +519,12 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
                       {song.notes && <p className="text-sm text-muted-foreground mt-1">{song.notes}</p>}
                     </div>
                   </div>
-                  <Button size="sm" variant="destructive" onClick={() => handleDelete(song.id)}>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="text-texto-2 hover:text-destructive"
+                    onClick={() => handleDelete(song.id)}
+                  >
                     <Trash2 className="w-4 h-4" />
                   </Button>
                 </div>
@@ -535,7 +557,7 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
               {searchResults.map((track) => (
                 <Card
                   key={track.id}
-                  className="cursor-pointer hover:bg-muted/50 transition-colors"
+                  className="cursor-pointer border-linea bg-superficie hover:bg-superficie-2/50 transition-colors"
                   onClick={() => handleSelectTrack(track)}
                 >
                   <CardContent className="p-4">
@@ -566,7 +588,7 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
         <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col gap-4">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Download className="w-5 h-5 text-purple-400" />
+              <Download className="w-5 h-5 text-periwinkle" />
               Importar Setlist desde setlist.fm
             </DialogTitle>
             <DialogDescription>
@@ -601,7 +623,7 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
             {/* Loading state */}
             {importPhase === 'loading' && (
               <div className="flex flex-col items-center justify-center py-12 gap-4 text-muted-foreground">
-                <Loader2 className="w-10 h-10 animate-spin text-purple-400" />
+                <Loader2 className="w-10 h-10 animate-spin text-periwinkle" />
                 <div className="text-center">
                   <p className="font-medium">Obteniendo canciones de setlist.fm...</p>
                   <p className="text-sm mt-1 opacity-70">Validando cada canción en Spotify automáticamente</p>
@@ -614,13 +636,13 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
               <>
                 {/* Stats bar */}
                 <div className="flex gap-3 flex-wrap items-center">
-                  <Badge className="gap-1.5 bg-emerald-500/15 text-emerald-400 border-emerald-500/30">
+                  <Badge variant="outline" className="gap-1.5 border-verde/30 bg-verde/10 text-verde">
                     <CheckCircle2 className="w-3.5 h-3.5" /> {importStats.exact} exactas
                   </Badge>
-                  <Badge className="gap-1.5 bg-amber-500/15 text-amber-400 border-amber-500/30">
+                  <Badge variant="outline" className="gap-1.5 bg-amber-500/10 text-amber-400 border-amber-500/30">
                     <AlertCircle className="w-3.5 h-3.5" /> {importStats.partial} parciales
                   </Badge>
-                  <Badge className="gap-1.5 bg-red-500/15 text-red-400 border-red-500/30">
+                  <Badge variant="outline" className="gap-1.5 bg-destructive/10 text-destructive border-destructive/30">
                     <XCircle className="w-3.5 h-3.5" /> {importStats.not_found} no encontradas
                   </Badge>
                   <span className="text-sm text-muted-foreground ml-auto">
@@ -647,8 +669,8 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
                       <div
                         key={song.position}
                         className={`flex items-start gap-3 p-3 rounded-lg border transition-colors cursor-pointer ${selectedSongs.has(song.position)
-                          ? 'border-border bg-muted/30'
-                          : 'border-transparent bg-muted/10 opacity-50'
+                          ? 'border-linea bg-superficie-2/40'
+                          : 'border-transparent bg-superficie-2/10 opacity-50'
                           }`}
                         onClick={() => toggleSongSelection(song.position)}
                       >
@@ -670,7 +692,7 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                className="text-green-500 hover:text-green-400 shrink-0"
+                                className="text-verde hover:text-verde/80 shrink-0"
                                 title="Abrir en Spotify"
                               >
                                 <ExternalLink className="w-3.5 h-3.5" />
@@ -700,7 +722,7 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
                   <Button
                     onClick={handleImportConfirm}
                     disabled={selectedSongs.size === 0}
-                    className="bg-purple-600 hover:bg-purple-700 text-white"
+                    className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Importar {selectedSongs.size} {selectedSongs.size === 1 ? 'canción' : 'canciones'}
@@ -712,7 +734,7 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
             {/* Importing spinner */}
             {importPhase === 'importing' && (
               <div className="flex flex-col items-center justify-center py-10 gap-3 text-muted-foreground">
-                <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+                <Loader2 className="w-8 h-8 animate-spin text-periwinkle" />
                 <p>Guardando canciones en la base de datos...</p>
               </div>
             )}

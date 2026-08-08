@@ -86,7 +86,7 @@ export const MediaUpload = ({ onMediaUploaded, currentMediaUrl, type }: MediaUpl
       <Label>{type === 'video' ? 'Video' : 'Imagen'}</Label>
       
       {previewUrl && (
-        <div className="relative w-full rounded-lg overflow-hidden border">
+        <div className="relative w-full rounded-lg overflow-hidden border border-linea">
           {type === 'video' ? (
             <video 
               src={previewUrl} 
@@ -111,19 +111,20 @@ export const MediaUpload = ({ onMediaUploaded, currentMediaUrl, type }: MediaUpl
           type="button"
           variant="outline"
           disabled={uploading}
+          className="w-full border-dashed border-linea bg-superficie hover:bg-superficie-2 hover:border-periwinkle/50"
           onClick={() => document.getElementById(`media-upload-${type}`)?.click()}
         >
           {uploading ? (
             <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              <Loader2 className="w-4 h-4 mr-2 animate-spin text-periwinkle" />
               Subiendo...
             </>
           ) : (
             <>
               {type === 'video' ? (
-                <Video className="w-4 h-4 mr-2" />
+                <Video className="w-4 h-4 mr-2 text-periwinkle" />
               ) : (
-                <ImageIcon className="w-4 h-4 mr-2" />
+                <ImageIcon className="w-4 h-4 mr-2 text-periwinkle" />
               )}
               Examinar...
             </>

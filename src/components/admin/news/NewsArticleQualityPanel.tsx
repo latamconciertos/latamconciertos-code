@@ -38,10 +38,8 @@ export const NewsArticleQualityPanel = ({ report, status }: NewsArticleQualityPa
 
   const barColor =
     percent === 100
-      ? 'bg-green-500'
-      : percent >= 60
-        ? 'bg-yellow-500'
-        : 'bg-red-500';
+      ? 'bg-verde'
+      : 'bg-[linear-gradient(95deg,#004AAD,#597CFF)]';
 
   const label =
     percent === 100
@@ -50,18 +48,18 @@ export const NewsArticleQualityPanel = ({ report, status }: NewsArticleQualityPa
 
   return (
     <Collapsible defaultOpen={percent < 100}>
-      <div className="rounded-lg border bg-card overflow-hidden">
-        <CollapsibleTrigger className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/50 transition-colors">
+      <div className="rounded-[20px] border border-linea bg-superficie overflow-hidden">
+        <CollapsibleTrigger className="w-full px-4 py-3 flex items-center justify-between hover:bg-superficie-2/60 transition-colors">
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-sm font-medium">Calidad</span>
               <span
-                className={`text-xs font-semibold ${percent === 100 ? 'text-green-600' : 'text-muted-foreground'}`}
+                className={`text-xs font-semibold ${percent === 100 ? 'text-verde' : 'text-muted-foreground'}`}
               >
                 {label}
               </span>
             </div>
-            <div className="h-2 w-full rounded-full bg-secondary overflow-hidden">
+            <div className="h-2 w-full rounded-full bg-superficie-2 overflow-hidden">
               <div
                 className={`h-full ${barColor} transition-all duration-500 rounded-full`}
                 style={{ width: `${percent}%` }}
@@ -72,16 +70,16 @@ export const NewsArticleQualityPanel = ({ report, status }: NewsArticleQualityPa
         </CollapsibleTrigger>
 
         <CollapsibleContent>
-          <div className="px-4 pb-3 pt-1 space-y-1.5 border-t">
+          <div className="px-4 pb-3 pt-1 space-y-1.5 border-t border-linea">
             {checks.map((check) => (
               <div
                 key={check.label}
                 className="flex items-center gap-2 text-sm"
               >
                 {check.ok ? (
-                  <Check className="h-3.5 w-3.5 text-green-600 shrink-0" />
+                  <Check className="h-3.5 w-3.5 text-verde shrink-0" />
                 ) : (
-                  <X className="h-3.5 w-3.5 text-red-500 shrink-0" />
+                  <X className="h-3.5 w-3.5 text-destructive shrink-0" />
                 )}
                 <span
                   className={check.ok ? 'text-muted-foreground' : 'text-foreground'}

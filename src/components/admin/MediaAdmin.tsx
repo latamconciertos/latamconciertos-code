@@ -184,10 +184,10 @@ export const MediaAdmin = () => {
     return (
       <div className="p-6 max-w-7xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">
+          <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">
             {editingItem ? 'Editar Elemento' : 'Nuevo Elemento'}
           </h2>
-          <Button variant="outline" onClick={resetForm}>
+          <Button variant="outline" className="rounded-full border-linea bg-transparent hover:bg-superficie-2" onClick={resetForm}>
             Volver
           </Button>
         </div>
@@ -195,7 +195,7 @@ export const MediaAdmin = () => {
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2 space-y-6">
-              <Card className="p-6">
+              <Card className="p-6 rounded-[20px] border-linea bg-superficie">
                 <div className="space-y-4">
                   <div>
                     <Label>Título</Label>
@@ -230,6 +230,7 @@ export const MediaAdmin = () => {
                       <Button
                         type="button"
                         variant={!useEmbed ? 'default' : 'outline'}
+                        className={!useEmbed ? 'rounded-full' : 'rounded-full border-linea bg-transparent hover:bg-superficie-2'}
                         onClick={() => setUseEmbed(false)}
                       >
                         Subir Archivo
@@ -237,6 +238,7 @@ export const MediaAdmin = () => {
                       <Button
                         type="button"
                         variant={useEmbed ? 'default' : 'outline'}
+                        className={useEmbed ? 'rounded-full' : 'rounded-full border-linea bg-transparent hover:bg-superficie-2'}
                         onClick={() => setUseEmbed(true)}
                       >
                         Código Embed
@@ -253,7 +255,7 @@ export const MediaAdmin = () => {
                       <div className="space-y-4">
                         <div>
                           <Label className="flex items-center gap-2">
-                            <Youtube className="h-4 w-4" />
+                            <Youtube className="h-4 w-4 text-periwinkle" />
                             URL de YouTube o Vimeo
                           </Label>
                           <Input
@@ -296,7 +298,7 @@ export const MediaAdmin = () => {
                           <div>
                             <Label>Preview</Label>
                             <div
-                              className="aspect-video w-full rounded-lg overflow-hidden border bg-black"
+                              className="aspect-video w-full rounded-lg overflow-hidden border border-linea bg-black"
                               dangerouslySetInnerHTML={{ __html: sanitizeEmbedCode(formData.embed_code) }}
                             />
                           </div>
@@ -312,7 +314,7 @@ export const MediaAdmin = () => {
                         <Button
                           type="button"
                           variant="outline"
-                          className="w-full"
+                          className="w-full rounded-full border-linea bg-transparent hover:bg-superficie-2"
                           onClick={() => setShowCropDialog(true)}
                         >
                           <Crop className="h-4 w-4 mr-2" />
@@ -334,7 +336,7 @@ export const MediaAdmin = () => {
             </div>
 
             <div className="space-y-6">
-              <Card className="p-6">
+              <Card className="p-6 rounded-[20px] border-linea bg-superficie">
                 <Tabs defaultValue="info">
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="info">Información</TabsTrigger>
@@ -405,7 +407,10 @@ export const MediaAdmin = () => {
                 </Tabs>
               </Card>
 
-              <Button type="submit" className="w-full">
+              <Button
+                type="submit"
+                className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+              >
                 {editingItem ? 'Actualizar' : 'Publicar'}
               </Button>
             </div>
@@ -428,8 +433,11 @@ export const MediaAdmin = () => {
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold">Gestión de Medios</h2>
-        <Button onClick={() => setIsCreating(true)}>
+        <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Gestión de Medios</h2>
+        <Button
+          className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+          onClick={() => setIsCreating(true)}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Nuevo Elemento
         </Button>
@@ -437,10 +445,10 @@ export const MediaAdmin = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {mediaItems.map((item) => (
-          <Card key={item.id} className="p-4">
+          <Card key={item.id} className="p-4 rounded-[20px] border-linea bg-superficie">
             <div className="space-y-3">
               {item.media_url && (
-                <div className="relative aspect-video bg-muted rounded-lg overflow-hidden">
+                <div className="relative aspect-video bg-superficie-2 rounded-lg overflow-hidden">
                   {item.type === 'video' ? (
                     <video src={item.media_url} className="w-full h-full object-cover" />
                   ) : (
@@ -451,15 +459,28 @@ export const MediaAdmin = () => {
 
               <div className="flex items-start gap-2">
                 {item.type === 'video' ? (
-                  <Video className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                  <Video className="w-5 h-5 text-periwinkle flex-shrink-0 mt-0.5" />
                 ) : (
-                  <ImageIcon className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                  <ImageIcon className="w-5 h-5 text-periwinkle flex-shrink-0 mt-0.5" />
                 )}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-semibold truncate">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {item.status} {item.featured && '• Destacado'}
-                  </p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-semibold ${
+                        item.status === 'published'
+                          ? 'border-verde/30 bg-verde/10 text-verde'
+                          : item.status === 'archived'
+                            ? 'border-linea bg-superficie-2 text-texto-2'
+                            : 'border-azul-claro/30 bg-azul-claro/10 text-azul-claro'
+                      }`}
+                    >
+                      {item.status === 'published' ? 'Publicado' : item.status === 'archived' ? 'Archivado' : 'Borrador'}
+                    </span>
+                    {item.featured && (
+                      <span className="text-xs text-texto-2">Destacado</span>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -468,14 +489,15 @@ export const MediaAdmin = () => {
                   variant="outline"
                   size="sm"
                   onClick={() => handleEdit(item)}
-                  className="flex-1"
+                  className="flex-1 rounded-full border-linea bg-transparent hover:bg-superficie-2"
                 >
                   <Edit className="w-4 h-4 mr-1" />
                   Editar
                 </Button>
                 <Button
-                  variant="destructive"
+                  variant="ghost"
                   size="sm"
+                  className="text-texto-2 hover:text-destructive"
                   onClick={() => handleDelete(item.id)}
                 >
                   <Trash2 className="w-4 h-4" />
@@ -487,7 +509,7 @@ export const MediaAdmin = () => {
       </div>
 
       {mediaItems.length === 0 && (
-        <div className="text-center py-12 text-muted-foreground">
+        <div className="text-center py-12 text-texto-2 border-2 border-dashed border-linea rounded-[20px]">
           No hay elementos. Crea uno nuevo para comenzar.
         </div>
       )}

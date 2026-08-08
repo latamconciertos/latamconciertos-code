@@ -39,7 +39,7 @@ export const NewsArticlePublicationCard = ({
   const status = form.watch('status');
 
   return (
-    <Card>
+    <Card className="rounded-[20px] border-linea bg-superficie">
       <CardHeader className="pb-3">
         <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
           Publicación

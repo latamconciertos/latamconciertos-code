@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Bell, BellOff, Send, AlertCircle } from 'lucide-react';
+import { Bell, BellOff, Send, AlertCircle, ChevronDown } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -95,8 +95,8 @@ export function PushSubscribeDialog({ trigger }: { trigger?: React.ReactNode } =
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {trigger ?? (
-          <Button variant="outline" size="sm" className="h-8 gap-1.5">
-            <Bell className="h-3.5 w-3.5" />
+          <Button variant="outline" size="sm" className="h-8 gap-1.5 rounded-full border-linea bg-transparent hover:bg-superficie-2">
+            <Bell className="h-3.5 w-3.5 text-periwinkle" />
             <span className="text-[11px] font-bold uppercase tracking-[0.15em]">Push</span>
           </Button>
         )}
@@ -106,7 +106,7 @@ export function PushSubscribeDialog({ trigger }: { trigger?: React.ReactNode } =
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary mb-2">
             Notificaciones
           </p>
-          <DialogTitle className="font-display uppercase text-2xl md:text-3xl font-black tracking-tight leading-[0.95]">
+          <DialogTitle className="font-display uppercase text-2xl md:text-3xl font-black tracking-[0.01em] leading-[0.95]">
             Push notifications
           </DialogTitle>
           <DialogDescription className="pt-2">
@@ -128,7 +128,7 @@ export function PushSubscribeDialog({ trigger }: { trigger?: React.ReactNode } =
           ) : (
             <>
               {/* Status row */}
-              <div className="flex items-center justify-between rounded-lg border border-border/60 bg-muted/30 p-4">
+              <div className="flex items-center justify-between rounded-lg border border-linea bg-superficie-2/30 p-4">
                 <div className="space-y-0.5">
                   <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
                     Estado en este dispositivo
@@ -146,7 +146,7 @@ export function PushSubscribeDialog({ trigger }: { trigger?: React.ReactNode } =
                 <div
                   className={
                     subscribed
-                      ? 'h-2.5 w-2.5 rounded-full bg-emerald-500'
+                      ? 'h-2.5 w-2.5 rounded-full bg-verde punto-vivo'
                       : 'h-2.5 w-2.5 rounded-full bg-muted-foreground/30'
                   }
                 />
@@ -159,7 +159,7 @@ export function PushSubscribeDialog({ trigger }: { trigger?: React.ReactNode } =
                     variant="outline"
                     onClick={handleDisable}
                     disabled={busy}
-                    className="gap-1.5 h-9"
+                    className="gap-1.5 h-9 rounded-full border-linea bg-transparent hover:bg-superficie-2"
                   >
                     <BellOff className="h-3.5 w-3.5" />
                     <span className="text-xs font-bold uppercase tracking-[0.15em]">Desactivar</span>
@@ -168,7 +168,7 @@ export function PushSubscribeDialog({ trigger }: { trigger?: React.ReactNode } =
                   <Button
                     onClick={handleEnable}
                     disabled={busy || permission === 'denied'}
-                    className="gap-1.5 h-9"
+                    className="gap-1.5 h-9 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
                   >
                     <Bell className="h-3.5 w-3.5" />
                     <span className="text-xs font-bold uppercase tracking-[0.15em]">
@@ -181,9 +181,9 @@ export function PushSubscribeDialog({ trigger }: { trigger?: React.ReactNode } =
                   variant="outline"
                   onClick={handleTest}
                   disabled={busy || !subscribed}
-                  className="gap-1.5 h-9"
+                  className="gap-1.5 h-9 rounded-full border-linea bg-transparent hover:bg-superficie-2"
                 >
-                  <Send className="h-3.5 w-3.5" />
+                  <Send className="h-3.5 w-3.5 text-periwinkle" />
                   <span className="text-xs font-bold uppercase tracking-[0.15em]">Probar</span>
                 </Button>
               </div>
@@ -197,10 +197,10 @@ export function PushSubscribeDialog({ trigger }: { trigger?: React.ReactNode } =
               )}
 
               {/* iOS PWA hint */}
-              <details className="group rounded-lg border border-border/60 bg-muted/30">
+              <details className="group rounded-lg border border-linea bg-superficie-2/30">
                 <summary className="cursor-pointer px-4 py-3 text-xs font-semibold flex items-center justify-between">
-                  <span>iPhone / iPad — pasos extra</span>
-                  <span className="text-muted-foreground group-open:rotate-180 transition-transform">▾</span>
+                  <span>iPhone / iPad: pasos extra</span>
+                  <ChevronDown className="h-3.5 w-3.5 text-muted-foreground group-open:rotate-180 transition-transform" />
                 </summary>
                 <div className="px-4 pb-4 space-y-2 text-xs text-muted-foreground leading-relaxed">
                   <p>

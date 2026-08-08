@@ -145,8 +145,8 @@ export const PushCampaignsAdmin = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Notificaciones Push</h2>
-        <p className="text-muted-foreground">Enviá alertas push a los fans suscritos del sitio.</p>
+        <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Notificaciones Push</h2>
+        <p className="text-texto-2">Enviá alertas push a los fans suscritos del sitio.</p>
       </div>
 
       <Tabs defaultValue="compose" className="space-y-6">
@@ -326,7 +326,7 @@ export const PushCampaignsAdmin = () => {
                         type="button"
                         onClick={() => setAudienceType(v)}
                         className={
-                          'relative px-4 py-2.5 text-xs font-semibold transition-colors ' +
+                          'relative px-4 py-2.5 text-xs font-bold uppercase tracking-[0.18em] transition-colors ' +
                           (isActive
                             ? 'text-foreground'
                             : 'text-muted-foreground hover:text-foreground')
@@ -338,7 +338,7 @@ export const PushCampaignsAdmin = () => {
                           aria-hidden="true"
                           className={
                             'absolute left-0 right-0 -bottom-px h-0.5 transition-colors ' +
-                            (isActive ? 'bg-primary' : 'bg-transparent')
+                            (isActive ? 'bg-verde' : 'bg-transparent')
                           }
                         />
                       </button>
@@ -421,7 +421,7 @@ export const PushCampaignsAdmin = () => {
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground mb-3">
                   Vista previa
                 </p>
-                <div className="rounded-xl bg-card border border-border/60 p-3.5 shadow-sm">
+                <div className="rounded-xl bg-superficie border border-linea p-3.5 shadow-sm">
                   <div className="flex items-start gap-2.5">
                     <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center shrink-0">
                       <Bell className="h-4 w-4 text-primary-foreground" />
@@ -441,7 +441,7 @@ export const PushCampaignsAdmin = () => {
                 </div>
               </div>
 
-              <div className="rounded-lg bg-muted/40 border border-border/60 px-3 py-2.5 space-y-1">
+              <div className="rounded-lg bg-superficie-2/40 border border-linea px-3 py-2.5 space-y-1">
                 <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
                   Audiencia
                 </p>
@@ -453,7 +453,7 @@ export const PushCampaignsAdmin = () => {
                   <Button
                     disabled={!canSend || createCampaign.isPending}
                     size="lg"
-                    className="w-full gap-2"
+                    className="w-full gap-2 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
                   >
                     {createCampaign.isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -467,7 +467,7 @@ export const PushCampaignsAdmin = () => {
                   <AlertDialogHeader>
                     <AlertDialogTitle>¿Enviar push ahora?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Se va a enviar a: <strong>{audienceLabel}</strong>. Esta acción no se puede deshacer — los push se entregan instantáneamente.
+                      Se va a enviar a: <strong>{audienceLabel}</strong>. Esta acción no se puede deshacer: los push se entregan instantáneamente.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
@@ -484,16 +484,16 @@ export const PushCampaignsAdmin = () => {
         <TabsContent value="history">
           {isLoading ? (
             <div className="flex justify-center py-12">
-              <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+              <Loader2 className="h-5 w-5 animate-spin text-periwinkle" />
             </div>
           ) : campaigns.length === 0 ? (
             <div className="text-center py-12 text-sm text-muted-foreground">
               Aún no se ha enviado ninguna campaña.
             </div>
           ) : (
-            <div className="rounded-xl border border-border/60 bg-card overflow-hidden">
+            <div className="rounded-[20px] border border-linea bg-superficie overflow-hidden">
               <table className="w-full text-sm">
-                <thead className="bg-muted/40 text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                <thead className="bg-superficie-2/60 text-[10px] font-bold uppercase tracking-[0.15em] text-texto-2">
                   <tr>
                     <th className="text-left px-4 py-3">Fecha</th>
                     <th className="text-left px-4 py-3">Título</th>
@@ -503,9 +503,9 @@ export const PushCampaignsAdmin = () => {
                     <th className="text-right px-4 py-3">Fallidas</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-border/50">
+                <tbody className="divide-y divide-linea">
                   {campaigns.map((c) => (
-                    <tr key={c.id} className="hover:bg-muted/20 transition-colors">
+                    <tr key={c.id} className="hover:bg-superficie-2/40 transition-colors">
                       <td className="px-4 py-3 text-xs text-muted-foreground whitespace-nowrap">
                         {c.sent_at ? formatDisplayDate(c.sent_at) : formatDisplayDate(c.created_at)}
                       </td>
@@ -514,7 +514,7 @@ export const PushCampaignsAdmin = () => {
                         <p className="text-xs text-muted-foreground line-clamp-1">{c.body}</p>
                       </td>
                       <td className="px-4 py-3 text-xs">
-                        <span className="inline-block rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
+                        <span className="inline-block rounded-full bg-superficie-2 border border-linea text-texto-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider">
                           {c.audience.type === 'all'
                             ? 'Todos'
                             : c.audience.type === 'country'
@@ -523,8 +523,8 @@ export const PushCampaignsAdmin = () => {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right tabular-nums font-mono text-xs">{c.recipient_count}</td>
-                      <td className="px-4 py-3 text-right tabular-nums font-mono text-xs text-emerald-500">{c.sent_count}</td>
-                      <td className="px-4 py-3 text-right tabular-nums font-mono text-xs text-rose-500">{c.failed_count}</td>
+                      <td className="px-4 py-3 text-right tabular-nums font-mono text-xs text-verde">{c.sent_count}</td>
+                      <td className="px-4 py-3 text-right tabular-nums font-mono text-xs text-destructive">{c.failed_count}</td>
                     </tr>
                   ))}
                 </tbody>

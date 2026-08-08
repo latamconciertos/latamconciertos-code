@@ -1,8 +1,7 @@
-import { CheckCircle2, ExternalLink, TrendingUp, FileText, Link as LinkIcon } from 'lucide-react';
+import { CheckCircle2, ExternalLink, TrendingUp, FileText, Link as LinkIcon, Target } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
 import { SEO } from '@/components/SEO';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -116,7 +115,7 @@ const SEOGuide = () => {
         keywords="seo, google search console, sitemaps, structured data"
         url="/admin/seo-guide"
       />
-      <div className="min-h-screen bg-background">
+      <div className="dark font-fira min-h-screen bg-noche text-texto">
         <Header />
 
         <main className="container mx-auto px-4 py-16">
@@ -128,25 +127,25 @@ const SEOGuide = () => {
           <div className="max-w-5xl mx-auto">
             {/* Header */}
             <div className="text-center mb-12">
-              <Badge className="mb-4 text-lg px-4 py-2">
-                SEO Dashboard
-              </Badge>
-              <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+              <span className="eyebrow-nocturno justify-center mb-4">SEO Dashboard</span>
+              <h1 className="font-display uppercase tracking-[0.01em] font-extrabold text-4xl md:text-5xl leading-none text-texto mb-4">
                 Estado de Optimización SEO
               </h1>
-              <p className="text-xl text-muted-foreground mb-6">
+              <p className="text-xl text-texto-2 mb-6">
                 Progreso de implementación técnica para maximizar la visibilidad en buscadores
               </p>
-              
+
               {/* Overall Progress */}
-              <Card className="max-w-2xl mx-auto">
+              <Card className="max-w-2xl mx-auto rounded-[20px] border-linea bg-superficie">
                 <CardContent className="pt-6">
                   <div className="space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-sm font-medium">Progreso General</span>
-                      <span className="text-3xl font-bold text-primary">{totalProgress}%</span>
+                      <span className={`font-display text-3xl font-extrabold tracking-[0.01em] ${totalProgress === 100 ? 'text-verde' : 'text-periwinkle'}`}>
+                        {totalProgress}%
+                      </span>
                     </div>
-                    <Progress value={totalProgress} className="h-3" />
+                    <ProgressBarNocturno value={totalProgress} className="h-3" />
                   </div>
                 </CardContent>
               </Card>
@@ -155,7 +154,7 @@ const SEOGuide = () => {
             {/* Checklist Categories */}
             <div className="grid gap-6 mb-12">
               {seoChecklist.map((category, idx) => (
-                <Card key={idx}>
+                <Card key={idx} className="rounded-[20px] border-linea bg-superficie">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <div>
@@ -164,19 +163,26 @@ const SEOGuide = () => {
                           {category.items.filter(i => i.done).length} de {category.items.length} completados
                         </CardDescription>
                       </div>
-                      <Badge variant={category.progress === 100 ? 'default' : 'secondary'}>
+                      <Badge
+                        variant="outline"
+                        className={
+                          category.progress === 100
+                            ? 'border-verde/30 bg-verde/10 text-verde'
+                            : 'border-linea bg-superficie-2 text-texto-2'
+                        }
+                      >
                         {category.progress}%
                       </Badge>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <Progress value={category.progress} className="mb-4" />
+                    <ProgressBarNocturno value={category.progress} className="h-2 mb-4" />
                     <ul className="space-y-2">
                       {category.items.map((item, itemIdx) => (
                         <li key={itemIdx} className="flex items-center gap-2">
-                          <CheckCircle2 
+                          <CheckCircle2
                             className={`h-5 w-5 flex-shrink-0 ${
-                              item.done ? 'text-green-500' : 'text-muted-foreground'
+                              item.done ? 'text-verde' : 'text-muted-foreground'
                             }`}
                           />
                           <span className={item.done ? 'text-foreground' : 'text-muted-foreground'}>
@@ -192,14 +198,19 @@ const SEOGuide = () => {
 
             {/* Resources */}
             <div className="mb-12">
-              <h2 className="text-2xl font-bold mb-6">Recursos Útiles</h2>
+              <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto mb-6">
+                Recursos Útiles
+              </h2>
               <div className="grid md:grid-cols-2 gap-4">
                 {resources.map((resource, idx) => (
-                  <Card key={idx} className="hover:shadow-lg transition-shadow">
+                  <Card
+                    key={idx}
+                    className="rounded-[20px] border-linea bg-superficie transition-all hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)]"
+                  >
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
-                        <div className="bg-primary/10 p-3 rounded-lg">
-                          <resource.icon className="h-6 w-6 text-primary" />
+                        <div className="bg-periwinkle/10 p-3 rounded-full">
+                          <resource.icon className="h-6 w-6 text-periwinkle" />
                         </div>
                         <div className="flex-1">
                           <h3 className="font-semibold mb-1">{resource.title}</h3>
@@ -208,14 +219,19 @@ const SEOGuide = () => {
                           </p>
                           {resource.internal ? (
                             <Link to={resource.link}>
-                              <Button size="sm" variant="outline">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                              >
                                 Abrir <ExternalLink className="h-3 w-3 ml-2" />
                               </Button>
                             </Link>
                           ) : (
-                            <Button 
-                              size="sm" 
+                            <Button
+                              size="sm"
                               variant="outline"
+                              className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                               onClick={() => window.open(resource.link, '_blank')}
                             >
                               Abrir <ExternalLink className="h-3 w-3 ml-2" />
@@ -230,9 +246,12 @@ const SEOGuide = () => {
             </div>
 
             {/* Next Steps */}
-            <Card className="bg-primary/5 border-primary/20">
+            <Card className="rounded-[20px] border-linea bg-superficie">
               <CardHeader>
-                <CardTitle>🎯 Siguiente Paso Recomendado</CardTitle>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-periwinkle" />
+                  Siguiente Paso Recomendado
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="mb-4 text-muted-foreground">
@@ -240,7 +259,10 @@ const SEOGuide = () => {
                   Google Search Console para monitorear la indexación y solicitar inclusión en Google News.
                 </p>
                 <Link to="/admin/google-search-console-setup">
-                  <Button size="lg">
+                  <Button
+                    size="lg"
+                    className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                  >
                     Ver Guía de Configuración
                     <ExternalLink className="h-4 w-4 ml-2" />
                   </Button>
@@ -255,5 +277,18 @@ const SEOGuide = () => {
     </>
   );
 };
+
+function ProgressBarNocturno({ value, className = '' }: { value: number; className?: string }) {
+  return (
+    <div className={`w-full rounded-full bg-superficie-2 overflow-hidden ${className}`}>
+      <div
+        className={`h-full rounded-full transition-all duration-500 ${
+          value === 100 ? 'bg-verde' : 'bg-[linear-gradient(95deg,#004AAD,#597CFF)]'
+        }`}
+        style={{ width: `${value}%` }}
+      />
+    </div>
+  );
+}
 
 export default SEOGuide;

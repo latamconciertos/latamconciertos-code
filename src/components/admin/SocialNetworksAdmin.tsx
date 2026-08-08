@@ -187,8 +187,8 @@ export function SocialNetworksAdmin() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Redes Sociales</h2>
-          <p className="text-muted-foreground mt-2">
+          <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Redes Sociales</h2>
+          <p className="text-texto-2 mt-2">
             Gestiona las redes sociales que aparecerán para compartir noticias
           </p>
         </div>
@@ -196,7 +196,7 @@ export function SocialNetworksAdmin() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Form */}
-        <Card>
+        <Card className="rounded-[20px] border-linea bg-superficie">
           <CardHeader>
             <CardTitle>{editingId ? 'Editar' : 'Nueva'} Red Social</CardTitle>
             <CardDescription>
@@ -253,11 +253,19 @@ export function SocialNetworksAdmin() {
               </div>
 
               <div className="flex gap-2">
-                <Button type="submit" className="flex-1">
+                <Button
+                  type="submit"
+                  className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                >
                   {editingId ? 'Actualizar' : 'Crear'}
                 </Button>
                 {editingId && (
-                  <Button type="button" variant="outline" onClick={resetForm}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                    onClick={resetForm}
+                  >
                     Cancelar
                   </Button>
                 )}
@@ -267,7 +275,7 @@ export function SocialNetworksAdmin() {
         </Card>
 
         {/* List */}
-        <Card>
+        <Card className="rounded-[20px] border-linea bg-superficie">
           <CardHeader>
             <CardTitle>Redes Sociales Configuradas</CardTitle>
             <CardDescription>
@@ -277,22 +285,22 @@ export function SocialNetworksAdmin() {
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="border-linea hover:bg-transparent">
                   <TableHead className="w-[50px]"></TableHead>
-                  <TableHead>Nombre</TableHead>
-                  <TableHead>Icono</TableHead>
-                  <TableHead className="text-center">Estado</TableHead>
-                  <TableHead className="text-right">Acciones</TableHead>
+                  <TableHead className="text-texto-2">Nombre</TableHead>
+                  <TableHead className="text-texto-2">Icono</TableHead>
+                  <TableHead className="text-center text-texto-2">Estado</TableHead>
+                  <TableHead className="text-right text-texto-2">Acciones</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {networks.map((network) => (
-                  <TableRow key={network.id}>
+                  <TableRow key={network.id} className="border-linea hover:bg-superficie-2/50">
                     <TableCell>
-                      <GripVertical className="h-4 w-4 text-muted-foreground" />
+                      <GripVertical className="h-4 w-4 text-texto-2" />
                     </TableCell>
                     <TableCell className="font-medium">{network.name}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">
+                    <TableCell className="text-sm text-texto-2">
                       {network.icon_name}
                     </TableCell>
                     <TableCell className="text-center">
@@ -306,6 +314,7 @@ export function SocialNetworksAdmin() {
                         <Button
                           variant="ghost"
                           size="sm"
+                          className="text-texto-2 hover:text-periwinkle"
                           onClick={() => handleEdit(network)}
                         >
                           Editar
@@ -313,6 +322,7 @@ export function SocialNetworksAdmin() {
                         <Button
                           variant="ghost"
                           size="sm"
+                          className="text-texto-2 hover:text-destructive"
                           onClick={() => handleDelete(network.id)}
                         >
                           <Trash2 className="h-4 w-4" />

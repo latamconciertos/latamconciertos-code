@@ -143,7 +143,7 @@ export function FestivalLineupManager({ festival, open, onClose }: FestivalLineu
 
         <div className="space-y-6">
           {/* Add Artist Form */}
-          <Card>
+          <Card className="rounded-[20px] border-linea bg-superficie">
             <CardHeader>
               <CardTitle className="text-base">Agregar Artista</CardTitle>
             </CardHeader>
@@ -209,10 +209,10 @@ export function FestivalLineupManager({ festival, open, onClose }: FestivalLineu
                 </div>
 
                 <div className="flex items-end">
-                  <Button 
+                  <Button
                     onClick={handleAddToLineup}
                     disabled={!selectedArtist || addToLineup.isPending}
-                    className="w-full"
+                    className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
                   >
                     {addToLineup.isPending ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -245,7 +245,7 @@ export function FestivalLineupManager({ festival, open, onClose }: FestivalLineu
                 if (dayLineup.length === 0) return null;
 
                 return (
-                  <Card key={day}>
+                  <Card key={day} className="rounded-[20px] border-linea bg-superficie">
                     <CardHeader className="pb-2">
                       <CardTitle className="text-sm font-medium">
                         {format(parseISO(day), 'EEEE d MMMM', { locale: es })}
@@ -314,7 +314,7 @@ export function FestivalLineupManager({ festival, open, onClose }: FestivalLineu
 
               {/* Artists without date */}
               {(lineupByDate['sin-fecha']?.length ?? 0) > 0 && (
-                <Card>
+                <Card className="rounded-[20px] border-linea bg-superficie">
                   <CardHeader className="pb-2">
                     <CardTitle className="text-sm font-medium text-muted-foreground">
                       Sin fecha asignada

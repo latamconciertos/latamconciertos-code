@@ -186,10 +186,14 @@ export const VenuesAdmin = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Gestión de Venues</h2>
-          <p className="text-muted-foreground">Administra venues, países y ciudades</p>
+          <h2 className="font-display uppercase tracking-[0.01em] text-2xl font-extrabold text-texto">Gestión de Venues</h2>
+          <p className="text-texto-2">Administra venues, países y ciudades</p>
         </div>
-        <Button onClick={() => setShowVenueForm(true)} size="lg">
+        <Button
+          onClick={() => setShowVenueForm(true)}
+          size="lg"
+          className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+        >
           <Plus className="w-4 h-4 mr-2" />
           Nuevo Venue
         </Button>

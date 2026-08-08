@@ -168,7 +168,7 @@ export const VenueSectionsManager = ({ projectId }: VenueSectionsManagerProps) =
   }
 
   return (
-    <Card>
+    <Card className="rounded-[20px] border-linea bg-superficie">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
@@ -179,7 +179,11 @@ export const VenueSectionsManager = ({ projectId }: VenueSectionsManagerProps) =
           </div>
           <Dialog open={showDialog} onOpenChange={setShowDialog}>
             <DialogTrigger asChild>
-              <Button size="sm" onClick={() => { setEditingSection(null); resetForm(); }}>
+              <Button
+                size="sm"
+                className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                onClick={() => { setEditingSection(null); resetForm(); }}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Agregar Sección
               </Button>
@@ -221,10 +225,18 @@ export const VenueSectionsManager = ({ projectId }: VenueSectionsManagerProps) =
                 </div>
 
                 <div className="flex gap-3 justify-end">
-                  <Button type="button" variant="outline" onClick={() => setShowDialog(false)}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                    onClick={() => setShowDialog(false)}
+                  >
                     Cancelar
                   </Button>
-                  <Button type="submit">
+                  <Button
+                    type="submit"
+                    className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                  >
                     {editingSection ? 'Actualizar' : 'Crear'}
                   </Button>
                 </div>
@@ -246,7 +258,7 @@ export const VenueSectionsManager = ({ projectId }: VenueSectionsManagerProps) =
             {sections.map((section) => (
               <div
                 key={section.id}
-                className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50"
+                className="flex items-center justify-between p-3 border border-linea rounded-lg hover:bg-superficie-2 transition-colors"
               >
                 <div className="flex items-center gap-3">
                   <GripVertical className="h-5 w-5 text-muted-foreground" />

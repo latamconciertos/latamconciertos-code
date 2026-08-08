@@ -129,8 +129,8 @@ export const VenuesTable = ({
             </div>
 
             {/* Table */}
-            <div className="border rounded-lg overflow-hidden bg-card">
-                <div className="grid grid-cols-12 gap-4 px-4 py-2.5 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <div className="rounded-[20px] border border-linea overflow-hidden bg-superficie">
+                <div className="grid grid-cols-12 gap-4 px-4 py-2.5 bg-superficie-2/60 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     <div className="col-span-4">Venue</div>
                     <div className="col-span-2">Ciudad</div>
                     <div className="col-span-2">País</div>
@@ -139,7 +139,7 @@ export const VenuesTable = ({
                     <div className="col-span-1 text-right">Acciones</div>
                 </div>
 
-                <div className="divide-y">
+                <div className="divide-y divide-linea">
                     {paginatedVenues.length === 0 ? (
                         <div className="p-8 text-center text-sm text-muted-foreground">
                             {searchTerm || filterCountry !== 'all' || filterCity !== 'all'
@@ -150,7 +150,7 @@ export const VenuesTable = ({
                         paginatedVenues.map((venue) => (
                             <div
                                 key={venue.id}
-                                className="grid grid-cols-12 gap-4 px-4 py-2.5 items-center hover:bg-muted/40 transition-colors cursor-pointer"
+                                className="grid grid-cols-12 gap-4 px-4 py-2.5 items-center hover:bg-superficie-2 transition-colors cursor-pointer"
                                 onClick={() => onEdit(venue)}
                             >
                                 <div className="col-span-4 min-w-0">
@@ -178,7 +178,7 @@ export const VenuesTable = ({
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             onClick={(e) => e.stopPropagation()}
-                                            className="inline-flex items-center gap-1 text-primary hover:underline"
+                                            className="inline-flex items-center gap-1 text-periwinkle hover:underline"
                                         >
                                             <ExternalLink className="w-3 h-3" />
                                         </a>
@@ -190,7 +190,7 @@ export const VenuesTable = ({
                                     <Button
                                         size="icon"
                                         variant="ghost"
-                                        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                                        className="h-8 w-8 text-muted-foreground hover:text-periwinkle"
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             onEdit(venue);
@@ -252,6 +252,7 @@ export const VenuesTable = ({
                                 <Button
                                     variant="outline"
                                     size="sm"
+                                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                     disabled={currentPage === 1}
                                 >
@@ -263,6 +264,7 @@ export const VenuesTable = ({
                                 <Button
                                     variant="outline"
                                     size="sm"
+                                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                                     disabled={currentPage === totalPages}
                                 >

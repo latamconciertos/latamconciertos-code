@@ -76,14 +76,14 @@ export const FanProjectDetailView = ({ projectId, onBack }: FanProjectDetailView
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, { variant: any; label: string }> = {
-      draft: { variant: 'secondary', label: 'Borrador' },
-      active: { variant: 'default', label: 'Activo' },
-      completed: { variant: 'outline', label: 'Completado' },
+    const variants: Record<string, { className: string; label: string }> = {
+      draft: { className: 'border-linea bg-superficie-2 text-texto-2', label: 'Borrador' },
+      active: { className: 'border-verde/30 bg-verde/10 text-verde', label: 'Activo' },
+      completed: { className: 'border-azul-claro/30 bg-azul-claro/10 text-azul-claro', label: 'Completado' },
     };
 
     const config = variants[status] || variants.draft;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
+    return <Badge variant="outline" className={config.className}>{config.label}</Badge>;
   };
 
   if (loading) {
@@ -93,8 +93,8 @@ export const FanProjectDetailView = ({ projectId, onBack }: FanProjectDetailView
   if (!project) {
     return (
       <div className="text-center py-8">
-        <p className="text-muted-foreground mb-4">Proyecto no encontrado</p>
-        <Button onClick={onBack} variant="outline">
+        <p className="text-texto-2 mb-4">Proyecto no encontrado</p>
+        <Button onClick={onBack} variant="outline" className="rounded-full border-linea bg-transparent hover:bg-superficie-2">
           <ArrowLeft className="h-4 w-4 mr-2" />
           Volver
         </Button>
@@ -118,18 +118,18 @@ export const FanProjectDetailView = ({ projectId, onBack }: FanProjectDetailView
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <Button onClick={onBack} variant="outline" size="sm" className="mb-2">
+          <Button onClick={onBack} variant="outline" size="sm" className="mb-2 rounded-full border-linea bg-transparent hover:bg-superficie-2">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Volver a Proyectos
           </Button>
           <div className="flex items-center gap-3">
-            <h2 className="text-3xl font-bold">{project.name}</h2>
+            <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-3xl text-texto">{project.name}</h2>
             {getStatusBadge(project.status)}
           </div>
         </div>
       </div>
 
-      <Card>
+      <Card className="rounded-[20px] border-linea bg-superficie">
         <CardHeader>
           <CardTitle>Información del Concierto</CardTitle>
         </CardHeader>
@@ -137,26 +137,26 @@ export const FanProjectDetailView = ({ projectId, onBack }: FanProjectDetailView
           <div>
             <p className="text-lg font-semibold">{project.concert.title}</p>
             {project.concert.date && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                <Calendar className="h-4 w-4" />
+              <div className="flex items-center gap-2 text-sm text-texto-2 mt-1">
+                <Calendar className="h-4 w-4 text-periwinkle" />
                 <span>
                   {formatDisplayDate(project.concert.date)}
                 </span>
               </div>
             )}
             {project.concert.venue && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <MapPin className="h-4 w-4" />
+              <div className="flex items-center gap-2 text-sm text-texto-2">
+                <MapPin className="h-4 w-4 text-periwinkle" />
                 <span>
                   {project.concert.venue.name} - {project.concert.venue.location}
                 </span>
               </div>
             )}
           </div>
-          
+
           {project.description && (
-            <div className="pt-3 border-t">
-              <p className="text-sm text-muted-foreground">{project.description}</p>
+            <div className="pt-3 border-t border-linea">
+              <p className="text-sm text-texto-2">{project.description}</p>
             </div>
           )}
         </CardContent>

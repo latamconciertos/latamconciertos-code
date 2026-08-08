@@ -205,14 +205,14 @@ export const FanProjectsAdmin = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, { variant: any; label: string }> = {
-      draft: { variant: 'secondary', label: 'Borrador' },
-      active: { variant: 'default', label: 'Activo' },
-      completed: { variant: 'outline', label: 'Completado' },
+    const variants: Record<string, { className: string; label: string }> = {
+      draft: { className: 'border-linea bg-superficie-2 text-texto-2', label: 'Borrador' },
+      active: { className: 'border-verde/30 bg-verde/10 text-verde', label: 'Activo' },
+      completed: { className: 'border-azul-claro/30 bg-azul-claro/10 text-azul-claro', label: 'Completado' },
     };
 
     const config = variants[status] || variants.draft;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
+    return <Badge variant="outline" className={config.className}>{config.label}</Badge>;
   };
 
   if (loading) {
@@ -232,11 +232,17 @@ export const FanProjectsAdmin = () => {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Fan Projects</h2>
+        <div>
+          <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Fan Projects</h2>
+          <p className="text-texto-2">Proyectos de luces creados junto a los fans</p>
+        </div>
 
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <DialogTrigger asChild>
-            <Button onClick={() => { setEditingProject(null); resetForm(); }}>
+            <Button
+              className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+              onClick={() => { setEditingProject(null); resetForm(); }}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Nuevo Proyecto
             </Button>
@@ -322,10 +328,18 @@ export const FanProjectsAdmin = () => {
               </div>
 
               <div className="flex gap-3 justify-end">
-                <Button type="button" variant="outline" onClick={() => setShowDialog(false)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                  onClick={() => setShowDialog(false)}
+                >
                   Cancelar
                 </Button>
-                <Button type="submit">
+                <Button
+                  type="submit"
+                  className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                >
                   {editingProject ? 'Actualizar' : 'Crear'}
                 </Button>
               </div>
@@ -336,15 +350,15 @@ export const FanProjectsAdmin = () => {
 
       <div className="grid gap-6">
         {projects.length === 0 ? (
-          <Card>
+          <Card className="rounded-[20px] border-linea bg-superficie">
             <CardContent className="p-12 text-center">
-              <Lightbulb className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
-              <p className="text-muted-foreground">No hay proyectos creados aún</p>
+              <Lightbulb className="h-12 w-12 mx-auto text-periwinkle/40 mb-4" />
+              <p className="text-texto-2">No hay proyectos creados aún</p>
             </CardContent>
           </Card>
         ) : (
           projects.map((project) => (
-            <Card key={project.id}>
+            <Card key={project.id} className="rounded-[20px] border-linea bg-superficie">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="space-y-1">
@@ -359,23 +373,26 @@ export const FanProjectsAdmin = () => {
                   </div>
                   <div className="flex gap-2">
                     <Button
-                      variant="default"
+                      variant="outline"
                       size="sm"
+                      className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                       onClick={() => setViewingProject(project.id)}
                     >
                       <Eye className="h-4 w-4 mr-2" />
                       Ver Detalles
                     </Button>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
+                      className="text-texto-2 hover:text-periwinkle"
                       onClick={() => handleEdit(project)}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
+                      className="text-texto-2 hover:text-destructive"
                       onClick={() => handleDelete(project.id)}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -384,7 +401,7 @@ export const FanProjectsAdmin = () => {
                 </div>
               </CardHeader>
               <CardContent>
-                <p className="text-sm text-muted-foreground line-clamp-2">
+                <p className="text-sm text-texto-2 line-clamp-2">
                   {project.description}
                 </p>
               </CardContent>

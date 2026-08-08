@@ -222,17 +222,17 @@ export function PWAAdmin() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Configuración PWA</h2>
-        <p className="text-muted-foreground">
+        <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Configuración PWA</h2>
+        <p className="text-texto-2">
           Gestiona la aplicación web progresiva (Progressive Web App)
         </p>
       </div>
 
       {/* Status Card */}
-      <Card>
+      <Card className="rounded-[20px] border-linea bg-superficie">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Smartphone className="h-5 w-5" />
+            <Smartphone className="h-5 w-5 text-periwinkle" />
             Estado de PWA
           </CardTitle>
           <CardDescription>
@@ -241,54 +241,54 @@ export function PWAAdmin() {
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex items-center justify-between p-4 border border-linea rounded-xl bg-superficie-2/30">
               <div>
                 <p className="text-sm font-medium">Service Worker</p>
-                <p className="text-xs text-muted-foreground">Estado del worker</p>
+                <p className="text-xs text-texto-2">Estado del worker</p>
               </div>
               {isInstalled ? (
-                <Badge variant="default" className="flex items-center gap-1">
+                <Badge variant="outline" className="flex items-center gap-1 border-verde/30 bg-verde/10 text-verde">
                   <CheckCircle className="h-3 w-3" />
                   Activo
                 </Badge>
               ) : (
-                <Badge variant="secondary" className="flex items-center gap-1">
+                <Badge variant="outline" className="flex items-center gap-1 border-linea bg-superficie-2 text-texto-2">
                   <AlertCircle className="h-3 w-3" />
                   Inactivo
                 </Badge>
               )}
             </div>
 
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex items-center justify-between p-4 border border-linea rounded-xl bg-superficie-2/30">
               <div>
                 <p className="text-sm font-medium">Modo PWA</p>
-                <p className="text-xs text-muted-foreground">Aplicación instalada</p>
+                <p className="text-xs text-texto-2">Aplicación instalada</p>
               </div>
               {isPWA ? (
-                <Badge variant="default" className="flex items-center gap-1">
+                <Badge variant="outline" className="flex items-center gap-1 border-verde/30 bg-verde/10 text-verde">
                   <CheckCircle className="h-3 w-3" />
                   Sí
                 </Badge>
               ) : (
-                <Badge variant="secondary" className="flex items-center gap-1">
+                <Badge variant="outline" className="flex items-center gap-1 border-linea bg-superficie-2 text-texto-2">
                   <AlertCircle className="h-3 w-3" />
                   No
                 </Badge>
               )}
             </div>
 
-            <div className="flex items-center justify-between p-4 border rounded-lg">
+            <div className="flex items-center justify-between p-4 border border-linea rounded-xl bg-superficie-2/30">
               <div>
                 <p className="text-sm font-medium">Offline</p>
-                <p className="text-xs text-muted-foreground">Caché disponible</p>
+                <p className="text-xs text-texto-2">Caché disponible</p>
               </div>
               {isInstalled ? (
-                <Badge variant="default" className="flex items-center gap-1">
+                <Badge variant="outline" className="flex items-center gap-1 border-verde/30 bg-verde/10 text-verde">
                   <CheckCircle className="h-3 w-3" />
                   Habilitado
                 </Badge>
               ) : (
-                <Badge variant="secondary" className="flex items-center gap-1">
+                <Badge variant="outline" className="flex items-center gap-1 border-linea bg-superficie-2 text-texto-2">
                   <AlertCircle className="h-3 w-3" />
                   Deshabilitado
                 </Badge>
@@ -297,12 +297,16 @@ export function PWAAdmin() {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2">
-            <Button onClick={handleUpdate} disabled={!isInstalled} className="flex items-center gap-2">
+            <Button onClick={handleUpdate} disabled={!isInstalled} className="flex items-center gap-2 rounded-full">
               <RefreshCw className="h-4 w-4" />
               Actualizar PWA
             </Button>
-            <Button onClick={handleInstallPrompt} variant="outline" className="flex items-center gap-2">
-              <Download className="h-4 w-4" />
+            <Button
+              onClick={handleInstallPrompt}
+              variant="outline"
+              className="flex items-center gap-2 rounded-full border-linea bg-transparent hover:bg-superficie-2"
+            >
+              <Download className="h-4 w-4 text-periwinkle" />
               Instrucciones de Instalación
             </Button>
           </div>
@@ -310,10 +314,10 @@ export function PWAAdmin() {
       </Card>
 
       {/* Icons Management Card */}
-      <Card>
+      <Card className="rounded-[20px] border-linea bg-superficie">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <ImageIcon className="h-5 w-5" />
+            <ImageIcon className="h-5 w-5 text-periwinkle" />
             Gestión de Íconos PWA
           </CardTitle>
           <CardDescription>
@@ -321,11 +325,11 @@ export function PWAAdmin() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <Alert>
+          <Alert className="rounded-xl border-linea bg-superficie-2/30">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              <strong>Importante:</strong> Los íconos actuales se almacenan en <code className="bg-muted px-1 py-0.5 rounded">/public/</code>. 
-              Al subir nuevos íconos aquí, se guardarán en Supabase Storage pero deberás actualizar <code className="bg-muted px-1 py-0.5 rounded">vite.config.ts</code> y hacer rebuild para que la PWA los use.
+              <strong>Importante:</strong> Los íconos actuales se almacenan en <code className="bg-superficie-2 px-1 py-0.5 rounded">/public/</code>.
+              Al subir nuevos íconos aquí, se guardarán en Supabase Storage pero deberás actualizar <code className="bg-superficie-2 px-1 py-0.5 rounded">vite.config.ts</code> y hacer rebuild para que la PWA los use.
             </AlertDescription>
           </Alert>
 
@@ -334,10 +338,10 @@ export function PWAAdmin() {
             <div className="space-y-4">
               <div>
                 <h4 className="font-medium mb-2">Ícono 192x192px</h4>
-                <p className="text-sm text-muted-foreground mb-4">Para pantallas estándar y Android</p>
+                <p className="text-sm text-texto-2 mb-4">Para pantallas estándar y Android</p>
               </div>
 
-              <div className="border rounded-lg p-4 bg-muted/20">
+              <div className="border border-linea rounded-xl p-4 bg-superficie-2/20">
                 <div className="flex items-center justify-center h-48 mb-4">
                   {settings?.icon_192_url ? (
                     <img
@@ -355,8 +359,8 @@ export function PWAAdmin() {
                   )}
                 </div>
                 <Label htmlFor="icon-192" className="cursor-pointer">
-                  <div className="flex items-center justify-center gap-2 p-2 border-2 border-dashed rounded-lg hover:bg-muted/50 transition-colors">
-                    <Upload className="h-4 w-4" />
+                  <div className="flex items-center justify-center gap-2 p-2 border-2 border-dashed border-linea rounded-lg hover:bg-superficie-2/50 transition-colors">
+                    <Upload className="h-4 w-4 text-periwinkle" />
                     <span className="text-sm">Subir nuevo ícono 192x192</span>
                   </div>
                   <Input
@@ -375,10 +379,10 @@ export function PWAAdmin() {
             <div className="space-y-4">
               <div>
                 <h4 className="font-medium mb-2">Ícono 512x512px</h4>
-                <p className="text-sm text-muted-foreground mb-4">Para pantallas de alta resolución</p>
+                <p className="text-sm text-texto-2 mb-4">Para pantallas de alta resolución</p>
               </div>
 
-              <div className="border rounded-lg p-4 bg-muted/20">
+              <div className="border border-linea rounded-xl p-4 bg-superficie-2/20">
                 <div className="flex items-center justify-center h-48 mb-4">
                   {settings?.icon_512_url ? (
                     <img
@@ -396,8 +400,8 @@ export function PWAAdmin() {
                   )}
                 </div>
                 <Label htmlFor="icon-512" className="cursor-pointer">
-                  <div className="flex items-center justify-center gap-2 p-2 border-2 border-dashed rounded-lg hover:bg-muted/50 transition-colors">
-                    <Upload className="h-4 w-4" />
+                  <div className="flex items-center justify-center gap-2 p-2 border-2 border-dashed border-linea rounded-lg hover:bg-superficie-2/50 transition-colors">
+                    <Upload className="h-4 w-4 text-periwinkle" />
                     <span className="text-sm">Subir nuevo ícono 512x512</span>
                   </div>
                   <Input
@@ -413,7 +417,7 @@ export function PWAAdmin() {
             </div>
           </div>
 
-          <Alert>
+          <Alert className="rounded-xl border-linea bg-superficie-2/30">
             <AlertDescription className="text-sm">
               <strong>Vista Previa iOS:</strong> En iPhone, el ícono se mostrará como un cuadrado con esquinas redondeadas. 
               En Android, el ícono puede aparecer circular o cuadrado según el launcher del dispositivo.
@@ -423,7 +427,7 @@ export function PWAAdmin() {
       </Card>
 
       {/* Configuration Card */}
-      <Card>
+      <Card className="rounded-[20px] border-linea bg-superficie">
         <CardHeader>
           <CardTitle>Configuración del Manifest</CardTitle>
           <CardDescription>
@@ -515,23 +519,31 @@ export function PWAAdmin() {
             </div>
 
             <div className="flex gap-2">
-              <Button type="submit">
+              <Button
+                type="submit"
+                className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+              >
                 Guardar Configuración
               </Button>
-              <Button type="button" variant="outline" onClick={copyManifestConfig} className="flex items-center gap-2">
-                <Copy className="h-4 w-4" />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={copyManifestConfig}
+                className="flex items-center gap-2 rounded-full border-linea bg-transparent hover:bg-superficie-2"
+              >
+                <Copy className="h-4 w-4 text-periwinkle" />
                 Copiar Config para vite.config.ts
               </Button>
             </div>
           </form>
 
-          <Alert className="mt-4">
+          <Alert className="mt-4 rounded-xl border-linea bg-superficie-2/30">
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              <p className="text-sm font-medium mb-2">📝 Pasos para aplicar cambios:</p>
-              <ol className="text-sm text-muted-foreground list-decimal list-inside space-y-1">
+              <p className="text-sm font-medium mb-2">Pasos para aplicar cambios:</p>
+              <ol className="text-sm text-texto-2 list-decimal list-inside space-y-1">
                 <li>Guarda la configuración aquí</li>
-                <li>Copia la configuración y pégala en <code className="bg-background px-1 py-0.5 rounded">vite.config.ts</code></li>
+                <li>Copia la configuración y pégala en <code className="bg-superficie-2 px-1 py-0.5 rounded">vite.config.ts</code></li>
                 <li>Haz rebuild de la aplicación</li>
                 <li>Los usuarios verán los cambios al actualizar la PWA</li>
               </ol>
@@ -541,7 +553,7 @@ export function PWAAdmin() {
       </Card>
 
       {/* Features Card */}
-      <Card>
+      <Card className="rounded-[20px] border-linea bg-superficie">
         <CardHeader>
           <CardTitle>Características PWA Activas</CardTitle>
           <CardDescription>
@@ -551,42 +563,42 @@ export function PWAAdmin() {
         <CardContent>
           <ul className="space-y-3">
             <li className="flex items-start gap-2">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-verde mt-0.5" />
               <div>
                 <p className="font-medium">Instalación</p>
                 <p className="text-sm text-muted-foreground">Los usuarios pueden instalar la app en sus dispositivos</p>
               </div>
             </li>
             <li className="flex items-start gap-2">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-verde mt-0.5" />
               <div>
                 <p className="font-medium">Funcionalidad Offline</p>
                 <p className="text-sm text-muted-foreground">Caché inteligente para acceso sin conexión</p>
               </div>
             </li>
             <li className="flex items-start gap-2">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-verde mt-0.5" />
               <div>
                 <p className="font-medium">Actualización Automática</p>
                 <p className="text-sm text-muted-foreground">La app se actualiza automáticamente en segundo plano</p>
               </div>
             </li>
             <li className="flex items-start gap-2">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-verde mt-0.5" />
               <div>
                 <p className="font-medium">Pantalla Completa</p>
                 <p className="text-sm text-muted-foreground">Experiencia de app nativa sin barra del navegador</p>
               </div>
             </li>
             <li className="flex items-start gap-2">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-verde mt-0.5" />
               <div>
                 <p className="font-medium">Optimización de Recursos</p>
                 <p className="text-sm text-muted-foreground">Caché de fuentes y recursos estáticos</p>
               </div>
             </li>
             <li className="flex items-start gap-2">
-              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5" />
+              <CheckCircle className="h-5 w-5 text-verde mt-0.5" />
               <div>
                 <p className="font-medium">Íconos Nativos</p>
                 <p className="text-sm text-muted-foreground">Logo de Conciertos Latam como ícono de la app</p>

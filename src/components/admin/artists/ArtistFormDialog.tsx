@@ -132,7 +132,7 @@ export const ArtistFormDialog = ({
                 {/* Spotify Search Section */}
                 {!artist && (
                     <>
-                        <div className="mb-6 p-4 border rounded-lg bg-muted/50">
+                        <div className="mb-6 p-4 border border-linea rounded-[20px] bg-superficie-2/50">
                             <Label className="text-base font-semibold">Buscar en Spotify</Label>
                             <div className="flex gap-2 mt-2">
                                 <Input
@@ -165,7 +165,7 @@ export const ArtistFormDialog = ({
 
                         {/* Artist Selection List */}
                         {searchResults.length > 0 && (
-                            <div className="mb-6 p-4 border rounded-lg bg-muted/30">
+                            <div className="mb-6 p-4 border border-linea rounded-[20px] bg-superficie-2/30">
                                 <Label className="text-base font-semibold mb-3 block">
                                     Selecciona el artista correcto ({searchResults.length} resultados)
                                 </Label>
@@ -175,7 +175,7 @@ export const ArtistFormDialog = ({
                                             type="button"
                                             key={artist.id}
                                             onClick={() => handleArtistSelect(artist)}
-                                            className="flex items-center gap-3 p-2.5 border rounded-lg bg-background text-left transition-colors hover:border-primary/50 hover:bg-muted/50"
+                                            className="flex items-center gap-3 p-2.5 border border-linea rounded-lg bg-superficie text-left transition-colors hover:border-periwinkle/50 hover:bg-superficie-2"
                                         >
                                             {/* Artist Image */}
                                             <img
@@ -266,10 +266,10 @@ export const ArtistFormDialog = ({
                     </div>
 
                     {/* Géneros Musicales */}
-                    <div className="p-4 border rounded-lg">
+                    <div className="p-4 border border-linea rounded-[20px] bg-superficie-2/30">
                         <div className="flex items-center justify-between mb-3">
                             <Label className="text-base font-semibold flex items-center gap-2">
-                                <Music className="w-4 h-4 text-primary" />
+                                <Music className="w-4 h-4 text-periwinkle" />
                                 Géneros Musicales
                             </Label>
                             {artist && (
@@ -328,10 +328,20 @@ export const ArtistFormDialog = ({
                     </div>
 
                     <DialogFooter>
-                        <Button type="button" variant="outline" onClick={onClose} disabled={isSubmitting}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                            onClick={onClose}
+                            disabled={isSubmitting}
+                        >
                             Cancelar
                         </Button>
-                        <Button type="submit" disabled={isSubmitting}>
+                        <Button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                        >
                             {isSubmitting && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                             {artist ? 'Actualizar' : 'Crear'}
                         </Button>

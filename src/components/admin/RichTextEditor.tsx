@@ -138,8 +138,8 @@ export const RichTextEditor = ({ value, onChange, label, placeholder }: RichText
     <div className="space-y-2">
       {label && <Label>{label}</Label>}
       <div
-        className={`rounded-lg border bg-background overflow-hidden transition-colors ${
-          isFocused ? 'border-primary ring-1 ring-primary/20' : 'border-border'
+        className={`rounded-[20px] border bg-superficie overflow-hidden transition-colors ${
+          isFocused ? 'border-periwinkle ring-1 ring-periwinkle/25' : 'border-linea'
         }`}
       >
         <EditorToolbar editor={editor} />

@@ -117,7 +117,7 @@ export function FestivalForm({
   };
 
   return (
-    <Card>
+    <Card className="rounded-[20px] border-linea bg-superficie">
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>
           {festival ? 'Editar Festival' : 'Nuevo Festival'}
@@ -285,7 +285,7 @@ export function FestivalForm({
           </div>
 
           {/* Featured Toggle */}
-          <div className="flex items-center justify-between rounded-lg border p-4">
+          <div className="flex items-center justify-between rounded-[20px] border border-linea bg-superficie-2/30 p-4">
             <div className="space-y-0.5">
               <Label htmlFor="is_featured">Destacar Festival</Label>
               <p className="text-sm text-muted-foreground">
@@ -301,10 +301,19 @@ export function FestivalForm({
 
           {/* Actions */}
           <div className="flex gap-2 justify-end">
-            <Button type="button" variant="outline" onClick={onCancel}>
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+              onClick={onCancel}
+            >
               Cancelar
             </Button>
-            <Button type="submit" disabled={isLoading}>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+            >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               {festival ? 'Actualizar' : 'Crear'} Festival
             </Button>

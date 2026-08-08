@@ -89,10 +89,10 @@ export const EditorToolbar = ({ editor }: EditorToolbarProps) => {
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b bg-muted/40">
+    <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-linea bg-superficie">
       {/* Heading selector */}
       <Select value={currentHeading()} onValueChange={(v) => handleHeadingChange(v as HeadingLevel)}>
-        <SelectTrigger className="w-[130px] h-8 text-xs border-0 bg-transparent hover:bg-muted focus:ring-0 shadow-none">
+        <SelectTrigger className="w-[130px] h-8 text-xs border-0 bg-transparent hover:bg-superficie-2 focus:ring-0 shadow-none">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -201,7 +201,7 @@ export const EditorToolbar = ({ editor }: EditorToolbarProps) => {
             size="sm"
             pressed={editor.isActive('link')}
             onPressedChange={openLinkPopover}
-            className="h-8 w-8 p-0"
+            className="h-8 w-8 p-0 data-[state=on]:bg-superficie-2 data-[state=on]:text-periwinkle"
             title="Enlace (⌘K)"
           >
             <Link2 className="h-4 w-4" />
@@ -324,7 +324,7 @@ function ToolbarToggle({
       size="sm"
       pressed={pressed}
       onPressedChange={onPressedChange}
-      className="h-8 w-8 p-0"
+      className="h-8 w-8 p-0 data-[state=on]:bg-superficie-2 data-[state=on]:text-periwinkle"
       title={tooltip}
     >
       <Icon className="h-4 w-4" />

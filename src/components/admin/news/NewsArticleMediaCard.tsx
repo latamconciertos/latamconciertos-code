@@ -23,20 +23,20 @@ export const NewsArticleMediaCard = () => {
 
   return (
     <Collapsible defaultOpen={hasImage}>
-      <div className="rounded-lg border bg-card overflow-hidden">
-        <CollapsibleTrigger className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/50 transition-colors">
+      <div className="rounded-[20px] border border-linea bg-superficie overflow-hidden">
+        <CollapsibleTrigger className="w-full px-4 py-3 flex items-center justify-between hover:bg-superficie-2/60 transition-colors">
           <div className="flex items-center gap-2">
-            <ImageIcon className="h-4 w-4 text-muted-foreground" />
+            <ImageIcon className="h-4 w-4 text-periwinkle" />
             <span className="text-base font-semibold">Imágenes destacadas</span>
             {hasImage && (
-              <span className="text-xs text-green-600 font-medium">Subida</span>
+              <span className="text-xs text-verde font-medium">Subida</span>
             )}
           </div>
           <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
         </CollapsibleTrigger>
 
         <CollapsibleContent>
-          <div className="px-4 pb-4 pt-2 space-y-6 border-t">
+          <div className="px-4 pb-4 pt-2 space-y-6 border-t border-linea">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
                 control={form.control}

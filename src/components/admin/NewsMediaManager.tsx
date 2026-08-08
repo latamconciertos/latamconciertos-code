@@ -131,6 +131,7 @@ export const NewsMediaManager = ({ initialMedia = [], onChange }: NewsMediaManag
               <Button
                 type="button"
                 variant="outline"
+                className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                 disabled={uploading}
                 onClick={() => document.getElementById('upload-image')?.click()}
               >
@@ -153,6 +154,7 @@ export const NewsMediaManager = ({ initialMedia = [], onChange }: NewsMediaManag
               <Button
                 type="button"
                 variant="outline"
+                className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                 disabled={uploading}
                 onClick={() => document.getElementById('upload-video')?.click()}
               >
@@ -164,7 +166,7 @@ export const NewsMediaManager = ({ initialMedia = [], onChange }: NewsMediaManag
         </div>
         
         {mediaItems.length > 0 && (
-          <div className="text-sm text-muted-foreground p-3 bg-muted rounded-md">
+          <div className="text-sm text-muted-foreground p-3 bg-superficie-2 border border-linea rounded-lg">
             <p className="font-medium mb-1">Para insertar en el contenido:</p>
             <p>Copia el código del medio y pégalo en el editor de texto donde quieras que aparezca.</p>
           </div>
@@ -174,7 +176,7 @@ export const NewsMediaManager = ({ initialMedia = [], onChange }: NewsMediaManag
       {mediaItems.length > 0 && (
         <div className="space-y-3">
           {mediaItems.map((item, index) => (
-            <Card key={index}>
+            <Card key={index} className="rounded-[20px] border-linea bg-superficie">
               <CardContent className="p-4">
                 <div className="flex gap-4">
                   <div className="flex flex-col gap-1">
@@ -220,13 +222,14 @@ export const NewsMediaManager = ({ initialMedia = [], onChange }: NewsMediaManag
                         type="button"
                         variant="outline"
                         size="sm"
+                        className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                         onClick={() => copyPlaceholder(index, item.media_type)}
                       >
                         <Copy className="h-3 w-3 mr-1" />
                         Copiar código
                       </Button>
                     </div>
-                    <code className="text-xs bg-muted px-2 py-1 rounded block">
+                    <code className="text-xs bg-superficie-2 px-2 py-1 rounded block">
                       {item.media_type === 'image' ? `[IMAGEN:${index}]` : `[VIDEO:${index}]`}
                     </code>
                     <Input

@@ -148,7 +148,7 @@ export const NewsArticleForm = ({ article }: NewsArticleFormProps) => {
   return (
     <FormProvider {...form}>
       {/* ── Sticky header ──────────────────────────────────────── */}
-      <header className="sticky top-0 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b">
+      <header className="sticky top-0 z-30 bg-noche/95 backdrop-blur supports-[backdrop-filter]:bg-noche/80 border-b border-linea">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <Button
@@ -161,7 +161,7 @@ export const NewsArticleForm = ({ article }: NewsArticleFormProps) => {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div className="min-w-0">
-              <h1 className="text-lg font-semibold truncate">
+              <h1 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl leading-none text-texto truncate">
                 {isEditing ? 'Editar artículo' : 'Nuevo artículo'}
               </h1>
             </div>
@@ -172,6 +172,7 @@ export const NewsArticleForm = ({ article }: NewsArticleFormProps) => {
               type="button"
               variant="outline"
               size="sm"
+              className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
               disabled={isSaving}
               onClick={handleSaveDraft}
             >
@@ -186,6 +187,7 @@ export const NewsArticleForm = ({ article }: NewsArticleFormProps) => {
             <Button
               type="button"
               size="sm"
+              className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
               disabled={isSaving || !quality.isValid}
               onClick={handlePublish}
             >
@@ -240,14 +242,14 @@ export const NewsArticleForm = ({ article }: NewsArticleFormProps) => {
                     <span
                       className={
                         quality.wordCount >= QUALITY_THRESHOLDS.minWords
-                          ? 'text-green-600 font-medium'
+                          ? 'text-verde font-medium'
                           : 'text-muted-foreground'
                       }
                     >
                       {quality.wordCount} palabras
                     </span>
                     {quality.wordCount < QUALITY_THRESHOLDS.minWords && (
-                      <span> — mínimo {QUALITY_THRESHOLDS.minWords} para publicar</span>
+                      <span> (mínimo {QUALITY_THRESHOLDS.minWords} para publicar)</span>
                     )}
                   </p>
                   <FormMessage />
@@ -261,10 +263,10 @@ export const NewsArticleForm = ({ article }: NewsArticleFormProps) => {
             {/* Ticket price extractor (collapsible, only if concert selected) */}
             {selectedConcertTicketUrl && (
               <Collapsible>
-                <div className="rounded-lg border bg-card overflow-hidden">
-                  <CollapsibleTrigger className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/50 transition-colors">
+                <div className="rounded-[20px] border border-linea bg-superficie overflow-hidden">
+                  <CollapsibleTrigger className="w-full px-4 py-3 flex items-center justify-between hover:bg-superficie-2/60 transition-colors">
                     <div className="flex items-center gap-2">
-                      <Ticket className="h-4 w-4 text-muted-foreground" />
+                      <Ticket className="h-4 w-4 text-periwinkle" />
                       <span className="text-base font-semibold">
                         Extractor de precios
                       </span>
@@ -272,7 +274,7 @@ export const NewsArticleForm = ({ article }: NewsArticleFormProps) => {
                     <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
                   </CollapsibleTrigger>
                   <CollapsibleContent>
-                    <div className="px-4 pb-4 pt-1 border-t">
+                    <div className="px-4 pb-4 pt-1 border-t border-linea">
                       <TicketPriceExtractor
                         ticketUrl={selectedConcertTicketUrl}
                         onInsertContent={handleInsertPriceContent}
@@ -285,10 +287,10 @@ export const NewsArticleForm = ({ article }: NewsArticleFormProps) => {
 
             {/* Media gallery (collapsible) */}
             <Collapsible defaultOpen={mediaItems.length > 0}>
-              <div className="rounded-lg border bg-card overflow-hidden">
-                <CollapsibleTrigger className="w-full px-4 py-3 flex items-center justify-between hover:bg-muted/50 transition-colors">
+              <div className="rounded-[20px] border border-linea bg-superficie overflow-hidden">
+                <CollapsibleTrigger className="w-full px-4 py-3 flex items-center justify-between hover:bg-superficie-2/60 transition-colors">
                   <div className="flex items-center gap-2">
-                    <Film className="h-4 w-4 text-muted-foreground" />
+                    <Film className="h-4 w-4 text-periwinkle" />
                     <span className="text-base font-semibold">
                       Galería multimedia
                     </span>
@@ -301,7 +303,7 @@ export const NewsArticleForm = ({ article }: NewsArticleFormProps) => {
                   <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform [[data-state=open]>&]:rotate-180" />
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <div className="px-4 pb-4 pt-1 border-t">
+                  <div className="px-4 pb-4 pt-1 border-t border-linea">
                     <NewsMediaManager
                       articleId={article?.id}
                       initialMedia={mediaItems}

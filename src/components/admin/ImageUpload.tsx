@@ -152,7 +152,7 @@ export const ImageUpload = ({
         )}
 
         {previewUrl && (
-          <div className={`relative ${previewStyle} rounded-lg overflow-hidden border`}>
+          <div className={`relative ${previewStyle} rounded-lg overflow-hidden border border-linea`}>
             <img
               src={previewUrl}
               alt="Preview"
@@ -166,21 +166,22 @@ export const ImageUpload = ({
             type="button"
             variant="outline"
             disabled={uploading}
+            className="w-full border-dashed border-linea bg-superficie hover:bg-superficie-2 hover:border-periwinkle/50"
             onClick={() => document.getElementById(inputId)?.click()}
           >
             {uploading ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <Loader2 className="w-4 h-4 mr-2 animate-spin text-periwinkle" />
                 Subiendo...
               </>
             ) : enableCrop ? (
               <>
-                <Crop className="w-4 h-4 mr-2" />
+                <Crop className="w-4 h-4 mr-2 text-periwinkle" />
                 Subir y Encuadrar
               </>
             ) : (
               <>
-                <Upload className="w-4 h-4 mr-2" />
+                <Upload className="w-4 h-4 mr-2 text-periwinkle" />
                 Subir Imagen
               </>
             )}

@@ -254,18 +254,22 @@ export const FanProjectSongsManager = ({ projectId, onEditSequence }: FanProject
   }
 
   return (
-    <Card>
+    <Card className="rounded-[20px] border-linea bg-superficie">
       <CardHeader>
         <div className="flex items-center justify-between">
           <div>
             <CardTitle>Canciones del Proyecto</CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-texto-2 mt-1">
               Agrega las canciones y configura las secuencias de colores
             </p>
           </div>
           <Dialog open={showDialog} onOpenChange={setShowDialog}>
             <DialogTrigger asChild>
-              <Button size="sm" onClick={() => { setEditingSong(null); resetForm(); }}>
+              <Button
+                size="sm"
+                className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                onClick={() => { setEditingSong(null); resetForm(); }}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Agregar Canción
               </Button>
@@ -282,7 +286,7 @@ export const FanProjectSongsManager = ({ projectId, onEditSequence }: FanProject
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 {/* Spotify Search Section */}
-                <div className="space-y-2 p-4 border rounded-lg bg-muted/50">
+                <div className="space-y-2 p-4 border border-linea rounded-xl bg-superficie-2/50">
                   <Label htmlFor="spotify_search" className="flex items-center gap-2">
                     <Search className="h-4 w-4" />
                     Buscar en Spotify
@@ -311,14 +315,14 @@ export const FanProjectSongsManager = ({ projectId, onEditSequence }: FanProject
                   </div>
                   
                   {spotifyResults.length > 0 && (
-                    <ScrollArea className="h-[200px] w-full rounded-md border mt-2">
+                    <ScrollArea className="h-[200px] w-full rounded-md border border-linea mt-2">
                       <div className="p-2 space-y-1">
                         {spotifyResults.map((track) => (
                           <button
                             key={track.id}
                             type="button"
                             onClick={() => handleSelectSpotifyTrack(track)}
-                            className="w-full text-left p-3 hover:bg-accent rounded-md transition-colors"
+                            className="w-full text-left p-3 hover:bg-superficie-2 rounded-md transition-colors"
                           >
                             <div className="flex items-center gap-3">
                               {track.album.images[0] && (
@@ -398,10 +402,18 @@ export const FanProjectSongsManager = ({ projectId, onEditSequence }: FanProject
                 </div>
 
                 <div className="flex gap-3 justify-end">
-                  <Button type="button" variant="outline" onClick={() => setShowDialog(false)}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                    onClick={() => setShowDialog(false)}
+                  >
                     Cancelar
                   </Button>
-                  <Button type="submit">
+                  <Button
+                    type="submit"
+                    className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                  >
                     {editingSong ? 'Actualizar' : 'Crear'}
                   </Button>
                 </div>
@@ -412,8 +424,8 @@ export const FanProjectSongsManager = ({ projectId, onEditSequence }: FanProject
       </CardHeader>
       <CardContent>
         {songs.length === 0 ? (
-          <div className="text-center py-8 text-muted-foreground">
-            <Music className="h-12 w-12 mx-auto mb-4 opacity-50" />
+          <div className="text-center py-8 text-texto-2">
+            <Music className="h-12 w-12 mx-auto mb-4 text-periwinkle/40" />
             <p>No hay canciones en este proyecto</p>
             <p className="text-sm mt-2">
               Agrega canciones para configurar las secuencias de luces
@@ -424,10 +436,10 @@ export const FanProjectSongsManager = ({ projectId, onEditSequence }: FanProject
             {songs.map((song, index) => (
               <div
                 key={song.id}
-                className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50"
+                className="flex items-center justify-between p-4 border border-linea rounded-xl hover:bg-superficie-2/50 transition-colors"
               >
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-semibold">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-periwinkle/10 text-periwinkle font-semibold">
                     {index + 1}
                   </div>
                   <div>
@@ -442,23 +454,26 @@ export const FanProjectSongsManager = ({ projectId, onEditSequence }: FanProject
                 </div>
                 <div className="flex gap-2">
                   <Button
-                    variant="default"
+                    variant="outline"
                     size="sm"
+                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                     onClick={() => onEditSequence(song.id, song.song_name)}
                   >
-                    <Palette className="h-4 w-4 mr-2" />
+                    <Palette className="h-4 w-4 mr-2 text-periwinkle" />
                     Configurar Colores
                   </Button>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
+                    className="text-texto-2 hover:text-periwinkle"
                     onClick={() => handleEdit(song)}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
+                    className="text-texto-2 hover:text-destructive"
                     onClick={() => handleDelete(song.id)}
                   >
                     <Trash2 className="h-4 w-4" />

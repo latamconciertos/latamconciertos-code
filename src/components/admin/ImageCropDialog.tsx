@@ -165,7 +165,7 @@ export const ImageCropDialog = ({
           <p className="text-sm text-muted-foreground">{description}</p>
         </DialogHeader>
 
-        <div className="flex-1 overflow-auto flex items-center justify-center bg-muted/20 rounded-lg p-4">
+        <div className="flex-1 overflow-auto flex items-center justify-center bg-superficie-2/30 border border-linea rounded-lg p-4">
           {loading ? (
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-2"></div>
@@ -193,6 +193,7 @@ export const ImageCropDialog = ({
         <DialogFooter className="flex gap-2">
           <Button
             variant="outline"
+            className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
             onClick={() => onOpenChange(false)}
             disabled={processing || loading}
           >
@@ -201,6 +202,7 @@ export const ImageCropDialog = ({
           <Button
             onClick={handleSave}
             disabled={processing || !completedCrop || loading}
+            className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
           >
             {processing ? 'Procesando...' : 'Guardar encuadre'}
           </Button>

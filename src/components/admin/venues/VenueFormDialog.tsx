@@ -140,10 +140,18 @@ export const VenueFormDialog = ({
                     </div>
 
                     <div className="flex gap-2">
-                        <Button type="submit">
+                        <Button
+                            type="submit"
+                            className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                        >
                             {venue ? 'Actualizar' : 'Crear'}
                         </Button>
-                        <Button type="button" variant="outline" onClick={onClose}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                            onClick={onClose}
+                        >
                             Cancelar
                         </Button>
                     </div>

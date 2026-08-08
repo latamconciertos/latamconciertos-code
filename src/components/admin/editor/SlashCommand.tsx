@@ -168,7 +168,7 @@ const CommandList = ({ items, command }: CommandListProps) => {
 
   if (items.length === 0) {
     return (
-      <div className="rounded-lg border bg-popover p-3 shadow-lg">
+      <div className="rounded-lg border border-linea bg-superficie p-3 shadow-[0_20px_50px_rgba(0,0,0,.5)]">
         <p className="text-sm text-muted-foreground">Sin resultados</p>
       </div>
     );
@@ -177,7 +177,7 @@ const CommandList = ({ items, command }: CommandListProps) => {
   return (
     <div
       ref={containerRef}
-      className="rounded-lg border bg-popover shadow-lg overflow-hidden max-h-[300px] overflow-y-auto w-[280px]"
+      className="rounded-lg border border-linea bg-superficie shadow-[0_20px_50px_rgba(0,0,0,.5)] overflow-hidden max-h-[300px] overflow-y-auto w-[280px]"
     >
       {items.map((item, index) => {
         const Icon = item.icon;
@@ -187,11 +187,11 @@ const CommandList = ({ items, command }: CommandListProps) => {
             onClick={() => command(item)}
             className={`flex items-center gap-3 w-full px-3 py-2.5 text-left transition-colors ${
               index === selectedIndex
-                ? 'bg-accent text-accent-foreground'
-                : 'hover:bg-muted'
+                ? 'bg-superficie-2 text-periwinkle'
+                : 'hover:bg-superficie-2/60'
             }`}
           >
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border bg-background">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-linea bg-superficie-2">
               <Icon className="h-4 w-4" />
             </div>
             <div className="min-w-0">

@@ -307,7 +307,7 @@ export const ConcertFormDialog = ({
                     {formData.event_type === 'festival' && (
                         <div>
                             <Label>Artistas del Festival</Label>
-                            <div className="border rounded-md p-4 space-y-2 max-h-60 overflow-y-auto">
+                            <div className="border border-linea bg-superficie-2/30 rounded-[20px] p-4 space-y-2 max-h-60 overflow-y-auto">
                                 {artists.map((artist) => (
                                     <div key={artist.id} className="flex items-center space-x-2">
                                         <Checkbox
@@ -335,7 +335,7 @@ export const ConcertFormDialog = ({
                                             return artist ? (
                                                 <div
                                                     key={artistId}
-                                                    className="flex items-center gap-1 bg-secondary text-secondary-foreground px-2 py-1 rounded-md text-sm"
+                                                    className="flex items-center gap-1 border border-linea bg-superficie-2 text-texto px-2.5 py-1 rounded-full text-sm"
                                                 >
                                                     {artist.name}
                                                     <Button
@@ -405,7 +405,7 @@ export const ConcertFormDialog = ({
                                 className="font-mono text-xs"
                             />
                             <p className="text-xs text-muted-foreground mt-1">
-                                💡 Pega el código completo del iframe que Spotify te proporciona. Extraeremos la URL automáticamente.
+                                Pega el código completo del iframe que Spotify te proporciona. Extraeremos la URL automáticamente.
                             </p>
                         </div>
                     </div>
@@ -419,10 +419,18 @@ export const ConcertFormDialog = ({
                     />
 
                     <div className="flex gap-2">
-                        <Button type="submit">
+                        <Button
+                            type="submit"
+                            className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                        >
                             {concert ? 'Actualizar' : 'Crear'}
                         </Button>
-                        <Button type="button" variant="outline" onClick={onClose}>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                            onClick={onClose}
+                        >
                             Cancelar
                         </Button>
                     </div>

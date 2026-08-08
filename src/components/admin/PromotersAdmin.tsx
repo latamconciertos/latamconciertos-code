@@ -117,10 +117,14 @@ export const PromotersAdmin = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Gestión de Promotoras</h2>
-          <p className="text-muted-foreground">Administra las promotoras de eventos</p>
+          <h2 className="font-display uppercase tracking-[0.01em] text-2xl font-extrabold text-texto">Gestión de Promotoras</h2>
+          <p className="text-texto-2">Administra las promotoras de eventos</p>
         </div>
-        <Button onClick={() => setShowForm(true)} size="lg">
+        <Button
+          onClick={() => setShowForm(true)}
+          size="lg"
+          className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+        >
           <Plus className="w-4 h-4 mr-2" />
           Nueva Promotora
         </Button>
@@ -143,15 +147,15 @@ export const PromotersAdmin = () => {
       </div>
 
       {/* Table */}
-      <div className="border rounded-lg overflow-hidden bg-card">
-        <div className="grid grid-cols-12 gap-4 px-4 py-2.5 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <div className="rounded-[20px] border border-linea overflow-hidden bg-superficie">
+        <div className="grid grid-cols-12 gap-4 px-4 py-2.5 bg-superficie-2/60 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           <div className="col-span-4">Nombre</div>
           <div className="col-span-5">Descripción</div>
           <div className="col-span-2">Sitio web</div>
           <div className="col-span-1 text-right">Acciones</div>
         </div>
 
-        <div className="divide-y">
+        <div className="divide-y divide-linea">
           {filteredPromoters.length === 0 ? (
             <div className="p-8 text-center text-sm text-muted-foreground">
               {searchTerm
@@ -162,7 +166,7 @@ export const PromotersAdmin = () => {
             filteredPromoters.map((promoter) => (
               <div
                 key={promoter.id}
-                className="grid grid-cols-12 gap-4 px-4 py-2.5 items-center hover:bg-muted/40 transition-colors cursor-pointer"
+                className="grid grid-cols-12 gap-4 px-4 py-2.5 items-center hover:bg-superficie-2 transition-colors cursor-pointer"
                 onClick={() => handleEdit(promoter)}
               >
                 <div className="col-span-4 min-w-0">
@@ -178,7 +182,7 @@ export const PromotersAdmin = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
-                      className="inline-flex items-center gap-1 text-primary hover:underline"
+                      className="inline-flex items-center gap-1 text-periwinkle hover:underline"
                     >
                       <ExternalLink className="w-3 h-3 shrink-0" />
                       <span className="truncate">Visitar</span>
@@ -191,7 +195,7 @@ export const PromotersAdmin = () => {
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    className="h-8 w-8 text-muted-foreground hover:text-periwinkle"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleEdit(promoter);
@@ -260,10 +264,18 @@ export const PromotersAdmin = () => {
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={resetForm}>
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                onClick={resetForm}
+              >
                 Cancelar
               </Button>
-              <Button type="submit">
+              <Button
+                type="submit"
+                className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+              >
                 {editingPromoter ? 'Actualizar' : 'Crear'}
               </Button>
             </div>

@@ -179,8 +179,8 @@ export const GalleryAdmin = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Galería de Medios</h2>
-          <p className="text-muted-foreground">Gestiona archivos en tus buckets de almacenamiento</p>
+          <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Galería de Medios</h2>
+          <p className="text-texto-2">Gestiona archivos en tus buckets de almacenamiento</p>
         </div>
       </div>
 
@@ -202,7 +202,11 @@ export const GalleryAdmin = () => {
 
         <div className="flex-1">
           <label htmlFor="file-upload">
-            <Button disabled={uploading} asChild>
+            <Button
+              disabled={uploading}
+              asChild
+              className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+            >
               <span className="cursor-pointer">
                 {uploading ? (
                   <>
@@ -228,28 +232,28 @@ export const GalleryAdmin = () => {
         </div>
       </div>
 
-      <Alert>
-        <AlertDescription>
+      <Alert className="rounded-xl border-linea bg-superficie">
+        <AlertDescription className="text-texto-2">
           Formatos permitidos: JPG, PNG, GIF, WEBP, MP4, WEBM. Tamaño máximo: 10MB
         </AlertDescription>
       </Alert>
 
       {loading ? (
         <div className="flex justify-center items-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin" />
+          <Loader2 className="w-8 h-8 animate-spin text-periwinkle" />
         </div>
       ) : files.length === 0 ? (
-        <div className="text-center py-12 border-2 border-dashed rounded-lg">
-          <ImageIcon className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-          <p className="text-muted-foreground">No hay archivos en este bucket</p>
+        <div className="text-center py-12 border-2 border-dashed border-linea rounded-[20px] bg-superficie/50">
+          <ImageIcon className="w-12 h-12 mx-auto text-periwinkle/40 mb-4" />
+          <p className="text-texto-2">No hay archivos en este bucket</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {files.map((file) => {
             const fileUrl = getFileUrl(file.name);
             return (
-              <Card key={file.name} className="overflow-hidden">
-                <div className="aspect-video bg-muted relative">
+              <Card key={file.name} className="overflow-hidden rounded-[20px] border-linea bg-superficie">
+                <div className="aspect-video bg-superficie-2 relative">
                   {isImage(file.metadata) ? (
                     <img
                       src={fileUrl}
@@ -270,7 +274,7 @@ export const GalleryAdmin = () => {
                   <p className="text-sm font-medium truncate" title={file.name}>
                     {file.name}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-texto-2">
                     {file.metadata?.size ? formatFileSize(file.metadata.size) : 'Tamaño desconocido'}
                   </p>
                   <div className="flex gap-2">
@@ -278,21 +282,23 @@ export const GalleryAdmin = () => {
                       variant="outline"
                       size="sm"
                       onClick={() => copyUrl(fileUrl)}
-                      className="flex-1"
+                      className="flex-1 rounded-full border-linea bg-transparent hover:bg-superficie-2"
                     >
                       <Copy className="w-3 h-3 mr-1" />
                       Copiar URL
                     </Button>
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
+                      className="text-texto-2 hover:text-periwinkle"
                       onClick={() => window.open(fileUrl, '_blank')}
                     >
                       <ExternalLink className="w-3 h-3" />
                     </Button>
                     <Button
-                      variant="destructive"
+                      variant="ghost"
                       size="sm"
+                      className="text-texto-2 hover:text-destructive"
                       onClick={() => setDeleteFile(file.name)}
                     >
                       <Trash2 className="w-3 h-3" />

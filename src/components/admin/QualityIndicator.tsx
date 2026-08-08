@@ -24,9 +24,9 @@ export const QualityIndicator = ({ label, value, min, max, status }: QualityIndi
     <div className="flex items-center justify-between py-2">
       <div className="flex items-center gap-2">
         {isComplete ? (
-          <Check className="h-5 w-5 text-green-600" />
+          <Check className="h-5 w-5 text-verde" />
         ) : (
-          <X className="h-5 w-5 text-red-600" />
+          <X className="h-5 w-5 text-destructive" />
         )}
         <span className="text-sm">{label}</span>
       </div>

@@ -293,18 +293,22 @@ export const AdsAdmin = () => {
   };
 
   const getStatusBadge = (status: string) => {
-    const variants: Record<string, 'default' | 'secondary' | 'destructive'> = {
-      active: 'default',
-      paused: 'secondary',
-      finished: 'destructive',
+    const chips: Record<string, { className: string; label: string }> = {
+      active: { className: 'border-verde/30 bg-verde/10 text-verde', label: 'Activa' },
+      paused: { className: 'border-amber-500/30 bg-amber-500/10 text-amber-400', label: 'Pausada' },
+      finished: { className: 'border-linea bg-superficie-2 text-texto-2', label: 'Finalizada' },
     };
-    return <Badge variant={variants[status] || 'default'}>{status}</Badge>;
+    const config = chips[status] || chips.active;
+    return <Badge variant="outline" className={config.className}>{config.label}</Badge>;
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Publicidad Interna</h2>
+        <div>
+          <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Publicidad Interna</h2>
+          <p className="text-texto-2">Campañas y anuncios propios en el sitio</p>
+        </div>
       </div>
 
       <Tabs defaultValue="configuration" className="w-full">
@@ -318,14 +322,17 @@ export const AdsAdmin = () => {
         <TabsContent value="configuration" className="space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Campañas</h3>
-            <Button onClick={() => setShowCampaignForm(true)}>
+            <Button
+              className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+              onClick={() => setShowCampaignForm(true)}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Nueva Campaña
             </Button>
           </div>
 
           {showCampaignForm && (
-            <Card>
+            <Card className="rounded-[20px] border-linea bg-superficie">
               <CardHeader>
                 <CardTitle>
                   {editingCampaign ? 'Editar' : 'Nueva'} Campaña
@@ -389,8 +396,12 @@ export const AdsAdmin = () => {
                   </div>
                 </div>
                 <div className="flex gap-2">
-                  <Button onClick={handleSaveCampaign}>Guardar</Button>
-                  <Button variant="outline" onClick={resetCampaignForm}>
+                  <Button className="rounded-full" onClick={handleSaveCampaign}>Guardar</Button>
+                  <Button
+                    variant="outline"
+                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                    onClick={resetCampaignForm}
+                  >
                     Cancelar
                   </Button>
                 </div>
@@ -402,11 +413,11 @@ export const AdsAdmin = () => {
             {campaigns.map((campaign) => (
               <Card
                 key={campaign.id}
-                className={
+                className={`rounded-[20px] bg-superficie ${
                   selectedCampaign === campaign.id
-                    ? 'border-primary'
-                    : ''
-                }
+                    ? 'border-[rgba(89,124,255,.45)]'
+                    : 'border-linea'
+                }`}
               >
                 <CardContent className="flex justify-between items-center p-4">
                   <div className="flex-1">
@@ -414,7 +425,7 @@ export const AdsAdmin = () => {
                       <h4 className="font-semibold">{campaign.name}</h4>
                       {getStatusBadge(campaign.status)}
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-texto-2">
                       Creada: {new Date(campaign.created_at).toLocaleDateString()}
                     </p>
                   </div>
@@ -422,21 +433,24 @@ export const AdsAdmin = () => {
                     <Button
                       size="sm"
                       variant="outline"
+                      className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                       onClick={() => setSelectedCampaign(campaign.id)}
                     >
-                      <Eye className="h-4 w-4 mr-1" />
+                      <Eye className="h-4 w-4 mr-1 text-periwinkle" />
                       Ver Anuncios
                     </Button>
                     <Button
                       size="sm"
-                      variant="outline"
+                      variant="ghost"
+                      className="text-texto-2 hover:text-periwinkle"
                       onClick={() => editCampaign(campaign)}
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
                     <Button
                       size="sm"
-                      variant="destructive"
+                      variant="ghost"
+                      className="text-texto-2 hover:text-destructive"
                       onClick={() => handleDeleteCampaign(campaign.id)}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -454,14 +468,17 @@ export const AdsAdmin = () => {
               Anuncios de:{' '}
               {campaigns.find((c) => c.id === selectedCampaign)?.name}
             </h3>
-            <Button onClick={() => setShowAdForm(true)}>
+            <Button
+              className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+              onClick={() => setShowAdForm(true)}
+            >
               <Plus className="h-4 w-4 mr-2" />
               Nuevo Anuncio
             </Button>
           </div>
 
           {showAdForm && (
-            <Card>
+            <Card className="rounded-[20px] border-linea bg-superficie">
               <CardHeader>
                 <CardTitle>{editingAd ? 'Editar' : 'Nuevo'} Anuncio</CardTitle>
               </CardHeader>
@@ -483,6 +500,7 @@ export const AdsAdmin = () => {
                     <div className="flex items-center space-x-2">
                       <input
                         type="radio"
+                        className="accent-periwinkle"
                         id="homepage"
                         checked={adForm.location === 'homepage'}
                         onChange={() =>
@@ -494,6 +512,7 @@ export const AdsAdmin = () => {
                     <div className="flex items-center space-x-2">
                       <input
                         type="radio"
+                        className="accent-periwinkle"
                         id="blog"
                         checked={adForm.location === 'blog'}
                         onChange={() =>
@@ -505,6 +524,7 @@ export const AdsAdmin = () => {
                     <div className="flex items-center space-x-2">
                       <input
                         type="radio"
+                        className="accent-periwinkle"
                         id="concerts"
                         checked={adForm.location === 'concerts'}
                         onChange={() =>
@@ -516,6 +536,7 @@ export const AdsAdmin = () => {
                     <div className="flex items-center space-x-2">
                       <input
                         type="radio"
+                        className="accent-periwinkle"
                         id="artists"
                         checked={adForm.location === 'artists'}
                         onChange={() =>
@@ -531,29 +552,29 @@ export const AdsAdmin = () => {
                   <Label>Formato de visualización</Label>
                   <div className="flex gap-4 mt-2">
                     <Card
-                      className={`cursor-pointer p-4 flex-1 ${
-                        adForm.format === 'banner' ? 'border-primary' : ''
+                      className={`cursor-pointer p-4 flex-1 rounded-xl bg-superficie-2/40 transition-colors ${
+                        adForm.format === 'banner' ? 'border-periwinkle' : 'border-linea'
                       }`}
                       onClick={() => setAdForm({ ...adForm, format: 'banner' })}
                     >
                       <div className="text-center">
-                        <div className="aspect-[728/90] bg-muted rounded mb-2"></div>
+                        <div className="aspect-[728/90] bg-superficie-2 rounded mb-2"></div>
                         <p className="text-sm">Banner</p>
-                        <p className="text-xs text-muted-foreground">728x90</p>
+                        <p className="text-xs text-texto-2">728x90</p>
                       </div>
                     </Card>
                     <Card
-                      className={`cursor-pointer p-4 flex-1 ${
-                        adForm.format === 'rectangle' ? 'border-primary' : ''
+                      className={`cursor-pointer p-4 flex-1 rounded-xl bg-superficie-2/40 transition-colors ${
+                        adForm.format === 'rectangle' ? 'border-periwinkle' : 'border-linea'
                       }`}
                       onClick={() =>
                         setAdForm({ ...adForm, format: 'rectangle' })
                       }
                     >
                       <div className="text-center">
-                        <div className="aspect-[300/250] bg-muted rounded mb-2 max-w-[150px] mx-auto"></div>
+                        <div className="aspect-[300/250] bg-superficie-2 rounded mb-2 max-w-[150px] mx-auto"></div>
                         <p className="text-sm">Rectángulo</p>
-                        <p className="text-xs text-muted-foreground">300x250</p>
+                        <p className="text-xs text-texto-2">300x250</p>
                       </div>
                     </Card>
                   </div>
@@ -626,8 +647,12 @@ export const AdsAdmin = () => {
                 </div>
 
                 <div className="flex gap-2">
-                  <Button onClick={handleSaveAd}>Guardar</Button>
-                  <Button variant="outline" onClick={resetAdForm}>
+                  <Button className="rounded-full" onClick={handleSaveAd}>Guardar</Button>
+                  <Button
+                    variant="outline"
+                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                    onClick={resetAdForm}
+                  >
                     Cancelar
                   </Button>
                 </div>
@@ -637,7 +662,7 @@ export const AdsAdmin = () => {
 
           <div className="grid gap-4">
             {ads.map((ad) => (
-              <Card key={ad.id}>
+              <Card key={ad.id} className="rounded-[20px] border-linea bg-superficie">
                 <CardContent className="p-4">
                   <div className="flex gap-4">
                     <img
@@ -649,22 +674,22 @@ export const AdsAdmin = () => {
                       <div className="flex items-center gap-2 mb-1">
                         <h4 className="font-semibold">{ad.name}</h4>
                         {ad.active ? (
-                          <Badge variant="default">Activo</Badge>
+                          <Badge variant="outline" className="border-verde/30 bg-verde/10 text-verde">Activo</Badge>
                         ) : (
-                          <Badge variant="secondary">Inactivo</Badge>
+                          <Badge variant="outline" className="border-linea bg-superficie-2 text-texto-2">Inactivo</Badge>
                         )}
-                        <Badge variant="outline">{ad.format}</Badge>
+                        <Badge variant="outline" className="border-linea text-texto-2">{ad.format}</Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-texto-2">
                         {ad.location} • {ad.position}
                       </p>
-                      <div className="flex gap-4 mt-2 text-sm">
+                      <div className="flex gap-4 mt-2 text-sm text-texto-2">
                         <span className="flex items-center gap-1">
-                          <Eye className="h-3 w-3" />
+                          <Eye className="h-3 w-3 text-periwinkle" />
                           {ad.impressions} vistas
                         </span>
                         <span className="flex items-center gap-1">
-                          <BarChart3 className="h-3 w-3" />
+                          <BarChart3 className="h-3 w-3 text-periwinkle" />
                           {ad.clicks} clicks
                         </span>
                       </div>
@@ -673,20 +698,23 @@ export const AdsAdmin = () => {
                       <Button
                         size="sm"
                         variant="outline"
+                        className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                         onClick={() => toggleAdActive(ad)}
                       >
                         {ad.active ? 'Desactivar' : 'Activar'}
                       </Button>
                       <Button
                         size="sm"
-                        variant="outline"
+                        variant="ghost"
+                        className="text-texto-2 hover:text-periwinkle"
                         onClick={() => editAd(ad)}
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
                       <Button
                         size="sm"
-                        variant="destructive"
+                        variant="ghost"
+                        className="text-texto-2 hover:text-destructive"
                         onClick={() => handleDeleteAd(ad.id)}
                       >
                         <Trash2 className="h-4 w-4" />

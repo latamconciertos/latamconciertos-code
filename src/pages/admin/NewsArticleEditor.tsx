@@ -11,22 +11,22 @@ const NewsArticleEditor = () => {
 
   if (!isReady) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div>Verificando permisos...</div>
+      <div className="min-h-screen flex items-center justify-center bg-noche font-fira">
+        <div className="text-texto-2">Verificando permisos...</div>
       </div>
     );
   }
 
   if (id && isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-noche font-fira">
         <LoadingSpinner />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="dark font-fira min-h-screen bg-noche text-texto">
       <NewsArticleForm article={id ? article : null} />
     </div>
   );

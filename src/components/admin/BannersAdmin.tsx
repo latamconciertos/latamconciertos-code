@@ -104,7 +104,7 @@ export const BannersAdmin = () => {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <Loader2 className="h-8 w-8 animate-spin text-periwinkle" />
       </div>
     );
   }
@@ -112,31 +112,31 @@ export const BannersAdmin = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Banners del Sitio</h2>
-        <p className="text-muted-foreground mt-1">
+        <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Banners del Sitio</h2>
+        <p className="text-texto-2 mt-1">
           Activa o desactiva banners promocionales en el home
         </p>
       </div>
 
       {banners.length === 0 && (
-        <Card>
-          <CardContent className="py-12 text-center text-muted-foreground">
-            <Megaphone className="h-12 w-12 mx-auto mb-4 opacity-50" />
+        <Card className="rounded-[20px] border-linea bg-superficie">
+          <CardContent className="py-12 text-center text-texto-2">
+            <Megaphone className="h-12 w-12 mx-auto mb-4 text-periwinkle/40" />
             <p>No hay banners configurados</p>
           </CardContent>
         </Card>
       )}
 
       {banners.map(banner => (
-        <Card key={banner.id}>
+        <Card key={banner.id} className="rounded-[20px] border-linea bg-superficie">
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2">
-                  <Megaphone className="h-5 w-5" />
+                  <Megaphone className="h-5 w-5 text-periwinkle" />
                   {banner.slug}
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className={banner.active ? 'text-verde' : 'text-texto-2'}>
                   {banner.active ? 'Visible en el home' : 'Oculto'}
                 </CardDescription>
               </div>
@@ -198,7 +198,7 @@ export const BannersAdmin = () => {
                     type="color"
                     value={banner.bg_color_from}
                     onChange={e => updateBanner(banner.id, 'bg_color_from', e.target.value)}
-                    className="h-9 w-12 rounded border cursor-pointer"
+                    className="h-9 w-12 rounded border border-linea cursor-pointer"
                   />
                   <Input
                     value={banner.bg_color_from}
@@ -214,7 +214,7 @@ export const BannersAdmin = () => {
                     type="color"
                     value={banner.bg_color_to}
                     onChange={e => updateBanner(banner.id, 'bg_color_to', e.target.value)}
-                    className="h-9 w-12 rounded border cursor-pointer"
+                    className="h-9 w-12 rounded border border-linea cursor-pointer"
                   />
                   <Input
                     value={banner.bg_color_to}
@@ -228,7 +228,7 @@ export const BannersAdmin = () => {
             <Button
               onClick={() => handleSave(banner)}
               disabled={saving === banner.id}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto rounded-full"
             >
               {saving === banner.id ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />

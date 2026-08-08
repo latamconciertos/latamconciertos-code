@@ -64,7 +64,10 @@ export const CountriesTable = ({
                         {countries.length} países registrados
                     </p>
                 </div>
-                <Button onClick={() => setShowForm(!showForm)}>
+                <Button
+                    onClick={() => setShowForm(!showForm)}
+                    className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                >
                     <Plus className="w-4 h-4 mr-2" />
                     Nuevo País
                 </Button>
@@ -72,7 +75,7 @@ export const CountriesTable = ({
 
             {/* Form */}
             {showForm && (
-                <Card>
+                <Card className="rounded-[20px] border-linea bg-superficie">
                     <CardHeader>
                         <CardTitle>Nuevo País</CardTitle>
                     </CardHeader>
@@ -101,8 +104,18 @@ export const CountriesTable = ({
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <Button type="submit">Crear</Button>
-                                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                                <Button
+                                    type="submit"
+                                    className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                                >
+                                    Crear
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                                    onClick={() => setShowForm(false)}
+                                >
                                     Cancelar
                                 </Button>
                             </div>
@@ -138,10 +151,10 @@ export const CountriesTable = ({
             </div>
 
             {/* Table */}
-            <div className="border rounded-lg overflow-hidden bg-card">
+            <div className="rounded-[20px] border border-linea overflow-hidden bg-superficie">
                 <Table>
                     <TableHeader>
-                        <TableRow className="bg-muted/50">
+                        <TableRow className="border-linea bg-superficie-2/60">
                             <TableHead className="w-12">#</TableHead>
                             <TableHead>País</TableHead>
                             <TableHead>Código ISO</TableHead>
@@ -151,7 +164,7 @@ export const CountriesTable = ({
                     <TableBody>
                         {paginatedCountries.length > 0 ? (
                             paginatedCountries.map((country, index) => (
-                                <TableRow key={country.id} className="hover:bg-muted/30">
+                                <TableRow key={country.id} className="border-linea hover:bg-superficie-2">
                                     <TableCell className="font-medium text-muted-foreground">
                                         {startIndex + index + 1}
                                     </TableCell>
@@ -193,6 +206,7 @@ export const CountriesTable = ({
                         <Button
                             variant="outline"
                             size="sm"
+                            className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                             disabled={currentPage === 1}
                         >
@@ -205,6 +219,7 @@ export const CountriesTable = ({
                         <Button
                             variant="outline"
                             size="sm"
+                            className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                             disabled={currentPage === totalPages}
                         >

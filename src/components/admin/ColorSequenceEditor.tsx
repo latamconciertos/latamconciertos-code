@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Plus, Trash2, Save, ArrowLeft } from 'lucide-react';
+import { Plus, Trash2, Save, ArrowLeft, Flame } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface ColorBlock {
@@ -222,12 +222,12 @@ export const ColorSequenceEditor = ({
 
   if (sections.length === 0) {
     return (
-      <Card>
+      <Card className="rounded-[20px] border-linea bg-superficie">
         <CardContent className="p-8 text-center">
-          <p className="text-muted-foreground mb-4">
+          <p className="text-texto-2 mb-4">
             Este proyecto no tiene localidades configuradas
           </p>
-          <Button onClick={onBack} variant="outline">
+          <Button onClick={onBack} variant="outline" className="rounded-full border-linea bg-transparent hover:bg-superficie-2">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Volver
           </Button>
@@ -240,26 +240,30 @@ export const ColorSequenceEditor = ({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <Button onClick={onBack} variant="outline" size="sm" className="mb-2">
+          <Button onClick={onBack} variant="outline" size="sm" className="mb-2 rounded-full border-linea bg-transparent hover:bg-superficie-2">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Volver
           </Button>
-          <h3 className="text-2xl font-bold">Editor de Colores: {songName}</h3>
-          <p className="text-sm text-muted-foreground">
+          <h3 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Editor de Colores: {songName}</h3>
+          <p className="text-sm text-texto-2">
             Configura la secuencia de colores por localidad
           </p>
         </div>
-        <Button onClick={handleSave} disabled={saving}>
+        <Button
+          onClick={handleSave}
+          disabled={saving}
+          className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+        >
           <Save className="h-4 w-4 mr-2" />
           {saving ? 'Guardando...' : 'Guardar Cambios'}
         </Button>
       </div>
 
-      <Card>
+      <Card className="rounded-[20px] border-linea bg-superficie">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Selecciona la Localidad</CardTitle>
-            <Badge variant="secondary">
+            <Badge variant="outline" className="border-linea bg-superficie-2 text-texto-2">
               {sequence.length} {sequence.length === 1 ? 'bloque' : 'bloques'}
             </Badge>
           </div>
@@ -338,7 +342,10 @@ export const ColorSequenceEditor = ({
 
                 <div className="mt-4 space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label>Tercer Color (Opcional) 🔥</Label>
+                    <Label className="flex items-center gap-1.5">
+                      Tercer Color (Opcional)
+                      <Flame className="h-3.5 w-3.5 text-periwinkle" />
+                    </Label>
                     {sequence[0]?.strobeColor3 && (
                       <Button
                         variant="ghost"
@@ -383,11 +390,14 @@ export const ColorSequenceEditor = ({
                     />
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Agrega un tercer color para efectos más dinámicos como fuego 🔥. Deja vacío para usar solo 2 colores.
+                    Agrega un tercer color para efectos más dinámicos como fuego. Deja vacío para usar solo 2 colores.
                   </p>
 
-                  <div className="mt-3 p-3 bg-muted/50 rounded-lg space-y-2">
-                    <p className="text-xs font-semibold">Presets de Fuego 🔥:</p>
+                  <div className="mt-3 p-3 bg-superficie-2/50 border border-linea rounded-xl space-y-2">
+                    <p className="text-xs font-semibold flex items-center gap-1.5">
+                      <Flame className="h-3.5 w-3.5 text-periwinkle" />
+                      Presets de Fuego:
+                    </p>
                     <div className="flex gap-2">
                       <Button
                         type="button"
@@ -401,9 +411,10 @@ export const ColorSequenceEditor = ({
                             strobeColor3: '#FFD700'
                           })));
                         }}
-                        className="flex-1 text-xs"
+                        className="flex-1 text-xs rounded-full border-linea bg-transparent hover:bg-superficie-2"
                       >
-                        🔥 Fuego Clásico
+                        <Flame className="h-3.5 w-3.5 mr-1.5" />
+                        Fuego Clásico
                       </Button>
                       <Button
                         type="button"
@@ -417,9 +428,10 @@ export const ColorSequenceEditor = ({
                             strobeColor3: '#FFA500'
                           })));
                         }}
-                        className="flex-1 text-xs"
+                        className="flex-1 text-xs rounded-full border-linea bg-transparent hover:bg-superficie-2"
                       >
-                        🔥 Fuego Intenso
+                        <Flame className="h-3.5 w-3.5 mr-1.5" />
+                        Fuego Intenso
                       </Button>
                     </div>
                   </div>
@@ -435,7 +447,7 @@ export const ColorSequenceEditor = ({
                       step="10"
                       value={strobeSpeed}
                       onChange={(e) => setStrobeSpeed(Number(e.target.value))}
-                      className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700"
+                      className="flex-1 h-2 bg-superficie-2 rounded-lg appearance-none cursor-pointer accent-periwinkle"
                     />
                     <Input
                       type="number"
@@ -456,19 +468,24 @@ export const ColorSequenceEditor = ({
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="rounded-[20px] border-linea bg-superficie">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Bloques de Color</CardTitle>
-            <Button onClick={addBlock} size="sm">
-              <Plus className="h-4 w-4 mr-2" />
+            <Button
+              onClick={addBlock}
+              size="sm"
+              variant="outline"
+              className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+            >
+              <Plus className="h-4 w-4 mr-2 text-periwinkle" />
               Agregar Bloque
             </Button>
           </div>
         </CardHeader>
         <CardContent>
           {sequence.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
+            <div className="text-center py-8 text-texto-2">
               <p>No hay bloques de color configurados</p>
               <p className="text-sm mt-2">
                 Agrega bloques para definir los colores en diferentes momentos
@@ -479,9 +496,9 @@ export const ColorSequenceEditor = ({
               {sequence.map((block, index) => (
                 <div
                   key={index}
-                  className="flex items-center gap-4 p-4 border rounded-lg bg-card"
+                  className="flex items-center gap-4 p-4 border border-linea rounded-xl bg-superficie-2/30"
                 >
-                  <div className="flex items-center justify-center w-8 h-8 rounded bg-muted font-semibold">
+                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-periwinkle/10 text-periwinkle font-semibold">
                     {index + 1}
                   </div>
 
@@ -549,8 +566,9 @@ export const ColorSequenceEditor = ({
                   </div>
 
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="icon"
+                    className="text-texto-2 hover:text-destructive"
                     onClick={() => removeBlock(index)}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -563,7 +581,7 @@ export const ColorSequenceEditor = ({
       </Card>
 
       {sequence.length > 0 && (
-        <Card>
+        <Card className="rounded-[20px] border-linea bg-superficie">
           <CardHeader>
             <CardTitle>Vista Previa</CardTitle>
           </CardHeader>

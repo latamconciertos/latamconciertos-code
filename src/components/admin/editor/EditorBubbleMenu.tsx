@@ -53,7 +53,7 @@ export const EditorBubbleMenu = ({ editor }: EditorBubbleMenuProps) => {
         placement: 'top',
         animation: 'shift-toward-subtle',
       }}
-      className="flex items-center gap-0.5 rounded-lg border bg-popover px-1.5 py-1 shadow-xl"
+      className="flex items-center gap-0.5 rounded-lg border border-linea bg-superficie px-1.5 py-1 shadow-[0_20px_50px_rgba(0,0,0,.5)]"
     >
       <BubbleToggle
         icon={Bold}
@@ -103,7 +103,7 @@ export const EditorBubbleMenu = ({ editor }: EditorBubbleMenuProps) => {
             size="sm"
             pressed={editor.isActive('link')}
             onPressedChange={openLinkPopover}
-            className="h-7 w-7 p-0"
+            className="h-7 w-7 p-0 data-[state=on]:bg-superficie-2 data-[state=on]:text-periwinkle"
             title="Enlace"
           >
             <Link2 className="h-3.5 w-3.5" />
@@ -157,7 +157,7 @@ function BubbleToggle({
       size="sm"
       pressed={pressed}
       onPressedChange={onPress}
-      className="h-7 w-7 p-0"
+      className="h-7 w-7 p-0 data-[state=on]:bg-superficie-2 data-[state=on]:text-periwinkle"
       title={tooltip}
     >
       <Icon className="h-3.5 w-3.5" />

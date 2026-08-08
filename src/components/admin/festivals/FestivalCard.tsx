@@ -65,7 +65,7 @@ export function FestivalCard({
   };
 
   return (
-    <Card className="overflow-hidden hover:shadow-md transition-shadow">
+    <Card className="overflow-hidden rounded-[20px] border-linea bg-superficie hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-shadow">
       <div className="flex flex-col md:flex-row">
         {/* Image */}
         <div className="w-full md:w-48 h-32 md:h-auto bg-muted flex-shrink-0">
@@ -99,13 +99,13 @@ export function FestivalCard({
                   </Badge>
                 )}
                 {festival.is_featured && (
-                  <Badge className="bg-yellow-500/20 text-yellow-600 border-yellow-500/30">
+                  <Badge className="border-azul-claro/30 bg-azul-claro/10 text-azul-claro">
                     <Star className="h-3 w-3 mr-1 fill-current" />
                     Destacado
                   </Badge>
                 )}
                 {isUpcoming && (
-                  <Badge variant="default" className="bg-green-500/20 text-green-600 border-green-500/30">
+                  <Badge variant="default" className="border-verde/30 bg-verde/10 text-verde">
                     Próximo
                   </Badge>
                 )}

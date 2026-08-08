@@ -21,7 +21,17 @@ interface Stats {
   dailyVisits: { date: string; visits: number }[];
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D'];
+// Paleta categórica nocturna: azules de marca + verde de energía, sin violetas
+const COLORS = ['#597CFF', '#37C563', '#83B4FF', '#F5A524', '#2FB6C9', '#94A0BD'];
+
+const CHART_GRID_STROKE = 'rgba(131,180,255,.12)';
+const CHART_TICK = { fill: '#94A0BD', fontSize: 12 };
+const CHART_TOOLTIP_STYLE = {
+  backgroundColor: '#0E1830',
+  border: '1px solid rgba(131,180,255,.12)',
+  borderRadius: 12,
+  color: '#F2F5FC',
+};
 
 export function TrafficAdmin() {
   const [stats, setStats] = useState<Stats | null>(null);
@@ -195,8 +205,8 @@ export function TrafficAdmin() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Tráfico del Sitio</h2>
-          <p className="text-muted-foreground">Análisis de visitantes y comportamiento</p>
+          <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Tráfico del Sitio</h2>
+          <p className="text-texto-2">Análisis de visitantes y comportamiento</p>
         </div>
         <Select value={timeRange} onValueChange={setTimeRange}>
           <SelectTrigger className="w-[180px]">
@@ -213,53 +223,53 @@ export function TrafficAdmin() {
 
       {/* Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
+        <Card className="rounded-[20px] border-linea bg-superficie">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total de Visitas</CardTitle>
-            <Eye className="h-4 w-4 text-muted-foreground" />
+            <Eye className="h-4 w-4 text-periwinkle" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.totalVisits.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Páginas vistas</p>
+            <div className="font-display text-3xl font-extrabold text-verde">{stats.totalVisits.toLocaleString()}</div>
+            <p className="text-xs text-texto-2">Páginas vistas</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-[20px] border-linea bg-superficie">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Visitantes Únicos</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <Users className="h-4 w-4 text-periwinkle" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.uniqueVisitors.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground">Sesiones únicas</p>
+            <div className="font-display text-3xl font-extrabold text-texto">{stats.uniqueVisitors.toLocaleString()}</div>
+            <p className="text-xs text-texto-2">Sesiones únicas</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-[20px] border-linea bg-superficie">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Duración Promedio</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+            <Clock className="h-4 w-4 text-periwinkle" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatDuration(stats.avgDuration)}</div>
-            <p className="text-xs text-muted-foreground">Por sesión</p>
+            <div className="font-display text-3xl font-extrabold text-texto">{formatDuration(stats.avgDuration)}</div>
+            <p className="text-xs text-texto-2">Por sesión</p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="rounded-[20px] border-linea bg-superficie">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Páginas por Sesión</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+            <Activity className="h-4 w-4 text-periwinkle" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.avgPagesPerSession}</div>
-            <p className="text-xs text-muted-foreground">Promedio</p>
+            <div className="font-display text-3xl font-extrabold text-texto">{stats.avgPagesPerSession}</div>
+            <p className="text-xs text-texto-2">Promedio</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Daily Visits Chart */}
-      <Card>
+      <Card className="rounded-[20px] border-linea bg-superficie">
         <CardHeader>
           <CardTitle>Visitas Diarias</CardTitle>
           <CardDescription>Tendencia de visitas en el período seleccionado</CardDescription>
@@ -267,12 +277,12 @@ export function TrafficAdmin() {
         <CardContent>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={stats.dailyVisits}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" />
-              <YAxis />
-              <Tooltip />
+              <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
+              <XAxis dataKey="date" tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
+              <YAxis tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
+              <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
               <Legend />
-              <Line type="monotone" dataKey="visits" stroke="#8884d8" name="Visitas" />
+              <Line type="monotone" dataKey="visits" stroke="#597CFF" strokeWidth={2} dot={{ fill: '#597CFF' }} name="Visitas" />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
@@ -288,7 +298,7 @@ export function TrafficAdmin() {
         </TabsList>
 
         <TabsContent value="pages">
-          <Card>
+          <Card className="rounded-[20px] border-linea bg-superficie">
             <CardHeader>
               <CardTitle>Páginas Más Visitadas</CardTitle>
               <CardDescription>Top 10 páginas por número de visitas</CardDescription>
@@ -296,11 +306,11 @@ export function TrafficAdmin() {
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={stats.topPages} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis dataKey="name" type="category" width={150} />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="#8884d8" name="Visitas" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
+                  <XAxis type="number" tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
+                  <YAxis dataKey="name" type="category" width={150} tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
+                  <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ fill: 'rgba(131,180,255,.06)' }} />
+                  <Bar dataKey="value" fill="#597CFF" radius={[0, 4, 4, 0]} name="Visitas" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -308,7 +318,7 @@ export function TrafficAdmin() {
         </TabsContent>
 
         <TabsContent value="locations">
-          <Card>
+          <Card className="rounded-[20px] border-linea bg-superficie">
             <CardHeader>
               <CardTitle>Países de Origen</CardTitle>
               <CardDescription>Distribución geográfica de visitantes</CardDescription>
@@ -323,14 +333,14 @@ export function TrafficAdmin() {
                     labelLine={false}
                     label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                     outerRadius={120}
-                    fill="#8884d8"
+                    fill="#597CFF"
                     dataKey="value"
                   >
                     {stats.topCountries.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
                 </PieChart>
               </ResponsiveContainer>
             </CardContent>
@@ -338,7 +348,7 @@ export function TrafficAdmin() {
         </TabsContent>
 
         <TabsContent value="devices">
-          <Card>
+          <Card className="rounded-[20px] border-linea bg-superficie">
             <CardHeader>
               <CardTitle>Tipo de Dispositivo</CardTitle>
               <CardDescription>Distribución por tipo de dispositivo</CardDescription>
@@ -353,14 +363,14 @@ export function TrafficAdmin() {
                     labelLine={false}
                     label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                     outerRadius={120}
-                    fill="#8884d8"
+                    fill="#597CFF"
                     dataKey="value"
                   >
                     {stats.deviceStats.map((_entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
                 </PieChart>
               </ResponsiveContainer>
             </CardContent>
@@ -368,7 +378,7 @@ export function TrafficAdmin() {
         </TabsContent>
 
         <TabsContent value="browsers">
-          <Card>
+          <Card className="rounded-[20px] border-linea bg-superficie">
             <CardHeader>
               <CardTitle>Navegadores</CardTitle>
               <CardDescription>Top 5 navegadores utilizados</CardDescription>
@@ -376,11 +386,11 @@ export function TrafficAdmin() {
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={stats.browserStats}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="#82ca9d" name="Visitas" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
+                  <XAxis dataKey="name" tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
+                  <YAxis tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
+                  <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ fill: 'rgba(131,180,255,.06)' }} />
+                  <Bar dataKey="value" fill="#37C563" radius={[4, 4, 0, 0]} name="Visitas" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -388,7 +398,7 @@ export function TrafficAdmin() {
         </TabsContent>
 
         <TabsContent value="referrers">
-          <Card>
+          <Card className="rounded-[20px] border-linea bg-superficie">
             <CardHeader>
               <CardTitle>Fuentes de Tráfico</CardTitle>
               <CardDescription>De dónde vienen los visitantes</CardDescription>
@@ -396,11 +406,11 @@ export function TrafficAdmin() {
             <CardContent>
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={stats.referrerStats} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis dataKey="name" type="category" width={150} />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="#8884d8" name="Visitas" />
+                  <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
+                  <XAxis type="number" tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
+                  <YAxis dataKey="name" type="category" width={150} tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
+                  <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ fill: 'rgba(131,180,255,.06)' }} />
+                  <Bar dataKey="value" fill="#597CFF" radius={[0, 4, 4, 0]} name="Visitas" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>

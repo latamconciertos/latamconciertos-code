@@ -85,7 +85,10 @@ export const CitiesTable = ({
                         {cities.length} ciudades registradas
                     </p>
                 </div>
-                <Button onClick={() => setShowForm(!showForm)}>
+                <Button
+                    onClick={() => setShowForm(!showForm)}
+                    className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                >
                     <Plus className="w-4 h-4 mr-2" />
                     Nueva Ciudad
                 </Button>
@@ -93,7 +96,7 @@ export const CitiesTable = ({
 
             {/* Form */}
             {showForm && (
-                <Card>
+                <Card className="rounded-[20px] border-linea bg-superficie">
                     <CardHeader>
                         <CardTitle>Nueva Ciudad</CardTitle>
                     </CardHeader>
@@ -129,8 +132,18 @@ export const CitiesTable = ({
                                 </div>
                             </div>
                             <div className="flex gap-2">
-                                <Button type="submit">Crear</Button>
-                                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                                <Button
+                                    type="submit"
+                                    className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                                >
+                                    Crear
+                                </Button>
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                                    onClick={() => setShowForm(false)}
+                                >
                                     Cancelar
                                 </Button>
                             </div>
@@ -162,7 +175,13 @@ export const CitiesTable = ({
                     </SelectContent>
                 </Select>
                 {(searchTerm || filterCountry !== 'all') && (
-                    <Button variant="outline" onClick={resetFilters}>Limpiar</Button>
+                    <Button
+                        variant="outline"
+                        className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                        onClick={resetFilters}
+                    >
+                        Limpiar
+                    </Button>
                 )}
             </div>
 
@@ -182,10 +201,10 @@ export const CitiesTable = ({
             </div>
 
             {/* Table */}
-            <div className="border rounded-lg overflow-hidden bg-card">
+            <div className="rounded-[20px] border border-linea overflow-hidden bg-superficie">
                 <Table>
                     <TableHeader>
-                        <TableRow className="bg-muted/50">
+                        <TableRow className="border-linea bg-superficie-2/60">
                             <TableHead className="w-12">#</TableHead>
                             <TableHead>Ciudad</TableHead>
                             <TableHead>País</TableHead>
@@ -195,7 +214,7 @@ export const CitiesTable = ({
                     <TableBody>
                         {paginatedCities.length > 0 ? (
                             paginatedCities.map((city, index) => (
-                                <TableRow key={city.id} className="hover:bg-muted/30">
+                                <TableRow key={city.id} className="border-linea hover:bg-superficie-2">
                                     <TableCell className="font-medium text-muted-foreground">
                                         {startIndex + index + 1}
                                     </TableCell>
@@ -233,6 +252,7 @@ export const CitiesTable = ({
                         <Button
                             variant="outline"
                             size="sm"
+                            className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                             disabled={currentPage === 1}
                         >
@@ -245,6 +265,7 @@ export const CitiesTable = ({
                         <Button
                             variant="outline"
                             size="sm"
+                            className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                             disabled={currentPage === totalPages}
                         >

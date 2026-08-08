@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Music2, TrendingUp, RefreshCw, Plus, Trash2, Save, Search } from "lucide-react";
+import { Loader2, Music2, TrendingUp, RefreshCw, Plus, Trash2, Save, Search, ChevronUp, ChevronDown } from "lucide-react";
 import { LATIN_AMERICAN_COUNTRIES } from "@/types/spotify";
 import { spotifyService } from "@/lib/spotify";
 import type { SpotifyTrack, SpotifyArtist } from "@/lib/spotify";
@@ -324,14 +324,14 @@ export const SpotifyChartsAdmin = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Gestión de Charts Spotify</h2>
-          <p className="text-muted-foreground mt-2">
+          <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Gestión de Charts Spotify</h2>
+          <p className="text-texto-2 mt-2">
             Busca y organiza los tops de canciones y artistas por país
           </p>
         </div>
       </div>
 
-      <Card>
+      <Card className="rounded-[20px] border-linea bg-superficie">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
@@ -378,13 +378,13 @@ export const SpotifyChartsAdmin = () => {
                 onClick={updateChartsFromSpotify}
                 disabled={loading}
                 variant="outline"
-                className="gap-2"
+                className="gap-2 rounded-full border-linea bg-transparent hover:bg-superficie-2"
               >
-                <RefreshCw className="h-4 w-4" />
+                <RefreshCw className="h-4 w-4 text-periwinkle" />
                 Actualizar desde Spotify
               </Button>
             )}
-            
+
             <Button
               onClick={() => {
                 if (editMode) {
@@ -393,16 +393,16 @@ export const SpotifyChartsAdmin = () => {
                 setEditMode(!editMode);
               }}
               variant={editMode ? "outline" : "default"}
-              className="gap-2"
+              className={editMode ? "gap-2 rounded-full border-linea bg-transparent hover:bg-superficie-2" : "gap-2 rounded-full"}
             >
               {editMode ? "Cancelar edición" : "Editar manualmente"}
             </Button>
 
             {editMode && (
-              <Button 
-                onClick={saveChanges} 
+              <Button
+                onClick={saveChanges}
                 disabled={loading}
-                className="gap-2"
+                className="gap-2 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
               >
                 {loading ? (
                   <>
@@ -423,17 +423,17 @@ export const SpotifyChartsAdmin = () => {
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Canciones */}
-        <Card>
+        <Card className="rounded-[20px] border-linea bg-superficie">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
-                <Music2 className="h-5 w-5" />
+                <Music2 className="h-5 w-5 text-periwinkle" />
                 Top 10 Canciones
               </CardTitle>
               {editMode && (
                 <Dialog open={showTrackSearch} onOpenChange={setShowTrackSearch}>
                   <DialogTrigger asChild>
-                    <Button size="sm" className="gap-2">
+                    <Button size="sm" className="gap-2 rounded-full">
                       <Plus className="h-4 w-4" />
                       Buscar canción
                     </Button>
@@ -462,7 +462,7 @@ export const SpotifyChartsAdmin = () => {
                         {trackSearchResults.map((track) => (
                           <div
                             key={track.id}
-                            className="flex items-center gap-3 p-3 border rounded-lg hover:bg-accent cursor-pointer"
+                            className="flex items-center gap-3 p-3 border border-linea rounded-xl hover:bg-superficie-2 cursor-pointer transition-colors"
                             onClick={() => addTrackFromSearch(track)}
                           >
                             {track.album.images[0] && (
@@ -478,7 +478,7 @@ export const SpotifyChartsAdmin = () => {
                                 {track.artists.map(a => a.name).join(', ')}
                               </p>
                             </div>
-                            <Plus className="h-5 w-5" />
+                            <Plus className="h-5 w-5 text-periwinkle" />
                           </div>
                         ))}
                       </div>
@@ -498,31 +498,31 @@ export const SpotifyChartsAdmin = () => {
                 {(editMode ? tracksDraft : tracks).map((track, index) => (
                   <div
                     key={track.id}
-                    className="flex items-center gap-2 p-2 border rounded-lg"
+                    className="flex items-center gap-2 p-2 border border-linea rounded-xl hover:bg-superficie-2/40 transition-colors"
                   >
                     {editMode && (
                       <div className="flex flex-col gap-1">
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6"
+                          className="h-6 w-6 text-texto-2 hover:text-periwinkle"
                           onClick={() => moveTrack(index, 'up')}
                           disabled={index === 0}
                         >
-                          ▲
+                          <ChevronUp className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6"
+                          className="h-6 w-6 text-texto-2 hover:text-periwinkle"
                           onClick={() => moveTrack(index, 'down')}
                           disabled={index === tracksDraft.length - 1}
                         >
-                          ▼
+                          <ChevronDown className="h-4 w-4" />
                         </Button>
                       </div>
                     )}
-                    <div className="font-bold text-muted-foreground w-8">
+                    <div className="font-bold text-verde w-8">
                       #{track.position}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -535,6 +535,7 @@ export const SpotifyChartsAdmin = () => {
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="text-texto-2 hover:text-destructive"
                         onClick={() => removeTrack(index)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -548,17 +549,17 @@ export const SpotifyChartsAdmin = () => {
         </Card>
 
         {/* Artistas */}
-        <Card>
+        <Card className="rounded-[20px] border-linea bg-superficie">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5" />
+                <TrendingUp className="h-5 w-5 text-periwinkle" />
                 Top 10 Artistas
               </CardTitle>
               {editMode && (
                 <Dialog open={showArtistSearch} onOpenChange={setShowArtistSearch}>
                   <DialogTrigger asChild>
-                    <Button size="sm" className="gap-2">
+                    <Button size="sm" className="gap-2 rounded-full">
                       <Plus className="h-4 w-4" />
                       Buscar artista
                     </Button>
@@ -587,7 +588,7 @@ export const SpotifyChartsAdmin = () => {
                         {artistSearchResults.map((artist) => (
                           <div
                             key={artist.id}
-                            className="flex items-center gap-3 p-3 border rounded-lg hover:bg-accent cursor-pointer"
+                            className="flex items-center gap-3 p-3 border border-linea rounded-xl hover:bg-superficie-2 cursor-pointer transition-colors"
                             onClick={() => addArtistFromSearch(artist)}
                           >
                             {artist.images[0] && (
@@ -603,7 +604,7 @@ export const SpotifyChartsAdmin = () => {
                                 {artist.genres?.slice(0, 3).join(', ') || 'Sin géneros'}
                               </p>
                             </div>
-                            <Plus className="h-5 w-5" />
+                            <Plus className="h-5 w-5 text-periwinkle" />
                           </div>
                         ))}
                       </div>
@@ -623,31 +624,31 @@ export const SpotifyChartsAdmin = () => {
                 {(editMode ? artistsDraft : artists).map((artist, index) => (
                   <div
                     key={artist.id}
-                    className="flex items-center gap-2 p-2 border rounded-lg"
+                    className="flex items-center gap-2 p-2 border border-linea rounded-xl hover:bg-superficie-2/40 transition-colors"
                   >
                     {editMode && (
                       <div className="flex flex-col gap-1">
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6"
+                          className="h-6 w-6 text-texto-2 hover:text-periwinkle"
                           onClick={() => moveArtist(index, 'up')}
                           disabled={index === 0}
                         >
-                          ▲
+                          <ChevronUp className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-6 w-6"
+                          className="h-6 w-6 text-texto-2 hover:text-periwinkle"
                           onClick={() => moveArtist(index, 'down')}
                           disabled={index === artistsDraft.length - 1}
                         >
-                          ▼
+                          <ChevronDown className="h-4 w-4" />
                         </Button>
                       </div>
                     )}
-                    <div className="font-bold text-muted-foreground w-8">
+                    <div className="font-bold text-verde w-8">
                       #{artist.position}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -660,6 +661,7 @@ export const SpotifyChartsAdmin = () => {
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="text-texto-2 hover:text-destructive"
                         onClick={() => removeArtist(index)}
                       >
                         <Trash2 className="h-4 w-4" />

@@ -130,21 +130,21 @@ export const UsersAdmin = () => {
 
   const getRoleBadge = (roles: { role: string }[]) => {
     if (roles.length === 0) {
-      return <Badge variant="outline" className="text-[10px]">Sin rol</Badge>;
+      return <Badge variant="outline" className="text-[10px] border-linea text-texto-2">Sin rol</Badge>;
     }
 
     const role = roles[0].role;
     const variants = {
-      admin: { variant: 'destructive' as const, icon: Shield },
-      moderator: { variant: 'default' as const, icon: Users },
-      user: { variant: 'secondary' as const, icon: User },
+      admin: { className: 'border-periwinkle/30 bg-periwinkle/10 text-periwinkle', icon: Shield },
+      moderator: { className: 'border-azul-claro/30 bg-azul-claro/10 text-azul-claro', icon: Users },
+      user: { className: 'border-linea bg-superficie-2 text-texto-2', icon: User },
     };
 
     const config = variants[role as keyof typeof variants] || variants.user;
     const Icon = config.icon;
 
     return (
-      <Badge variant={config.variant} className="text-[10px]">
+      <Badge variant="outline" className={`text-[10px] ${config.className}`}>
         <Icon className="w-3 h-3 mr-1" />
         {role.charAt(0).toUpperCase() + role.slice(1)}
       </Badge>
@@ -190,8 +190,8 @@ export const UsersAdmin = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Gestión de Usuarios</h2>
-          <p className="text-muted-foreground">Administra roles y permisos de usuarios</p>
+          <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Gestión de Usuarios</h2>
+          <p className="text-texto-2">Administra roles y permisos de usuarios</p>
         </div>
       </div>
 
@@ -203,7 +203,7 @@ export const UsersAdmin = () => {
             placeholder="Buscar por nombre o ID…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10"
+            className="pl-10 rounded-full bg-superficie border-linea focus-visible:ring-periwinkle"
           />
         </div>
         <Select value={roleFilter} onValueChange={(v) => setRoleFilter(v as typeof roleFilter)}>
@@ -224,8 +224,8 @@ export const UsersAdmin = () => {
       </div>
 
       {/* Table */}
-      <div className="border rounded-lg overflow-hidden bg-card">
-        <div className="grid grid-cols-12 gap-4 px-4 py-2.5 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <div className="rounded-[20px] border border-linea overflow-hidden bg-superficie">
+        <div className="grid grid-cols-12 gap-4 px-4 py-2.5 bg-superficie-2/60 text-xs font-semibold uppercase tracking-wide text-texto-2">
           <div className="col-span-4">Usuario</div>
           <div className="col-span-2">ID</div>
           <div className="col-span-2">Rol</div>
@@ -233,7 +233,7 @@ export const UsersAdmin = () => {
           <div className="col-span-2 text-right">Cambiar rol</div>
         </div>
 
-        <div className="divide-y">
+        <div className="divide-y divide-linea">
           {paginatedUsers.length === 0 ? (
             <div className="p-8 text-center text-sm text-muted-foreground">
               {searchQuery || roleFilter !== 'all'
@@ -244,16 +244,16 @@ export const UsersAdmin = () => {
             paginatedUsers.map((user) => (
               <div
                 key={user.id}
-                className="grid grid-cols-12 gap-4 px-4 py-2.5 items-center hover:bg-muted/40 transition-colors"
+                className="grid grid-cols-12 gap-4 px-4 py-2.5 items-center hover:bg-superficie-2/50 transition-colors"
               >
                 <div className="col-span-4 flex items-center gap-3 min-w-0">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <User className="w-4 h-4 text-primary" />
+                  <div className="w-8 h-8 rounded-full bg-periwinkle/10 flex items-center justify-center shrink-0">
+                    <User className="w-4 h-4 text-periwinkle" />
                   </div>
                   <span className="font-medium truncate">{user.username || 'Sin nombre'}</span>
                 </div>
                 <div className="col-span-2">
-                  <code className="text-[10px] bg-muted px-2 py-0.5 rounded">
+                  <code className="text-[10px] bg-superficie-2 text-texto-2 px-2 py-0.5 rounded-full border border-linea">
                     {user.id.slice(0, 8)}…
                   </code>
                 </div>
@@ -322,6 +322,7 @@ export const UsersAdmin = () => {
                 <Button
                   variant="outline"
                   size="sm"
+                  className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                   onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                   disabled={currentPage === 1}
                 >
@@ -333,6 +334,7 @@ export const UsersAdmin = () => {
                 <Button
                   variant="outline"
                   size="sm"
+                  className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                   onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                   disabled={currentPage === totalPages}
                 >

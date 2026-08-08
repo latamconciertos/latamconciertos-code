@@ -81,10 +81,16 @@ export const NewsAdminNew = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold">Gestión de Noticias</h2>
-          <p className="text-muted-foreground">Gestiona todos los artículos</p>
+          <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">
+            Gestión de Noticias
+          </h2>
+          <p className="text-texto-2">Gestiona todos los artículos</p>
         </div>
-        <Button onClick={() => navigate('/admin/news/new')} size="lg">
+        <Button
+          onClick={() => navigate('/admin/news/new')}
+          size="lg"
+          className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+        >
           <Plus className="h-4 w-4 mr-2" />
           Crear Artículo
         </Button>
@@ -130,15 +136,15 @@ export const NewsAdminNew = () => {
       </div>
 
       {/* Table */}
-      <div className="border rounded-lg overflow-hidden bg-card">
-        <div className="grid grid-cols-12 gap-4 px-4 py-2.5 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+      <div className="rounded-[20px] border border-linea overflow-hidden bg-superficie">
+        <div className="grid grid-cols-12 gap-4 px-4 py-2.5 bg-superficie-2/60 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
           <div className="col-span-6">Artículo</div>
           <div className="col-span-3">Fecha</div>
           <div className="col-span-2">Estado</div>
           <div className="col-span-1 text-right">Acciones</div>
         </div>
 
-        <div className="divide-y">
+        <div className="divide-y divide-linea">
           {filteredArticles.length === 0 ? (
             <div className="p-8 text-center text-sm text-muted-foreground">
               No se encontraron artículos.
@@ -147,7 +153,7 @@ export const NewsAdminNew = () => {
             filteredArticles.map((article) => (
               <div
                 key={article.id}
-                className="grid grid-cols-12 gap-4 px-4 py-2.5 items-center hover:bg-muted/40 transition-colors cursor-pointer"
+                className="grid grid-cols-12 gap-4 px-4 py-2.5 items-center hover:bg-superficie-2/50 transition-colors cursor-pointer"
                 onClick={() => navigate(`/admin/news/edit/${article.id}`)}
               >
                 <div className="col-span-6 flex items-center gap-3 min-w-0">
@@ -162,7 +168,7 @@ export const NewsAdminNew = () => {
                       height={40}
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded bg-muted flex items-center justify-center shrink-0">
+                    <div className="w-10 h-10 rounded bg-superficie-2 flex items-center justify-center shrink-0">
                       <span className="text-[10px] text-muted-foreground">Sin img</span>
                     </div>
                   )}
@@ -186,10 +192,11 @@ export const NewsAdminNew = () => {
                 </div>
                 <div className="col-span-2">
                   <Badge
+                    variant="outline"
                     className={
                       article.status === 'published'
-                        ? 'bg-green-100 text-green-800 hover:bg-green-100'
-                        : 'bg-gray-100 text-gray-800 hover:bg-gray-100'
+                        ? 'border-verde/30 bg-verde/10 text-verde'
+                        : 'border-linea bg-superficie-2 text-texto-2'
                     }
                   >
                     {article.status === 'published' ? 'Publicado' : 'Borrador'}
@@ -199,7 +206,7 @@ export const NewsAdminNew = () => {
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    className="h-8 w-8 text-muted-foreground hover:text-periwinkle"
                     onClick={(e) => {
                       e.stopPropagation();
                       navigate(`/admin/news/edit/${article.id}`);

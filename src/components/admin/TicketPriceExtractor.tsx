@@ -272,18 +272,18 @@ export const TicketPriceExtractor = ({
     return (
       <div className="space-y-2">
         <Badge variant={badgeVariant} className="text-xs">{title}</Badge>
-        <div className="border rounded-lg overflow-hidden">
+        <div className="border border-linea rounded-lg overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-muted/50">
+              <tr className="bg-superficie-2/60">
                 <th className="text-left p-3 font-medium">Zona</th>
                 <th className="text-left p-3 font-medium">Precio</th>
                 {hasServiceFees && <th className="text-left p-3 font-medium">Servicio</th>}
               </tr>
             </thead>
-            <tbody className="divide-y">
+            <tbody className="divide-y divide-linea">
               {prices.map((price, index) => (
-                <tr key={index} className="hover:bg-muted/30">
+                <tr key={index} className="hover:bg-superficie-2">
                   <td className="p-3 font-medium">{price.zone}</td>
                   <td className="p-3 text-primary font-medium">{price.price}</td>
                   {hasServiceFees && <td className="p-3 text-muted-foreground">{price.service_fee || '-'}</td>}
@@ -314,14 +314,14 @@ export const TicketPriceExtractor = ({
               <Ticket className="h-4 w-4" />
               Extracción de Precios
               {hasSavedPrices && (
-                <Badge variant="secondary" className="ml-2">Precios guardados</Badge>
+                <Badge variant="secondary" className="ml-2 border-verde/30 bg-verde/10 text-verde">Precios guardados</Badge>
               )}
             </span>
             {isOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
           </Button>
         </CollapsibleTrigger>
         <CollapsibleContent className="pt-4">
-          <div className="space-y-4 border rounded-lg p-4 bg-muted/30">
+          <div className="space-y-4 border border-linea rounded-[20px] p-4 bg-superficie-2/30">
             {hasSavedPrices && !extractedData && (
               <Alert>
                 <Check className="h-4 w-4" />
@@ -411,7 +411,7 @@ export const TicketPriceExtractor = ({
                     variant="outline"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isLoading}
-                    className="flex-1"
+                    className="flex-1 rounded-full border-linea bg-transparent hover:bg-superficie-2"
                     type="button"
                   >
                     <Image className="h-4 w-4 mr-2" />
@@ -423,14 +423,23 @@ export const TicketPriceExtractor = ({
 
             {hasData && (
               <div className="space-y-4">
-                {renderPriceTable(extractedData.presale_prices, '🎟️ Precios Preventa', 'default')}
-                {renderPriceTable(extractedData.regular_prices, '🎫 Precios Venta General', 'secondary')}
+                {renderPriceTable(extractedData.presale_prices, 'Precios Preventa', 'default')}
+                {renderPriceTable(extractedData.regular_prices, 'Precios Venta General', 'secondary')}
 
                 <div className="flex gap-2 pt-2">
-                  <Button onClick={handleSave} className="flex-1" type="button">
+                  <Button
+                    onClick={handleSave}
+                    className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                    type="button"
+                  >
                     Guardar Precios
                   </Button>
-                  <Button variant="outline" onClick={handleCopyHtml} type="button">
+                  <Button
+                    variant="outline"
+                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                    onClick={handleCopyHtml}
+                    type="button"
+                  >
                     {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
                   </Button>
                 </div>
@@ -453,10 +462,10 @@ export const TicketPriceExtractor = ({
 
   // Full card mode (for news)
   return (
-    <Card>
+    <Card className="rounded-[20px] border-linea bg-superficie">
       <CardHeader className="pb-3">
         <CardTitle className="text-base font-semibold flex items-center gap-2">
-          <Ticket className="h-5 w-5" />
+          <Ticket className="h-5 w-5 text-periwinkle" />
           Extractor de Precios de Tickets
         </CardTitle>
       </CardHeader>
@@ -536,7 +545,7 @@ export const TicketPriceExtractor = ({
                 variant="outline"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isLoading}
-                className="flex-1"
+                className="flex-1 rounded-full border-linea bg-transparent hover:bg-superficie-2"
               >
                 <Image className="h-4 w-4 mr-2" />
                 Subir imagen
@@ -556,10 +565,10 @@ export const TicketPriceExtractor = ({
             )}
 
             {/* Presale prices table */}
-            {renderPriceTable(extractedData.presale_prices, '🎟️ Precios Preventa', 'default')}
+            {renderPriceTable(extractedData.presale_prices, 'Precios Preventa', 'default')}
 
             {/* Regular prices table */}
-            {renderPriceTable(extractedData.regular_prices, '🎫 Precios Venta General', 'secondary')}
+            {renderPriceTable(extractedData.regular_prices, 'Precios Venta General', 'secondary')}
 
             {/* Sale dates */}
             {(extractedData.presale_date || extractedData.general_sale_date) && (
@@ -582,19 +591,29 @@ export const TicketPriceExtractor = ({
             {/* Actions */}
             <div className="flex gap-2 pt-2">
               {isNewsMode && (
-                <Button onClick={handleInsert} className="flex-1">
+                <Button
+                  onClick={handleInsert}
+                  className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                >
                   Insertar en Noticia
                 </Button>
               )}
               {isSaveMode && (
-                <Button onClick={handleSave} className="flex-1">
+                <Button
+                  onClick={handleSave}
+                  className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                >
                   Guardar Precios
                 </Button>
               )}
-              <Button variant="outline" onClick={handleCopyHtml}>
+              <Button
+                variant="outline"
+                className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                onClick={handleCopyHtml}
+              >
                 {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
               </Button>
-              <Button variant="outline" asChild>
+              <Button variant="outline" className="rounded-full border-linea bg-transparent hover:bg-superficie-2" asChild>
                 <a href={extractedData.source_url} target="_blank" rel="noopener noreferrer">
                   <ExternalLink className="h-4 w-4" />
                 </a>

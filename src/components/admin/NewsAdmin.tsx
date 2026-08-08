@@ -204,15 +204,20 @@ export const NewsAdmin = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Gestión de Noticias</h2>
-        <Button onClick={() => setShowForm(true)}>
+        <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">
+          Gestión de Noticias
+        </h2>
+        <Button
+          onClick={() => setShowForm(true)}
+          className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+        >
           <Plus className="w-4 h-4 mr-2" />
           Nueva Noticia
         </Button>
       </div>
 
       {showForm && (
-        <Card>
+        <Card className="rounded-[20px] border-linea bg-superficie">
           <CardHeader>
             <CardTitle>
               {editingArticle ? 'Editar Noticia' : 'Nueva Noticia'}
@@ -323,10 +328,18 @@ export const NewsAdmin = () => {
               </div>
 
               <div className="flex gap-2">
-                <Button type="submit">
+                <Button
+                  type="submit"
+                  className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                >
                   {editingArticle ? 'Actualizar' : 'Crear'}
                 </Button>
-                <Button type="button" variant="outline" onClick={resetForm}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+                  onClick={resetForm}
+                >
                   Cancelar
                 </Button>
               </div>
@@ -337,7 +350,7 @@ export const NewsAdmin = () => {
 
       <div className="grid gap-4">
         {articles.map((article) => (
-          <Card key={article.id}>
+          <Card key={article.id} className="rounded-[20px] border-linea bg-superficie">
             <CardContent className="p-4">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
@@ -353,6 +366,7 @@ export const NewsAdmin = () => {
                   <Button
                     size="sm"
                     variant="outline"
+                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                     onClick={() => handleEdit(article)}
                   >
                     <Edit className="w-4 h-4" />

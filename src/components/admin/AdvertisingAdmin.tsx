@@ -25,7 +25,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Eye, Trash2 } from 'lucide-react';
+import { Eye, Trash2, Mail } from 'lucide-react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 
@@ -129,14 +129,14 @@ const AdvertisingAdmin = () => {
     }
   };
 
-  const getStatusBadge = (status: string) => {
-    const variants: Record<string, 'default' | 'secondary' | 'destructive'> = {
-      pending: 'default',
-      contacted: 'secondary',
-      approved: 'secondary',
-      rejected: 'destructive',
-    };
+  const statusChipClasses: Record<string, string> = {
+    pending: 'border-amber-500/30 bg-amber-500/10 text-amber-400',
+    contacted: 'border-periwinkle/30 bg-periwinkle/10 text-periwinkle',
+    approved: 'border-verde/30 bg-verde/10 text-verde',
+    rejected: 'border-destructive/30 bg-destructive/10 text-destructive',
+  };
 
+  const getStatusBadge = (status: string) => {
     const labels: Record<string, string> = {
       pending: 'Pendiente',
       contacted: 'Contactado',
@@ -145,7 +145,7 @@ const AdvertisingAdmin = () => {
     };
 
     return (
-      <Badge variant={variants[status] || 'default'}>
+      <Badge variant="outline" className={statusChipClasses[status] || 'border-linea bg-superficie-2 text-texto-2'}>
         {labels[status] || status}
       </Badge>
     );
@@ -160,36 +160,61 @@ const AdvertisingAdmin = () => {
     return <div className="flex justify-center p-8">Cargando solicitudes...</div>;
   }
 
+  const pendingCount = requests.filter((r) => r.status === 'pending').length;
+  const contactedCount = requests.filter((r) => r.status === 'contacted').length;
+  const approvedCount = requests.filter((r) => r.status === 'approved').length;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">Solicitudes de Publicidad</h2>
-        <Badge variant="secondary">{requests.length} solicitudes</Badge>
+        <div>
+          <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Solicitudes de Publicidad</h2>
+          <p className="text-texto-2">Leads comerciales que llegan desde /publicidad</p>
+        </div>
       </div>
 
-      <div className="rounded-md border">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="rounded-[20px] border border-linea bg-superficie p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-texto-2">Total</p>
+          <p className="font-display text-3xl font-extrabold text-texto mt-1">{requests.length}</p>
+        </div>
+        <div className="rounded-[20px] border border-linea bg-superficie p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-texto-2">Pendientes</p>
+          <p className="font-display text-3xl font-extrabold text-amber-400 mt-1">{pendingCount}</p>
+        </div>
+        <div className="rounded-[20px] border border-linea bg-superficie p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-texto-2">Contactados</p>
+          <p className="font-display text-3xl font-extrabold text-periwinkle mt-1">{contactedCount}</p>
+        </div>
+        <div className="rounded-[20px] border border-linea bg-superficie p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-texto-2">Aprobados</p>
+          <p className="font-display text-3xl font-extrabold text-verde mt-1">{approvedCount}</p>
+        </div>
+      </div>
+
+      <div className="rounded-[20px] border border-linea bg-superficie overflow-hidden">
         <Table>
           <TableHeader>
-            <TableRow>
-              <TableHead>Fecha</TableHead>
-              <TableHead>Empresa</TableHead>
-              <TableHead>Contacto</TableHead>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Presupuesto</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
+            <TableRow className="border-linea hover:bg-transparent">
+              <TableHead className="text-texto-2">Fecha</TableHead>
+              <TableHead className="text-texto-2">Empresa</TableHead>
+              <TableHead className="text-texto-2">Contacto</TableHead>
+              <TableHead className="text-texto-2">Tipo</TableHead>
+              <TableHead className="text-texto-2">Presupuesto</TableHead>
+              <TableHead className="text-texto-2">Estado</TableHead>
+              <TableHead className="text-right text-texto-2">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {requests.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center text-muted-foreground">
+                <TableCell colSpan={7} className="text-center text-texto-2">
                   No hay solicitudes
                 </TableCell>
               </TableRow>
             ) : (
               requests.map((request) => (
-                <TableRow key={request.id}>
+                <TableRow key={request.id} className="border-linea hover:bg-superficie-2/50">
                   <TableCell className="font-medium">
                     {format(new Date(request.created_at), 'dd/MM/yyyy', { locale: es })}
                   </TableCell>
@@ -197,7 +222,7 @@ const AdvertisingAdmin = () => {
                   <TableCell>
                     <div className="text-sm">
                       <div>{request.contact_name}</div>
-                      <div className="text-muted-foreground">{request.email}</div>
+                      <div className="text-texto-2">{request.email}</div>
                     </div>
                   </TableCell>
                   <TableCell>{request.ad_type}</TableCell>
@@ -207,7 +232,9 @@ const AdvertisingAdmin = () => {
                       value={request.status}
                       onValueChange={(value) => updateStatus(request.id, value)}
                     >
-                      <SelectTrigger className="w-32">
+                      <SelectTrigger
+                        className={`w-32 h-8 rounded-full border text-xs font-semibold ${statusChipClasses[request.status] || 'border-linea bg-superficie-2 text-texto-2'}`}
+                      >
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -223,6 +250,17 @@ const AdvertisingAdmin = () => {
                       <Button
                         variant="ghost"
                         size="sm"
+                        className="text-texto-2 hover:text-periwinkle"
+                        asChild
+                      >
+                        <a href={`mailto:${request.email}`} aria-label="Contactar por email">
+                          <Mail className="h-4 w-4" />
+                        </a>
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-texto-2 hover:text-periwinkle"
                         onClick={() => viewDetails(request)}
                       >
                         <Eye className="h-4 w-4" />
@@ -230,9 +268,10 @@ const AdvertisingAdmin = () => {
                       <Button
                         variant="ghost"
                         size="sm"
+                        className="text-texto-2 hover:text-destructive"
                         onClick={() => deleteRequest(request.id)}
                       >
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </TableCell>
@@ -304,6 +343,18 @@ const AdvertisingAdmin = () => {
                     {format(new Date(selectedRequest.created_at), "dd/MM/yyyy 'a las' HH:mm", { locale: es })}
                   </p>
                 </div>
+              </div>
+
+              <div className="flex justify-end pt-2 border-t border-linea">
+                <Button
+                  asChild
+                  className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                >
+                  <a href={`mailto:${selectedRequest.email}?subject=Publicidad en Conciertos Latam`}>
+                    <Mail className="h-4 w-4 mr-2" />
+                    Contactar a {selectedRequest.contact_name}
+                  </a>
+                </Button>
               </div>
             </div>
           )}

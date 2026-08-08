@@ -9,7 +9,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Pencil, Trash2, Star, Music, MoreHorizontal, ListMusic, Copy } from 'lucide-react';
+import { Pencil, Trash2, Star, Music, MoreHorizontal, ListMusic, Copy, Ticket } from 'lucide-react';
 import { SetlistManager } from '../SetlistManager';
 import { useArtistImage } from '@/hooks/useArtistImage';
 import type { Concert, Artist, Venue } from './types';
@@ -77,7 +77,7 @@ export const ConcertTableRow = ({
 
     return (
         <div
-            className="grid grid-cols-12 gap-4 px-4 py-2.5 items-center hover:bg-muted/40 transition-colors cursor-pointer"
+            className="grid grid-cols-12 gap-4 px-4 py-2.5 items-center hover:bg-superficie-2 transition-colors cursor-pointer"
             onClick={() => onEdit(concert)}
         >
             <div className="col-span-4 flex items-center gap-3 min-w-0">
@@ -99,7 +99,10 @@ export const ConcertTableRow = ({
                 <div className="min-w-0">
                     <h3 className="font-medium truncate">{concert.title}</h3>
                     {concert.ticket_prices_html && (
-                        <p className="text-[10px] text-muted-foreground">💰 Precios</p>
+                        <p className="flex items-center gap-1 text-[10px] text-texto-2">
+                            <Ticket className="w-3 h-3 text-periwinkle" />
+                            Precios
+                        </p>
                     )}
                 </div>
             </div>
@@ -123,7 +126,7 @@ export const ConcertTableRow = ({
             <div className="col-span-2 min-w-0">
                 <p className="text-sm">{dateLabel ?? <span className="text-muted-foreground italic">Sin fecha</span>}</p>
                 {concert.date && (
-                    <p className={`text-[10px] ${isPastConcert(concert.date) ? 'text-muted-foreground' : 'text-primary'}`}>
+                    <p className={`text-[10px] ${isPastConcert(concert.date) ? 'text-muted-foreground' : 'text-verde'}`}>
                         {isPastConcert(concert.date) ? 'Pasado' : 'Próximo'}
                     </p>
                 )}
@@ -135,7 +138,7 @@ export const ConcertTableRow = ({
                         <Button
                             size="icon"
                             variant="ghost"
-                            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                            className="h-8 w-8 text-muted-foreground hover:text-periwinkle"
                             onClick={(e) => e.stopPropagation()}
                             aria-label="Acciones"
                         >
@@ -150,7 +153,7 @@ export const ConcertTableRow = ({
                             }}
                         >
                             <Star
-                                className={`w-4 h-4 mr-2 ${concert.is_featured ? 'fill-yellow-400 text-yellow-400' : ''}`}
+                                className={`w-4 h-4 mr-2 ${concert.is_featured ? 'fill-azul-claro text-azul-claro' : ''}`}
                             />
                             {concert.is_featured ? 'Quitar destacado' : 'Marcar destacado'}
                         </DropdownMenuItem>

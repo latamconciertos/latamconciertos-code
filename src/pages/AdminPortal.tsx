@@ -15,7 +15,7 @@ import {
   ArrowRight,
   Home,
 } from 'lucide-react';
-import logoPrincipal from '@/assets/logo-principal.png';
+import logo from '@/assets/logo.png';
 
 const AdminPortal = () => {
   const { user, isReady } = useRequireAdmin();
@@ -24,16 +24,17 @@ const AdminPortal = () => {
 
   if (!isReady) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="dark font-fira min-h-screen flex items-center justify-center bg-noche text-texto">
         <div className="text-muted-foreground">Cargando...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    // "Evolución Nocturna": el panel también vive sobre la noche
+    <div className="dark font-fira min-h-screen bg-noche text-texto">
       {/* Header */}
-      <header className="border-b border-border/50">
+      <header className="border-b border-linea">
         <div className="max-w-5xl mx-auto px-6 py-2.5 flex items-center justify-between gap-3">
           <Button
             variant="ghost"
@@ -62,11 +63,19 @@ const AdminPortal = () => {
       </header>
 
       {/* Content */}
-      <main className="max-w-5xl mx-auto px-6 py-16">
-        <div className="text-center mb-12">
-          <img src={logoPrincipal} alt="Conciertos Latam" className="h-32 mx-auto mb-6" />
-          <h1 className="text-3xl font-bold">Panel de Administración</h1>
-          <p className="text-muted-foreground mt-2">
+      <main className="relative max-w-5xl mx-auto px-6 py-16">
+        {/* Glow de cobalto detrás del hero, nunca color plano */}
+        <div
+          className="absolute left-1/2 top-0 h-[280px] w-[min(560px,90vw)] -translate-x-1/2 rounded-full pointer-events-none"
+          style={{ background: 'radial-gradient(closest-side, rgba(0,74,173,.35), transparent 70%)', filter: 'blur(100px)' }}
+        />
+        <div className="relative text-center mb-12">
+          <img src={logo} alt="Conciertos Latam" className="h-32 mx-auto mb-6" />
+          <span className="eyebrow-nocturno justify-center mb-3">Equipo Conciertos Latam</span>
+          <h1 className="font-display uppercase text-4xl md:text-5xl font-black tracking-[0.01em] leading-none text-texto">
+            Panel de administración
+          </h1>
+          <p className="text-texto-2 mt-3">
             Selecciona el módulo con el que quieres trabajar
           </p>
         </div>
@@ -75,16 +84,16 @@ const AdminPortal = () => {
           {/* Content Management */}
           <button
             onClick={() => navigate('/admin/content')}
-            className="group relative overflow-hidden rounded-2xl border bg-card p-8 text-left transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1"
+            className="group relative overflow-hidden rounded-[20px] border border-linea bg-superficie p-8 text-left transition-all hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -translate-y-8 translate-x-8 group-hover:bg-blue-500/10 transition-colors" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-cobalto/15 blur-2xl rounded-full -translate-y-8 translate-x-8 group-hover:bg-cobalto/25 transition-colors" />
 
             <div className="relative">
-              <div className="flex items-center justify-center h-14 w-14 rounded-xl bg-blue-500/10 text-blue-500 mb-5">
+              <div className="flex items-center justify-center h-14 w-14 rounded-full bg-periwinkle/10 text-periwinkle mb-5">
                 <Layers className="h-7 w-7" />
               </div>
 
-              <h2 className="text-xl font-bold mb-2">Gestor de Contenido</h2>
+              <h2 className="font-display uppercase text-2xl font-extrabold tracking-[0.01em] text-texto mb-2">Gestor de Contenido</h2>
               <p className="text-sm text-muted-foreground mb-6">
                 Administra la plataforma: noticias, artistas, conciertos, venues, festivales y más.
               </p>
@@ -96,7 +105,7 @@ const AdminPortal = () => {
                 <ModuleTag icon={TrendingUp} label="Spotify" />
               </div>
 
-              <div className="flex items-center text-sm font-medium text-primary">
+              <div className="flex items-center text-sm font-medium text-periwinkle">
                 Abrir módulo
                 <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </div>
@@ -106,16 +115,16 @@ const AdminPortal = () => {
           {/* Operations */}
           <button
             onClick={() => navigate('/admin/operations')}
-            className="group relative overflow-hidden rounded-2xl border bg-card p-8 text-left transition-all hover:border-primary/50 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-1"
+            className="group relative overflow-hidden rounded-[20px] border border-linea bg-superficie p-8 text-left transition-all hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1"
           >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/5 rounded-full -translate-y-8 translate-x-8 group-hover:bg-purple-500/10 transition-colors" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-cobalto/15 blur-2xl rounded-full -translate-y-8 translate-x-8 group-hover:bg-cobalto/25 transition-colors" />
 
             <div className="relative">
-              <div className="flex items-center justify-center h-14 w-14 rounded-xl bg-purple-500/10 text-purple-500 mb-5">
+              <div className="flex items-center justify-center h-14 w-14 rounded-full bg-periwinkle/10 text-periwinkle mb-5">
                 <ClipboardList className="h-7 w-7" />
               </div>
 
-              <h2 className="text-xl font-bold mb-2">Operaciones</h2>
+              <h2 className="font-display uppercase text-2xl font-extrabold tracking-[0.01em] text-texto mb-2">Operaciones</h2>
               <p className="text-sm text-muted-foreground mb-6">
                 Gestiona acreditaciones, deadlines, asignación de equipo y logística de eventos.
               </p>
@@ -126,7 +135,7 @@ const AdminPortal = () => {
                 <ModuleTag icon={Calendar} label="Agenda" />
               </div>
 
-              <div className="flex items-center text-sm font-medium text-primary">
+              <div className="flex items-center text-sm font-medium text-periwinkle">
                 Abrir módulo
                 <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
               </div>
@@ -146,7 +155,7 @@ function ModuleTag({
   label: string;
 }) {
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
+    <span className="inline-flex items-center gap-1 rounded-full border border-linea bg-superficie-2 px-2.5 py-1 text-xs text-texto-2">
       <Icon className="h-3 w-3" />
       {label}
     </span>

@@ -34,8 +34,8 @@ export const ConcertsTable = ({
     return (
         <div className="space-y-4">
             {/* Table */}
-            <div className="border rounded-lg overflow-hidden bg-card">
-                <div className="grid grid-cols-12 gap-4 px-4 py-2.5 bg-muted/50 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            <div className="rounded-[20px] border border-linea overflow-hidden bg-superficie">
+                <div className="grid grid-cols-12 gap-4 px-4 py-2.5 bg-superficie-2/60 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     <div className="col-span-4">Concierto</div>
                     <div className="col-span-2">Tipo / Artista</div>
                     <div className="col-span-2">Venue</div>
@@ -43,7 +43,7 @@ export const ConcertsTable = ({
                     <div className="col-span-2 text-right">Acciones</div>
                 </div>
 
-                <div className="divide-y">
+                <div className="divide-y divide-linea">
                     {paginatedConcerts.length === 0 ? (
                         <div className="p-8 text-center text-sm text-muted-foreground">
                             No se encontraron conciertos.
@@ -99,6 +99,7 @@ export const ConcertsTable = ({
                                 <Button
                                     variant="outline"
                                     size="sm"
+                                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                     disabled={currentPage === 1}
                                 >
@@ -110,6 +111,7 @@ export const ConcertsTable = ({
                                 <Button
                                     variant="outline"
                                     size="sm"
+                                    className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
                                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                                     disabled={currentPage === totalPages}
                                 >

@@ -161,19 +161,19 @@ export function SetlistContributionsAdmin() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold">Contribuciones de Setlist</h2>
-        <p className="text-muted-foreground mt-2">
-          Revisa y aprueba las canciones que los usuarios han agregado a los setlists
+        <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Contribuciones de Setlist</h2>
+        <p className="text-texto-2 mt-2">
+          Revisa y aprueba las canciones que los fans han agregado a los setlists
         </p>
       </div>
 
       {contributions.length === 0 ? (
-        <Card>
+        <Card className="rounded-[20px] border-linea bg-superficie">
           <CardContent className="py-12">
             <div className="text-center">
-              <Music className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+              <Music className="w-12 h-12 mx-auto text-periwinkle/40 mb-4" />
               <h3 className="text-lg font-medium mb-2">No hay contribuciones pendientes</h3>
-              <p className="text-muted-foreground">
+              <p className="text-texto-2">
                 Todas las contribuciones han sido revisadas
               </p>
             </div>
@@ -182,7 +182,7 @@ export function SetlistContributionsAdmin() {
       ) : (
         <div className="grid gap-4">
           {contributions.map((contribution) => (
-            <Card key={contribution.id}>
+            <Card key={contribution.id} className="rounded-[20px] border-linea bg-superficie">
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
@@ -197,7 +197,7 @@ export function SetlistContributionsAdmin() {
                       </span>
                     </CardDescription>
                   </div>
-                  <Badge variant="secondary">Pendiente</Badge>
+                  <Badge variant="outline" className="border-amber-500/30 bg-amber-500/10 text-amber-400">Pendiente</Badge>
                 </div>
               </CardHeader>
               <CardContent>
@@ -230,7 +230,8 @@ export function SetlistContributionsAdmin() {
                     <Button
                       onClick={() => handleApprove(contribution.id)}
                       size="sm"
-                      className="bg-green-600 hover:bg-green-700"
+                      variant="outline"
+                      className="rounded-full border-verde/30 bg-verde/10 text-verde hover:bg-verde/20 hover:text-verde"
                     >
                       <Check className="w-4 h-4 mr-2" />
                       Aprobar
@@ -238,7 +239,8 @@ export function SetlistContributionsAdmin() {
                     <Button
                       onClick={() => handleReject(contribution.id)}
                       size="sm"
-                      variant="destructive"
+                      variant="outline"
+                      className="rounded-full border-destructive/30 bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive"
                     >
                       <X className="w-4 h-4 mr-2" />
                       Rechazar
