@@ -131,6 +131,17 @@ export const SELECT_QUERIES = {
     )
   `,
 
+  // Igual que concertBasic pero con joins internos e ids de ciudad/país, para poder filtrar
+  // por el país del usuario (PostgREST exige !inner para filtrar sobre una relación anidada).
+  concertNearby: `
+    id, title, slug, date, image_url, event_type, is_featured,
+    artists (id, name, photo_url, slug),
+    venues!inner (
+      id, name, location,
+      cities!inner (id, name, country_id, countries!inner (id, name, iso_code))
+    )
+  `,
+
   artistBasic: `id, name, slug, photo_url, bio, social_links, genres`,
 
   venueWithLocation: `

@@ -268,8 +268,13 @@ class GeographyServiceClass {
             .select('*')
             .eq('id', data.country_id)
             .single();
-          
-          return { data: country, error: countryError };
+
+          // La ciudad viaja adosada al país: es lo que permite ordenar la agenda por cercanía
+          // sin necesidad de tenerla registrada en el catálogo de ciudades.
+          return {
+            data: country ? { ...country, city_name: data.city_name ?? null } : null,
+            error: countryError,
+          };
         }
         
         return { data: null, error: null };

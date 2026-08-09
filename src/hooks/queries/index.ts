@@ -15,6 +15,7 @@ export type { QueryKeys } from './queryKeys';
 export {
   useConcerts,
   useUpcomingConcerts,
+  useUpcomingNearbyConcerts,
   usePastConcerts,
   useFeaturedConcerts,
   useConcertBySlug,

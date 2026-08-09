@@ -5,7 +5,9 @@ import { SectionHeader } from './SectionHeader';
 import { StadiumArcs } from './StadiumArcs';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ModernConcertCard } from './ModernConcertCard';
-import { useUpcomingConcerts } from '@/hooks/queries';
+import { useUpcomingNearbyConcerts } from '@/hooks/queries';
+import { useUserLocation } from '@/hooks/useUserLocation';
+import { LocationPicker } from './LocationPicker';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
 import { Link } from 'react-router-dom';
 import { withTicketTracking } from '@/lib/ticketUrl';
@@ -44,8 +46,29 @@ export const NewHomeUpcomingConcerts = () => {
     const [concertsWithImages, setConcertsWithImages] = useState<ConcertWithImage[]>([]);
     const [selectedConcert, setSelectedConcert] = useState<ConcertWithImage | null>(null);
 
-    const { data: concertsData, isLoading } = useUpcomingConcerts(8);
+    // La agenda se ordena por cercanía al usuario: no tiene sentido que alguien en México
+    // abra el home y vea solo fechas de Bogotá.
+    const { countryId, countryName, cityName, source, isLoading: locationLoading, setPreferred } =
+        useUserLocation();
+    const { data: concertsData, isLoading: concertsLoading } = useUpcomingNearbyConcerts({
+        countryId,
+        cityName,
+        limit: 8,
+        enabled: !locationLoading,
+    });
+    const isLoading = locationLoading || concertsLoading;
     const concerts = concertsData ?? [];
+
+    // Cuando el país elegido todavía no tiene fechas, la sección se rellena con la agenda
+    // regional: decirlo explícitamente en vez de titular "en México" mostrando Bogotá.
+    const hasLocalConcerts = countryName
+        ? concerts.some((c) => c.venues?.cities?.countries?.name === countryName)
+        : false;
+    const subtitle = !countryName
+        ? 'Los shows más esperados de Latinoamérica, con fechas y entradas.'
+        : hasLocalConcerts
+            ? `Los shows más esperados en ${countryName}, con fechas y entradas.`
+            : `Aún no tenemos fechas confirmadas en ${countryName}: mientras tanto, la agenda de Latinoamérica.`;
 
     useEffect(() => {
         const fetchArtistImages = async () => {
@@ -118,8 +141,16 @@ export const NewHomeUpcomingConcerts = () => {
                 <SectionHeader
                     eyebrow="Agenda"
                     title="Próximos conciertos"
-                    subtitle="Los shows más esperados de Latinoamérica, con fechas y entradas."
+                    subtitle={subtitle}
                     action={{ label: 'Ver todos los conciertos', to: '/concerts' }}
+                    aside={
+                        <LocationPicker
+                            countryId={countryId}
+                            countryName={countryName}
+                            source={source}
+                            onChange={setPreferred}
+                        />
+                    }
                 />
 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">

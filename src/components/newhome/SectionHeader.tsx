@@ -6,6 +6,8 @@ interface SectionHeaderProps {
     title: string;
     subtitle?: string;
     action?: { label: string; to: string };
+    /** Control auxiliar junto a la acción (p. ej. el selector de ubicación de la agenda). */
+    aside?: React.ReactNode;
 }
 
 /**
@@ -13,7 +15,7 @@ interface SectionHeaderProps {
  * titular en Big Shoulders uppercase y acción secundaria a la derecha.
  * Alineado a la izquierda a propósito — evitar layouts 100% centrados.
  */
-export const SectionHeader = ({ eyebrow, title, subtitle, action }: SectionHeaderProps) => {
+export const SectionHeader = ({ eyebrow, title, subtitle, action, aside }: SectionHeaderProps) => {
     return (
         <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5 mb-10 md:mb-12">
             <div className="max-w-2xl">
@@ -27,11 +29,16 @@ export const SectionHeader = ({ eyebrow, title, subtitle, action }: SectionHeade
                     </p>
                 )}
             </div>
-            {action && (
-                <Link to={action.to} className="btn-nocturno-secundario shrink-0">
-                    {action.label}
-                    <ArrowRight className="h-4 w-4" />
-                </Link>
+            {(action || aside) && (
+                <div className="flex flex-wrap items-center gap-3 shrink-0">
+                    {aside}
+                    {action && (
+                        <Link to={action.to} className="btn-nocturno-secundario shrink-0">
+                            {action.label}
+                            <ArrowRight className="h-4 w-4" />
+                        </Link>
+                    )}
+                </div>
             )}
         </div>
     );

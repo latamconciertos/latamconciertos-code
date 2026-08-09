@@ -12,6 +12,8 @@ export const queryKeys = {
     lists: () => [...queryKeys.concerts.all, 'list'] as const,
     list: (filters: object) => [...queryKeys.concerts.lists(), filters] as const,
     upcoming: (limit?: number) => [...queryKeys.concerts.all, 'upcoming', { limit }] as const,
+    upcomingNearby: (countryId?: string | null, cityName?: string | null, limit?: number) =>
+      [...queryKeys.concerts.all, 'upcomingNearby', { countryId: countryId ?? null, cityName: cityName ?? null, limit }] as const,
     past: (limit?: number) => [...queryKeys.concerts.all, 'past', { limit }] as const,
     featured: () => [...queryKeys.concerts.all, 'featured'] as const,
     details: () => [...queryKeys.concerts.all, 'detail'] as const,

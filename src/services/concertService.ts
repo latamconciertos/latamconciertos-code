@@ -17,6 +17,33 @@ import type {
 } from '@/types/entities';
 import { handleServiceCall, handleServiceCallArray, getTodayDate, SELECT_QUERIES } from './base';
 
+// La ciudad que devuelve la geolocalización por IP casi nunca coincide carácter a carácter con
+// la del catálogo ("Ciudad de México" vs "Mexico City", "Bogotá" vs "Bogota"): se comparan
+// versiones sin acentos ni artículos, con los alias más comunes de la región.
+const CITY_ALIASES: Record<string, string> = {
+  'mexico city': 'ciudad de mexico',
+  cdmx: 'ciudad de mexico',
+  'distrito federal': 'ciudad de mexico',
+  'mexico d f': 'ciudad de mexico',
+  'guadalajara de buga': 'guadalajara',
+  'santiago de queretaro': 'queretaro',
+  'santa fe de bogota': 'bogota',
+  'bogota d c': 'bogota',
+};
+
+export function normalizeCityName(value?: string | null): string | null {
+  if (!value) return null;
+  const base = value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!base) return null;
+  return CITY_ALIASES[base] ?? base;
+}
+
 export interface ConcertFilterOptions {
   status?: ConcertFilterStatus;
   artistId?: string;
@@ -86,6 +113,73 @@ class ConcertServiceClass {
 
       return query;
     }, 'ConcertService.getUpcoming');
+  }
+
+  /**
+   * Upcoming concerts ordered by proximity to the user: same city first, then same country,
+   * then the rest of LATAM as filler so the section is never empty (a user in a country with
+   * no listed shows still sees the regional agenda instead of a blank home).
+   */
+  async getUpcomingNearby(options: {
+    limit?: number;
+    countryId?: string | null;
+    cityName?: string | null;
+  }): Promise<ServiceResponse<ConcertWithBasicRelations[]>> {
+    const limit = options.limit ?? 8;
+
+    return handleServiceCall(async () => {
+      const today = getTodayDate();
+      const collected: ConcertWithBasicRelations[] = [];
+      const seen = new Set<string>();
+
+      const push = (rows: ConcertWithBasicRelations[] | null) => {
+        for (const row of rows || []) {
+          if (seen.has(row.id)) continue;
+          seen.add(row.id);
+          collected.push(row);
+        }
+      };
+
+      if (options.countryId) {
+        const { data: countryRows, error: countryError } = await supabase
+          .from('concerts')
+          .select(SELECT_QUERIES.concertNearby)
+          .gte('date', today)
+          .eq('venues.cities.country_id', options.countryId)
+          .order('date', { ascending: true })
+          .limit(limit);
+
+        // Un fallo aquí no debe tumbar la sección: se sigue con la agenda general.
+        if (countryError) {
+          console.error('[ConcertService.getUpcomingNearby] filtro por país falló', countryError);
+        } else {
+          const rows = (countryRows || []) as unknown as ConcertWithBasicRelations[];
+          // Dentro del país, los de la ciudad del usuario van primero (orden estable: el resto
+          // conserva el orden por fecha que ya trae la consulta).
+          const target = normalizeCityName(options.cityName);
+          const ranked = target
+            ? [...rows].sort((a, b) =>
+              Number(normalizeCityName(b.venues?.cities?.name) === target) -
+              Number(normalizeCityName(a.venues?.cities?.name) === target)
+            )
+            : rows;
+          push(ranked);
+        }
+      }
+
+      if (collected.length < limit) {
+        const { data: fillerRows, error: fillerError } = await supabase
+          .from('concerts')
+          .select(SELECT_QUERIES.concertBasic)
+          .gte('date', today)
+          .order('date', { ascending: true })
+          .limit(limit + collected.length);
+        if (fillerError) return { data: null, error: fillerError };
+        push((fillerRows || []) as unknown as ConcertWithBasicRelations[]);
+      }
+
+      return { data: collected.slice(0, limit), error: null };
+    }, 'ConcertService.getUpcomingNearby');
   }
 
   /**

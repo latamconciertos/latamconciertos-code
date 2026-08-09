@@ -42,6 +42,26 @@ export function useUpcomingConcerts(limit?: number) {
 }
 
 /**
+ * Hook to fetch upcoming concerts ranked by proximity to the user (city → country → LATAM).
+ */
+export function useUpcomingNearbyConcerts(
+  options: { countryId?: string | null; cityName?: string | null; limit?: number; enabled?: boolean },
+) {
+  const { countryId = null, cityName = null, limit = 8, enabled = true } = options;
+  return useQuery({
+    queryKey: queryKeys.concerts.upcomingNearby(countryId, cityName, limit),
+    queryFn: async () => {
+      const result = await concertService.getUpcomingNearby({ countryId, cityName, limit });
+      if (!result.success) throw new Error(result.error || 'Failed to fetch nearby concerts');
+      return result.data as ConcertWithBasicRelations[];
+    },
+    enabled,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+  });
+}
+
+/**
  * Hook to fetch past concerts
  */
 export function usePastConcerts(limit?: number) {

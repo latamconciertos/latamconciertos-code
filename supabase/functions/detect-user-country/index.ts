@@ -1,3 +1,7 @@
+// Geolocalización por IP para personalizar el home: devuelve país (con su id en la base) y
+// además ciudad/región, que es lo que permite priorizar los conciertos más cercanos al usuario.
+// Ante cualquier fallo degrada a Colombia en vez de romper: el home siempre debe renderizar.
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.38.4";
 
@@ -6,195 +10,93 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const FALLBACK_ISO = 'CO';
+
+function json(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  });
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
-  try {
-    // Get client IP from various possible headers
-    const clientIP = 
-      req.headers.get('x-forwarded-for')?.split(',')[0] ||
-      req.headers.get('x-real-ip') ||
-      req.headers.get('cf-connecting-ip') ||
-      '8.8.8.8'; // Default to Google DNS for testing
+  // El cliente se crea una sola vez y ANTES de cualquier rama que lo use: la versión previa lo
+  // declaraba después del primer fallback, que por eso lanzaba ReferenceError y solo funcionaba
+  // de rebote gracias al catch externo.
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL')!,
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+  );
 
-    console.log('Client IP:', clientIP);
-
-    // Use ipapi.co to get country from IP
-    const ipApiUrl = `https://ipapi.co/${clientIP}/json/`;
-    console.log('Fetching from:', ipApiUrl);
-    
-    const ipApiResponse = await fetch(ipApiUrl, {
-      headers: {
-        'User-Agent': 'Conciertos Latam/1.0'
-      }
-    });
-    
-    console.log('IP API Response status:', ipApiResponse.status);
-    
-    if (!ipApiResponse.ok) {
-      const errorText = await ipApiResponse.text();
-      console.error('IP API Error:', errorText);
-      
-      // Fallback to Colombia for development/testing
-      console.log('Using fallback country: Colombia');
-      const { data: country } = await supabase
-        .from('countries')
-        .select('id, name, iso_code')
-        .eq('iso_code', 'CO')
-        .single();
-        
-      if (country) {
-        return new Response(
-          JSON.stringify({ 
-            country_id: country.id,
-            country_name: country.name,
-            country_code: country.iso_code,
-            fallback: true
-          }),
-          { 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          }
-        );
-      }
-      
-      throw new Error(`Failed to fetch IP location: ${errorText}`);
-    }
-
-    const ipData = await ipApiResponse.json();
-    console.log('IP Data:', ipData);
-    
-    const countryCode = ipData.country_code || ipData.country;
-
-    console.log('Detected country code:', countryCode);
-
-    if (!countryCode) {
-      console.log('No country code found, using fallback');
-      // Fallback to Colombia
-      const { data: country } = await supabase
-        .from('countries')
-        .select('id, name, iso_code')
-        .eq('iso_code', 'CO')
-        .single();
-        
-      if (country) {
-        return new Response(
-          JSON.stringify({ 
-            country_id: country.id,
-            country_name: country.name,
-            country_code: country.iso_code,
-            fallback: true
-          }),
-          { 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          }
-        );
-      }
-      
-      return new Response(
-        JSON.stringify({ error: 'Could not detect country' }),
-        { 
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
-    }
-
-    // Get country ID from Supabase
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    console.log('Looking up country in database:', countryCode);
-    const { data: country, error } = await supabase
+  async function respondWithCountry(
+    isoCode: string,
+    extra: Record<string, unknown> = {},
+  ): Promise<Response> {
+    const { data: country } = await supabase
       .from('countries')
       .select('id, name, iso_code')
-      .eq('iso_code', countryCode)
-      .single();
+      .ilike('iso_code', isoCode)
+      .maybeSingle();
 
-    if (error || !country) {
-      console.error('Country not found in database:', error);
-      console.log('Using fallback country: Colombia');
-      
-      // Fallback to Colombia
-      const { data: fallbackCountry } = await supabase
-        .from('countries')
-        .select('id, name, iso_code')
-        .eq('iso_code', 'CO')
-        .single();
-        
-      if (fallbackCountry) {
-        return new Response(
-          JSON.stringify({ 
-            country_id: fallbackCountry.id,
-            country_name: fallbackCountry.name,
-            country_code: fallbackCountry.iso_code,
-            fallback: true
-          }),
-          { 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          }
-        );
-      }
-      
-      return new Response(
-        JSON.stringify({ error: 'Country not found in database' }),
-        { 
-          status: 404,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        }
-      );
+    if (!country) {
+      // El país existe en el mundo pero no en el catálogo: se informa igual para que el frontend
+      // pueda decidir (mostrar toda LATAM) en lugar de asumir Colombia silenciosamente.
+      return json({ country_id: null, country_code: isoCode, country_name: null, ...extra });
+    }
+    return json({
+      country_id: country.id,
+      country_name: country.name,
+      country_code: country.iso_code,
+      ...extra,
+    });
+  }
+
+  try {
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      req.headers.get('x-real-ip') ||
+      req.headers.get('cf-connecting-ip') ||
+      '';
+
+    if (!clientIP) {
+      return await respondWithCountry(FALLBACK_ISO, { fallback: true, reason: 'sin IP' });
     }
 
-    console.log('Country found:', country);
-    return new Response(
-      JSON.stringify({ 
-        country_id: country.id,
-        country_name: country.name,
-        country_code: country.iso_code
-      }),
-      { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    );
-  } catch (error) {
-    console.error('Unexpected error:', error);
-    
-    // Try to return Colombia as ultimate fallback
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 4000);
+    let ipData: Record<string, unknown> | null = null;
     try {
-      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-      const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-      const supabase = createClient(supabaseUrl, supabaseKey);
-      
-      const { data: fallbackCountry } = await supabase
-        .from('countries')
-        .select('id, name, iso_code')
-        .eq('iso_code', 'CO')
-        .single();
-        
-      if (fallbackCountry) {
-        return new Response(
-          JSON.stringify({ 
-            country_id: fallbackCountry.id,
-            country_name: fallbackCountry.name,
-            country_code: fallbackCountry.iso_code,
-            fallback: true,
-            error: error.message
-          }),
-          { 
-            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-          }
-        );
-      }
-    } catch {}
-    
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { 
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-      }
-    );
+      const res = await fetch(`https://ipapi.co/${clientIP}/json/`, {
+        headers: { 'User-Agent': 'Conciertos Latam/1.0' },
+        signal: controller.signal,
+      });
+      if (res.ok) ipData = await res.json();
+    } catch (error) {
+      console.error('[detect-user-country] ipapi falló:', error instanceof Error ? error.message : error);
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    const isoCode = (ipData?.country_code || ipData?.country) as string | undefined;
+    if (!isoCode) {
+      return await respondWithCountry(FALLBACK_ISO, { fallback: true, reason: 'sin país en la respuesta' });
+    }
+
+    // La ciudad es lo que permite ordenar por cercanía dentro del país (un usuario en Guadalajara
+    // ve primero Guadalajara y luego el resto de México).
+    return await respondWithCountry(isoCode, {
+      city_name: (ipData?.city as string) ?? null,
+      region: (ipData?.region as string) ?? null,
+    });
+  } catch (error) {
+    console.error('[detect-user-country] error inesperado:', error);
+    try {
+      return await respondWithCountry(FALLBACK_ISO, { fallback: true });
+    } catch {
+      return json({ error: 'No se pudo detectar la ubicación' }, 500);
+    }
   }
 });
