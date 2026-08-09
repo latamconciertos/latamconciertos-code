@@ -18,9 +18,11 @@ interface City {
 interface QuickCreateVenueProps {
     cities: City[];
     onVenueCreated: (venueId: string) => void;
+    initialName?: string;
+    initialCityName?: string;
 }
 
-export const QuickCreateVenue = ({ cities, onVenueCreated }: QuickCreateVenueProps) => {
+export const QuickCreateVenue = ({ cities, onVenueCreated, initialName, initialCityName }: QuickCreateVenueProps) => {
     const queryClient = useQueryClient();
     const [open, setOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -36,6 +38,16 @@ export const QuickCreateVenue = ({ cities, onVenueCreated }: QuickCreateVenuePro
             .replace(/[^\w\s-]/g, '')
             .replace(/[\s_-]+/g, '-')
             .replace(/^-+|-+$/g, '');
+    };
+
+    const handleOpen = () => {
+        setOpen(true);
+        if (initialName && !formData.name) {
+            const cityMatch = initialCityName
+                ? cities.find((c) => c.name.toLowerCase() === initialCityName.toLowerCase())
+                : undefined;
+            setFormData((f) => ({ ...f, name: initialName, city_id: cityMatch?.id ?? f.city_id }));
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -82,7 +94,7 @@ export const QuickCreateVenue = ({ cities, onVenueCreated }: QuickCreateVenuePro
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={() => setOpen(true)}
+                onClick={handleOpen}
                 className="shrink-0 rounded-full border-linea bg-transparent hover:bg-superficie-2"
             >
                 <Plus className="w-4 h-4 mr-1" />
