@@ -4,9 +4,12 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
 import { requireAdmin } from '../_shared/requireAdmin.ts';
 import { enforceRateLimit } from '../_shared/rateLimit.ts';
+import { isAllowedUrl } from '../_shared/antiSsrf.ts';
 import { discoverEventUrls, eventKeyFromUrl } from '../_shared/ingest/discover.ts';
 import { fetchPage } from '../_shared/ingest/fetchPage.ts';
 import { extractEvent } from '../_shared/ingest/extractEvent.ts';
+import { extractEventsFromJsonLd } from '../_shared/ingest/jsonldList.ts';
+import type { CanonicalEvent } from '../_shared/ingest/types.ts';
 import { matchEntity } from '../_shared/ingest/matching.ts';
 import { computeFingerprint } from '../_shared/ingest/fingerprint.ts';
 import { emptyCounters } from '../_shared/ingest/types.ts';
@@ -28,6 +31,17 @@ function json(status: number, body: unknown): Response {
   });
 }
 
+// Compara lastmod del sitemap contra la última corrida como fechas reales
+// (vienen en zonas horarias distintas). Ante fechas no parseables, re-visita.
+function lastmodIsNewer(lastmod: string | undefined, sinceIso: string | null): boolean {
+  if (!lastmod) return false;
+  if (!sinceIso) return true;
+  const lastmodMs = Date.parse(lastmod);
+  const sinceMs = Date.parse(sinceIso);
+  if (Number.isNaN(lastmodMs) || Number.isNaN(sinceMs)) return true;
+  return lastmodMs > sinceMs;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -37,7 +51,7 @@ Deno.serve(async (req) => {
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const triggerSecret = Deno.env.get('INGEST_TRIGGER_SECRET') || '';
 
-  let body: { sourceId?: string; runId?: string; triggeredBy?: string; authToken?: string };
+  let body: { sourceId?: string; runId?: string; triggeredBy?: string; authToken?: string; singleUrl?: string };
   try {
     body = await req.json();
   } catch {
@@ -108,7 +122,41 @@ Deno.serve(async (req) => {
       .maybeSingle();
     const sinceIso = lastOk?.started_at ?? null;
 
-    const discovered = await discoverEventUrls(src, sinceIso);
+    // Modo URL puntual: ingesta una sola página sin correr el descubrimiento
+    // completo. Se valida contra el dominio de la fuente (anti-SSRF): acepta
+    // subdominios como web.tuboleta.com o prod.tuboleta.com.
+    const singleUrl = body.singleUrl?.trim() || null;
+    if (singleUrl && !isAllowedUrl(singleUrl, new URL(src.base_url).hostname)) {
+      throw new Error('La URL no pertenece al dominio de esta fuente');
+    }
+
+    // Modo lista: los eventos salen del JSON-LD de las páginas de categoría, no de las fichas.
+    // Se precomputan aquí y el bucle de abajo los usa sin volver a pedir la página ni llamar al LLM.
+    const preExtracted = new Map<string, CanonicalEvent>();
+    const listed: { url: string; categoryHint?: string }[] = [];
+    if (!singleUrl && src.config.extract?.list_from_jsonld) {
+      for (const categoryUrl of src.config.discovery.category_urls || []) {
+        try {
+          const page = await fetchPage(categoryUrl, src.fetch_method, {
+            userAgent: src.config.fetch?.user_agent,
+            waitForMs: src.config.fetch?.wait_for_ms,
+          });
+          counters.pages_fetched++;
+          const hint = src.config.category_map?.[categoryUrl.split('/').pop() || ''];
+          for (const item of extractEventsFromJsonLd({ source: src, html: page.html, categoryHint: hint })) {
+            if (preExtracted.has(item.url)) continue;
+            preExtracted.set(item.url, item.event);
+            listed.push({ url: item.url, categoryHint: hint });
+          }
+        } catch (error) {
+          console.error(`[ingest] category ${categoryUrl} failed:`, error instanceof Error ? error.message : error);
+        }
+      }
+    }
+
+    const discovered = singleUrl
+      ? [{ url: singleUrl }]
+      : (preExtracted.size ? listed : await discoverEventUrls(src));
     counters.pages_discovered = discovered.length;
 
     const { data: existingRows } = await supabase
@@ -119,31 +167,45 @@ Deno.serve(async (req) => {
       (existingRows || []).map((r) => [r.source_event_key as string, r]),
     );
 
-    const maxNew = Math.min(
-      src.config.discovery.max_new_pages_per_run ?? 25,
-      HARD_MAX_NEW_PAGES,
-    );
-    const newItems = discovered
-      .filter((d) => !existing.has(eventKeyFromUrl(d.url)))
-      .slice(0, maxNew);
-    const pendingRefresh = discovered.filter((d) => {
-      const row = existing.get(eventKeyFromUrl(d.url));
-      return row && row.status === 'pending' && Boolean(d.lastmod);
-    });
-    const toFetch = [...newItems, ...pendingRefresh];
+    let toFetch = discovered;
+    if (!singleUrl) {
+      // El tope duro protege contra corridas que descargan una ficha por evento. En modo lista
+      // el costo ya está acotado por el número de páginas de categoría (los eventos salen del
+      // mismo HTML, sin fetch ni LLM por evento), así que ahí manda solo la config.
+      const maxNew = src.config.extract?.list_from_jsonld
+        ? (src.config.discovery.max_new_pages_per_run ?? 100)
+        : Math.min(src.config.discovery.max_new_pages_per_run ?? 25, HARD_MAX_NEW_PAGES);
+      // Prioridad explícita: lo descubierto vía páginas de categoría (conciertos/
+      // festivales curados por la fuente) se procesa antes que lo que solo aparece
+      // en el sitemap, que en ticketeras generalistas trae teatro, deportes y hasta
+      // álbumes de fútbol. El sort es estable: dentro de cada grupo se conserva el
+      // orden de la página, y el backfill avanza de forma determinista corrida a corrida.
+      const newItems = discovered
+        .filter((d) => !existing.has(eventKeyFromUrl(d.url)))
+        .sort((a, b) => Number(Boolean(b.categoryHint)) - Number(Boolean(a.categoryHint)))
+        .slice(0, maxNew);
+      // Re-visita solo pendientes cuyo lastmod sea posterior a la última corrida
+      // exitosa (comparación de fechas reales: los lastmod vienen con offset -05:00
+      // y sinceIso en UTC; compararlos como strings da resultados incorrectos).
+      const pendingRefresh = discovered.filter((d) => {
+        const row = existing.get(eventKeyFromUrl(d.url));
+        return row && row.status === 'pending' && lastmodIsNewer(d.lastmod, sinceIso);
+      });
+      toFetch = [...newItems, ...pendingRefresh];
 
-    // Todo lo ya visto que no se re-visita: solo se marca como visto en esta corrida.
-    const refreshKeys = new Set(pendingRefresh.map((d) => eventKeyFromUrl(d.url)));
-    const seenKeys = discovered
-      .map((d) => eventKeyFromUrl(d.url))
-      .filter((key) => existing.has(key) && !refreshKeys.has(key));
-    if (seenKeys.length) {
-      await supabase
-        .from('staged_events')
-        .update({ last_seen_at: new Date().toISOString() })
-        .eq('source_id', src.id)
-        .in('source_event_key', seenKeys);
-      counters.events_skipped += seenKeys.length;
+      // Todo lo ya visto que no se re-visita: solo se marca como visto en esta corrida.
+      const refreshKeys = new Set(pendingRefresh.map((d) => eventKeyFromUrl(d.url)));
+      const seenKeys = discovered
+        .map((d) => eventKeyFromUrl(d.url))
+        .filter((key) => existing.has(key) && !refreshKeys.has(key));
+      if (seenKeys.length) {
+        await supabase
+          .from('staged_events')
+          .update({ last_seen_at: new Date().toISOString() })
+          .eq('source_id', src.id)
+          .in('source_event_key', seenKeys);
+        counters.events_skipped += seenKeys.length;
+      }
     }
 
     // Catálogos en memoria: una carga por corrida.
@@ -178,19 +240,24 @@ Deno.serve(async (req) => {
       }
       const key = eventKeyFromUrl(item.url);
       try {
-        const page = await fetchPage(item.url, src.fetch_method, {
-          userAgent: src.config.fetch?.user_agent,
-          waitForMs: src.config.fetch?.wait_for_ms,
-        });
-        counters.pages_fetched++;
+        // En modo lista el evento ya se extrajo del JSON-LD de la categoría: no se vuelve a
+        // pedir la página (la ficha responde 401) ni se gasta una llamada al LLM.
+        let event = preExtracted.get(item.url);
+        if (!event) {
+          const page = await fetchPage(item.url, src.fetch_method, {
+            userAgent: src.config.fetch?.user_agent,
+            waitForMs: src.config.fetch?.wait_for_ms,
+          });
+          counters.pages_fetched++;
 
-        const event = await extractEvent({
-          source: src,
-          url: item.url,
-          html: page.html,
-          markdown: page.markdown,
-          categoryHint: item.categoryHint,
-        });
+          event = await extractEvent({
+            source: src,
+            url: item.url,
+            html: page.html,
+            markdown: page.markdown,
+            categoryHint: item.categoryHint,
+          });
+        }
         counters.events_extracted++;
 
         const venueName = event.venue_name ?? defaults.venue_name ?? null;

@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Calendar, MapPin, Ticket, Tag } from 'lucide-react';
 import type { StagedEventWithSource, MatchConfidence } from '@/types/entities';
 import { EVENT_TYPE_GUESS_LABELS } from '@/types/entities';
+import { countryLabel } from './countries';
+import { smartTitleCase } from './titleCase';
 
 const MATCH_DOT: Record<MatchConfidence, string> = {
   exact: 'bg-verde',
@@ -39,6 +41,9 @@ export const StagedEventCard = ({ event, onOpen, onApprove, onDiscard, onReject 
               {event.source_name ?? 'Fuente'}
             </Badge>
             <Badge variant="outline" className="border-linea bg-superficie-2 text-[10px] text-texto-2">
+              {countryLabel(event.country_code)}
+            </Badge>
+            <Badge variant="outline" className="border-linea bg-superficie-2 text-[10px] text-texto-2">
               {EVENT_TYPE_GUESS_LABELS[event.event_type_guess]}
             </Badge>
             {event.relevance && (
@@ -58,7 +63,7 @@ export const StagedEventCard = ({ event, onOpen, onApprove, onDiscard, onReject 
             )}
           </div>
 
-          <h3 className="truncate font-semibold text-texto">{event.title}</h3>
+          <h3 className="truncate font-semibold text-texto">{smartTitleCase(event.title)}</h3>
 
           <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-texto-2">
             <span className="inline-flex items-center gap-1">

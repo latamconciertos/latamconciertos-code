@@ -143,6 +143,31 @@ export const useIngestionRuns = () =>
     },
   });
 
+export const useIngestSingleUrl = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ sourceId, url }: { sourceId: string; url: string }) => {
+      const { data, error } = await supabase.functions.invoke('ingest-source', {
+        body: { sourceId, singleUrl: url },
+      });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data: any) => {
+      const stats = data?.data?.stats;
+      if (stats?.events_new) {
+        toast.success('Evento ingerido: revísalo en Pendientes');
+      } else if (stats?.events_updated) {
+        toast.success('Evento actualizado: revísalo en Pendientes');
+      } else {
+        toast.info('Ese evento ya estaba ingerido o no se pudo extraer');
+      }
+      qc.invalidateQueries({ queryKey: KEYS.all });
+    },
+    onError: (error: Error) => toast.error(`No se pudo ingerir la URL: ${error.message}`),
+  });
+};
+
 export const useRunSource = () => {
   const qc = useQueryClient();
   return useMutation({

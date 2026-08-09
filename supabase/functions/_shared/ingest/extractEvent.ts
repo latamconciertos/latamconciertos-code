@@ -28,19 +28,31 @@ export function extractJsonLd(html: string): string | null {
   return null;
 }
 
-// Bogotá es UTC-5 fijo (sin DST): la fecha local se puede derivar determinísticamente de
-// cualquier startDate ISO con offset explícito, sin depender del LLM.
+// La fecha local se deriva determinísticamente de cualquier startDate ISO con offset explícito,
+// sin depender del LLM. La zona horaria viene de la fuente (Bogotá UTC-5, CDMX UTC-6, etc.):
+// Intl resuelve el offset real de esa fecha, incluido DST donde aplique (ej. Tijuana).
 export function deriveLocalDateTime(
   isoStartDate: string,
-  utcOffsetMinutes = -300,
+  timeZone = 'America/Bogota',
 ): { date: string; time: string } | null {
   if (!/([zZ]|[+-]\d{2}:?\d{2})$/.test(isoStartDate.trim())) return null;
   const parsed = new Date(isoStartDate);
   if (isNaN(parsed.getTime())) return null;
-  const local = new Date(parsed.getTime() + utcOffsetMinutes * 60_000);
-  const date = local.toISOString().slice(0, 10);
-  const time = local.toISOString().slice(11, 16);
-  return { date, time };
+  try {
+    // sv-SE formatea como "YYYY-MM-DD HH:mm", que ya es la fecha/hora local de esa zona.
+    const local = new Intl.DateTimeFormat('sv-SE', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).format(parsed);
+    return { date: local.slice(0, 10), time: local.slice(11, 16) };
+  } catch {
+    return null; // zona horaria inválida en la config
+  }
 }
 
 function clampEventType(value: unknown): CanonicalEvent['event_type_guess'] {
@@ -141,7 +153,10 @@ export async function extractEvent(args: {
     try {
       const startDate = JSON.parse(jsonld)?.startDate;
       if (typeof startDate === 'string') {
-        const derived = deriveLocalDateTime(startDate);
+        const derived = deriveLocalDateTime(
+          startDate,
+          args.source.config.defaults?.timezone || 'America/Bogota',
+        );
         if (derived && event.event_date && derived.date !== event.event_date) {
           event.event_date = derived.date;
           event.event_time = derived.time;

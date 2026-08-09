@@ -131,7 +131,9 @@ export const QuickCreateArtist = ({ onArtistCreated, initialName }: QuickCreateA
             </Button>
 
             <Dialog open={open} onOpenChange={setOpen} modal={false}>
-                <DialogContent className="max-w-md">
+                {/* max-h + scroll: los resultados de Spotify crecen dentro del
+                    diálogo y sin tope lo desbordaban del viewport en pantallas bajas */}
+                <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>Crear Artista Rápido</DialogTitle>
                     </DialogHeader>
@@ -165,7 +167,7 @@ export const QuickCreateArtist = ({ onArtistCreated, initialName }: QuickCreateA
                             </div>
 
                             {results.length > 0 && (
-                                <div className="mt-2 space-y-1.5">
+                                <div className="mt-2 max-h-60 space-y-1.5 overflow-y-auto pr-1">
                                     {results.map((artist) => (
                                         <button
                                             key={artist.id}

@@ -16,6 +16,12 @@ export interface SourceConfig {
     prefer_jsonld?: boolean;
     price_source?: 'html' | 'image' | 'none';
     hints?: string;
+    // Los eventos se leen del array JSON-LD de la página de categoría, sin visitar cada ficha
+    // (Ticketmaster México bloquea el detalle con 401). Mapeo determinista, sin LLM.
+    list_from_jsonld?: boolean;
+    // Títulos/URLs que delatan add-ons de boletería (estacionamiento, fast lane, paquetes VIP):
+    // se estacionan como relevancia baja en vez de colarse como conciertos.
+    exclude_title_patterns?: string[];
   };
   defaults?: {
     timezone?: string;

@@ -9,6 +9,24 @@ export interface FetchedPage {
   markdown: string | null;
 }
 
+// No todas las ticketeras sirven UTF-8: eticket.mx declara iso-8859-15 y decodificarlo como
+// UTF-8 destruye los acentos ("CIUDAD DE MÉXICO" → "CIUDAD DE MXICO"), lo que luego contamina
+// el matching de ciudades y venues. Se respeta el charset del header y, si falta, el <meta>.
+function decodeBody(buffer: ArrayBuffer, contentType: string | null): string {
+  const fromHeader = contentType?.match(/charset=["']?([\w-]+)/i)?.[1];
+  const sniff = new TextDecoder('utf-8').decode(buffer.slice(0, 2048));
+  const fromMeta = sniff.match(/<meta[^>]+charset=["']?([\w-]+)/i)?.[1];
+  const charset = (fromHeader || fromMeta || 'utf-8').toLowerCase();
+  if (charset === 'utf-8' || charset === 'utf8') {
+    return new TextDecoder('utf-8').decode(buffer);
+  }
+  try {
+    return new TextDecoder(charset).decode(buffer);
+  } catch {
+    return new TextDecoder('utf-8').decode(buffer); // charset desconocido: mejor algo que nada
+  }
+}
+
 export async function fetchHttp(url: string, userAgent?: string): Promise<FetchedPage> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 20_000);
@@ -17,13 +35,13 @@ export async function fetchHttp(url: string, userAgent?: string): Promise<Fetche
       headers: {
         'User-Agent': userAgent || DEFAULT_UA,
         'Accept': 'text/html,application/xhtml+xml',
-        'Accept-Language': 'es-CO,es;q=0.9',
+        'Accept-Language': 'es-MX,es-CO,es;q=0.9',
       },
       signal: controller.signal,
       redirect: 'follow',
     });
     if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
-    const html = await res.text();
+    const html = decodeBody(await res.arrayBuffer(), res.headers.get('content-type'));
     return { html, markdown: null };
   } finally {
     clearTimeout(timeout);

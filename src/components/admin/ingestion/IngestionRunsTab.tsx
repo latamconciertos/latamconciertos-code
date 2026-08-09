@@ -1,6 +1,9 @@
+import { useMemo, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Loader2, History } from 'lucide-react';
 import { useIngestionRuns } from '@/hooks/queries/useIngestion';
+import { IngestionFilterBar } from './IngestionFilterBar';
 import { RUN_STATUS_LABELS, type RunStatus } from '@/types/entities';
 
 const STATUS_COLORS: Record<RunStatus, string> = {
@@ -19,6 +22,42 @@ function durationLabel(started: string, finished: string | null): string {
 export const IngestionRunsTab = () => {
   const { data: runs, isLoading } = useIngestionRuns();
 
+  const [sourceId, setSourceId] = useState('all');
+  const [runStatus, setRunStatus] = useState('all');
+
+  const sourceOptions = useMemo(() => {
+    const map = new Map<string, string>();
+    (runs ?? []).forEach((r) => map.set(r.source_id, r.source_name ?? r.source_id.slice(0, 8)));
+    return [...map.entries()]
+      .map(([value, label]) => ({ value, label }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [runs]);
+
+  const statusOptions = useMemo(
+    () =>
+      (Object.keys(RUN_STATUS_LABELS) as RunStatus[]).map((status) => ({
+        value: status,
+        label: RUN_STATUS_LABELS[status],
+      })),
+    [],
+  );
+
+  const filtered = useMemo(
+    () =>
+      (runs ?? []).filter(
+        (r) =>
+          (sourceId === 'all' || r.source_id === sourceId) &&
+          (runStatus === 'all' || r.status === runStatus),
+      ),
+    [runs, sourceId, runStatus],
+  );
+
+  const hasActiveFilters = sourceId !== 'all' || runStatus !== 'all';
+  const clearFilters = () => {
+    setSourceId('all');
+    setRunStatus('all');
+  };
+
   if (isLoading) {
     return (
       <div className="flex justify-center py-12">
@@ -32,7 +71,33 @@ export const IngestionRunsTab = () => {
   }
 
   return (
-    <div className="overflow-x-auto rounded-[20px] border border-linea bg-superficie">
+    <div>
+      <IngestionFilterBar
+        selects={[
+          { value: sourceId, onChange: setSourceId, allLabel: 'Todas las fuentes', options: sourceOptions, triggerClass: 'min-w-[170px]' },
+          { value: runStatus, onChange: setRunStatus, allLabel: 'Todos los estados', options: statusOptions },
+        ]}
+        shown={filtered.length}
+        total={runs.length}
+        hasActiveFilters={hasActiveFilters}
+        onClear={clearFilters}
+      />
+
+      {filtered.length === 0 ? (
+        <div className="flex flex-col items-center gap-3 py-16 text-texto-2">
+          <History className="h-8 w-8 opacity-50" />
+          <p className="text-sm">Sin corridas con estos filtros.</p>
+          <Button
+            size="sm"
+            variant="outline"
+            className="rounded-full border-linea bg-transparent hover:bg-superficie-2"
+            onClick={clearFilters}
+          >
+            Limpiar filtros
+          </Button>
+        </div>
+      ) : (
+      <div className="overflow-x-auto rounded-[20px] border border-linea bg-superficie">
       <div className="grid min-w-[720px] grid-cols-12 gap-4 border-b border-linea bg-superficie-2/60 px-4 py-3 text-xs font-semibold uppercase tracking-wide text-texto-2">
         <span className="col-span-3">Fuente</span>
         <span className="col-span-2">Inicio</span>
@@ -42,7 +107,7 @@ export const IngestionRunsTab = () => {
         <span className="col-span-1">Estado</span>
       </div>
       <div className="divide-y divide-linea">
-        {runs.map((run) => (
+        {filtered.map((run) => (
           <div key={run.id} className="grid min-w-[720px] grid-cols-12 items-center gap-4 px-4 py-3 text-sm">
             <span className="col-span-3 truncate font-medium text-texto">{run.source_name ?? run.source_id.slice(0, 8)}</span>
             <span className="col-span-2 text-texto-2">{new Date(run.started_at).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' })}</span>
@@ -60,6 +125,8 @@ export const IngestionRunsTab = () => {
           </div>
         ))}
       </div>
+      </div>
+      )}
     </div>
   );
 };

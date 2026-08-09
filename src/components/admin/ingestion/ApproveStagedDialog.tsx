@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
-import { Loader2, ExternalLink, Sparkles, Calendar } from 'lucide-react';
+import { Loader2, ExternalLink, Sparkles, Calendar, CheckCircle2, AlertTriangle, Info } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { slugify } from '@/lib/slugify';
@@ -17,9 +17,11 @@ import { QuickCreateVenue } from '@/components/admin/QuickCreateVenue';
 import { QuickCreatePromoter } from '@/components/admin/QuickCreatePromoter';
 import { priceDataToHtml } from './priceHtml';
 import { getMatchConfidence } from './matchClient';
+import { smartTitleCase } from './titleCase';
 import type { StagedEventWithSource } from '@/types/entities';
 
 interface Entity { id: string; name: string }
+interface VenueEntity extends Entity { city_name: string | null }
 interface City { id: string; name: string }
 
 interface Props {
@@ -29,7 +31,7 @@ interface Props {
 
 export const ApproveStagedDialog = ({ event, onClose }: Props) => {
   const [artists, setArtists] = useState<Entity[]>([]);
-  const [venues, setVenues] = useState<Entity[]>([]);
+  const [venues, setVenues] = useState<VenueEntity[]>([]);
   const [promoters, setPromoters] = useState<Entity[]>([]);
   const [cities, setCities] = useState<City[]>([]);
 
@@ -54,13 +56,13 @@ export const ApproveStagedDialog = ({ event, onClose }: Props) => {
     (async () => {
       const [a, v, p, c] = await Promise.all([
         supabase.from('artists').select('id, name').order('name'),
-        supabase.from('venues').select('id, name').order('name'),
+        supabase.from('venues').select('id, name, cities:city_id (name)').order('name'),
         supabase.from('promoters').select('id, name').order('name'),
         supabase.from('cities').select('id, name').order('name'),
       ]);
       if (cancelled) return;
       setArtists((a.data ?? []) as Entity[]);
-      setVenues((v.data ?? []) as Entity[]);
+      setVenues(mapVenues(v.data));
       setPromoters((p.data ?? []) as Entity[]);
       setCities((c.data ?? []) as City[]);
     })();
@@ -71,11 +73,39 @@ export const ApproveStagedDialog = ({ event, onClose }: Props) => {
   useEffect(() => {
     if (!event) return;
     setArtistId(event.matched_artist_id ?? bestLocalMatch(event.artist_name, artists) ?? '');
-    setVenueId(event.matched_venue_id ?? bestLocalMatch(event.venue_name, venues) ?? '');
+    setVenueId(event.matched_venue_id ?? bestVenueMatch(event.venue_name, event.city_name, venues) ?? '');
     setPromoterId(event.matched_promoter_id ?? bestLocalMatch(event.promoter_name, promoters) ?? '');
   }, [event, artists, venues, promoters]);
 
   const priceHtml = useMemo(() => priceDataToHtml(event?.price_data ?? null), [event]);
+
+  // Validación visible: ¿lo que dice la fuente ya existe en el catálogo?
+  const artistMatch = useMemo(
+    () => fieldMatch(event?.artist_name ?? null, artistId, artists),
+    [event, artistId, artists],
+  );
+  const venueMatch = useMemo(() => {
+    const base = fieldMatch(event?.venue_name ?? null, venueId, venues);
+    // Con venues homónimos en varias ciudades, la ciudad es parte de la validación
+    const selected = venues.find((v) => v.id === venueId);
+    if (selected?.city_name && event?.city_name) {
+      const cityOk = getMatchConfidence(event.city_name, selected.city_name) !== 'not_found';
+      if (base.tone === 'ok' && !cityOk) {
+        return {
+          tone: 'review' as const,
+          text: `El nombre coincide pero es el de ${selected.city_name} y la fuente dice ${event.city_name}: verifica`,
+        };
+      }
+      if (base.tone === 'ok' && cityOk) {
+        return { tone: 'ok' as const, text: `Ya está en el catálogo (${selected.city_name}) y coincide con la fuente` };
+      }
+    }
+    return base;
+  }, [event, venueId, venues]);
+  const promoterMatch = useMemo(
+    () => fieldMatch(event?.promoter_name ?? null, promoterId, promoters),
+    [event, promoterId, promoters],
+  );
 
   if (!event) return null;
 
@@ -98,7 +128,7 @@ export const ApproveStagedDialog = ({ event, onClose }: Props) => {
           });
         } else {
           const created = await createFestival.mutateAsync({
-            name: event.title,
+            name: smartTitleCase(event.title),
             slug: `${slugify(event.title)}-${event.event_date ?? Date.now()}`,
             start_date: event.event_date,
             venue_id: venueId || null,
@@ -128,7 +158,7 @@ export const ApproveStagedDialog = ({ event, onClose }: Props) => {
           });
         } else {
           const created = await createConcert.mutateAsync({
-            title: event.title,
+            title: smartTitleCase(event.title),
             slug: `${slugify(event.title)}-${event.event_date ?? Date.now()}`,
             date: event.event_date,
             event_type: 'concert',
@@ -171,7 +201,7 @@ export const ApproveStagedDialog = ({ event, onClose }: Props) => {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {isFestival ? <Sparkles className="h-5 w-5 text-periwinkle" /> : <Calendar className="h-5 w-5 text-periwinkle" />}
-            {event.title}
+            {smartTitleCase(event.title)}
           </DialogTitle>
         </DialogHeader>
 
@@ -206,7 +236,9 @@ export const ApproveStagedDialog = ({ event, onClose }: Props) => {
                 <Label className="text-xs text-texto-2">Artista</Label>
                 <div className="mt-1 flex gap-2">
                   <Select value={artistId} onValueChange={setArtistId}>
-                    <SelectTrigger><SelectValue placeholder={event.artist_name ?? 'Selecciona artista'} /></SelectTrigger>
+                    <SelectTrigger className={matchBorder(artistMatch.tone)}>
+                      <SelectValue placeholder="Selecciona artista" />
+                    </SelectTrigger>
                     <SelectContent>
                       {artists.map((a) => <SelectItem key={a.id} value={a.id}>{a.name}</SelectItem>)}
                     </SelectContent>
@@ -216,6 +248,7 @@ export const ApproveStagedDialog = ({ event, onClose }: Props) => {
                     onArtistCreated={(id) => { void refetchArtists(setArtists); setArtistId(id); }}
                   />
                 </div>
+                <MatchHint match={artistMatch} />
               </div>
             )}
 
@@ -223,9 +256,16 @@ export const ApproveStagedDialog = ({ event, onClose }: Props) => {
               <Label className="text-xs text-texto-2">Venue</Label>
               <div className="mt-1 flex gap-2">
                 <Select value={venueId} onValueChange={setVenueId}>
-                  <SelectTrigger><SelectValue placeholder={event.venue_name ?? 'Selecciona venue'} /></SelectTrigger>
+                  <SelectTrigger className={matchBorder(venueMatch.tone)}>
+                    <SelectValue placeholder="Selecciona venue" />
+                  </SelectTrigger>
                   <SelectContent>
-                    {venues.map((v) => <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>)}
+                    {venues.map((v) => (
+                      <SelectItem key={v.id} value={v.id}>
+                        {v.name}
+                        {v.city_name && <span className="text-texto-2"> · {v.city_name}</span>}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <QuickCreateVenue
@@ -235,19 +275,23 @@ export const ApproveStagedDialog = ({ event, onClose }: Props) => {
                   onVenueCreated={(id) => { void refetchVenues(setVenues); setVenueId(id); }}
                 />
               </div>
+              <MatchHint match={venueMatch} />
             </div>
 
             <div>
               <Label className="text-xs text-texto-2">Promotora</Label>
               <div className="mt-1 flex gap-2">
                 <Select value={promoterId} onValueChange={setPromoterId}>
-                  <SelectTrigger><SelectValue placeholder={event.promoter_name ?? 'Selecciona promotora'} /></SelectTrigger>
+                  <SelectTrigger className={matchBorder(promoterMatch.tone)}>
+                    <SelectValue placeholder="Selecciona promotora" />
+                  </SelectTrigger>
                   <SelectContent>
                     {promoters.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
                   </SelectContent>
                 </Select>
                 <QuickCreatePromoter onPromoterCreated={(id) => { void refetchPromoters(setPromoters); setPromoterId(id); }} />
               </div>
+              <MatchHint match={promoterMatch} />
             </div>
 
             {event.price_data?.type === 'image' && event.price_data.image_url && (
@@ -291,6 +335,61 @@ function Field({ label, value }: { label: string; value: string }) {
   );
 }
 
+type MatchTone = 'ok' | 'review' | 'missing' | 'none';
+
+interface FieldMatchState {
+  tone: MatchTone;
+  text: string;
+}
+
+/**
+ * Valida lo seleccionado contra lo que dice la fuente:
+ * ok = ya existe y coincide · review = existe pero hay que verificar ·
+ * missing = la fuente trae un nombre que no está en el catálogo · none = sin dato
+ */
+function fieldMatch(scraped: string | null, selectedId: string, list: Entity[]): FieldMatchState {
+  const selected = list.find((entity) => entity.id === selectedId);
+
+  if (selected) {
+    if (!scraped) return { tone: 'ok', text: `Seleccionado del catálogo: ${selected.name}` };
+    const confidence = getMatchConfidence(scraped, selected.name);
+    if (confidence === 'exact') {
+      return { tone: 'ok', text: 'Ya está en el catálogo y coincide con la fuente' };
+    }
+    if (confidence === 'partial') {
+      return { tone: 'review', text: `Coincidencia parcial con "${scraped}": verifica que sea el mismo` };
+    }
+    return { tone: 'review', text: `Distinto a lo que dice la fuente ("${scraped}"): verifica` };
+  }
+
+  if (scraped) {
+    return { tone: 'missing', text: `"${scraped}" no está en el catálogo: créalo con Nuevo` };
+  }
+  return { tone: 'none', text: 'La fuente no trae este dato (opcional)' };
+}
+
+function matchBorder(tone: MatchTone): string {
+  if (tone === 'ok') return 'border-verde/40';
+  if (tone === 'review' || tone === 'missing') return 'border-amber-500/40';
+  return '';
+}
+
+function MatchHint({ match }: { match: FieldMatchState }) {
+  const styles: Record<MatchTone, { icon: typeof CheckCircle2; className: string }> = {
+    ok: { icon: CheckCircle2, className: 'text-verde' },
+    review: { icon: AlertTriangle, className: 'text-amber-400' },
+    missing: { icon: AlertTriangle, className: 'text-amber-400' },
+    none: { icon: Info, className: 'text-texto-2/70' },
+  };
+  const { icon: Icon, className } = styles[match.tone];
+  return (
+    <p className={`mt-1.5 flex items-center gap-1.5 text-[11px] ${className}`}>
+      <Icon className="h-3 w-3 shrink-0" />
+      {match.text}
+    </p>
+  );
+}
+
 function bestLocalMatch(name: string | null, candidates: Entity[]): string | null {
   if (!name) return null;
   let partial: string | null = null;
@@ -302,13 +401,49 @@ function bestLocalMatch(name: string | null, candidates: Entity[]): string | nul
   return partial;
 }
 
+/**
+ * Match de venue consciente de ciudad: entre venues homónimos
+ * ("Movistar Arena" en Bogotá, Buenos Aires y Santiago) prefiere
+ * el de la ciudad que reporta la fuente.
+ */
+function bestVenueMatch(
+  name: string | null,
+  cityName: string | null,
+  candidates: VenueEntity[],
+): string | null {
+  if (!name) return null;
+  const matches = candidates.filter((c) => getMatchConfidence(name, c.name) !== 'not_found');
+  if (!matches.length) return null;
+
+  if (cityName) {
+    const inCity = matches.filter(
+      (c) => c.city_name && getMatchConfidence(cityName, c.city_name) !== 'not_found',
+    );
+    if (inCity.length) {
+      const exactInCity = inCity.find((c) => getMatchConfidence(name, c.name) === 'exact');
+      return (exactInCity ?? inCity[0]).id;
+    }
+  }
+
+  const exact = matches.find((c) => getMatchConfidence(name, c.name) === 'exact');
+  return (exact ?? matches[0]).id;
+}
+
+function mapVenues(rows: unknown): VenueEntity[] {
+  return ((rows ?? []) as any[]).map((v) => ({
+    id: v.id,
+    name: v.name,
+    city_name: v.cities?.name ?? null,
+  }));
+}
+
 async function refetchArtists(set: (v: Entity[]) => void) {
   const { data } = await supabase.from('artists').select('id, name').order('name');
   set((data ?? []) as Entity[]);
 }
-async function refetchVenues(set: (v: Entity[]) => void) {
-  const { data } = await supabase.from('venues').select('id, name').order('name');
-  set((data ?? []) as Entity[]);
+async function refetchVenues(set: (v: VenueEntity[]) => void) {
+  const { data } = await supabase.from('venues').select('id, name, cities:city_id (name)').order('name');
+  set(mapVenues(data));
 }
 async function refetchPromoters(set: (v: Entity[]) => void) {
   const { data } = await supabase.from('promoters').select('id, name').order('name');

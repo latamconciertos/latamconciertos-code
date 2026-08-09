@@ -19,7 +19,12 @@ function resolveUrl(raw: string, baseUrl: string): string | null {
 // evento por query string; tuboleta sirve el mismo path bajo tuboleta.com y prod.tuboleta.com).
 export function eventKeyFromUrl(url: string): string {
   const parsed = new URL(url);
-  return parsed.pathname + parsed.search;
+  const path = parsed.pathname + parsed.search;
+  // Boletia da un subdominio por evento (animole-2026.boletia.com), todos con ruta "/": si la
+  // llave ignorara el host, el catálogo entero colapsaría en una sola entrada. Solo aplica a
+  // URLs sin ruta, así que las llaves ya existentes (todas con path) no cambian.
+  if (path === '/' || path === '') return parsed.hostname;
+  return path;
 }
 
 function extractMatches(html: string, pattern: string, baseUrl: string): string[] {
@@ -58,7 +63,7 @@ async function discoverFromCategories(source: SourceRow): Promise<DiscoveredUrl[
   return results;
 }
 
-async function discoverFromSitemap(source: SourceRow, sinceIso: string | null): Promise<DiscoveredUrl[]> {
+async function discoverFromSitemap(source: SourceRow): Promise<DiscoveredUrl[]> {
   const { config } = source;
   if (!config.discovery.sitemap_url) return [];
 
@@ -94,7 +99,10 @@ async function discoverFromSitemap(source: SourceRow, sinceIso: string | null): 
       const loc = block[1].match(/<loc>\s*([^<]+)\s*<\/loc>/)?.[1]?.trim();
       if (!loc || !eventRegex.test(loc)) continue;
       const lastmod = block[1].match(/<lastmod>\s*([^<]+)\s*<\/lastmod>/)?.[1]?.trim();
-      if (sinceIso && lastmod && lastmod <= sinceIso) continue;
+      // OJO: aquí NO se filtra por lastmod. El tope de páginas por corrida hace
+      // que un filtro incremental en el descubrimiento pierda para siempre los
+      // eventos que quedaron fuera del corte en la primera corrida. Decidir qué
+      // se re-visita es trabajo del runner (que sí conoce lo ya almacenado).
       const resolved = resolveUrl(loc, source.base_url);
       if (!resolved) continue;
       const key = eventKeyFromUrl(resolved);
@@ -113,7 +121,7 @@ function matchCategoryHint(categoryUrl: string, categoryMap: Record<string, stri
   return undefined;
 }
 
-export async function discoverEventUrls(source: SourceRow, sinceIso: string | null): Promise<DiscoveredUrl[]> {
+export async function discoverEventUrls(source: SourceRow): Promise<DiscoveredUrl[]> {
   const type = source.config.discovery.type;
   const merged = new Map<string, DiscoveredUrl>();
 
@@ -123,7 +131,7 @@ export async function discoverEventUrls(source: SourceRow, sinceIso: string | nu
     }
   }
   if (type === 'sitemap' || type === 'both') {
-    for (const item of await discoverFromSitemap(source, sinceIso)) {
+    for (const item of await discoverFromSitemap(source)) {
       const key = eventKeyFromUrl(item.url);
       const existing = merged.get(key);
       merged.set(key, existing ? { ...existing, lastmod: item.lastmod } : item);
