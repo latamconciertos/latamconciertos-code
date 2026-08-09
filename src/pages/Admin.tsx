@@ -31,6 +31,7 @@ const FanProjectsAdmin = lazy(() => import('@/components/admin/FanProjectsAdmin'
 const PushCampaignsAdmin = lazy(() => import('@/components/admin/PushCampaignsAdmin').then(m => ({ default: m.PushCampaignsAdmin })));
 const FestivalsAdmin = lazy(() => import('@/components/admin/FestivalsAdmin').then(m => ({ default: m.FestivalsAdmin })));
 const BannersAdmin = lazy(() => import('@/components/admin/BannersAdmin').then(m => ({ default: m.BannersAdmin })));
+const IngestionAdmin = lazy(() => import('@/components/admin/ingestion/IngestionAdmin').then(m => ({ default: m.IngestionAdmin })));
 
 const Admin = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -131,6 +132,7 @@ const Admin = () => {
         case 'fan-projects': return <FanProjectsAdmin />;
         case 'push-campaigns': return <PushCampaignsAdmin />;
         case 'banners': return <BannersAdmin />;
+        case 'ingestion': return <IngestionAdmin />;
         default: return <NewsAdminNew />;
       }
     })();

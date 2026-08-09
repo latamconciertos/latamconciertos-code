@@ -20,3 +20,4 @@ export * from './media';
 export * from './friendship';
 export * from './accreditation';
 export * from './contact';
+export * from './ingestion';
