@@ -348,7 +348,7 @@ const AdvertisingAdmin = () => {
               <div className="flex justify-end pt-2 border-t border-linea">
                 <Button
                   asChild
-                  className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                  className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
                 >
                   <a href={`mailto:${selectedRequest.email}?subject=Publicidad en Conciertos Latam`}>
                     <Mail className="h-4 w-4 mr-2" />

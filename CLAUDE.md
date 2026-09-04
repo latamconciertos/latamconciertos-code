@@ -12,7 +12,7 @@ Conciertos LATAM is a music/events platform for Latin America. It serves two pur
 - **Backend:** Supabase (PostgreSQL, Auth, Edge Functions, Storage)
 - **Rich text editor:** Tiptap v2 (slash commands, bubble menu, drag & drop images)
 - **Email:** Resend (free tier, automated via Edge Function + pg_cron)
-- **Brand color:** `#004aad` (bg-brand-blue)
+- **Brand color:** `#7516E2` morado — degradado de marca morado → violeta → fucsia → naranja (Manual v2.0; `bg-brand-blue` es alias deprecado que resuelve a morado)
 
 ## Project Structure
 ```
@@ -40,12 +40,12 @@ supabase/
 The admin panel has a **portal entry** at `/admin` with two separate modules:
 
 ### Gestor de Contenido (`/admin/content`)
-- Sidebar: blue (#004aad), defined in `AdminSidebar.tsx`
+- Sidebar: morado (#7516E2 via brand-blue alias), defined in `AdminSidebar.tsx`
 - Sections: Contenido, Catálogo, Comunidad, Monetización, Integraciones, Configuración
 - Manages: news, artists, concerts, festivals, venues, promoters, users, ads, banners, spotify charts, social networks, media, gallery, fan projects, setlists, PWA, traffic
 
 ### Operaciones (`/admin/operations`)
-- Sidebar: blue (#004aad), defined in `OperationsSidebar.tsx`
+- Sidebar: morado (#7516E2 via brand-blue alias), defined in `OperationsSidebar.tsx`
 - Sections: Overview (Dashboard, Calendar), Gestión (Accreditations, Kanban, Contacts)
 - Database tables: `accreditations`, `event_team_assignments`, `contacts`, `notification_log`
 
@@ -93,6 +93,7 @@ VITE_SUPABASE_PUBLISHABLE_KEY  # Supabase anon key
 VITE_SUPABASE_PROJECT_ID   # Project ref ID
 SUPABASE_SERVICE_ROLE_KEY  # Service role key (server-side only, never expose to client)
 RESEND_API_KEY             # Resend email API key (also set as Supabase secret)
+GEMINI_API_KEY             # Google Gemini API key (Supabase secret; ingestion extractor + price-from-image)
 ```
 
 ## Edge Functions

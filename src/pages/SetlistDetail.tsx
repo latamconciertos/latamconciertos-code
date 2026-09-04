@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useSetlistConcert, useSetlistSongs, useContributeToSetlist, useSpotifyTrackImages } from '@/hooks/queries';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
+import { getConcertImage } from '@/lib/concertImage';
 
 export default function SetlistDetail() {
   const { artistSlug, concertSlug, city, date } = useParams();
@@ -122,7 +123,7 @@ export default function SetlistDetail() {
         description={`Lista completa de canciones del concierto de ${concert.artist?.name || 'artista'} en ${concert.venue?.name || 'venue'}, ${concert.venue?.location || 'ciudad'} el ${concert.date ? new Date(concert.date).toLocaleDateString('es', { year: 'numeric', month: 'long', day: 'numeric' }) : 'fecha'}. ${songs.length} canciones interpretadas. Setlist oficial y contribuciones de la comunidad.`}
         keywords={`setlist ${concert.artist?.name || ''}, setlist ${concert.artist?.name || ''} ${concert.venue?.location || ''}, ${concert.artist?.name || ''} ${concert.date ? new Date(concert.date).getFullYear() : ''}, lista de canciones ${concert.artist?.name || ''}, ${concert.artist?.name || ''} live, ${concert.artist?.name || ''} tour, setlist ${concert.venue?.name || ''}, canciones ${concert.title}`}
         type="article"
-        image={concert.image_url || undefined}
+        image={getConcertImage(concert, '') || undefined}
         url={`/setlist/${artistSlug}/${concertSlug}/${city}/${date}`}
       />
       <Header />
@@ -131,10 +132,10 @@ export default function SetlistDetail() {
         <div className="max-w-3xl mx-auto">
           {/* Concert Header */}
           <div className="mb-6">
-            {concert.image_url && (
+            {concert.artist?.photo_url && (
               <div className="aspect-video mb-4 rounded-[20px] overflow-hidden bg-superficie-2 ring-1 ring-linea">
                 <img
-                  src={concert.image_url}
+                  src={concert.artist.photo_url}
                   alt={concert.title}
                   className="w-full h-full object-cover"
                 />
@@ -264,7 +265,7 @@ export default function SetlistDetail() {
               </CardHeader>
               <CardContent>
                 {!showContributeForm ? (
-                  <Button size="sm" onClick={() => setShowContributeForm(true)} className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95">
+                  <Button size="sm" onClick={() => setShowContributeForm(true)} className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95">
                     <Plus className="w-3.5 h-3.5 mr-1.5" />
                     Agregar una canción
                   </Button>
@@ -300,7 +301,7 @@ export default function SetlistDetail() {
                       />
                     </div>
                     <div className="flex gap-2">
-                      <Button type="submit" size="sm" disabled={contributeMutation.isPending} className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95">
+                      <Button type="submit" size="sm" disabled={contributeMutation.isPending} className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95">
                         {contributeMutation.isPending ? 'Enviando...' : 'Enviar Contribución'}
                       </Button>
                       <Button
@@ -324,7 +325,7 @@ export default function SetlistDetail() {
                   <p className="text-sm text-muted-foreground mb-3">
                     Inicia sesión para contribuir canciones al setlist
                   </p>
-                  <Button size="sm" asChild className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95">
+                  <Button size="sm" asChild className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95">
                     <Link to="/auth">Iniciar Sesión</Link>
                   </Button>
                 </div>

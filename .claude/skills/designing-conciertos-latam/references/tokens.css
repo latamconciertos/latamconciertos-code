@@ -1,0 +1,111 @@
+/* ============================================================
+   Conciertos Latam — Tokens de diseño (Manual de Marca v2.0)
+   Copiar tal cual. No redefinir colores a mano.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@400..900&family=Fira+Sans:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Color */
+  --noche: #070D1F;          /* Fondo oficial. TODO vive sobre este azul-noche */
+  --superficie: #0E1830;     /* Cards y paneles */
+  --superficie-2: #131F3D;   /* Hover de cards/paneles, elevación */
+  --morado: #7516E2;         /* Marca. Gradientes, glows, énfasis. Nunca plano en secciones */
+  --violeta: #AB0DC4;        /* Puente del degradado */
+  --fucsia: #E70485;         /* Interactivo: links, iconos, hovers, focus, eyebrows */
+  --naranja: #FE670C;        /* Solo acentos: en vivo, fechas, disponibilidad */
+  --blanco: #FFFFFF;
+  --texto: #FFFFFF;
+  --texto-2: #94A0BD;
+  --linea: rgba(231, 4, 133, .2);
+
+  /* Gradientes firma */
+  --grad-primario: linear-gradient(95deg, #7516E2, #E70485);
+  --grad-arco: linear-gradient(92deg, #7516E2, #AB0DC4, #E70485, #FE670C);
+
+  /* Tipografía */
+  --font-display: 'Big Shoulders Display', sans-serif;
+  --font-ui: 'Fira Sans', sans-serif;
+
+  /* Forma y elevación */
+  --radio-card: 20px;
+  --radio-pill: 100px;
+  --sombra-card-hover: 0 20px 50px rgba(0, 0, 0, .5);
+  --sombra-boton: 0 8px 32px rgba(117, 22, 226, .45);
+
+  /* Layout */
+  --contenedor: 1240px;
+}
+
+/* ---------- Reset base ---------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--noche);
+  color: var(--texto);
+  font-family: var(--font-ui);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: .01em;
+  line-height: 1.05;
+  margin: 0;
+}
+
+h1 { font-size: clamp(48px, 8.5vw, 116px); font-weight: 900; }
+h2 { font-size: clamp(32px, 4.5vw, 56px); font-weight: 800; }
+h3 { font-size: clamp(24px, 3vw, 32px); font-weight: 700; }
+
+p { margin: 0; }
+
+a { color: var(--fucsia); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+img { max-width: 100%; display: block; }
+
+:focus-visible {
+  outline: 2px solid var(--fucsia);
+  outline-offset: 2px;
+}
+
+.contenedor {
+  max-width: var(--contenedor);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+@media (max-width: 640px) {
+  .contenedor { padding: 0 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* ============================================================
+   Tabla de equivalencias — migración desde la identidad anterior
+   (azul cobalto / periwinkle / verde). Si encuentras estos
+   valores en código viejo o en memoria, reemplaza así:
+   ------------------------------------------------------------
+   #004AAD  cobalto        → var(--morado)   #7516E2  (marca: gradientes y glows)
+   #597CFF  periwinkle     → var(--fucsia)   #E70485  (interactivo: links, iconos, focus)
+   #83B4FF  azul claro     → var(--texto-2)  #94A0BD  en texto de apoyo;
+                             var(--fucsia)   #E70485  en eyebrows
+   #37C563  verde energía  → var(--naranja)  #FE670C  (en vivo, fechas, disponibilidad)
+   #F2F5FC  texto          → var(--blanco)   #FFFFFF
+   rgba(131,180,255,.12)   → var(--linea)    rgba(231,4,133,.2)
+   linear-gradient(95deg, #004AAD, #597CFF)          → var(--grad-primario)
+   linear-gradient(92deg, #597CFF, #37C563)          → var(--grad-arco)
+   radial-gradient de cobalto (glow de hero)         → mismo glow con #7516E2
+   ============================================================ */

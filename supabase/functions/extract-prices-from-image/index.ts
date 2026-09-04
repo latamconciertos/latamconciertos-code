@@ -68,9 +68,9 @@ serve(async (req) => {
       );
     }
 
-    const apiKey = Deno.env.get('LOVABLE_API_KEY');
+    const apiKey = Deno.env.get('GEMINI_API_KEY');
     if (!apiKey) {
-      console.error('LOVABLE_API_KEY not configured');
+      console.error('GEMINI_API_KEY not configured');
       return new Response(
         JSON.stringify({ success: false, error: 'API key no configurada' }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -83,14 +83,15 @@ serve(async (req) => {
       ? { type: "image_url", image_url: { url: imageBase64 } }
       : { type: "image_url", image_url: { url: imageUrl } };
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+    // Endpoint OpenAI-compatible de Gemini: acepta image_url con data URIs base64.
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/openai/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
+        model: 'gemini-3.6-flash',
         messages: [
           {
             role: 'system',
@@ -129,7 +130,7 @@ Responde SOLO con un JSON válido con esta estructura:
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Lovable AI error:', response.status, errorText);
+      console.error('Gemini API error:', response.status, errorText);
       return new Response(
         JSON.stringify({ success: false, error: `Error de AI: ${response.status}` }),
         { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

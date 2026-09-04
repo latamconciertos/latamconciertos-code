@@ -91,7 +91,7 @@ const BadgesDisplay = ({ userId }: BadgesDisplayProps) => {
             key={badge.id}
             className={`p-4 text-center rounded-[20px] bg-superficie transition-all ${
               earned
-                ? 'border-[rgba(89,124,255,.5)]'
+                ? 'border-[rgba(231,4,133,.5)]'
                 : 'border-linea opacity-50 grayscale'
             }`}
           >

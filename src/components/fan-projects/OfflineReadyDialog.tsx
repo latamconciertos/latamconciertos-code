@@ -70,7 +70,7 @@ export const OfflineReadyDialog = ({
                 <AlertDialogFooter className="mt-2">
                     <AlertDialogAction
                         onClick={() => onOpenChange(false)}
-                        className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95 text-base font-semibold py-6"
+                        className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95 text-base font-semibold py-6"
                     >
                         Entendido
                     </AlertDialogAction>

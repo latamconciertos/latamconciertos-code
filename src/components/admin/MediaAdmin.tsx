@@ -409,7 +409,7 @@ export const MediaAdmin = () => {
 
               <Button
                 type="submit"
-                className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
               >
                 {editingItem ? 'Actualizar' : 'Publicar'}
               </Button>
@@ -435,7 +435,7 @@ export const MediaAdmin = () => {
       <div className="flex items-center justify-between mb-6">
         <h2 className="font-display uppercase tracking-[0.01em] font-extrabold text-2xl text-texto">Gestión de Medios</h2>
         <Button
-          className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+          className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
           onClick={() => setIsCreating(true)}
         >
           <Plus className="w-4 h-4 mr-2" />

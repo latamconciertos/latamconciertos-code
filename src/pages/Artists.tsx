@@ -184,8 +184,8 @@ const Artists = () => {
                     onClick={() => setSelectedGenre(null)}
                     className={`px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] transition-colors flex-shrink-0 ${
                       !selectedGenre
-                        ? 'bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)]'
-                        : 'bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(89,124,255,.35)]'
+                        ? 'bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)]'
+                        : 'bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(231,4,133,.35)]'
                     }`}
                     aria-pressed={!selectedGenre}
                   >
@@ -199,8 +199,8 @@ const Artists = () => {
                         onClick={() => handleGenreClick(genre)}
                         className={`px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] transition-colors flex-shrink-0 ${
                           isSelected
-                            ? 'bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)]'
-                            : 'bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(89,124,255,.35)]'
+                            ? 'bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)]'
+                            : 'bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(231,4,133,.35)]'
                         }`}
                         aria-pressed={isSelected}
                       >
@@ -243,7 +243,7 @@ const Artists = () => {
                   <Link
                     key={artist.id}
                     to={`/artists/${artist.slug}`}
-                    className="group relative block overflow-hidden rounded-[20px] border border-linea bg-superficie-2 aspect-[4/5] hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-periwinkle"
+                    className="group relative block overflow-hidden rounded-[20px] border border-linea bg-superficie-2 aspect-[4/5] hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-periwinkle"
                   >
                     {/* Póster full-bleed: la foto ocupa toda la card, sin corte */}
                     <img

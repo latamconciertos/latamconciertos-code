@@ -196,7 +196,7 @@ const FestivalDetail = () => {
                                             {lineup.map((lineupItem) => (
                                                 <div
                                                     key={lineupItem.id}
-                                                    className="group relative overflow-hidden rounded-2xl border border-linea bg-superficie-2 p-3 hover:border-[rgba(89,124,255,.35)] transition-all duration-300"
+                                                    className="group relative overflow-hidden rounded-2xl border border-linea bg-superficie-2 p-3 hover:border-[rgba(231,4,133,.35)] transition-all duration-300"
                                                 >
                                                     <div className="flex items-center gap-3">
                                                         {lineupItem.artistImage ? (
@@ -282,7 +282,7 @@ const FestivalDetail = () => {
                                     </div>
 
                                     {isUpcoming && festival.ticket_url && (
-                                        <Button className="w-full mt-3 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95" size="sm" asChild>
+                                        <Button className="w-full mt-3 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95" size="sm" asChild>
                                             <a
                                                 href={withTicketTracking(festival.ticket_url)}
                                                 target="_blank"
@@ -356,7 +356,7 @@ const FestivalDetail = () => {
                                                 {lineup.map((lineupItem) => (
                                                     <div
                                                         key={lineupItem.id}
-                                                        className="group relative overflow-hidden rounded-2xl border border-linea bg-superficie-2 p-4 hover:border-[rgba(89,124,255,.35)] transition-all duration-300"
+                                                        className="group relative overflow-hidden rounded-2xl border border-linea bg-superficie-2 p-4 hover:border-[rgba(231,4,133,.35)] transition-all duration-300"
                                                     >
                                                         <div className="flex items-center gap-3">
                                                             {lineupItem.artistImage ? (
@@ -445,7 +445,7 @@ const FestivalDetail = () => {
                                         </div>
 
                                         {isUpcoming && festival.ticket_url && (
-                                            <Button className="w-full mt-4 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95" asChild>
+                                            <Button className="w-full mt-4 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95" asChild>
                                                 <a
                                                     href={withTicketTracking(festival.ticket_url)}
                                                     target="_blank"

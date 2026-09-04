@@ -22,15 +22,15 @@ interface Stats {
 }
 
 // Paleta categórica nocturna: azules de marca + verde de energía, sin violetas
-const COLORS = ['#597CFF', '#37C563', '#83B4FF', '#F5A524', '#2FB6C9', '#94A0BD'];
+const COLORS = ['#E70485', '#7516E2', '#FE670C', '#2FB6C9', '#F5A524', '#94A0BD'];
 
-const CHART_GRID_STROKE = 'rgba(131,180,255,.12)';
+const CHART_GRID_STROKE = 'rgba(231,4,133,.2)';
 const CHART_TICK = { fill: '#94A0BD', fontSize: 12 };
 const CHART_TOOLTIP_STYLE = {
   backgroundColor: '#0E1830',
-  border: '1px solid rgba(131,180,255,.12)',
+  border: '1px solid rgba(231,4,133,.2)',
   borderRadius: 12,
-  color: '#F2F5FC',
+  color: '#FFFFFF',
 };
 
 export function TrafficAdmin() {
@@ -282,7 +282,7 @@ export function TrafficAdmin() {
               <YAxis tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
               <Tooltip contentStyle={CHART_TOOLTIP_STYLE} />
               <Legend />
-              <Line type="monotone" dataKey="visits" stroke="#597CFF" strokeWidth={2} dot={{ fill: '#597CFF' }} name="Visitas" />
+              <Line type="monotone" dataKey="visits" stroke="#E70485" strokeWidth={2} dot={{ fill: '#E70485' }} name="Visitas" />
             </LineChart>
           </ResponsiveContainer>
         </CardContent>
@@ -309,8 +309,8 @@ export function TrafficAdmin() {
                   <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
                   <XAxis type="number" tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
                   <YAxis dataKey="name" type="category" width={150} tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
-                  <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ fill: 'rgba(131,180,255,.06)' }} />
-                  <Bar dataKey="value" fill="#597CFF" radius={[0, 4, 4, 0]} name="Visitas" />
+                  <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ fill: 'rgba(231,4,133,.1)' }} />
+                  <Bar dataKey="value" fill="#E70485" radius={[0, 4, 4, 0]} name="Visitas" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -333,7 +333,7 @@ export function TrafficAdmin() {
                     labelLine={false}
                     label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                     outerRadius={120}
-                    fill="#597CFF"
+                    fill="#E70485"
                     dataKey="value"
                   >
                     {stats.topCountries.map((_entry, index) => (
@@ -363,7 +363,7 @@ export function TrafficAdmin() {
                     labelLine={false}
                     label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                     outerRadius={120}
-                    fill="#597CFF"
+                    fill="#E70485"
                     dataKey="value"
                   >
                     {stats.deviceStats.map((_entry, index) => (
@@ -389,8 +389,8 @@ export function TrafficAdmin() {
                   <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
                   <XAxis dataKey="name" tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
                   <YAxis tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
-                  <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ fill: 'rgba(131,180,255,.06)' }} />
-                  <Bar dataKey="value" fill="#37C563" radius={[4, 4, 0, 0]} name="Visitas" />
+                  <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ fill: 'rgba(231,4,133,.1)' }} />
+                  <Bar dataKey="value" fill="#E70485" radius={[4, 4, 0, 0]} name="Visitas" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -409,8 +409,8 @@ export function TrafficAdmin() {
                   <CartesianGrid strokeDasharray="3 3" stroke={CHART_GRID_STROKE} />
                   <XAxis type="number" tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
                   <YAxis dataKey="name" type="category" width={150} tick={CHART_TICK} stroke={CHART_GRID_STROKE} />
-                  <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ fill: 'rgba(131,180,255,.06)' }} />
-                  <Bar dataKey="value" fill="#597CFF" radius={[0, 4, 4, 0]} name="Visitas" />
+                  <Tooltip contentStyle={CHART_TOOLTIP_STYLE} cursor={{ fill: 'rgba(231,4,133,.1)' }} />
+                  <Bar dataKey="value" fill="#E70485" radius={[0, 4, 4, 0]} name="Visitas" />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>

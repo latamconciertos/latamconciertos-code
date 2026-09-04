@@ -57,7 +57,7 @@ export const FestivalCard = memo(({ festival, onClick }: FestivalCardProps) => {
 
   return (
     <Card
-      className="group relative overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 cursor-pointer festival-card h-full flex flex-col"
+      className="group relative overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 cursor-pointer festival-card h-full flex flex-col"
       onClick={onClick}
     >
       {/* Image Section with Date Badge */}
@@ -139,7 +139,7 @@ export const FestivalCard = memo(({ festival, onClick }: FestivalCardProps) => {
 
         {festival.ticket_url ? (
           <Button
-            className="relative z-[2] w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95 group/btn mt-4"
+            className="relative z-[2] w-full rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95 group/btn mt-4"
             asChild
           >
             <a

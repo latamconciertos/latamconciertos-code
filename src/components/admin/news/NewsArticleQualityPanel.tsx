@@ -39,7 +39,7 @@ export const NewsArticleQualityPanel = ({ report, status }: NewsArticleQualityPa
   const barColor =
     percent === 100
       ? 'bg-verde'
-      : 'bg-[linear-gradient(95deg,#004AAD,#597CFF)]';
+      : 'bg-[linear-gradient(95deg,#7516E2,#E70485)]';
 
   const label =
     percent === 100

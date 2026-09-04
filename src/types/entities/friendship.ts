@@ -130,7 +130,7 @@ export interface FriendConcert {
   title: string;
   slug: string;
   date: string | null;
-  image_url: string | null;
+  artist_photo_url: string | null;
   venue_name: string | null;
   city_name: string | null;
   artist_name: string | null;

@@ -52,7 +52,7 @@ const FeaturedVideosSection = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-center h-64">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 border-4 border-periwinkle/30 border-t-periwinkle rounded-full animate-spin" />
+              <div className="w-12 h-12 border-4 border-fucsia/30 border-t-fucsia rounded-full animate-spin" />
               <p className="text-texto-2 animate-pulse">Cargando videos destacados...</p>
             </div>
           </div>
@@ -89,7 +89,7 @@ const FeaturedVideosSection = () => {
                 className="group cursor-pointer"
                 onClick={() => setSelectedVideo(video)}
               >
-                <div className="relative aspect-video rounded-[20px] overflow-hidden border border-linea bg-superficie group-hover:border-[rgba(89,124,255,.35)] group-hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300">
+                <div className="relative aspect-video rounded-[20px] overflow-hidden border border-linea bg-superficie group-hover:border-[rgba(231,4,133,.35)] group-hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300">
                   {/* Thumbnail */}
                   <img
                     src={getThumbnail(video)}
@@ -106,7 +106,7 @@ const FeaturedVideosSection = () => {
 
                   {/* Play Button */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-16 h-16 rounded-full bg-[linear-gradient(95deg,#004AAD,#597CFF)] shadow-[0_8px_32px_rgba(0,74,173,.4)] flex items-center justify-center transform scale-100 group-hover:scale-110 transition-transform duration-300">
+                    <div className="w-16 h-16 rounded-full bg-[linear-gradient(95deg,#7516E2,#E70485)] shadow-[0_8px_32px_rgba(117,22,226,.45)] flex items-center justify-center transform scale-100 group-hover:scale-110 transition-transform duration-300">
                       <Play className="h-8 w-8 text-white ml-1" fill="currentColor" />
                     </div>
                   </div>

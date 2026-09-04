@@ -157,7 +157,7 @@ export const ContactsAdmin = () => {
         <Button
           onClick={openCreate}
           size="lg"
-          className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+          className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nuevo contacto
@@ -201,7 +201,7 @@ export const ContactsAdmin = () => {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((c) => (
-            <Card key={c.id} className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-colors">
+            <Card key={c.id} className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] transition-colors">
               <CardContent className="pt-5 pb-4">
                 <div className="flex items-start justify-between mb-3">
                   <div className="min-w-0 flex-1">
@@ -373,7 +373,7 @@ export const ContactsAdmin = () => {
             <div className="flex gap-2 pt-2">
               <Button
                 type="submit"
-                className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
               >
                 {editingId ? 'Guardar' : 'Crear contacto'}
               </Button>

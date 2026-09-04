@@ -28,7 +28,7 @@ const PassCard = ({ level = 'Fan', points = 340, concerts = 7 }: { level?: strin
 
     {/* Card */}
     <div className="relative rounded-2xl overflow-hidden shadow-2xl"
-      style={{ background: 'linear-gradient(135deg, #004aad 0%, #1e40af 40%, #312e81 80%, #4c1d95 100%)' }}>
+      style={{ background: 'linear-gradient(135deg, #7516E2 0%, #1e40af 40%, #312e81 80%, #4c1d95 100%)' }}>
 
       {/* Noise texture overlay */}
       <div className="absolute inset-0 opacity-[0.04]"
@@ -373,7 +373,7 @@ const Benefits = () => {
               <Button
                 asChild
                 size="lg"
-                className="bg-[#004aad] hover:bg-[#0055cc] text-white font-semibold px-10 h-12"
+                className="bg-[#7516E2] hover:bg-[#0055cc] text-white font-semibold px-10 h-12"
               >
                 <Link to="/auth">
                   Crear cuenta gratis

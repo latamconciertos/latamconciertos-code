@@ -358,7 +358,7 @@ const BlogPost = () => {
         </section>
 
         {/* Brand accent rule between hero and body — cobalto solo en gradiente */}
-        <div className="h-0.5 bg-[linear-gradient(95deg,#004AAD,#597CFF)]" aria-hidden="true" />
+        <div className="h-0.5 bg-[linear-gradient(95deg,#7516E2,#E70485)]" aria-hidden="true" />
 
         {/* Article Content Section */}
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
@@ -422,7 +422,7 @@ const BlogPost = () => {
                     to={`/blog/${relatedArticle.slug}`}
                     className="group block"
                   >
-                    <Card className="overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 h-full">
+                    <Card className="overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 h-full">
                       <div className="relative overflow-hidden aspect-video bg-superficie-2">
                         <img
                           src={getArticleImage(relatedArticle)}

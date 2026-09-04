@@ -176,7 +176,7 @@ export const AccreditationsKanban = () => {
               className={cn(
                 'flex-shrink-0 w-[300px] flex flex-col rounded-xl border border-linea border-t-[3px] transition-all duration-200',
                 col.accent,
-                isDropTarget && `${col.dropBg} border-[rgba(89,124,255,.35)] scale-[1.01] shadow-[0_20px_50px_rgba(0,0,0,.5)]`,
+                isDropTarget && `${col.dropBg} border-[rgba(231,4,133,.35)] scale-[1.01] shadow-[0_20px_50px_rgba(0,0,0,.5)]`,
               )}
               onDragOver={(e) => handleDragOver(e, col.status)}
               onDragLeave={handleDragLeave}
@@ -277,7 +277,7 @@ function KanbanCard({
       }}
       className={cn(
         'group rounded-[20px] border border-linea bg-superficie p-3.5 cursor-grab active:cursor-grabbing transition-all duration-200',
-        'hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_10px_30px_rgba(0,0,0,.4)] hover:-translate-y-0.5',
+        'hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_10px_30px_rgba(0,0,0,.4)] hover:-translate-y-0.5',
         isDragging && 'opacity-30 scale-95 rotate-1 shadow-none',
         isOverdue && 'border-l-[3px] border-l-destructive',
         isUrgent && !isOverdue && 'border-l-[3px] border-l-amber-400',

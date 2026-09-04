@@ -30,14 +30,48 @@ interface SpotifyTrack {
   popularity?: number;
 }
 
+const ARTIST_IMAGE_CACHE_PREFIX = 'spotify:artist-img:';
+const ARTIST_IMAGE_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+
 class SpotifyService {
   private artistImageCache: Map<string, string> = new Map();
+
+  // Caché persistente para que la imagen de Spotify (la fuente de verdad de las
+  // portadas) no cueste una llamada a la edge function por artista en cada visita.
+  private readPersistedArtistImage(cacheKey: string): string | null {
+    try {
+      const raw = localStorage.getItem(ARTIST_IMAGE_CACHE_PREFIX + cacheKey);
+      if (!raw) return null;
+      const { url, ts } = JSON.parse(raw) as { url?: string; ts?: number };
+      if (!url || !ts || Date.now() - ts > ARTIST_IMAGE_CACHE_TTL_MS) return null;
+      return url;
+    } catch {
+      return null;
+    }
+  }
+
+  private persistArtistImage(cacheKey: string, url: string): void {
+    try {
+      localStorage.setItem(
+        ARTIST_IMAGE_CACHE_PREFIX + cacheKey,
+        JSON.stringify({ url, ts: Date.now() })
+      );
+    } catch {
+      // Sin espacio o storage bloqueado: el caché en memoria sigue funcionando.
+    }
+  }
 
   async searchArtist(artistName: string): Promise<string | null> {
     try {
       const cacheKey = artistName.toLowerCase().trim();
       if (this.artistImageCache.has(cacheKey)) {
         return this.artistImageCache.get(cacheKey)!;
+      }
+
+      const persisted = this.readPersistedArtistImage(cacheKey);
+      if (persisted) {
+        this.artistImageCache.set(cacheKey, persisted);
+        return persisted;
       }
 
       const { data, error } = await supabase.functions.invoke('spotify-api', {
@@ -52,6 +86,7 @@ class SpotifyService {
       if (data?.data?.imageUrl) {
         const imageUrl = data.data.imageUrl;
         this.artistImageCache.set(cacheKey, imageUrl);
+        this.persistArtistImage(cacheKey, imageUrl);
         return imageUrl;
       }
 
@@ -176,6 +211,10 @@ class SpotifyService {
     }
   }
 
+  // La imagen fresca de Spotify manda sobre la foto guardada en catálogo (puede
+  // estar vieja o caducada); la de catálogo queda como fallback si Spotify no
+  // responde. Quien pinte cards debe resolver esto ANTES del primer render —
+  // reemplazar la imagen ya visible produce el "swap" que este caché evita.
   async getArtistImage(artistName: string, fallbackUrl?: string): Promise<string> {
     const spotifyImage = await this.searchArtist(artistName);
 

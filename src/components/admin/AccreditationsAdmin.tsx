@@ -277,7 +277,7 @@ export const AccreditationsAdmin = () => {
         <Button
           onClick={openCreate}
           size="lg"
-          className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+          className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nueva acreditación
@@ -718,7 +718,7 @@ export const AccreditationsAdmin = () => {
             <div className="flex gap-2 pt-2">
               <Button
                 type="submit"
-                className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
               >
                 {editingId ? 'Guardar cambios' : 'Crear acreditación'}
               </Button>
@@ -836,7 +836,7 @@ export const AccreditationsAdmin = () => {
             <Button
               onClick={handleAddMember}
               disabled={!newMemberUserId}
-              className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+              className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
               size="sm"
             >
               <UserPlus className="h-4 w-4 mr-2" />

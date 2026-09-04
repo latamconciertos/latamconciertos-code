@@ -17,7 +17,7 @@ All colors MUST be HSL.
       --popover: 0 0% 100%;
       --popover-foreground: 222.2 84% 4.9%;
 
-      --primary: 218 100% 34%;
+      --primary: 268 82% 49%;
       --primary-foreground: 0 0% 100%;
 
       --secondary: 210 40% 96.1%;
@@ -34,7 +34,7 @@ All colors MUST be HSL.
 
       --border: 214.3 31.8% 91.4%;
       --input: 214.3 31.8% 91.4%;
-      --ring: 218 100% 34%;
+      --ring: 268 82% 49%;
 
       --radius: 0.5rem;
 
@@ -50,7 +50,7 @@ All colors MUST be HSL.
       --midnight-blue: #0a1128;
     }
 
-    /* Evolución Nocturna — noche #070D1F, superficie #0E1830, periwinkle #597CFF */
+    /* Manual de Marca v2.0 — noche #070D1F, superficie #0E1830, fucsia #E70485 */
     .dark {
       --background: 225 63% 7%;
       --foreground: 222 63% 97%;
@@ -61,7 +61,7 @@ All colors MUST be HSL.
       --popover: 222 55% 12%;
       --popover-foreground: 222 63% 97%;
 
-      --primary: 227 100% 67%;
+      --primary: 326 97% 46%;
       --primary-foreground: 0 0% 100%;
 
       --secondary: 223 52% 16%;
@@ -78,15 +78,15 @@ All colors MUST be HSL.
 
       --border: 223 43% 16%;
       --input: 223 43% 16%;
-      --ring: 227 100% 67%;
+      --ring: 326 97% 46%;
       --sidebar-background: 222 55% 12%;
       --sidebar-foreground: 222 63% 97%;
-      --sidebar-primary: 227 100% 67%;
+      --sidebar-primary: 326 97% 46%;
       --sidebar-primary-foreground: 0 0% 100%;
       --sidebar-accent: 223 52% 16%;
       --sidebar-accent-foreground: 222 63% 97%;
       --sidebar-border: 223 43% 16%;
-      --sidebar-ring: 227 100% 67%;
+      --sidebar-ring: 326 97% 46%;
     }
   }
 
@@ -268,50 +268,50 @@ All colors MUST be HSL.
       @apply font-fira text-xl md:text-2xl font-bold;
     }
 
-    /* ============================================
-       Evolución Nocturna — componentes de la home
-       ============================================ */
+    /* ==================================================
+       Manual de Marca v2.0 — componentes de la home
+       ================================================== */
 
-    /* Botón primario: gradiente cobalto→periwinkle, pill */
+    /* Botón primario: gradiente morado→fucsia, pill */
     .btn-nocturno {
       @apply inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5 font-fira text-base font-semibold text-white transition-all duration-300 border-0;
-      background: linear-gradient(95deg, #004AAD, #597CFF);
-      box-shadow: 0 8px 32px rgba(0, 74, 173, .4);
+      background: linear-gradient(95deg, #7516E2, #E70485);
+      box-shadow: 0 8px 32px rgba(117, 22, 226, .45);
     }
 
     .btn-nocturno:hover {
       transform: translateY(-2px);
-      box-shadow: 0 12px 40px rgba(0, 74, 173, .55);
+      box-shadow: 0 12px 40px rgba(117, 22, 226, .6);
       color: #fff;
     }
 
     .btn-nocturno:focus-visible {
-      outline: 2px solid #597CFF;
+      outline: 2px solid #E70485;
       outline-offset: 2px;
     }
 
     /* Botón secundario: transparente con borde línea */
     .btn-nocturno-secundario {
       @apply inline-flex items-center justify-center gap-2 rounded-full border px-6 py-2.5 font-fira text-sm font-semibold transition-colors duration-300;
-      border-color: rgba(131, 180, 255, .12);
-      color: #F2F5FC;
+      border-color: rgba(231, 4, 133, .2);
+      color: #FFFFFF;
       background: transparent;
     }
 
     .btn-nocturno-secundario:hover {
       background: #0E1830;
-      border-color: rgba(89, 124, 255, .35);
-      color: #F2F5FC;
+      border-color: rgba(231, 4, 133, .35);
+      color: #FFFFFF;
     }
 
     .btn-nocturno-secundario:focus-visible {
-      outline: 2px solid #597CFF;
+      outline: 2px solid #E70485;
       outline-offset: 2px;
     }
 
-    /* Eyebrow de sección: barra verde + texto azul claro */
+    /* Eyebrow de sección: barra con el arco completo + texto fucsia */
     .eyebrow-nocturno {
-      @apply inline-flex items-center gap-3 font-fira text-[13px] font-semibold uppercase text-azul-claro;
+      @apply inline-flex items-center gap-3 font-fira text-[13px] font-semibold uppercase text-fucsia;
       letter-spacing: .12em;
     }
 
@@ -319,25 +319,25 @@ All colors MUST be HSL.
       content: '';
       width: 24px;
       height: 2px;
-      background: #37C563;
+      background: linear-gradient(92deg, #7516E2, #AB0DC4, #E70485, #FE670C);
       flex-shrink: 0;
     }
   }
 
   @layer utilities {
 
-    /* Punto verde pulsante para badges "en vivo" */
+    /* Punto naranja pulsante para badges "en vivo" */
     @keyframes pulso-vivo {
       0% {
-        box-shadow: 0 0 0 0 rgba(55, 197, 99, .55);
+        box-shadow: 0 0 0 0 rgba(254, 103, 12, .55);
       }
 
       70% {
-        box-shadow: 0 0 0 9px rgba(55, 197, 99, 0);
+        box-shadow: 0 0 0 9px rgba(254, 103, 12, 0);
       }
 
       100% {
-        box-shadow: 0 0 0 0 rgba(55, 197, 99, 0);
+        box-shadow: 0 0 0 0 rgba(254, 103, 12, 0);
       }
     }
 
@@ -345,9 +345,9 @@ All colors MUST be HSL.
       animation: pulso-vivo 2s ease-out infinite;
     }
 
-    /* Focus visible periwinkle en contexto nocturno */
+    /* Focus visible fucsia en contexto nocturno */
     .dark :focus-visible {
-      outline-color: #597CFF;
+      outline-color: #E70485;
     }
 
     .scrollbar-hide::-webkit-scrollbar {
@@ -360,7 +360,7 @@ All colors MUST be HSL.
     }
 
     .gradient-blue {
-      background: linear-gradient(135deg, #004aad 0%, #0066cc 100%);
+      background: linear-gradient(135deg, #7516E2 0%, #E70485 100%);
     }
 
     .text-shadow {
@@ -395,7 +395,7 @@ All colors MUST be HSL.
     .stage-lights::after {
       width: 350px;
       height: 350px;
-      background: radial-gradient(circle, hsl(218 100% 60%) 0%, transparent 70%);
+      background: radial-gradient(circle, hsl(326 97% 46%) 0%, transparent 70%);
       top: -150px;
       right: 15%;
       animation-delay: 4s;

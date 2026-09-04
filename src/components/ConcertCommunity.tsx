@@ -151,7 +151,7 @@ const ConcertCommunity = ({ concertId, concertTitle }: ConcertCommunityProps) =>
                 ? `${memberCount} miembros en la comunidad`
                 : 'Coordina transporte, filas y proyectos de fans con otros asistentes'}
             </p>
-            <Button onClick={joinCommunity} disabled={loading} className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95" size="sm">
+            <Button onClick={joinCommunity} disabled={loading} className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95" size="sm">
               Unirse a la Comunidad
             </Button>
           </div>

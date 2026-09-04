@@ -62,8 +62,8 @@ export const ConcertGenreFilter = ({
                   relative px-4 py-2 rounded-full text-sm font-medium
                   transition-all duration-200 flex-shrink-0
                   ${isSelected
-                    ? 'bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)]'
-                    : 'bg-superficie border border-linea hover:border-[rgba(89,124,255,.35)] hover:bg-superficie-2 text-texto'
+                    ? 'bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)]'
+                    : 'bg-superficie border border-linea hover:border-[rgba(231,4,133,.35)] hover:bg-superficie-2 text-texto'
                   }
                 `}
               >

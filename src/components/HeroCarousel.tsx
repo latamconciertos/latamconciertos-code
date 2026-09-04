@@ -80,7 +80,7 @@ export const HeroCarousel = () => {
             <section className="relative w-full h-[600px] md:h-[700px] overflow-hidden bg-noche">
                 <div className="absolute inset-0 bg-superficie/60" />
                 <div className="relative h-full flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-periwinkle"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-fucsia"></div>
                 </div>
             </section>
         );
@@ -124,11 +124,11 @@ export const HeroCarousel = () => {
                             />
                         </>
                     ) : (
-                        // Fallback cuando no hay imagen: superficie con glow cobalto
+                        // Fallback cuando no hay imagen: superficie con glow morado
                         <div className="absolute inset-0 bg-superficie">
                             <div
                                 className="absolute left-1/2 top-1/2 h-[400px] w-[700px] -translate-x-1/2 -translate-y-1/2 rounded-full"
-                                style={{ background: 'radial-gradient(closest-side, rgba(0,74,173,.45), transparent 70%)', filter: 'blur(110px)' }}
+                                style={{ background: 'radial-gradient(closest-side, rgba(117,22,226,.45), transparent 70%)', filter: 'blur(110px)' }}
                             />
                         </div>
                     )}
@@ -181,7 +181,7 @@ export const HeroCarousel = () => {
                                 transition={{ delay: 0.2 }}
                                 className="mb-5"
                             >
-                                <span className="inline-flex items-center rounded-full border border-verde/30 bg-noche/70 backdrop-blur-sm px-3.5 py-1.5 font-fira text-[11px] font-bold uppercase tracking-[0.14em] text-verde">
+                                <span className="inline-flex items-center rounded-full border border-naranja/30 bg-noche/70 backdrop-blur-sm px-3.5 py-1.5 font-fira text-[11px] font-bold uppercase tracking-[0.14em] text-naranja">
                                     {currentArticle.categories.name}
                                 </span>
                             </motion.div>
@@ -241,7 +241,7 @@ export const HeroCarousel = () => {
                         key={index}
                         onClick={() => goToSlide(index)}
                         className={`h-2 rounded-full transition-all min-h-0 min-w-0 ${index === currentSlide
-                                ? 'w-8 bg-verde'
+                                ? 'w-8 bg-fucsia'
                                 : 'w-2 bg-white/40 hover:bg-white/60'
                             }`}
                         aria-label={`Ir a noticia ${index + 1}`}

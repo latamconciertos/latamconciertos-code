@@ -17,8 +17,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 // Pills de filtro "Evolución Nocturna": seleccionada con gradiente firma, resto sobre superficie
 const pillBase = 'rounded-full px-4 py-2 text-sm font-semibold whitespace-nowrap transition-all duration-300';
-const pillActive = `${pillBase} bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)]`;
-const pillInactive = `${pillBase} bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(89,124,255,.35)]`;
+const pillActive = `${pillBase} bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)]`;
+const pillInactive = `${pillBase} bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(231,4,133,.35)]`;
 
 const Venues = () => {
     const [selectedCountry, setSelectedCountry] = useState<string>('all');
@@ -190,7 +190,7 @@ const Venues = () => {
                                     key={venue.id}
                                     to={`/venues/${venue.cities?.slug || 'venue'}/${venue.slug}`}
                                 >
-                                    <Card className="group overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full">
+                                    <Card className="group overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full">
                                         {venue.image_url && (
                                             <div className="relative h-40 overflow-hidden bg-superficie-2">
                                                 <img

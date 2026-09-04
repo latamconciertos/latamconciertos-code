@@ -278,7 +278,7 @@ const ConcertAttendanceButtons = ({
         disabled={loading}
         className={`flex-1 gap-2 py-3.5 px-4 justify-center transition-all duration-200 min-h-[48px] font-medium rounded-full border ${interaction.attendanceType === 'attending'
           ? 'border-verde/40 bg-verde/15 text-verde data-[state=on]:bg-verde/15 data-[state=on]:text-verde hover:bg-verde/20'
-          : 'border-linea bg-transparent text-texto-2 hover:bg-superficie-2 hover:text-texto hover:border-[rgba(89,124,255,.35)]'
+          : 'border-linea bg-transparent text-texto-2 hover:bg-superficie-2 hover:text-texto hover:border-[rgba(231,4,133,.35)]'
           }`}
       >
         <CalendarCheck className="h-4 w-4" />
@@ -290,7 +290,7 @@ const ConcertAttendanceButtons = ({
         disabled={loading}
         className={`flex-1 gap-2 py-3.5 px-4 justify-center transition-all duration-200 min-h-[48px] font-medium rounded-full border ${interaction.attendanceType === 'tentative'
           ? 'border-periwinkle/40 bg-periwinkle/15 text-periwinkle data-[state=on]:bg-periwinkle/15 data-[state=on]:text-periwinkle hover:bg-periwinkle/20'
-          : 'border-linea bg-transparent text-texto-2 hover:bg-superficie-2 hover:text-texto hover:border-[rgba(89,124,255,.35)]'
+          : 'border-linea bg-transparent text-texto-2 hover:bg-superficie-2 hover:text-texto hover:border-[rgba(231,4,133,.35)]'
           }`}
       >
         <CalendarClock className="h-4 w-4" />

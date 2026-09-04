@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import type { ConcertPageItem } from '@/hooks/queries/useConcertsPage';
 import { getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
+import { getConcertImage } from '@/lib/concertImage';
 
 const SITE_URL = 'https://www.conciertoslatam.com';
 const getDefaultImage = () => getDefaultImageUtil('concert');
@@ -79,7 +80,7 @@ export function useConcertsSEO({
           "@id": `${SITE_URL}/concerts?id=${concert.slug}`,
           "name": concert.title,
           "description": concert.description || `Concierto de ${concert.artists?.name || 'artista'} en ${concert.venues?.cities?.name || 'América Latina'}`,
-          "image": concert.image_url || concert.artist_image_url || getDefaultImage(),
+          "image": getConcertImage(concert, getDefaultImage()),
           "startDate": concert.date || undefined,
           "eventStatus": "https://schema.org/EventScheduled",
           "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",

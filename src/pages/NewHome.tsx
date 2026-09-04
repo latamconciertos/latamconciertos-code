@@ -40,7 +40,7 @@ const NewHome = () => {
     };
 
     return (
-        // "Evolución Nocturna": la home siempre vive sobre la noche,
+        // Manual de Marca v2.0: la home siempre vive sobre la noche,
         // independiente del toggle de tema — por eso el wrapper .dark
         <div className="dark font-fira">
             <SEO

@@ -29,8 +29,8 @@ export const LocationPicker = ({ countryId, countryName, source, onChange }: Loc
 
     return (
         <DropdownMenu>
-            <DropdownMenuTrigger className="group inline-flex items-center gap-1.5 rounded-full border border-linea bg-superficie-2/60 px-3 py-1.5 text-xs font-medium text-texto-2 transition-colors hover:border-periwinkle/40 hover:text-texto">
-                <MapPin className="h-3.5 w-3.5 text-periwinkle" />
+            <DropdownMenuTrigger className="group inline-flex items-center gap-1.5 rounded-full border border-linea bg-superficie-2/60 px-3 py-1.5 text-xs font-medium text-texto-2 transition-colors hover:border-fucsia/40 hover:text-texto">
+                <MapPin className="h-3.5 w-3.5 text-fucsia" />
                 <span>{label}</span>
                 <ChevronDown className="h-3.5 w-3.5 opacity-60 transition-transform group-data-[state=open]:rotate-180" />
             </DropdownMenuTrigger>
@@ -47,7 +47,7 @@ export const LocationPicker = ({ countryId, countryName, source, onChange }: Loc
                     className="flex items-center justify-between text-sm"
                 >
                     Toda Latinoamérica
-                    {!countryId && <Check className="h-4 w-4 text-verde" />}
+                    {!countryId && <Check className="h-4 w-4 text-fucsia" />}
                 </DropdownMenuItem>
                 {countries.map((country) => (
                     <DropdownMenuItem
@@ -56,7 +56,7 @@ export const LocationPicker = ({ countryId, countryName, source, onChange }: Loc
                         className="flex items-center justify-between text-sm"
                     >
                         {country.name}
-                        {countryId === country.id && <Check className="h-4 w-4 text-verde" />}
+                        {countryId === country.id && <Check className="h-4 w-4 text-fucsia" />}
                     </DropdownMenuItem>
                 ))}
             </DropdownMenuContent>

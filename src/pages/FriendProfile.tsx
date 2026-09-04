@@ -216,9 +216,9 @@ const ConcertList = ({
         <Link key={concert.id} to={`/concerts/${concert.slug}`}>
           <Card className="h-full hover:bg-accent/50 transition-colors cursor-pointer">
             <CardContent className="p-4 flex gap-4">
-              {concert.image_url ? (
+              {concert.artist_photo_url ? (
                 <img
-                  src={concert.image_url}
+                  src={concert.artist_photo_url}
                   alt={concert.title}
                   className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
                 />

@@ -308,9 +308,9 @@ class FriendServiceClass {
       .select(`
         concert_id,
         concerts(
-          id, title, slug, date, image_url,
+          id, title, slug, date,
           venues(name, cities(name)),
-          artists(name)
+          artists(name, photo_url)
         )
       `)
       .eq('user_id', friendId)
@@ -335,7 +335,7 @@ class FriendServiceClass {
         title: fc.concerts.title,
         slug: fc.concerts.slug,
         date: fc.concerts.date,
-        image_url: fc.concerts.image_url,
+        artist_photo_url: fc.concerts.artists?.photo_url || null,
         venue_name: fc.concerts.venues?.name || null,
         city_name: fc.concerts.venues?.cities?.name || null,
         artist_name: fc.concerts.artists?.name || null,
@@ -456,7 +456,7 @@ class FriendServiceClass {
         concerts(
           id, title, slug, date, image_url,
           venues(name, cities(name)),
-          artists(name)
+          artists(name, photo_url)
         )
       `)
       .eq('user_id', userId)

@@ -205,7 +205,7 @@ const SEOGuide = () => {
                 {resources.map((resource, idx) => (
                   <Card
                     key={idx}
-                    className="rounded-[20px] border-linea bg-superficie transition-all hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)]"
+                    className="rounded-[20px] border-linea bg-superficie transition-all hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)]"
                   >
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
@@ -261,7 +261,7 @@ const SEOGuide = () => {
                 <Link to="/admin/google-search-console-setup">
                   <Button
                     size="lg"
-                    className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                    className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
                   >
                     Ver Guía de Configuración
                     <ExternalLink className="h-4 w-4 ml-2" />
@@ -283,7 +283,7 @@ function ProgressBarNocturno({ value, className = '' }: { value: number; classNa
     <div className={`w-full rounded-full bg-superficie-2 overflow-hidden ${className}`}>
       <div
         className={`h-full rounded-full transition-all duration-500 ${
-          value === 100 ? 'bg-verde' : 'bg-[linear-gradient(95deg,#004AAD,#597CFF)]'
+          value === 100 ? 'bg-verde' : 'bg-[linear-gradient(95deg,#7516E2,#E70485)]'
         }`}
         style={{ width: `${value}%` }}
       />

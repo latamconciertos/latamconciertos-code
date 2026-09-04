@@ -51,12 +51,12 @@ const HeroLanding = ({
   const animDuration = isMobile ? 0.4 : 0.8;
 
   return <motion.div ref={containerRef} className="fixed top-0 left-0 right-0 h-screen w-full overflow-hidden z-0 bg-noche" style={{ y }}>
-    {/* Glow de escenario: cobalto en radial, nunca plano */}
+    {/* Glow de escenario: morado en radial, nunca plano */}
     <motion.div
       className="absolute left-1/2 top-[36%] h-[420px] w-[min(760px,90vw)] -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
       style={{
         opacity,
-        background: 'radial-gradient(closest-side, rgba(0,74,173,.45), transparent 70%)',
+        background: 'radial-gradient(closest-side, rgba(117,22,226,.45), transparent 70%)',
         filter: isMobile ? 'blur(70px)' : 'blur(110px)'
       }}
     />
@@ -97,8 +97,8 @@ const HeroLanding = ({
         transition={{ duration: animDuration, delay: 0.3 }}
         className="mb-6 flex items-center gap-2.5 rounded-full border border-linea bg-superficie/60 px-4 py-1.5"
       >
-        <span className="h-2 w-2 rounded-full bg-verde punto-vivo" />
-        <span className="font-fira text-[11px] font-bold uppercase tracking-[0.14em] text-azul-claro">
+        <span className="h-2 w-2 rounded-full bg-naranja punto-vivo" />
+        <span className="font-fira text-[11px] font-bold uppercase tracking-[0.14em] text-naranja">
           Música en vivo en toda Latinoamérica
         </span>
       </motion.div>
@@ -116,7 +116,7 @@ const HeroLanding = ({
       }} className="font-display font-black uppercase tracking-[0.01em] text-center leading-[0.92] text-texto text-[clamp(48px,8.5vw,116px)]">
         Todos los conciertos
         <br />
-        <span className="bg-gradient-to-r from-periwinkle to-verde bg-clip-text text-transparent">
+        <span className="bg-[linear-gradient(92deg,#7516E2,#AB0DC4,#E70485,#FE670C)] bg-clip-text text-transparent">
           de Latinoamérica
         </span>
       </motion.h1>
@@ -152,7 +152,7 @@ const HeroLanding = ({
     <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-noche via-noche/80 to-transparent pointer-events-none" />
 
     {/* Scroll indicator */}
-    <motion.button onClick={scrollToContent} aria-label="Bajar al contenido" className="absolute bottom-8 left-0 right-0 mx-auto w-12 h-12 flex items-center justify-center text-periwinkle/60 hover:text-periwinkle transition-colors z-20" initial={{
+    <motion.button onClick={scrollToContent} aria-label="Bajar al contenido" className="absolute bottom-8 left-0 right-0 mx-auto w-12 h-12 flex items-center justify-center text-fucsia/60 hover:text-fucsia transition-colors z-20" initial={{
       opacity: 0
     }} animate={{
       opacity: 1,

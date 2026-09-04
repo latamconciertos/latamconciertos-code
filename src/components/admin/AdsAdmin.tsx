@@ -323,7 +323,7 @@ export const AdsAdmin = () => {
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-semibold">Campañas</h3>
             <Button
-              className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+              className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
               onClick={() => setShowCampaignForm(true)}
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -415,7 +415,7 @@ export const AdsAdmin = () => {
                 key={campaign.id}
                 className={`rounded-[20px] bg-superficie ${
                   selectedCampaign === campaign.id
-                    ? 'border-[rgba(89,124,255,.45)]'
+                    ? 'border-[rgba(231,4,133,.45)]'
                     : 'border-linea'
                 }`}
               >
@@ -469,7 +469,7 @@ export const AdsAdmin = () => {
               {campaigns.find((c) => c.id === selectedCampaign)?.name}
             </h3>
             <Button
-              className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+              className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
               onClick={() => setShowAdForm(true)}
             >
               <Plus className="h-4 w-4 mr-2" />

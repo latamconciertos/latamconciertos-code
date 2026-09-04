@@ -448,7 +448,7 @@ const FanProjectDetail = () => {
                   const preloaded = preloadedSongs.has(song.id);
 
                   return (
-                    <Card key={song.id} className="rounded-[20px] border border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-colors">
+                    <Card key={song.id} className="rounded-[20px] border border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] transition-colors">
                       <CardContent className="p-4 sm:p-6">
                         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-4">
                           <div className="flex-1 min-w-0">
@@ -497,7 +497,7 @@ const FanProjectDetail = () => {
                               size="lg"
                               onClick={() => navigate(`/fan-projects/${projectId}/song/${song.id}/light`)}
                               disabled={!preloaded}
-                              className="w-full sm:w-auto h-12 font-semibold text-base rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                              className="w-full sm:w-auto h-12 font-semibold text-base rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
                             >
                               Entrar
                             </Button>

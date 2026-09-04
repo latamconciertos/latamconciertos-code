@@ -177,7 +177,7 @@ const About = () => {
                 </div>
               </div>
 
-              <Button size="lg" className="rounded-full px-8 font-bold uppercase tracking-[0.15em] text-xs border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95">
+              <Button size="lg" className="rounded-full px-8 font-bold uppercase tracking-[0.15em] text-xs border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95">
                 Únete a la comunidad
               </Button>
             </div>
@@ -205,7 +205,7 @@ const About = () => {
                   { icon: Users, title: 'Comunidad', desc: 'Una comunidad apasionada por la música que comparte experiencias, recomendaciones y descubre nuevos artistas cada día.' },
                   { icon: Globe, title: 'Cobertura', desc: 'México, Colombia, Argentina, Chile, Perú, Brasil, Uruguay, Ecuador, Costa Rica, Guatemala, Panamá, República Dominicana y más.' },
                 ].map(({ icon: Icon, title, desc }) => (
-                  <Card key={title} className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-colors">
+                  <Card key={title} className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] transition-colors">
                     <CardContent className="p-5 md:p-6">
                       <div className="flex items-center gap-3 mb-3">
                         <div className="bg-periwinkle/10 p-2 rounded-lg">
@@ -247,7 +247,7 @@ const About = () => {
                     id={person.anchor}
                     itemScope
                     itemType="https://schema.org/Person"
-                    className="bg-superficie border border-linea rounded-[20px] p-5 md:p-6 hover:border-[rgba(89,124,255,.35)] transition-colors"
+                    className="bg-superficie border border-linea rounded-[20px] p-5 md:p-6 hover:border-[rgba(231,4,133,.35)] transition-colors"
                   >
                     <link itemProp="url" href={`${SITE_URL}/about#${person.anchor}`} />
                     <div className="flex items-start gap-4">
@@ -311,7 +311,7 @@ const About = () => {
                   { icon: Users, title: 'Comunidad', desc: 'Fomentamos el diálogo y la conexión entre fans de toda América Latina.' },
                   { icon: Heart, title: 'Pasión', desc: 'Amor genuino por la música y la cultura en vivo que se refleja en cada detalle.' },
                 ].map(({ icon: Icon, title, desc }) => (
-                  <Card key={title} className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-colors group">
+                  <Card key={title} className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] transition-colors group">
                     <CardContent className="p-5 md:p-6">
                       <div className="flex items-center gap-3 mb-3">
                         <div className="bg-periwinkle/10 p-2 rounded-lg group-hover:bg-periwinkle/20 transition-colors">
@@ -421,7 +421,7 @@ const About = () => {
                   latamconciertos@gmail.com
                 </a>
                 <span className="hidden sm:inline text-muted-foreground/40">·</span>
-                <Button size="lg" className="rounded-full px-8 font-bold uppercase tracking-[0.15em] text-xs border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95">
+                <Button size="lg" className="rounded-full px-8 font-bold uppercase tracking-[0.15em] text-xs border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95">
                   Contáctanos
                 </Button>
               </div>

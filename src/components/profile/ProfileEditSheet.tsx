@@ -130,7 +130,7 @@ const ProfileEditSheet = ({
                   <Camera className="h-6 w-6 text-white" />
                 )}
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 rounded-full p-1.5 bg-[linear-gradient(95deg,#004AAD,#597CFF)] shadow-[0_4px_16px_rgba(0,74,173,.4)]">
+              <div className="absolute -bottom-0.5 -right-0.5 rounded-full p-1.5 bg-[linear-gradient(95deg,#7516E2,#E70485)] shadow-[0_4px_16px_rgba(117,22,226,.45)]">
                 <Camera className="h-3.5 w-3.5 text-white" />
               </div>
             </button>
@@ -272,7 +272,7 @@ const ProfileEditSheet = ({
           <Button
             onClick={onSave}
             disabled={isSaving}
-            className="w-full h-12 gap-2 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+            className="w-full h-12 gap-2 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
           >
             <Save className="h-4 w-4" />
             {isSaving ? 'Guardando...' : 'Guardar cambios'}

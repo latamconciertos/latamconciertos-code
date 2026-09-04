@@ -62,7 +62,7 @@ export const ModernFestivalCard = ({ festival, onClick }: ModernFestivalCardProp
             className="h-full"
         >
             <Card
-                className="overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300 cursor-pointer h-full flex flex-col"
+                className="overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300 cursor-pointer h-full flex flex-col"
                 onClick={onClick}
             >
                 {/* Image Section with Date Badge */}
@@ -80,14 +80,14 @@ export const ModernFestivalCard = ({ festival, onClick }: ModernFestivalCardProp
                         style={{ background: 'linear-gradient(180deg, transparent 40%, rgba(7,13,31,.85))' }}
                     />
 
-                    {/* Chip de categoría: verde solo como chispa */}
+                    {/* Chip de categoría: naranja solo como chispa */}
                     <div className="absolute top-3 left-3">
-                        <span className="inline-flex items-center rounded-full border border-verde/30 bg-noche/80 backdrop-blur-sm px-3 py-1 font-fira text-[10px] font-bold uppercase tracking-[0.12em] text-verde">
+                        <span className="inline-flex items-center rounded-full border border-naranja/30 bg-noche/80 backdrop-blur-sm px-3 py-1 font-fira text-[10px] font-bold uppercase tracking-[0.12em] text-naranja">
                             Festival
                         </span>
                     </div>
 
-                    {/* Chip de fecha: número grande en verde, Big Shoulders */}
+                    {/* Chip de fecha: número grande en naranja, Big Shoulders */}
                     <div className="absolute top-3 right-3 rounded-2xl border border-linea bg-noche/80 backdrop-blur-sm px-3 py-2 text-center min-w-[56px]">
                         {isMultiDay ? (
                             <>
@@ -97,7 +97,7 @@ export const ModernFestivalCard = ({ festival, onClick }: ModernFestivalCardProp
                                             key={index}
                                             className="w-6 h-6 rounded-full bg-superficie-2 flex items-center justify-center"
                                         >
-                                            <span className="font-display text-[11px] font-bold text-verde">{day}</span>
+                                            <span className="font-display text-[11px] font-bold text-naranja">{day}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -105,7 +105,7 @@ export const ModernFestivalCard = ({ festival, onClick }: ModernFestivalCardProp
                             </>
                         ) : (
                             <>
-                                <div className="font-display text-2xl font-extrabold text-verde leading-none">{festivalDays[0]}</div>
+                                <div className="font-display text-2xl font-extrabold text-naranja leading-none">{festivalDays[0]}</div>
                                 <div className="font-fira text-[10px] uppercase tracking-[0.12em] text-texto-2 mt-0.5">{month}</div>
                             </>
                         )}
@@ -116,8 +116,8 @@ export const ModernFestivalCard = ({ festival, onClick }: ModernFestivalCardProp
                 <div className="p-5 space-y-2 flex-1 flex flex-col">
                     {/* Primer artista del lineup como eyebrow */}
                     <div className="flex items-center gap-2">
-                        <Calendar className="h-3.5 w-3.5 text-periwinkle" />
-                        <p className="font-fira text-xs text-periwinkle font-semibold uppercase tracking-[0.14em]">
+                        <Calendar className="h-3.5 w-3.5 text-fucsia" />
+                        <p className="font-fira text-xs text-fucsia font-semibold uppercase tracking-[0.14em]">
                             {festival.lineup ? festival.lineup.split(',')[0].trim() : 'Festival'}
                         </p>
                     </div>
@@ -129,7 +129,7 @@ export const ModernFestivalCard = ({ festival, onClick }: ModernFestivalCardProp
 
                     {/* Location */}
                     <div className="flex items-center gap-2 text-texto-2">
-                        <MapPin className="h-4 w-4 text-periwinkle" />
+                        <MapPin className="h-4 w-4 text-fucsia" />
                         <p className="text-sm">{location}</p>
                     </div>
 

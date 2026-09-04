@@ -83,7 +83,7 @@ export function generateConcertMetadata(concert: any): PageMetadata {
             `concierto ${artist.toLowerCase()}`,
             venue.toLowerCase(),
         ],
-        image: concert.artists?.photo_url || concert.image_url || SEO_CONFIG.defaultImage,
+        image: concert.artists?.photo_url || SEO_CONFIG.defaultImage,
         url: `/conciertos/${concert.slug || concert.id}`,
         type: 'article',
     };

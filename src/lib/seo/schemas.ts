@@ -54,8 +54,8 @@ export function generateConcertSchema(concert: any) {
     };
 
     // Add image if available
-    if (concert.artists?.photo_url || concert.image_url) {
-        (schema as any).image = [concert.artists?.photo_url || concert.image_url];
+    if (concert.artists?.photo_url) {
+        (schema as any).image = [concert.artists.photo_url];
     }
 
     // Add organizer if available

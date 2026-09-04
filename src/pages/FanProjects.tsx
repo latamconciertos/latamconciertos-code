@@ -138,12 +138,12 @@ const FanProjects = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
               {projects.map((project) => {
                 const dateInfo = formatDate(project.concert.date);
-                const imageUrl = project.concert.artist?.photo_url || project.concert.image_url || getDefaultImage();
+                const imageUrl = project.concert.artist?.photo_url || getDefaultImage();
 
                 return (
                   <Card
                     key={project.id}
-                    className="group overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
+                    className="group overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 cursor-pointer"
                     onClick={() => navigate(`/fan-projects/${project.id}`)}
                   >
                     {/* Image Section */}
@@ -228,7 +228,7 @@ const FanProjects = () => {
                       </div>
 
                       <Button
-                        className="w-full group/btn mt-4 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                        className="w-full group/btn mt-4 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
                         onClick={(e) => {
                           e.stopPropagation();
                           navigate(`/fan-projects/${project.id}`);

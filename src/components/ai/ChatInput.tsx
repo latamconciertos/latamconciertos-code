@@ -25,7 +25,7 @@ const ChatInput = ({ input, onInputChange, onSubmit, isLoading }: ChatInputProps
             type="submit"
             disabled={isLoading || !input.trim()}
             size="icon"
-            className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
           >
             {isLoading ? (
               <Loader2 className="h-5 w-5 animate-spin" />

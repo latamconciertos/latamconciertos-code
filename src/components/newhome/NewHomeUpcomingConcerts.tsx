@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Calendar, ArrowRight, MapPin, Ticket, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SectionHeader } from './SectionHeader';
 import { StadiumArcs } from './StadiumArcs';
 import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { ModernConcertCard } from './ModernConcertCard';
-import { useUpcomingNearbyConcerts } from '@/hooks/queries';
+import { useUpcomingNearbyConcerts, queryKeys } from '@/hooks/queries';
 import { useUserLocation } from '@/hooks/useUserLocation';
 import { LocationPicker } from './LocationPicker';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
@@ -13,6 +14,7 @@ import { Link } from 'react-router-dom';
 import { withTicketTracking } from '@/lib/ticketUrl';
 import { spotifyService } from '@/lib/spotify';
 import { getDefaultImage as getDefaultImageUtil } from '@/lib/imageOptimization';
+import { getConcertImage } from '@/lib/concertImage';
 import ConcertAttendanceButtons from '@/components/ConcertAttendanceButtons';
 import ConcertCommunity from '@/components/ConcertCommunity';
 import { format, parseISO } from 'date-fns';
@@ -43,7 +45,6 @@ interface ConcertWithImage {
 }
 
 export const NewHomeUpcomingConcerts = () => {
-    const [concertsWithImages, setConcertsWithImages] = useState<ConcertWithImage[]>([]);
     const [selectedConcert, setSelectedConcert] = useState<ConcertWithImage | null>(null);
 
     // La agenda se ordena por cercanía al usuario: no tiene sentido que alguien en México
@@ -56,8 +57,47 @@ export const NewHomeUpcomingConcerts = () => {
         limit: 8,
         enabled: !locationLoading,
     });
-    const isLoading = locationLoading || concertsLoading;
     const concerts = concertsData ?? [];
+
+    // La imagen de Spotify manda sobre la foto de catálogo, y se resuelve ANTES de
+    // pintar la grilla: un solo render con la portada definitiva, en vez de mostrar
+    // la de catálogo y reemplazarla a los segundos. El caché del servicio (memoria +
+    // localStorage) hace que a partir de la segunda visita esto no cueste espera.
+    const { data: concertsWithImages, isLoading: imagesLoading } = useQuery({
+        queryKey: queryKeys.concerts.artistImages(concerts.map((c) => c.id)),
+        enabled: concerts.length > 0,
+        staleTime: Infinity,
+        queryFn: async () => {
+            const BATCH_SIZE = 3;
+            const withImages: ConcertWithImage[] = [];
+
+            for (let i = 0; i < concerts.length; i += BATCH_SIZE) {
+                const batch = concerts.slice(i, i + BATCH_SIZE);
+
+                const batchResults = await Promise.all(
+                    batch.map(async (concert) => {
+                        if (!concert.artists?.name) return concert as ConcertWithImage;
+                        try {
+                            const artistImage = await spotifyService.getArtistImage(
+                                concert.artists.name,
+                                concert.artists.photo_url || undefined
+                            );
+                            return { ...concert, artist_image_url: artistImage } as ConcertWithImage;
+                        } catch (error) {
+                            console.error('Error fetching artist image:', error);
+                            return concert as ConcertWithImage;
+                        }
+                    })
+                );
+
+                withImages.push(...batchResults);
+            }
+
+            return withImages;
+        },
+    });
+
+    const isLoading = locationLoading || concertsLoading || (concerts.length > 0 && imagesLoading);
 
     // Cuando el país elegido todavía no tiene fechas, la sección se rellena con la agenda
     // regional: decirlo explícitamente en vez de titular "en México" mostrando Bogotá.
@@ -70,49 +110,10 @@ export const NewHomeUpcomingConcerts = () => {
             ? `Los shows más esperados en ${countryName}, con fechas y entradas.`
             : `Aún no tenemos fechas confirmadas en ${countryName}: mientras tanto, la agenda de Latinoamérica.`;
 
-    useEffect(() => {
-        const fetchArtistImages = async () => {
-            if (concerts.length === 0) {
-                setConcertsWithImages([]);
-                return;
-            }
-
-            const BATCH_SIZE = 3;
-            const withImages: ConcertWithImage[] = [];
-
-            for (let i = 0; i < concerts.length; i += BATCH_SIZE) {
-                const batch = concerts.slice(i, i + BATCH_SIZE);
-
-                const batchResults = await Promise.all(
-                    batch.map(async (concert) => {
-                        if (concert.artists?.name) {
-                            try {
-                                const artistImage = await spotifyService.getArtistImage(
-                                    concert.artists.name,
-                                    concert.artists.photo_url || undefined
-                                );
-                                return { ...concert, artist_image_url: artistImage } as ConcertWithImage;
-                            } catch (error) {
-                                console.error('Error fetching artist image:', error);
-                                return concert as ConcertWithImage;
-                            }
-                        }
-                        return concert as ConcertWithImage;
-                    })
-                );
-
-                withImages.push(...batchResults);
-            }
-
-            setConcertsWithImages(withImages);
-        };
-
-        fetchArtistImages();
-    }, [concertsData]);
-
-
     const getDefaultImage = () => getDefaultImageUtil('concert');
-    const displayConcerts = concertsWithImages.length > 0 ? concertsWithImages : (concerts as ConcertWithImage[]);
+    // El fallback a `concerts` solo aplica si el query de imágenes falló por completo:
+    // mejor cards con foto de catálogo que una sección vacía.
+    const displayConcerts = concertsWithImages ?? (concerts as ConcertWithImage[]);
 
     if (isLoading) {
         return (
@@ -173,7 +174,7 @@ export const NewHomeUpcomingConcerts = () => {
                                             bajas (13") los botones queden visibles sin scroll */}
                                         <div className="relative w-full aspect-[4/3] sm:aspect-[16/9] sm:max-h-[38vh] overflow-hidden shrink-0">
                                             <img
-                                                src={selectedConcert.artist_image_url || getDefaultImage()}
+                                                src={getConcertImage(selectedConcert, getDefaultImage())}
                                                 alt={selectedConcert.artists?.name || selectedConcert.title}
                                                 className="w-full h-full object-cover object-top"
                                             />
@@ -225,7 +226,7 @@ export const NewHomeUpcomingConcerts = () => {
                                                         </Link>
                                                     </Button>
                                                     {selectedConcert.ticket_url && (
-                                                        <Button className="flex-1 rounded-full h-11 text-sm font-semibold border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95" asChild>
+                                                        <Button className="flex-1 rounded-full h-11 text-sm font-semibold border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95" asChild>
                                                             <a
                                                                 href={withTicketTracking(selectedConcert.ticket_url)}
                                                                 target="_blank"
@@ -242,7 +243,7 @@ export const NewHomeUpcomingConcerts = () => {
                                             {/* Community section */}
                                             <div className="border-t border-border/40 px-5 py-4">
                                                 <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                                                    <Users className="h-4 w-4 text-periwinkle" />
+                                                    <Users className="h-4 w-4 text-fucsia" />
                                                     Comunidad
                                                 </h3>
                                                 <ConcertCommunity

@@ -20,7 +20,7 @@ const ProfileHeader = ({ displayName, username, location, bio, avatarUrl, stats 
       <div className="flex items-center gap-6 sm:gap-8">
         {/* Avatar con anillo de gradiente firma */}
         <div className="flex-shrink-0">
-          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full p-[3px] bg-[linear-gradient(135deg,#004AAD,#597CFF)]">
+          <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full p-[3px] bg-[linear-gradient(135deg,#7516E2,#E70485)]">
             <div className="w-full h-full rounded-full bg-superficie-2 flex items-center justify-center overflow-hidden">
               {avatarUrl ? (
                 <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />

@@ -433,9 +433,9 @@ export default function ConcertCommunityChat() {
             fill="none"
             preserveAspectRatio="xMidYMax slice"
           >
-            <path d="M-60 300C260 60 940 60 1260 300" stroke="#597CFF" strokeOpacity="0.16" strokeWidth="2" />
-            <path d="M40 300C320 120 880 120 1160 300" stroke="#83B4FF" strokeOpacity="0.11" strokeWidth="2" />
-            <path d="M140 300C390 175 810 175 1060 300" stroke="#37C563" strokeOpacity="0.13" strokeWidth="2" />
+            <path d="M-60 300C260 60 940 60 1260 300" stroke="#E70485" strokeOpacity="0.16" strokeWidth="2" />
+            <path d="M40 300C320 120 880 120 1160 300" stroke="#E70485" strokeOpacity="0.11" strokeWidth="2" />
+            <path d="M140 300C390 175 810 175 1060 300" stroke="#FE670C" strokeOpacity="0.13" strokeWidth="2" />
           </svg>
         </div>
 
@@ -447,7 +447,7 @@ export default function ConcertCommunityChat() {
                   <img
                     src={concertInfo.image_url}
                     alt=""
-                    className="mb-5 h-20 w-20 rounded-full object-cover ring-2 ring-periwinkle/35 shadow-[0_0_40px_rgba(0,74,173,.45)]"
+                    className="mb-5 h-20 w-20 rounded-full object-cover ring-2 ring-periwinkle/35 shadow-[0_0_40px_rgba(117,22,226,.45)]"
                   />
                 ) : (
                   <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-full bg-superficie-2 ring-2 ring-periwinkle/35">
@@ -525,7 +525,7 @@ export default function ConcertCommunityChat() {
                     <div
                       className={`max-w-[78%] sm:max-w-[65%] rounded-2xl px-3 py-1.5 ${
                         isOwn
-                          ? `bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_4px_16px_rgba(0,74,173,.3)] ${isLastInGroup ? 'rounded-br-md' : ''}`
+                          ? `bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_4px_16px_rgba(117,22,226,.3)] ${isLastInGroup ? 'rounded-br-md' : ''}`
                           : `bg-superficie border border-linea text-texto ${isLastInGroup ? 'rounded-bl-md' : ''}`
                       }`}
                     >
@@ -580,7 +580,7 @@ export default function ConcertCommunityChat() {
             type="submit"
             size="icon"
             disabled={isSending || !input.trim()}
-            className="rounded-full shrink-0 h-10 w-10 border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] transition-transform hover:opacity-95 motion-safe:hover:-translate-y-0.5 disabled:opacity-40"
+            className="rounded-full shrink-0 h-10 w-10 border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] transition-transform hover:opacity-95 motion-safe:hover:-translate-y-0.5 disabled:opacity-40"
           >
             <Send className="h-4 w-4" />
           </Button>

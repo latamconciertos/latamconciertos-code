@@ -11,7 +11,7 @@ interface SectionHeaderProps {
 }
 
 /**
- * Encabezado de sección "Evolución Nocturna": eyebrow con barra verde,
+ * Encabezado de sección (Manual v2.0): eyebrow fucsia con barra en grad-arco,
  * titular en Big Shoulders uppercase y acción secundaria a la derecha.
  * Alineado a la izquierda a propósito — evitar layouts 100% centrados.
  */

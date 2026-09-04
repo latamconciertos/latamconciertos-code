@@ -27,7 +27,7 @@ export default {
 				background: 'hsl(var(--background))',
 				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: '#004aad',
+					DEFAULT: '#7516E2',
 					foreground: '#ffffff'
 				},
 				secondary: {
@@ -66,24 +66,30 @@ export default {
 				},
 				// Colores personalizados para Conciertos Latam
 				brand: {
-					blue: '#004aad',
+					blue: '#7516E2',
 					white: '#ffffff'
 				},
-				// Evolución Nocturna — tokens de la dirección de diseño
+				// Manual de Marca v2.0 — la noche en vivo (morado → violeta → fucsia → naranja)
 				noche: '#070D1F',
 				superficie: {
 					DEFAULT: '#0E1830',
 					2: '#131F3D'
 				},
-				cobalto: '#004AAD',
-				periwinkle: '#597CFF',
-				'azul-claro': '#83B4FF',
-				verde: '#37C563',
+				morado: '#7516E2',
+				violeta: '#AB0DC4',
+				fucsia: '#E70485',
+				naranja: '#FE670C',
 				texto: {
-					DEFAULT: '#F2F5FC',
+					DEFAULT: '#FFFFFF',
 					2: '#94A0BD'
 				},
-				linea: 'rgba(131,180,255,.12)'
+				linea: 'rgba(231,4,133,.2)',
+				// Deprecated: alias de la identidad anterior, re-apuntados a la paleta v2.0.
+				// Migrar a morado/fucsia/naranja al tocar cada archivo.
+				cobalto: '#7516E2',
+				periwinkle: '#E70485',
+				'azul-claro': '#94A0BD',
+				verde: '#FE670C'
 			},
 			fontFamily: {
 				// Evolución Nocturna: Fira Sans es la fuente de UI y cuerpo del manual
@@ -125,12 +131,12 @@ export default {
 					'100%': { transform: 'translateX(0)' }
 				},
 				'pulse-glow': {
-					'0%, 100%': { 
-						boxShadow: '0 0 20px rgba(0, 74, 173, 0.3)',
+					'0%, 100%': {
+						boxShadow: '0 0 20px rgba(117, 22, 226, 0.3)',
 						transform: 'scale(1)'
 					},
-					'50%': { 
-						boxShadow: '0 0 40px rgba(0, 74, 173, 0.6)',
+					'50%': {
+						boxShadow: '0 0 40px rgba(117, 22, 226, 0.6)',
 						transform: 'scale(1.02)'
 					}
 				},

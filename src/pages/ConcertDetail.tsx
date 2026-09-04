@@ -84,7 +84,7 @@ const ConcertDetail = () => {
     "@type": "MusicEvent",
     "name": concert.title,
     "description": concert.description || `Concierto de ${concert.artists?.name || 'artista'}`,
-    "image": concert.image_url || artistImage,
+    "image": artistImage || concert.artists?.photo_url,
     "startDate": concert.date || undefined,
     "eventStatus": "https://schema.org/EventScheduled",
     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
@@ -121,7 +121,7 @@ const ConcertDetail = () => {
         title={`${concert.title} - ${concert.artists?.name || 'Concierto'}`}
         description={concert.description || `Toda la información sobre ${concert.title}. Fecha, lugar, entradas y más.`}
         keywords={`${concert.title}, ${concert.artists?.name || ''}, concierto, entradas, ${concert.venues?.cities?.name || ''}`}
-        image={concert.image_url || artistImage || undefined}
+        image={artistImage || concert.artists?.photo_url || undefined}
         url={`/concerts/${concert.slug}`}
         structuredData={structuredData}
       />
@@ -153,7 +153,7 @@ const ConcertDetail = () => {
                   <div className="lg:w-64 lg:flex-shrink-0">
                     <div className="relative">
                       <img
-                        src={artistImage || concert.image_url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop"}
+                        src={artistImage || concert.artists?.photo_url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop"}
                         alt={concert.artists?.name || concert.title}
                         className="w-full aspect-square object-cover rounded-[20px] ring-1 ring-linea"
                       />
@@ -223,7 +223,7 @@ const ConcertDetail = () => {
                     {/* Artist Image - Small, Left-aligned */}
                     <div className="relative w-20 h-20 flex-shrink-0">
                       <img
-                        src={artistImage || concert.image_url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop"}
+                        src={artistImage || concert.artists?.photo_url || "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop"}
                         alt={concert.artists?.name || concert.title}
                         className="w-full h-full object-cover rounded-xl ring-1 ring-linea"
                       />
@@ -351,7 +351,7 @@ const ConcertDetail = () => {
                   </div>
 
                   {isUpcoming && concert.ticket_url && (
-                    <Button className="w-full mt-3 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95" size="sm" asChild>
+                    <Button className="w-full mt-3 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95" size="sm" asChild>
                       <a
                         href={withTicketTracking(concert.ticket_url)}
                         target="_blank"
@@ -604,7 +604,7 @@ const ConcertDetail = () => {
                     </div>
 
                     {isUpcoming && concert.ticket_url && (
-                      <Button className="w-full mt-4 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95" asChild>
+                      <Button className="w-full mt-4 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95" asChild>
                         <a
                           href={withTicketTracking(concert.ticket_url)}
                           target="_blank"

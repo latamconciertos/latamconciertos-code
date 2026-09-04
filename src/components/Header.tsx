@@ -149,7 +149,7 @@ const Header = ({ visible = true }: HeaderProps) => {
         visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-full pointer-events-none"
       )}
     >
-      <nav className="bg-[#070D1F]/85 backdrop-blur-lg border-b border-[rgba(131,180,255,.12)] px-4 sm:px-6 lg:px-8">
+      <nav className="bg-[#070D1F]/85 backdrop-blur-lg border-b border-[rgba(231,4,133,.2)] px-4 sm:px-6 lg:px-8">
         {/* Grilla de 3 columnas: el menú central queda centrado respecto a la barra,
             sin importar cuánto pesen el logo (izq) o los iconos (der) */}
         <div className="max-w-7xl mx-auto grid grid-cols-[1fr_auto_1fr] h-16 items-center">
@@ -176,7 +176,7 @@ const Header = ({ visible = true }: HeaderProps) => {
                   className={cn(
                     "relative text-sm font-fira font-medium px-4 py-2 rounded-lg transition-all",
                     isActive
-                      ? "text-white after:absolute after:left-4 after:right-4 after:bottom-0.5 after:h-0.5 after:rounded-full after:bg-verde"
+                      ? "text-white after:absolute after:left-4 after:right-4 after:bottom-0.5 after:h-0.5 after:rounded-full after:bg-fucsia"
                       : "text-white/90 hover:text-white hover:bg-white/10"
                   )}
                 >
@@ -193,7 +193,7 @@ const Header = ({ visible = true }: HeaderProps) => {
                     className={cn(
                       "relative bg-transparent text-sm font-fira font-medium hover:text-white hover:bg-white/10 data-[state=open]:bg-white/10 px-4 py-2 h-auto",
                       experienciasItems.some((i) => isActivePath(i.path)) || location.pathname.startsWith("/setlist")
-                        ? "text-white after:absolute after:left-4 after:right-4 after:bottom-0.5 after:h-0.5 after:rounded-full after:bg-verde"
+                        ? "text-white after:absolute after:left-4 after:right-4 after:bottom-0.5 after:h-0.5 after:rounded-full after:bg-fucsia"
                         : "text-white/90"
                     )}
                   >

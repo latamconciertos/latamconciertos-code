@@ -8,6 +8,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { formatDisplayDate, formatInBogota } from '@/lib/timezone';
 import { useVenueDetail, useVenueDetailConcerts } from '@/hooks/queries';
+import { getConcertImage } from '@/lib/concertImage';
 
 const VenueDetail = () => {
     const { venueSlug } = useParams();
@@ -108,7 +109,7 @@ const VenueDetail = () => {
                             )}
                             <div
                                 className="absolute inset-0 pointer-events-none"
-                                style={{ background: 'linear-gradient(180deg, rgba(0,74,173,.3), rgba(7,13,31,.4) 55%, #070D1F)' }}
+                                style={{ background: 'linear-gradient(180deg, rgba(117,22,226,.3), rgba(7,13,31,.4) 55%, #070D1F)' }}
                                 aria-hidden="true"
                             />
                         </div>
@@ -202,10 +203,10 @@ const VenueDetail = () => {
 
                                         return (
                                             <Link key={concert.id} to={`/concerts/${concert.slug}`}>
-                                                <Card className="group overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full">
+                                                <Card className="group overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 cursor-pointer h-full">
                                                     <div className="relative overflow-hidden bg-superficie-2">
                                                         <img
-                                                            src={concert.image_url || concert.artists?.photo_url || "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=300&fit=crop"}
+                                                            src={getConcertImage(concert, "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=400&h=300&fit=crop")}
                                                             alt={concert.title}
                                                             className="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-300"
                                                             loading="lazy"
@@ -253,11 +254,11 @@ const VenueDetail = () => {
                                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {pastConcerts.slice(0, 6).map((concert) => (
                                         <Link key={concert.id} to={`/concerts/${concert.slug}`}>
-                                            <Card className="group overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-all duration-300 cursor-pointer opacity-75 hover:opacity-100">
+                                            <Card className="group overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] transition-all duration-300 cursor-pointer opacity-75 hover:opacity-100">
                                                 <div className="flex gap-4 p-4">
                                                     <div className="relative w-24 h-24 flex-shrink-0 rounded-2xl overflow-hidden bg-superficie-2">
                                                         <img
-                                                            src={concert.image_url || concert.artists?.photo_url || "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=200&h=200&fit=crop"}
+                                                            src={getConcertImage(concert, "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=200&h=200&fit=crop")}
                                                             alt={concert.title}
                                                             className="w-full h-full object-cover"
                                                         />

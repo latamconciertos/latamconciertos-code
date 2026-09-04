@@ -67,7 +67,7 @@ const AdminPortal = () => {
         {/* Glow de cobalto detrás del hero, nunca color plano */}
         <div
           className="absolute left-1/2 top-0 h-[280px] w-[min(560px,90vw)] -translate-x-1/2 rounded-full pointer-events-none"
-          style={{ background: 'radial-gradient(closest-side, rgba(0,74,173,.35), transparent 70%)', filter: 'blur(100px)' }}
+          style={{ background: 'radial-gradient(closest-side, rgba(117,22,226,.35), transparent 70%)', filter: 'blur(100px)' }}
         />
         <div className="relative text-center mb-12">
           <img src={logo} alt="Conciertos Latam" className="h-32 mx-auto mb-6" />
@@ -84,7 +84,7 @@ const AdminPortal = () => {
           {/* Content Management */}
           <button
             onClick={() => navigate('/admin/content')}
-            className="group relative overflow-hidden rounded-[20px] border border-linea bg-superficie p-8 text-left transition-all hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1"
+            className="group relative overflow-hidden rounded-[20px] border border-linea bg-superficie p-8 text-left transition-all hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-cobalto/15 blur-2xl rounded-full -translate-y-8 translate-x-8 group-hover:bg-cobalto/25 transition-colors" />
 
@@ -115,7 +115,7 @@ const AdminPortal = () => {
           {/* Operations */}
           <button
             onClick={() => navigate('/admin/operations')}
-            className="group relative overflow-hidden rounded-[20px] border border-linea bg-superficie p-8 text-left transition-all hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1"
+            className="group relative overflow-hidden rounded-[20px] border border-linea bg-superficie p-8 text-left transition-all hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1"
           >
             <div className="absolute top-0 right-0 w-32 h-32 bg-cobalto/15 blur-2xl rounded-full -translate-y-8 translate-x-8 group-hover:bg-cobalto/25 transition-colors" />
 

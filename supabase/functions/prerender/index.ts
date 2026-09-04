@@ -147,7 +147,7 @@ const musicEventLd = (c: any): object => ({
   eventStatus: 'https://schema.org/EventScheduled',
   eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
   url: `${SITE}/concerts/${c.slug}`,
-  image: c.image_url || c.artists?.photo_url || undefined,
+  image: c.artists?.photo_url || undefined,
   description: c.description || `Concierto de ${c.artists?.name || 'música en vivo'}`,
   location: c.venues
     ? {
@@ -246,7 +246,7 @@ Deno.serve(async (req) => {
         title: `${c.title}${city ? ` en ${city}` : ''}: fecha, entradas y setlist | ${SITE_NAME}`,
         description,
         path: `/concerts/${c.slug}`,
-        image: c.image_url || c.artists?.photo_url,
+        image: c.artists?.photo_url ?? undefined,
         jsonLd: [musicEventLd(c)],
         body: `<h1>${esc(c.title)}</h1>
 ${c.artists ? `<p>Artista: <a href="${SITE}/artists/${esc(c.artists.slug)}">${esc(c.artists.name)}</a></p>` : ''}
@@ -584,7 +584,7 @@ ${list.length > 0
         title: `Setlist de ${c.artists?.name || c.title} en ${city} (${c.date}): ${songs.length} canciones | ${SITE_NAME}`,
         description: `Setlist completo del concierto de ${c.artists?.name || c.title} en ${city}: ${songs.length} canciones en orden, verificadas por asistentes.`,
         path: `/${segments.join('/')}`,
-        image: c.image_url || c.artists?.photo_url,
+        image: c.artists?.photo_url ?? undefined,
         jsonLd: [musicEventLd(c)],
         body: `<h1>Setlist: ${esc(c.artists?.name || c.title)} en ${esc(city)}</h1>
 <p>Concierto: <a href="${SITE}/concerts/${esc(c.slug)}">${esc(c.title)}</a> — ${esc(formatDateEs(c.date))}</p>

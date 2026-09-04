@@ -253,7 +253,7 @@ export const QuickCreateArtist = ({ onArtistCreated, initialName }: QuickCreateA
                             <Button
                                 type="submit"
                                 disabled={loading}
-                                className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                                className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
                             >
                                 {loading ? (
                                     <>

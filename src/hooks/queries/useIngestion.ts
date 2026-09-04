@@ -159,8 +159,10 @@ export const useIngestSingleUrl = () => {
         toast.success('Evento ingerido: revísalo en Pendientes');
       } else if (stats?.events_updated) {
         toast.success('Evento actualizado: revísalo en Pendientes');
+      } else if (data?.data?.error) {
+        toast.error(`No se pudo extraer el evento: ${data.data.error}`);
       } else {
-        toast.info('Ese evento ya estaba ingerido o no se pudo extraer');
+        toast.info('Ese evento ya estaba ingerido (no se vuelve a proponer)');
       }
       qc.invalidateQueries({ queryKey: KEYS.all });
     },
@@ -180,11 +182,15 @@ export const useRunSource = () => {
     },
     onSuccess: (data: any) => {
       const stats = data?.data?.stats;
-      toast.success(
-        stats
-          ? `Corrida lista: ${stats.events_new} nuevos, ${stats.events_updated} actualizados`
-          : 'Corrida iniciada',
-      );
+      if (data?.data?.status === 'partial' && data?.data?.error) {
+        toast.warning(`Corrida parcial: ${data.data.error}`);
+      } else {
+        toast.success(
+          stats
+            ? `Corrida lista: ${stats.events_new} nuevos, ${stats.events_updated} actualizados`
+            : 'Corrida iniciada',
+        );
+      }
       qc.invalidateQueries({ queryKey: KEYS.all });
     },
     onError: (error: Error) => toast.error(`Error al ejecutar: ${error.message}`),

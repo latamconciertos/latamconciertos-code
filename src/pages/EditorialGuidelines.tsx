@@ -27,7 +27,7 @@ const EditorialGuidelines = () => {
           </p>
 
           <div className="grid md:grid-cols-2 gap-6 mb-12">
-            <Card className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-colors">
+            <Card className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] transition-colors">
               <CardContent className="pt-6">
                 <div className="w-12 h-12 rounded-full bg-periwinkle/10 flex items-center justify-center mb-4">
                   <CheckCircle2 className="h-6 w-6 text-periwinkle" />
@@ -39,7 +39,7 @@ const EditorialGuidelines = () => {
               </CardContent>
             </Card>
 
-            <Card className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-colors">
+            <Card className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] transition-colors">
               <CardContent className="pt-6">
                 <div className="w-12 h-12 rounded-full bg-periwinkle/10 flex items-center justify-center mb-4">
                   <FileCheck className="h-6 w-6 text-periwinkle" />
@@ -51,7 +51,7 @@ const EditorialGuidelines = () => {
               </CardContent>
             </Card>
 
-            <Card className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-colors">
+            <Card className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] transition-colors">
               <CardContent className="pt-6">
                 <div className="w-12 h-12 rounded-full bg-periwinkle/10 flex items-center justify-center mb-4">
                   <Users className="h-6 w-6 text-periwinkle" />
@@ -63,7 +63,7 @@ const EditorialGuidelines = () => {
               </CardContent>
             </Card>
 
-            <Card className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-colors">
+            <Card className="rounded-[20px] border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] transition-colors">
               <CardContent className="pt-6">
                 <div className="w-12 h-12 rounded-full bg-periwinkle/10 flex items-center justify-center mb-4">
                   <AlertCircle className="h-6 w-6 text-periwinkle" />

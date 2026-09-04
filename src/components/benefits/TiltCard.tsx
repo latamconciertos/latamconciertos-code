@@ -75,7 +75,7 @@ export const TiltCard = ({ level = 'Fan', points = 340, concerts = 7 }: TiltCard
         <div
           className="relative rounded-2xl overflow-hidden shadow-2xl"
           style={{
-            background: 'linear-gradient(135deg, #004aad 0%, #1e40af 40%, #312e81 80%, #4c1d95 100%)',
+            background: 'linear-gradient(135deg, #7516E2 0%, #1e40af 40%, #312e81 80%, #4c1d95 100%)',
             transformStyle: 'preserve-3d',
           }}
         >

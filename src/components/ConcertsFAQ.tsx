@@ -100,7 +100,7 @@ export const ConcertsFAQ = ({ countryName, cityName }: ConcertsFAQProps) => {
                         <AccordionItem
                             key={index}
                             value={`item-${index}`}
-                            className="border border-linea rounded-[20px] px-6 bg-superficie hover:bg-superficie-2 hover:border-[rgba(89,124,255,.35)] transition-all duration-300"
+                            className="border border-linea rounded-[20px] px-6 bg-superficie hover:bg-superficie-2 hover:border-[rgba(231,4,133,.35)] transition-all duration-300"
                         >
                             <AccordionTrigger className="text-left hover:no-underline py-5">
                                 <span className="font-semibold text-base pr-4">

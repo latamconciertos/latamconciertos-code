@@ -365,7 +365,7 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
           <Button
             onClick={() => setShowForm(!showForm)}
             size="sm"
-            className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+            className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
           >
             <Plus className="w-4 h-4 mr-2" />
             Agregar Canción
@@ -722,7 +722,7 @@ export const SetlistManager = ({ concertId, concertTitle, artistName }: SetlistM
                   <Button
                     onClick={handleImportConfirm}
                     disabled={selectedSongs.size === 0}
-                    className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                    className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Importar {selectedSongs.size} {selectedSongs.size === 1 ? 'canción' : 'canciones'}

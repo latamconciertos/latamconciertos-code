@@ -190,7 +190,7 @@ const Blog = () => {
     const readTime = getReadingTime(article.content);
     return (
       <a key={article.id} href={`/blog/${article.slug}`} className="group block focus:outline-none">
-        <Card className="overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] group-hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
+        <Card className="overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] group-hover:-translate-y-1 transition-all duration-300 h-full flex flex-col">
           <div className="relative aspect-[16/10] overflow-hidden bg-superficie-2">
             <img
               src={getArticleImage(article)}
@@ -403,7 +403,7 @@ const Blog = () => {
               >
                 <div className="grid md:grid-cols-12 gap-6 md:gap-10 items-center">
                   <div className="md:col-span-7">
-                    <div className="aspect-[16/10] overflow-hidden rounded-[20px] bg-superficie-2 ring-1 ring-linea group-hover:ring-[rgba(89,124,255,.35)] transition-all duration-300 relative">
+                    <div className="aspect-[16/10] overflow-hidden rounded-[20px] bg-superficie-2 ring-1 ring-linea group-hover:ring-[rgba(231,4,133,.35)] transition-all duration-300 relative">
                       <img
                         src={getArticleImage(featuredArticle)}
                         alt={featuredArticle.title}

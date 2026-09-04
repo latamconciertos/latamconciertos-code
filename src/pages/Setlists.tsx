@@ -9,6 +9,7 @@ import { Music, Calendar, MapPin, Search } from 'lucide-react';
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 import { useSetlistsPage, type ConcertWithSetlist } from '@/hooks/queries';
 import { LoadingSpinnerInline } from '@/components/ui/loading-spinner';
+import { getConcertImage } from '@/lib/concertImage';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -90,7 +91,7 @@ export default function Setlists() {
         "url": `https://www.conciertoslatam.com${generateSetlistUrl(c)}`,
         "performer": c.artist ? { "@type": "MusicGroup", "name": c.artist.name } : undefined,
         "location": c.venue ? { "@type": "MusicVenue", "name": c.venue.name } : undefined,
-        "image": c.image_url || c.artist?.photo_url || undefined,
+        "image": getConcertImage(c, '') || undefined,
       })),
     },
   };
@@ -212,7 +213,7 @@ export default function Setlists() {
             {/* Setlists list — setlist.fm / Songkick pattern */}
             <div className="max-w-4xl mx-auto divide-y divide-linea border-y border-linea">
               {paginatedConcerts.map((concert) => {
-                const imageUrl = concert.artist?.photo_url || concert.image_url || getDefaultImage();
+                const imageUrl = getConcertImage(concert, getDefaultImage());
                 const hasSetlist = concert.setlist_count > 0;
                 const dateObj = concert.date ? new Date(concert.date) : null;
                 const day = dateObj ? dateObj.getDate().toString() : '—';

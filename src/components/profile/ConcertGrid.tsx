@@ -3,6 +3,7 @@ import { Calendar, Music, MapPin, ExternalLink } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import type { ProfileConcert } from '@/hooks/queries/useProfileConcerts';
+import { getConcertImage } from '@/lib/concertImage';
 
 interface ConcertGridProps {
   concerts: ProfileConcert[];
@@ -46,7 +47,7 @@ const ConcertGrid = ({ concerts, emptyMessage, emptyIcon = 'calendar' }: Concert
     <div className="space-y-2">
       {concerts.map((concert) => {
         const dateInfo = concert.date ? formatShortDate(concert.date) : null;
-        const imageUrl = concert.image_url || concert.artist?.photo_url;
+        const imageUrl = getConcertImage(concert, '');
         const venueName = concert.venue?.name;
         const cityName = concert.venue?.city?.name;
         const locationStr = [venueName, cityName].filter(Boolean).join(' · ');
@@ -54,7 +55,7 @@ const ConcertGrid = ({ concerts, emptyMessage, emptyIcon = 'calendar' }: Concert
         return (
           <Card
             key={concert.id}
-            className="overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] transition-colors cursor-pointer"
+            className="overflow-hidden rounded-[20px] border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] transition-colors cursor-pointer"
             onClick={() => navigate(`/concerts/${concert.slug}`)}
           >
             <CardContent className="p-0">

@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
 
     const { data: concerts, error } = await supabase
       .from('concerts')
-      .select('slug, date, updated_at, title, image_url, event_type')
+      .select('slug, date, updated_at, title, event_type, artists(photo_url)')
       .gte('date', eighteenMonthsAgoStr)
       .not('slug', 'is', null)
       .not('title', 'is', null)
@@ -54,9 +54,12 @@ Deno.serve(async (req) => {
       const priority = isUpcoming ? '0.9' : '0.6';
       const changefreq = isUpcoming ? 'daily' : 'monthly';
       
-      const imageTag = concert.image_url ? `
+      // Solo la foto del artista: `image_url` guarda el afiche de la tiquetera y Google
+      // no puede rastrearlo porque la fuente bloquea el hotlink.
+      const artistPhoto = (concert as any).artists?.photo_url;
+      const imageTag = artistPhoto ? `
     <image:image>
-      <image:loc>${escapeXml(concert.image_url)}</image:loc>
+      <image:loc>${escapeXml(artistPhoto)}</image:loc>
       <image:title>${escapeXml(concert.title)}</image:title>
     </image:image>` : '';
       

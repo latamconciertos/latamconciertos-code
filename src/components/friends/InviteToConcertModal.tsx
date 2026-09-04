@@ -98,9 +98,9 @@ export function InviteToConcertModal({
                     />
                     
                     <div className="flex gap-3 flex-1 min-w-0">
-                      {concert.image_url ? (
+                      {concert.artists?.photo_url ? (
                         <img
-                          src={concert.image_url}
+                          src={concert.artists.photo_url}
                           alt={concert.title}
                           className="h-12 w-12 rounded object-cover shrink-0"
                           decoding="async"

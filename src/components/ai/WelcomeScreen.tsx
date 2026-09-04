@@ -41,7 +41,7 @@ const WelcomeScreen = ({ userName, onCreateConversation, isDisabled, onOpenSideb
             onClick={onCreateConversation}
             size="lg"
             disabled={isDisabled}
-            className="px-8 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+            className="px-8 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
           >
             <Plus className="h-5 w-5 mr-2" />
             Iniciar conversación

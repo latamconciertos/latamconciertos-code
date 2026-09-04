@@ -429,7 +429,7 @@ export const TicketPriceExtractor = ({
                 <div className="flex gap-2 pt-2">
                   <Button
                     onClick={handleSave}
-                    className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                    className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
                     type="button"
                   >
                     Guardar Precios
@@ -593,7 +593,7 @@ export const TicketPriceExtractor = ({
               {isNewsMode && (
                 <Button
                   onClick={handleInsert}
-                  className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                  className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
                 >
                   Insertar en Noticia
                 </Button>
@@ -601,7 +601,7 @@ export const TicketPriceExtractor = ({
               {isSaveMode && (
                 <Button
                   onClick={handleSave}
-                  className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                  className="flex-1 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
                 >
                   Guardar Precios
                 </Button>

@@ -19,6 +19,7 @@ export const queryKeys = {
     details: () => [...queryKeys.concerts.all, 'detail'] as const,
     detail: (slug: string) => [...queryKeys.concerts.details(), slug] as const,
     byArtist: (artistId: string, status?: string) => [...queryKeys.concerts.all, 'byArtist', artistId, status] as const,
+    artistImages: (concertIds: string[]) => [...queryKeys.concerts.all, 'artistImages', concertIds] as const,
   },
 
   // Festivals

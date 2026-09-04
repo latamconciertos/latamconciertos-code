@@ -29,7 +29,7 @@ export const ConcertsCountryGrid = () => {
               to={`/conciertos/${country.slug}`}
               className="group"
             >
-              <Card className="overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:bg-superficie-2 hover:-translate-y-1 transition-all duration-300">
+              <Card className="overflow-hidden rounded-[20px] border border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] hover:bg-superficie-2 hover:-translate-y-1 transition-all duration-300">
                 <CardContent className="p-4 text-center">
                   <div className="text-4xl mb-2 group-hover:scale-110 transition-transform duration-300">
                     {country.flag}

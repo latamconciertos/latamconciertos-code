@@ -57,7 +57,7 @@ export const NewHomeFeaturedArtists = () => {
                             className="group flex-shrink-0 flex flex-col items-center gap-2"
                         >
                             <div className="relative">
-                                <div className="w-[76px] h-[76px] rounded-full overflow-hidden ring-1 ring-linea group-hover:ring-2 group-hover:ring-periwinkle transition-all p-0.5">
+                                <div className="w-[76px] h-[76px] rounded-full overflow-hidden ring-1 ring-linea group-hover:ring-2 group-hover:ring-fucsia transition-all p-0.5">
                                     <img
                                         src={artist.photo_url || getDefaultImage()}
                                         alt={artist.name}

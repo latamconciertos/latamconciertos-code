@@ -89,7 +89,7 @@ export const NewsAdminNew = () => {
         <Button
           onClick={() => navigate('/admin/news/new')}
           size="lg"
-          className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+          className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
         >
           <Plus className="h-4 w-4 mr-2" />
           Crear Artículo

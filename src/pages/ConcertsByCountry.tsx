@@ -121,14 +121,13 @@ const ConcertsByCountry = () => {
       
       if (concertsError) throw concertsError;
       
-      // Prefer artist photo, fallback to Spotify image, then concert poster
+      // La portada es la foto del artista; nunca el afiche de la tiquetera de `image_url`
       const enriched = await Promise.all(
         (concertsData || []).map(async (concert) => {
           let artistImage: string | null = concert.artists?.photo_url || null;
           if (!artistImage && concert.artists?.name) {
             artistImage = await spotifyService.getArtistImage(concert.artists.name);
           }
-          if (!artistImage) artistImage = concert.image_url;
           return { ...concert, artist_image_url: artistImage };
         })
       );
@@ -370,7 +369,7 @@ const ConcertsByCountry = () => {
         to={`/concerts/${concert.slug}`}
         className="group block focus:outline-none"
       >
-        <div className="relative aspect-[4/5] sm:aspect-[3/4] overflow-hidden rounded-[20px] bg-superficie-2 ring-1 ring-linea group-hover:ring-[rgba(89,124,255,.5)] group-hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300">
+        <div className="relative aspect-[4/5] sm:aspect-[3/4] overflow-hidden rounded-[20px] bg-superficie-2 ring-1 ring-linea group-hover:ring-[rgba(231,4,133,.5)] group-hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300">
           <img
             src={concert.artist_image_url || '/placeholder.svg'}
             alt={`${concert.artists?.name || concert.title} en ${concert.venues?.cities?.name || countryInfo.name}`}
@@ -519,7 +518,7 @@ const ConcertsByCountry = () => {
                 <Collapsible open={isPastConcertsOpen} onOpenChange={setIsPastConcertsOpen}>
                   <CollapsibleTrigger asChild>
                     <button
-                      className="w-full flex items-center justify-between py-4 border-y border-linea hover:border-[rgba(89,124,255,.35)] transition-colors group mb-4"
+                      className="w-full flex items-center justify-between py-4 border-y border-linea hover:border-[rgba(231,4,133,.35)] transition-colors group mb-4"
                       aria-labelledby="past-concerts"
                     >
                       <div className="flex items-center gap-3">
@@ -598,7 +597,7 @@ const ConcertsByCountry = () => {
                     key={city.slug}
                     to={`/concerts?city=${city.slug}`}
                     aria-label={`Conciertos en ${city.name}, ${countryInfo.name}`}
-                    className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(89,124,255,.35)] transition-colors"
+                    className="group inline-flex items-center gap-2 px-4 py-2 rounded-full bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(231,4,133,.35)] transition-colors"
                   >
                     <span className="text-[11px] font-bold uppercase tracking-[0.15em]">
                       {city.name}
@@ -718,7 +717,7 @@ const ConcertsByCountry = () => {
                   <Link
                     key={slug}
                     to={`/conciertos/${slug}`}
-                    className="px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(89,124,255,.35)] transition-colors"
+                    className="px-4 py-2 rounded-full text-[11px] font-bold uppercase tracking-[0.15em] bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(231,4,133,.35)] transition-colors"
                   >
                     {data.name}
                   </Link>

@@ -38,7 +38,7 @@ const ChatMessageList = ({ messages, isLoading, onSuggestionClick, messagesEndRe
                     <Button
                       key={index}
                       variant="outline"
-                      className="text-left justify-start h-auto py-3 px-4 rounded-2xl bg-superficie border-linea text-texto-2 hover:text-texto hover:bg-superficie-2 hover:border-[rgba(89,124,255,.35)]"
+                      className="text-left justify-start h-auto py-3 px-4 rounded-2xl bg-superficie border-linea text-texto-2 hover:text-texto hover:bg-superficie-2 hover:border-[rgba(231,4,133,.35)]"
                       onClick={() => onSuggestionClick(suggestion)}
                       disabled={isLoading}
                     >
@@ -57,7 +57,7 @@ const ChatMessageList = ({ messages, isLoading, onSuggestionClick, messagesEndRe
                 >
                   <div
                     className={`max-w-[80%] rounded-2xl px-4 py-3 ${message.role === 'user'
-                      ? 'bg-superficie-2 border border-[rgba(89,124,255,.25)] text-texto'
+                      ? 'bg-superficie-2 border border-[rgba(231,4,133,.25)] text-texto'
                       : 'bg-superficie border border-linea'
                       }`}
                   >

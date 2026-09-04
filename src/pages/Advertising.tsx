@@ -308,7 +308,7 @@ const Advertising = () => {
                 {PRODUCTS.map((product) => (
                   <div
                     key={product.slug}
-                    className="rounded-[20px] border border-linea bg-superficie p-6 hover:border-[rgba(89,124,255,.35)] transition-colors"
+                    className="rounded-[20px] border border-linea bg-superficie p-6 hover:border-[rgba(231,4,133,.35)] transition-colors"
                   >
                     <div className="w-12 h-12 rounded-full bg-periwinkle/10 flex items-center justify-center mb-4">
                       <product.icon className="h-6 w-6 text-periwinkle" />
@@ -494,7 +494,7 @@ const Advertising = () => {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-12 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(0,74,173,.55)]"
+                    className="w-full h-12 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(117,22,226,.6)]"
                   >
                     <Send className="h-4 w-4 mr-2" />
                     {loading ? 'Enviando...' : 'Enviar solicitud'}

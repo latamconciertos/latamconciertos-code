@@ -31,6 +31,7 @@ export interface SetlistConcert {
   artist: {
     name: string;
     slug: string;
+    photo_url: string | null;
   } | null;
   venue: {
     name: string;
@@ -72,7 +73,7 @@ export function useSetlistConcert(
           slug,
           date,
           image_url,
-          artist:artists(name, slug),
+          artist:artists(name, slug, photo_url),
           venue:venues(name, location, city:cities(slug))
         `)
         .eq('slug', concertSlug)

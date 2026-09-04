@@ -97,7 +97,7 @@ export const FeatureCards = () => {
             <section className="w-full py-12 md:py-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
-                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-periwinkle mx-auto"></div>
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-fucsia mx-auto"></div>
                     </div>
                 </div>
             </section>
@@ -124,7 +124,7 @@ export const FeatureCards = () => {
                             viewport={{ once: true }}
                             transition={{ duration: 0.6, delay: index * 0.1 }}
                         >
-                            <Card className="h-full rounded-[20px] border-linea bg-superficie hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300">
+                            <Card className="h-full rounded-[20px] border-linea bg-superficie hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300">
                                 <CardHeader className="pb-3">
                                     <div className="flex items-center justify-between mb-2">
                                         <CardTitle className="font-display text-2xl font-extrabold uppercase tracking-[0.01em] text-texto">
@@ -137,9 +137,9 @@ export const FeatureCards = () => {
                                             aria-label={expandedCards[category.id] ? "Colapsar" : "Expandir"}
                                         >
                                             {expandedCards[category.id] ? (
-                                                <ChevronUp className="h-5 w-5 text-periwinkle" />
+                                                <ChevronUp className="h-5 w-5 text-fucsia" />
                                             ) : (
-                                                <ChevronDown className="h-5 w-5 text-periwinkle" />
+                                                <ChevronDown className="h-5 w-5 text-fucsia" />
                                             )}
                                         </button>
                                     </div>
@@ -179,7 +179,7 @@ export const FeatureCards = () => {
                                                                         <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
                                                                     </div>
                                                                 )}
-                                                                <h3 className="font-bold text-base text-foreground leading-tight line-clamp-2 group-hover:text-periwinkle transition-colors mb-2">
+                                                                <h3 className="font-bold text-base text-foreground leading-tight line-clamp-2 group-hover:text-fucsia transition-colors mb-2">
                                                                     {category.articles[0].title}
                                                                 </h3>
                                                                 {category.articles[0].meta_description && (
@@ -199,7 +199,7 @@ export const FeatureCards = () => {
                                                                     to={`/blog/${article.slug}`}
                                                                     className="block group border-t border-border pt-3"
                                                                 >
-                                                                    <h4 className="font-semibold text-sm text-foreground leading-tight line-clamp-2 group-hover:text-periwinkle transition-colors mb-1">
+                                                                    <h4 className="font-semibold text-sm text-foreground leading-tight line-clamp-2 group-hover:text-fucsia transition-colors mb-1">
                                                                         {article.title}
                                                                     </h4>
                                                                     <p className="text-xs text-muted-foreground">
@@ -211,7 +211,7 @@ export const FeatureCards = () => {
                                                             {/* View all link */}
                                                             <Link
                                                                 to={`/blog?category=${category.slug}`}
-                                                                className="flex items-center gap-2 text-sm font-semibold text-periwinkle hover:text-azul-claro transition-colors pt-2"
+                                                                className="flex items-center gap-2 text-sm font-semibold text-fucsia hover:text-fucsia/80 transition-colors pt-2"
                                                             >
                                                                 Ver todas en {category.name}
                                                                 <ArrowRight className="h-4 w-4" />
@@ -248,7 +248,7 @@ export const FeatureCards = () => {
                                                                 <div className="absolute inset-0 bg-gradient-to-t from-background/50 to-transparent" />
                                                             </div>
                                                         )}
-                                                        <h3 className="font-bold text-base text-foreground leading-tight line-clamp-2 group-hover:text-periwinkle transition-colors mb-2">
+                                                        <h3 className="font-bold text-base text-foreground leading-tight line-clamp-2 group-hover:text-fucsia transition-colors mb-2">
                                                             {category.articles[0].title}
                                                         </h3>
                                                         {category.articles[0].meta_description && (
@@ -268,7 +268,7 @@ export const FeatureCards = () => {
                                                             to={`/blog/${article.slug}`}
                                                             className="block group border-t border-border pt-3"
                                                         >
-                                                            <h4 className="font-semibold text-sm text-foreground leading-tight line-clamp-2 group-hover:text-periwinkle transition-colors mb-1">
+                                                            <h4 className="font-semibold text-sm text-foreground leading-tight line-clamp-2 group-hover:text-fucsia transition-colors mb-1">
                                                                 {article.title}
                                                             </h4>
                                                             <p className="text-xs text-muted-foreground">
@@ -280,7 +280,7 @@ export const FeatureCards = () => {
                                                     {/* View all link */}
                                                     <Link
                                                         to={`/blog?category=${category.slug}`}
-                                                        className="flex items-center gap-2 text-sm font-semibold text-periwinkle hover:text-azul-claro transition-colors pt-2"
+                                                        className="flex items-center gap-2 text-sm font-semibold text-fucsia hover:text-fucsia/80 transition-colors pt-2"
                                                     >
                                                         Ver todas en {category.name}
                                                         <ArrowRight className="h-4 w-4" />

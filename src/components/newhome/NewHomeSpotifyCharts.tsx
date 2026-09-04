@@ -75,7 +75,7 @@ export const NewHomeSpotifyCharts = () => {
                             if (c) setSelectedCountry(c);
                         }}
                     >
-                        <SelectTrigger className="w-52 h-10 text-sm rounded-full border-linea bg-superficie focus:ring-periwinkle">
+                        <SelectTrigger className="w-52 h-10 text-sm rounded-full border-linea bg-superficie focus:ring-fucsia">
                             <SelectValue>
                                 <span className="flex items-center gap-2">
                                     <span>{selectedCountry.flag}</span>
@@ -102,14 +102,14 @@ export const NewHomeSpotifyCharts = () => {
                     <TabsList className="w-fit h-10 p-1 rounded-full bg-superficie border border-linea">
                         <TabsTrigger
                             value="tracks"
-                            className="text-xs sm:text-sm gap-1.5 px-4 rounded-full text-texto-2 data-[state=active]:bg-[linear-gradient(95deg,#004AAD,#597CFF)] data-[state=active]:text-white data-[state=active]:shadow-[0_8px_32px_rgba(0,74,173,.4)]"
+                            className="text-xs sm:text-sm gap-1.5 px-4 rounded-full text-texto-2 data-[state=active]:bg-[linear-gradient(95deg,#7516E2,#E70485)] data-[state=active]:text-white data-[state=active]:shadow-[0_8px_32px_rgba(117,22,226,.45)]"
                         >
                             <Music2 className="w-3.5 h-3.5" />
                             Canciones
                         </TabsTrigger>
                         <TabsTrigger
                             value="artists"
-                            className="text-xs sm:text-sm gap-1.5 px-4 rounded-full text-texto-2 data-[state=active]:bg-[linear-gradient(95deg,#004AAD,#597CFF)] data-[state=active]:text-white data-[state=active]:shadow-[0_8px_32px_rgba(0,74,173,.4)]"
+                            className="text-xs sm:text-sm gap-1.5 px-4 rounded-full text-texto-2 data-[state=active]:bg-[linear-gradient(95deg,#7516E2,#E70485)] data-[state=active]:text-white data-[state=active]:shadow-[0_8px_32px_rgba(117,22,226,.45)]"
                         >
                             <TrendingUp className="w-3.5 h-3.5" />
                             Artistas

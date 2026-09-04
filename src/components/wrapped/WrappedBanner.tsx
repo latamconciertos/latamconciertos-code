@@ -29,9 +29,9 @@ export const WrappedBanner = () => {
           <motion.div
             whileHover={{ y: -4 }}
             whileTap={{ scale: 0.98 }}
-            className="relative overflow-hidden rounded-[20px] border border-linea p-6 sm:p-8 shadow-[0_8px_32px_rgba(0,74,173,.4)] cursor-pointer"
+            className="relative overflow-hidden rounded-[20px] border border-linea p-6 sm:p-8 shadow-[0_8px_32px_rgba(117,22,226,.45)] cursor-pointer"
             style={{
-              background: `linear-gradient(95deg, ${banner.bg_color_from || '#004AAD'}, ${banner.bg_color_to || '#597CFF'})`,
+              background: `linear-gradient(95deg, ${banner.bg_color_from || '#7516E2'}, ${banner.bg_color_to || '#E70485'})`,
             }}
           >
             {/* Subtle animated glow */}

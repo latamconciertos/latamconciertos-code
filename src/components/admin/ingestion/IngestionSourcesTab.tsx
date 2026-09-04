@@ -156,7 +156,7 @@ export const IngestionSourcesTab = () => {
         <Button
           onClick={handleSingleUrl}
           disabled={singleUrlIngest.isPending || !eventUrl.trim()}
-          className="h-9 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] px-4 text-xs font-semibold text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+          className="h-9 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] px-4 text-xs font-semibold text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
         >
           {singleUrlIngest.isPending ? (
             <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />

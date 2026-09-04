@@ -49,7 +49,7 @@ export const ConcertCard = memo(({ concert, isPast = false }: ConcertCardProps) 
 
   return (
     <Card
-      className={`group relative overflow-hidden rounded-[20px] border border-linea bg-superficie-2 aspect-[4/5] sm:aspect-[3/4] hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 concert-card h-full ${isPast ? 'opacity-75' : ''}`}
+      className={`group relative overflow-hidden rounded-[20px] border border-linea bg-superficie-2 aspect-[4/5] sm:aspect-[3/4] hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] hover:-translate-y-1 transition-all duration-300 concert-card h-full ${isPast ? 'opacity-75' : ''}`}
     >
       {/* Hidden SEO metadata */}
       <meta itemProp="name" content={concert.title} />
@@ -115,7 +115,7 @@ export const ConcertCard = memo(({ concert, isPast = false }: ConcertCardProps) 
 
         {/* Ticket CTA */}
         {!isPast && concert.ticket_url && (
-          <Button asChild size="sm" className="relative z-[2] w-full h-9 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] px-3.5 text-xs font-semibold text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95 group/btn">
+          <Button asChild size="sm" className="relative z-[2] w-full h-9 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] px-3.5 text-xs font-semibold text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95 group/btn">
             <a
               href={withTicketTracking(concert.ticket_url)}
               target="_blank"

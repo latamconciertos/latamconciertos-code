@@ -45,7 +45,7 @@ export const NewHomeFeaturedImages = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-center h-64">
                         <div className="flex flex-col items-center gap-4">
-                            <div className="w-12 h-12 border-4 border-periwinkle/30 border-t-periwinkle rounded-full animate-spin" />
+                            <div className="w-12 h-12 border-4 border-fucsia/30 border-t-fucsia rounded-full animate-spin" />
                             <p className="text-texto-2 animate-pulse">Cargando galería...</p>
                         </div>
                     </div>
@@ -80,7 +80,7 @@ export const NewHomeFeaturedImages = () => {
                                 className="break-inside-avoid group cursor-pointer"
                                 onClick={() => setSelectedImage(image)}
                             >
-                                <div className="relative overflow-hidden rounded-[20px] border border-linea group-hover:border-[rgba(89,124,255,.35)] group-hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-500">
+                                <div className="relative overflow-hidden rounded-[20px] border border-linea group-hover:border-[rgba(231,4,133,.35)] group-hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-500">
                                     {/* Image */}
                                     <img
                                         src={image.image_url}
@@ -98,7 +98,7 @@ export const NewHomeFeaturedImages = () => {
                                     {/* Zoom Icon */}
                                     <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                         <div className="w-10 h-10 rounded-full border border-linea bg-noche/80 backdrop-blur-sm flex items-center justify-center">
-                                            <ZoomIn className="h-5 w-5 text-periwinkle" />
+                                            <ZoomIn className="h-5 w-5 text-fucsia" />
                                         </div>
                                     </div>
 

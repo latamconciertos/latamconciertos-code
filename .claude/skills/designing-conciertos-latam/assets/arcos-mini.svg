@@ -1,0 +1,5 @@
+<svg width="400" height="170" viewBox="0 0 400 170" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="pointer-events:none">
+  <!-- Versión secundaria: 2 arcos, fucsia arriba y naranja tocando el horizonte -->
+  <path d="M -20 170 A 220 150 0 0 1 420 170" stroke="#E70485" stroke-width="2" opacity=".3"/>
+  <path d="M 60 170 A 140 90 0 0 1 340 170" stroke="#FE670C" stroke-width="2" opacity=".28"/>
+</svg>

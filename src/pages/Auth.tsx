@@ -144,7 +144,7 @@ const Auth = () => {
       <div
         className="absolute left-1/2 top-[30%] h-[420px] w-[min(760px,90vw)] -translate-x-1/2 -translate-y-1/2 rounded-full pointer-events-none"
         style={{
-          background: 'radial-gradient(closest-side, rgba(0,74,173,.45), transparent 70%)',
+          background: 'radial-gradient(closest-side, rgba(117,22,226,.45), transparent 70%)',
           filter: 'blur(110px)'
         }}
       />
@@ -238,7 +238,7 @@ const Auth = () => {
               </div>
               <Button
                 type="submit"
-                className="w-full h-11 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(0,74,173,.55)]"
+                className="w-full h-11 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_40px_rgba(117,22,226,.6)]"
                 disabled={loading}
               >
                 {loading ? 'Cargando...' : (isLogin ? 'Iniciar sesión' : 'Unirme gratis')}

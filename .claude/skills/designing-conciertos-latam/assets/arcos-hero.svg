@@ -1,0 +1,8 @@
+<svg width="1600" height="620" viewBox="0 0 1600 620" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="pointer-events:none">
+  <!-- Arcos del estadio encendido: morado arriba → violeta y fucsia al centro → naranja tocando el horizonte -->
+  <path d="M -250 620 A 1050 600 0 0 1 1850 620" stroke="#7516E2" stroke-width="2" opacity=".16"/>
+  <path d="M -120 620 A 920 520 0 0 1 1720 620" stroke="#7516E2" stroke-width="2" opacity=".3"/>
+  <path d="M 10 620 A 790 430 0 0 1 1590 620" stroke="#AB0DC4" stroke-width="2" opacity=".3"/>
+  <path d="M 140 620 A 660 340 0 0 1 1460 620" stroke="#E70485" stroke-width="2" opacity=".34"/>
+  <path d="M 270 620 A 530 250 0 0 1 1330 620" stroke="#FE670C" stroke-width="2" opacity=".3"/>
+</svg>

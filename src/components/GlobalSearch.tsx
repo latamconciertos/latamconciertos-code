@@ -25,7 +25,7 @@ interface SearchResults {
     date: string | null;
     venue_name?: string;
     artist_name?: string;
-    image_url?: string | null;
+    artist_photo_url?: string | null;
   }>;
   news: Array<{
     id: string;
@@ -107,7 +107,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
             ? supabase.from("artists").select("id, name, slug, photo_url").ilike("name", term).abortSignal(ac.signal).limit(5)
             : { data: null },
           should("concerts")
-            ? supabase.from("concerts").select("id, title, slug, date, image_url, venues(name), artists(name)").or(`title.ilike.${term}`).abortSignal(ac.signal).order("date", { ascending: true }).limit(5)
+            ? supabase.from("concerts").select("id, title, slug, date, venues(name), artists(name, photo_url)").or(`title.ilike.${term}`).abortSignal(ac.signal).order("date", { ascending: true }).limit(5)
             : { data: null },
           should("news")
             ? supabase.from("news_articles").select("id, title, slug, published_at, cover_image").eq("status", "published").ilike("title", term).abortSignal(ac.signal).order("published_at", { ascending: false }).limit(5)
@@ -119,7 +119,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
 
         setResults({
           artists: (a.data as any) || [],
-          concerts: (c.data as any)?.map((x: any) => ({ id: x.id, title: x.title, slug: x.slug, date: x.date, image_url: x.image_url, venue_name: x.venues?.name, artist_name: x.artists?.name })) || [],
+          concerts: (c.data as any)?.map((x: any) => ({ id: x.id, title: x.title, slug: x.slug, date: x.date, artist_photo_url: x.artists?.photo_url, venue_name: x.venues?.name, artist_name: x.artists?.name })) || [],
           news: (n.data as any) || [],
           people: (p.data as any)?.map((x: any) => ({ id: x.id, username: x.username, first_name: x.first_name, last_name: x.last_name, avatar_url: x.avatar_url, country_name: x.countries?.name })) || [],
         });
@@ -183,7 +183,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Buscar..."
-                className="w-full h-10 pl-10 pr-9 rounded-full bg-superficie text-sm border border-linea outline-none focus:ring-2 focus:ring-periwinkle placeholder:text-texto-2/60"
+                className="w-full h-10 pl-10 pr-9 rounded-full bg-superficie text-sm border border-linea outline-none focus:ring-2 focus:ring-fucsia placeholder:text-texto-2/60"
               />
               {searchQuery && (
                 <button onClick={() => setSearchQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors">
@@ -191,7 +191,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
                 </button>
               )}
             </div>
-            <button onClick={handleClose} className="text-sm font-medium text-periwinkle hover:text-azul-claro transition-colors flex-shrink-0">
+            <button onClick={handleClose} className="text-sm font-medium text-fucsia hover:text-fucsia/80 transition-colors flex-shrink-0">
               Cancelar
             </button>
           </div>
@@ -208,8 +208,8 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
                   className={cn(
                     "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors flex-shrink-0",
                     active
-                      ? "border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)]"
-                      : "bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(89,124,255,.35)]"
+                      ? "border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)]"
+                      : "bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-[rgba(231,4,133,.35)]"
                   )}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -249,7 +249,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
             <Section title="Artistas">
               {results.artists.map(a => (
                 <ResultRow key={a.id} onClick={() => goTo(`/artists/${a.slug}`)}>
-                  <Thumbnail src={a.photo_url} fallback={<Mic2 className="h-5 w-5 text-periwinkle" />} round />
+                  <Thumbnail src={a.photo_url} fallback={<Mic2 className="h-5 w-5 text-fucsia" />} round />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-foreground truncate">{a.name}</p>
                     <p className="text-xs text-muted-foreground">Artista</p>
@@ -264,7 +264,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
             <Section title="Conciertos">
               {results.concerts.map(c => (
                 <ResultRow key={c.id} onClick={() => goTo(`/concerts/${c.slug}`)}>
-                  <Thumbnail src={c.image_url} fallback={<Music2 className="h-5 w-5 text-periwinkle" />} />
+                  <Thumbnail src={c.artist_photo_url} fallback={<Music2 className="h-5 w-5 text-fucsia" />} />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-foreground truncate">{c.title}</p>
                     <p className="text-xs text-muted-foreground truncate">
@@ -281,7 +281,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
             <Section title="Noticias">
               {results.news.map(n => (
                 <ResultRow key={n.id} onClick={() => goTo(`/blog/${n.slug}`)}>
-                  <Thumbnail src={n.cover_image} fallback={<BookOpen className="h-5 w-5 text-periwinkle" />} />
+                  <Thumbnail src={n.cover_image} fallback={<BookOpen className="h-5 w-5 text-fucsia" />} />
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-foreground line-clamp-1">{n.title}</p>
                     <p className="text-xs text-muted-foreground">{n.published_at ? formatDisplayDate(n.published_at) : ""}</p>
@@ -300,7 +300,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
                 return (
                   <div key={p.id} className="flex items-center gap-3 py-2.5 px-1 rounded-xl hover:bg-superficie transition-colors">
                     <button onClick={() => goTo(`/profile/${p.username || p.id}`)} className="flex items-center gap-3 flex-1 min-w-0 text-left">
-                      <Thumbnail src={p.avatar_url} fallback={<Users className="h-5 w-5 text-periwinkle" />} round />
+                      <Thumbnail src={p.avatar_url} fallback={<Users className="h-5 w-5 text-fucsia" />} round />
                       <div className="min-w-0">
                         <p className="text-sm font-medium text-foreground truncate">{name}</p>
                         <p className="text-xs text-muted-foreground truncate">
@@ -314,7 +314,7 @@ export const GlobalSearch = ({ open, onOpenChange }: GlobalSearchProps) => {
                         size="sm"
                         className={cn(
                           "h-8 rounded-full text-xs gap-1.5 flex-shrink-0",
-                          !sent && "border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white hover:opacity-95"
+                          !sent && "border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white hover:opacity-95"
                         )}
                         disabled={sendingRequest === p.id || sent}
                         onClick={() => handleAddFriend(p.id)}

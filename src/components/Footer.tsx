@@ -16,11 +16,11 @@ const TikTokIcon = ({ className }: { className?: string }) => (
 
 const Footer = () => {
   return (
-    <footer className="relative bg-[#070D1F] text-[#F2F5FC] border-t border-[rgba(131,180,255,.12)] overflow-hidden">
-      {/* Glows de cobalto, nunca color plano */}
+    <footer className="relative bg-[#070D1F] text-[#FFFFFF] border-t border-[rgba(231,4,133,.2)] overflow-hidden">
+      {/* Glows de morado y fucsia, nunca color plano */}
       <div className="absolute inset-0 opacity-10 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#004AAD] rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#597CFF] rounded-full blur-3xl"></div>
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-[#7516E2] rounded-full blur-3xl"></div>
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[#E70485] rounded-full blur-3xl"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-12 md:py-16">
@@ -55,9 +55,9 @@ const Footer = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="group w-9 h-9 bg-superficie rounded-full flex items-center justify-center hover:bg-superficie-2 border border-linea hover:border-periwinkle/40 transition-all duration-300"
+                  className="group w-9 h-9 bg-superficie rounded-full flex items-center justify-center hover:bg-superficie-2 border border-linea hover:border-fucsia/40 transition-all duration-300"
                 >
-                  <Icon className="h-4 w-4 text-texto-2 group-hover:text-periwinkle transition-colors" />
+                  <Icon className="h-4 w-4 text-texto-2 group-hover:text-fucsia transition-colors" />
                 </a>
               ))}
             </div>
@@ -100,8 +100,8 @@ const Footer = () => {
         {/* Conciertos por País */}
         <div className="relative py-7 md:py-8 mb-7 md:mb-8 border-t border-linea">
           <div className="flex items-center gap-2 mb-4 md:mb-5">
-            <MapPin className="h-3.5 w-3.5 text-periwinkle" />
-            <h4 className="text-[10px] sm:text-[11px] font-bold text-azul-claro uppercase tracking-[0.18em]">
+            <MapPin className="h-3.5 w-3.5 text-fucsia" />
+            <h4 className="text-[10px] sm:text-[11px] font-bold text-fucsia uppercase tracking-[0.18em]">
               Conciertos por país
             </h4>
           </div>
@@ -128,7 +128,7 @@ const Footer = () => {
                 key={c.slug}
                 href={`/conciertos/${c.slug}`}
                 aria-label={`Conciertos en ${c.name}`}
-                className="px-3 py-2 text-center rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.1em] sm:tracking-[0.12em] bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-periwinkle/40 hover:bg-superficie-2 transition-colors truncate"
+                className="px-3 py-2 text-center rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.1em] sm:tracking-[0.12em] bg-superficie border border-linea text-texto-2 hover:text-texto hover:border-fucsia/40 hover:bg-superficie-2 transition-colors truncate"
               >
                 {c.name}
               </a>
@@ -143,11 +143,11 @@ const Footer = () => {
               &copy; {new Date().getFullYear()} Conciertos Latam · Hecho con amor por la música en vivo.
             </p>
             <div className="flex flex-wrap justify-center gap-x-3 sm:gap-x-4 gap-y-1 text-[11px] md:text-xs text-texto-2/80">
-              <a href="/privacy" className="hover:text-periwinkle transition-colors">Privacidad</a>
+              <a href="/privacy" className="hover:text-fucsia transition-colors">Privacidad</a>
               <span className="text-texto-2/40" aria-hidden="true">·</span>
-              <a href="/terms" className="hover:text-periwinkle transition-colors">Términos</a>
+              <a href="/terms" className="hover:text-fucsia transition-colors">Términos</a>
               <span className="text-texto-2/40" aria-hidden="true">·</span>
-              <a href="mailto:latamconciertos@gmail.com" className="hover:text-periwinkle transition-colors">Contacto</a>
+              <a href="mailto:latamconciertos@gmail.com" className="hover:text-fucsia transition-colors">Contacto</a>
             </div>
           </div>
         </div>
@@ -164,11 +164,11 @@ interface FooterColumnProps {
 function FooterColumn({ title, items }: FooterColumnProps) {
   return (
     <div>
-      <h4 className="text-azul-claro font-bold mb-4 text-[11px] sm:text-xs uppercase tracking-[0.18em] relative inline-block">
+      <h4 className="text-fucsia font-bold mb-4 text-[11px] sm:text-xs uppercase tracking-[0.18em] relative inline-block">
         {title}
         <span
           aria-hidden="true"
-          className="absolute -bottom-1.5 left-0 w-6 h-0.5 bg-verde"
+          className="absolute -bottom-1.5 left-0 w-6 h-0.5 bg-[linear-gradient(92deg,#7516E2,#AB0DC4,#E70485,#FE670C)]"
         />
       </h4>
       <ul className="space-y-2.5">
@@ -176,14 +176,14 @@ function FooterColumn({ title, items }: FooterColumnProps) {
           <li key={item.href}>
             <a
               href={item.href}
-              className="text-texto-2 hover:text-periwinkle transition-colors text-sm flex items-center gap-2 group"
+              className="text-texto-2 hover:text-fucsia transition-colors text-sm flex items-center gap-2 group"
             >
               {item.icon ? (
-                <span className="text-texto-2/70 group-hover:text-periwinkle transition-colors">
+                <span className="text-texto-2/70 group-hover:text-fucsia transition-colors">
                   {item.icon}
                 </span>
               ) : (
-                <span className="w-0 group-hover:w-1.5 h-0.5 bg-periwinkle transition-all duration-300" />
+                <span className="w-0 group-hover:w-1.5 h-0.5 bg-fucsia transition-all duration-300" />
               )}
               <span className="truncate">{item.label}</span>
             </a>

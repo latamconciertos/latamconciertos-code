@@ -9,6 +9,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { Link, useNavigate } from 'react-router-dom';
 import { canShareNatively } from '@/utils/socialShare';
+import { getConcertImage } from '@/lib/concertImage';
+import { getDefaultImage } from '@/lib/imageOptimization';
+import { spotifyService } from '@/lib/spotify';
 
 interface ModernConcertCardProps {
     concert: {
@@ -16,10 +19,10 @@ interface ModernConcertCardProps {
         title: string;
         slug?: string;
         date: string;
-        image_url: string | null;
         artist_image_url?: string;
         artists?: {
             name: string;
+            photo_url?: string | null;
         } | null;
         venues?: {
             name: string;
@@ -41,9 +44,30 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
 
     const artistName = concert.artists?.name || 'Artista';
     const location = concert.venues?.cities?.name || concert.venues?.name || 'Por definir';
-    const imageUrl = concert.artist_image_url ||
-        concert.image_url ||
-        'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80';
+
+    // Una URL de catálogo caducada dejaría el ícono de imagen rota ocupando toda la
+    // card: ante el fallo se pinta el placeholder y se reintenta una vez contra
+    // Spotify. La búsqueda en vivo solo corre aquí — nunca sobre fotos que sí cargan.
+    const fallbackImage = getDefaultImage('concert');
+    const [imageOverride, setImageOverride] = useState<string | null>(null);
+    const imageUrl = imageOverride ?? getConcertImage(concert, fallbackImage);
+
+    const handleImageError = () => {
+        if (imageOverride) {
+            // El reintento de Spotify también falló: quedarse con el placeholder.
+            if (imageOverride !== fallbackImage) setImageOverride(fallbackImage);
+            return;
+        }
+        setImageOverride(fallbackImage);
+        const name = concert.artists?.name;
+        if (!name) return;
+        spotifyService
+            .searchArtist(name)
+            .then((fresh) => {
+                if (fresh) setImageOverride(fresh);
+            })
+            .catch(() => { /* queda el placeholder */ });
+    };
 
     // Save/attendance state
     const [attendanceType, setAttendanceType] = useState<AttendanceType>(null);
@@ -192,7 +216,7 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
             className="h-full"
         >
             <Card
-                className="group relative overflow-hidden rounded-[20px] border border-linea bg-superficie-2 aspect-[4/5] sm:aspect-[3/4] hover:border-[rgba(89,124,255,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300 cursor-pointer h-full"
+                className="group relative overflow-hidden rounded-[20px] border border-linea bg-superficie-2 aspect-[4/5] sm:aspect-[3/4] hover:border-[rgba(231,4,133,.35)] hover:shadow-[0_20px_50px_rgba(0,0,0,.5)] transition-all duration-300 cursor-pointer h-full"
                 onClick={onClick}
             >
                 {/* Póster full-bleed: la foto ocupa toda la card, sin corte */}
@@ -202,6 +226,7 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     loading="lazy"
                     decoding="async"
+                    onError={handleImageError}
                 />
                 {/* Overlay oscuro desde abajo para que el texto respire */}
                 <div
@@ -209,9 +234,9 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
                     style={{ background: 'linear-gradient(180deg, transparent 35%, rgba(7,13,31,.92))' }}
                 />
 
-                {/* Chip de fecha: número grande en verde, Big Shoulders */}
+                {/* Chip de fecha: número grande en naranja, Big Shoulders */}
                 <div className="absolute top-3 right-3 rounded-2xl border border-linea bg-noche/80 backdrop-blur-sm px-2.5 py-1.5 text-center min-w-[48px]">
-                    <div className="font-display text-xl font-extrabold text-verde leading-none">{day}</div>
+                    <div className="font-display text-xl font-extrabold text-naranja leading-none">{day}</div>
                     <div className="font-fira text-[9px] uppercase tracking-[0.12em] text-texto-2 mt-0.5">{month}</div>
                 </div>
 
@@ -219,8 +244,8 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
                 <div className="absolute inset-x-0 bottom-0 p-3.5 sm:p-4 flex items-end justify-between gap-2.5">
                     <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                            <Music className="h-3 w-3 text-periwinkle flex-shrink-0" />
-                            <p className="font-fira text-[10px] sm:text-[11px] text-periwinkle font-semibold uppercase tracking-[0.14em] truncate">
+                            <Music className="h-3 w-3 text-fucsia flex-shrink-0" />
+                            <p className="font-fira text-[10px] sm:text-[11px] text-fucsia font-semibold uppercase tracking-[0.14em] truncate">
                                 {artistName}
                             </p>
                         </div>
@@ -229,7 +254,7 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
                             {/* Enlace real y crawleable al detalle; el resto de la tarjeta abre el quick view */}
                             <Link
                                 to={`/concerts/${concert.slug || concert.id}`}
-                                className="hover:text-periwinkle transition-colors"
+                                className="hover:text-fucsia transition-colors"
                                 onClick={(e) => e.stopPropagation()}
                             >
                                 {concert.title}
@@ -237,7 +262,7 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
                         </h3>
 
                         <div className="mt-1 flex items-center gap-1.5 text-texto-2">
-                            <MapPin className="h-3.5 w-3.5 text-periwinkle flex-shrink-0" />
+                            <MapPin className="h-3.5 w-3.5 text-fucsia flex-shrink-0" />
                             <p className="text-xs sm:text-sm truncate">{location}</p>
                         </div>
                     </div>
@@ -250,7 +275,7 @@ export const ModernConcertCard = ({ concert, onClick }: ModernConcertCardProps) 
                                 <Button
                                     variant={isSaved ? "default" : "outline"}
                                     size="icon"
-                                    className={`h-9 w-9 rounded-full transition-colors ${isSaved ? 'border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white' : 'border-linea bg-noche/70 backdrop-blur-sm text-texto hover:bg-superficie-2 hover:text-texto'}`}
+                                    className={`h-9 w-9 rounded-full transition-colors ${isSaved ? 'border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white' : 'border-linea bg-noche/70 backdrop-blur-sm text-texto hover:bg-superficie-2 hover:text-texto'}`}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                     }}

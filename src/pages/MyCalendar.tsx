@@ -11,6 +11,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { LoadingSpinner } from '@/components/ui/loading-spinner';
 import { useMyCalendarConcerts, CalendarConcert } from '@/hooks/queries/useMyCalendar';
+import { getConcertImage } from '@/lib/concertImage';
 
 type AttendanceType = 'attending' | 'tentative' | 'favorite';
 
@@ -178,7 +179,7 @@ const MyCalendar = () => {
                             {/* Image */}
                             <div className="flex-shrink-0 w-16 sm:w-20 h-auto">
                               <img
-                                src={concert.image_url || concert.artists?.photo_url || '/placeholder.svg'}
+                                src={getConcertImage(concert, '/placeholder.svg')}
                                 alt={concert.title}
                                 className="w-full h-full object-cover"
                               />

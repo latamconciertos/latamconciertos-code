@@ -1,5 +1,5 @@
-// Extracción de un evento: pre-parse de JSON-LD + LLM (gateway Lovable, mismo proveedor que
-// extract-prices-from-image) + verificación determinista de la fecha local.
+// Extracción de un evento: pre-parse de JSON-LD + LLM (API de Gemini directa, mismo proveedor
+// que extract-prices-from-image) + verificación determinista de la fecha local.
 
 import type { CanonicalEvent, SourceRow } from './types.ts';
 import { buildExtractionMessages } from './prompt.ts';
@@ -76,8 +76,8 @@ export async function extractEvent(args: {
   markdown: string | null;
   categoryHint?: string;
 }): Promise<CanonicalEvent> {
-  const apiKey = Deno.env.get('LOVABLE_API_KEY');
-  if (!apiKey) throw new Error('LOVABLE_API_KEY not configured');
+  const apiKey = Deno.env.get('GEMINI_API_KEY');
+  if (!apiKey) throw new Error('GEMINI_API_KEY not configured');
 
   const jsonld = extractJsonLd(args.html);
   const pageText = args.markdown
@@ -95,17 +95,25 @@ export async function extractEvent(args: {
     todayIso: new Date().toISOString().slice(0, 10),
   });
 
-  const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
+  // Endpoint OpenAI-compatible de Gemini: mismo formato de messages que el gateway anterior.
+  const response = await fetch(
+    'https://generativelanguage.googleapis.com/v1beta/openai/chat/completions',
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gemini-3.6-flash',
+        messages,
+        response_format: { type: 'json_object' },
+      }),
     },
-    body: JSON.stringify({ model: 'google/gemini-2.5-flash', messages }),
-  });
+  );
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`LLM gateway ${response.status}: ${errorText.slice(0, 200)}`);
+    throw new Error(`Gemini API ${response.status}: ${errorText.slice(0, 200)}`);
   }
 
   const data = await response.json();

@@ -52,7 +52,7 @@ const ConversationSidebar = ({
       <div className={isMobile ? "p-4 border-b border-linea shrink-0" : "p-4 border-b border-linea"}>
         <Button
           onClick={onCreateNew}
-          className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+          className="w-full rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
           disabled={isDisabled}
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -89,7 +89,7 @@ const ConversationSidebar = ({
                     <Button
                       size="sm"
                       onClick={() => onRenameSubmit(conv.id)}
-                      className="rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white hover:opacity-95"
+                      className="rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white hover:opacity-95"
                     >
                       <Pencil className="h-3 w-3" />
                     </Button>

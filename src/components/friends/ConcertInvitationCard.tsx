@@ -58,9 +58,9 @@ export function ConcertInvitationCard({ invitation, onAccept, onDecline, isLoadi
             {/* Concert Info */}
             <div className="mt-2 p-2 sm:p-3 bg-muted/50 rounded-lg">
               <div className="flex gap-3">
-                {concerts?.image_url ? (
+                {concerts?.artists?.photo_url ? (
                   <img
-                    src={concerts.image_url}
+                    src={concerts.artists.photo_url}
                     alt={concerts.title}
                     className="h-14 w-14 sm:h-16 sm:w-16 rounded-lg object-cover shrink-0"
                     loading="lazy"

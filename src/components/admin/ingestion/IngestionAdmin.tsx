@@ -7,8 +7,8 @@ import { useStagedCounts } from '@/hooks/queries/useIngestion';
 
 const tabTriggerClass =
   'rounded-full px-4 data-[state=inactive]:text-texto-2 data-[state=inactive]:hover:text-texto ' +
-  'data-[state=active]:bg-[linear-gradient(95deg,#004AAD,#597CFF)] data-[state=active]:text-white ' +
-  'data-[state=active]:shadow-[0_4px_16px_rgba(0,74,173,.35)]';
+  'data-[state=active]:bg-[linear-gradient(95deg,#7516E2,#E70485)] data-[state=active]:text-white ' +
+  'data-[state=active]:shadow-[0_4px_16px_rgba(117,22,226,.35)]';
 
 export const IngestionAdmin = () => {
   const { data: counts } = useStagedCounts();

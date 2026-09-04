@@ -168,7 +168,7 @@ export function PushSubscribeDialog({ trigger }: { trigger?: React.ReactNode } =
                   <Button
                     onClick={handleEnable}
                     disabled={busy || permission === 'denied'}
-                    className="gap-1.5 h-9 rounded-full border-0 bg-[linear-gradient(95deg,#004AAD,#597CFF)] text-white font-semibold shadow-[0_8px_32px_rgba(0,74,173,.4)] hover:opacity-95"
+                    className="gap-1.5 h-9 rounded-full border-0 bg-[linear-gradient(95deg,#7516E2,#E70485)] text-white font-semibold shadow-[0_8px_32px_rgba(117,22,226,.45)] hover:opacity-95"
                   >
                     <Bell className="h-3.5 w-3.5" />
                     <span className="text-xs font-bold uppercase tracking-[0.15em]">

@@ -233,6 +233,10 @@ Deno.serve(async (req) => {
 
     const defaults = src.config.defaults || {};
 
+    // Primer error de ítem: si la corrida no extrae nada, se reporta como causa
+    // (un fallo del proveedor LLM se veía como "0 nuevos" con status success).
+    let firstItemError: string | null = null;
+
     for (const item of toFetch) {
       if (Date.now() - startedMs > WALL_CLOCK_BUDGET_MS) {
         runStatus = 'partial';
@@ -353,10 +357,16 @@ Deno.serve(async (req) => {
           counters.events_skipped++;
         }
       } catch (error) {
-        console.error(`[ingest-source] ${src.slug} ${key}:`,
-          error instanceof Error ? error.message : error);
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(`[ingest-source] ${src.slug} ${key}:`, message);
+        if (!firstItemError) firstItemError = message;
         counters.events_skipped++;
       }
+    }
+
+    if (counters.events_extracted === 0 && firstItemError) {
+      runStatus = 'partial';
+      runError = firstItemError;
     }
   } catch (error) {
     runStatus = 'error';
