@@ -39,7 +39,18 @@
       "destination": "https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/generate-festivals-sitemap"
     },
     {
-      "source": "/:page(concerts|artists|blog|festivals|setlists|venues|promoters)",
+      "source": "/",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": "(?i).*(googlebot|bingbot|duckduckbot|yandexbot|baiduspider|gptbot|chatgpt-user|oai-searchbot|perplexitybot|claudebot|claude-web|anthropic-ai|amazonbot|applebot|facebookexternalhit|twitterbot|linkedinbot|whatsapp|telegrambot|slackbot|discordbot|pinterest|google-inspectiontool).*"
+        }
+      ],
+      "destination": "https://ybvfsxsapsshhtqpvukr.supabase.co/functions/v1/prerender"
+    },
+    {
+      "source": "/:page(concerts|artists|blog|festivals|setlists|venues|promoters|publicidad)",
       "has": [
         {
           "type": "header",

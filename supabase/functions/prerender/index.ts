@@ -29,6 +29,45 @@ const formatDateEs = (iso: string | null): string => {
   return d.toLocaleDateString('es-CO', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 };
 
+// Las consultas fallidas antes se ignoraban ({ data } sin error) y el bot recibía
+// "0 conciertos" o 404 por cada ficha. Ahora cualquier error aborta con 503.
+// deno-lint-ignore no-explicit-any
+const q = async (
+  promise: PromiseLike<{ data: any; error: { message: string } | null }>,
+  label: string,
+  // deno-lint-ignore no-explicit-any
+): Promise<any> => {
+  const { data, error } = await promise;
+  if (error) {
+    console.error(`[prerender] ${label}:`, error.message);
+    throw new Error(`${label}: ${error.message}`);
+  }
+  return data;
+};
+
+// Slugs públicos de /conciertos/:pais → nombre e ISO (la tabla countries no tiene slug)
+const COUNTRIES: Record<string, { name: string; iso: string }> = {
+  colombia: { name: 'Colombia', iso: 'CO' },
+  mexico: { name: 'México', iso: 'MX' },
+  argentina: { name: 'Argentina', iso: 'AR' },
+  chile: { name: 'Chile', iso: 'CL' },
+  peru: { name: 'Perú', iso: 'PE' },
+  brasil: { name: 'Brasil', iso: 'BR' },
+  ecuador: { name: 'Ecuador', iso: 'EC' },
+  venezuela: { name: 'Venezuela', iso: 'VE' },
+  'costa-rica': { name: 'Costa Rica', iso: 'CR' },
+  panama: { name: 'Panamá', iso: 'PA' },
+  uruguay: { name: 'Uruguay', iso: 'UY' },
+  paraguay: { name: 'Paraguay', iso: 'PY' },
+  bolivia: { name: 'Bolivia', iso: 'BO' },
+  guatemala: { name: 'Guatemala', iso: 'GT' },
+  'republica-dominicana': { name: 'República Dominicana', iso: 'DO' },
+  'puerto-rico': { name: 'Puerto Rico', iso: 'PR' },
+  'el-salvador': { name: 'El Salvador', iso: 'SV' },
+  honduras: { name: 'Honduras', iso: 'HN' },
+  nicaragua: { name: 'Nicaragua', iso: 'NI' },
+};
+
 interface PageData {
   title: string;
   description: string;
@@ -169,7 +208,7 @@ const musicEventLd = (c: any): object => ({
 
 const CONCERT_SELECT = `slug, title, date, description, ticket_url, image_url, event_type,
   artists:artist_id (name, slug, photo_url),
-  venues:venue_id (name, slug, cities:city_id (name, slug, countries:country_id (name, slug)))`;
+  venues:venue_id (name, slug, cities:city_id (name, slug, countries:country_id (name, iso_code)))`;
 
 Deno.serve(async (req) => {
   const url = new URL(req.url);
@@ -187,13 +226,13 @@ Deno.serve(async (req) => {
   try {
     // ============ /concerts (listado) ============
     if (segments[0] === 'concerts' && segments.length === 1) {
-      const { data: concerts } = await supabase
+      const concerts = await q(supabase
         .from('concerts')
         .select(CONCERT_SELECT)
         .gte('date', today)
         .not('slug', 'is', null)
         .order('date', { ascending: true })
-        .limit(200);
+        .limit(200), 'concerts');
 
       const list = concerts || [];
       return renderHtml({
@@ -221,20 +260,20 @@ Deno.serve(async (req) => {
 
     // ============ /concerts/:slug (detalle) ============
     if (segments[0] === 'concerts' && segments.length === 2) {
-      const { data: c } = await supabase
+      const c = await q(supabase
         .from('concerts')
         .select(`id, ${CONCERT_SELECT}, ticket_prices_html, promoters:promoter_id (name)`)
         .eq('slug', segments[1])
-        .maybeSingle();
+        .maybeSingle(), 'c');
 
       if (!c) return notFound(path);
 
-      const { data: setlist } = await supabase
+      const setlist = await q(supabase
         .from('setlist_songs')
         .select('song_name, position')
         .eq('concert_id', c.id)
         .eq('status', 'approved')
-        .order('position', { ascending: true });
+        .order('position', { ascending: true }), 'setlist');
 
       const city = c.venues?.cities?.name;
       const country = c.venues?.cities?.countries?.name;
@@ -263,12 +302,12 @@ ${setlist && setlist.length > 0 ? `<section><h2>Setlist</h2><ol>${setlist.map((s
 
     // ============ /artists (listado) ============
     if (segments[0] === 'artists' && segments.length === 1) {
-      const { data: artists } = await supabase
+      const artists = await q(supabase
         .from('artists')
         .select('name, slug, genres')
         .not('slug', 'is', null)
         .order('name', { ascending: true })
-        .limit(500);
+        .limit(500), 'artists');
 
       const list = artists || [];
       return renderHtml({
@@ -283,21 +322,21 @@ ${setlist && setlist.length > 0 ? `<section><h2>Setlist</h2><ol>${setlist.map((s
 
     // ============ /artists/:slug (detalle) ============
     if (segments[0] === 'artists' && segments.length === 2) {
-      const { data: a } = await supabase
+      const a = await q(supabase
         .from('artists')
         .select('id, name, slug, bio, photo_url, genres, social_links')
         .eq('slug', segments[1])
-        .maybeSingle();
+        .maybeSingle(), 'a');
 
       if (!a) return notFound(path);
 
-      const { data: concerts } = await supabase
+      const concerts = await q(supabase
         .from('concerts')
         .select(CONCERT_SELECT)
         .eq('artist_id', a.id)
         .gte('date', today)
         .order('date', { ascending: true })
-        .limit(50);
+        .limit(50), 'concerts');
 
       const upcoming = concerts || [];
       const sameAs = a.social_links && typeof a.social_links === 'object'
@@ -339,12 +378,12 @@ ${upcoming.length > 0
 
     // ============ /blog (listado) ============
     if (segments[0] === 'blog' && segments.length === 1) {
-      const { data: articles } = await supabase
+      const articles = await q(supabase
         .from('news_articles')
         .select('title, slug, meta_description, published_at, featured_image')
         .eq('status', 'published')
         .order('published_at', { ascending: false })
-        .limit(100);
+        .limit(100), 'articles');
 
       const list = articles || [];
       return renderHtml({
@@ -358,12 +397,12 @@ ${upcoming.length > 0
 
     // ============ /blog/:slug (artículo) ============
     if (segments[0] === 'blog' && segments.length === 2) {
-      const { data: n } = await supabase
+      const n = await q(supabase
         .from('news_articles')
         .select('title, slug, meta_description, content, featured_image, published_at, updated_at')
         .eq('slug', segments[1])
         .eq('status', 'published')
-        .maybeSingle();
+        .maybeSingle(), 'n');
 
       if (!n) return notFound(path);
 
@@ -403,12 +442,12 @@ ${n.content || ''}
 
     // ============ /festivals (listado) ============
     if (segments[0] === 'festivals' && segments.length === 1) {
-      const { data: festivals } = await supabase
+      const festivals = await q(supabase
         .from('festivals')
         .select('name, slug, start_date, end_date, venues:venue_id (name, cities:city_id (name))')
         .gte('start_date', today)
         .order('start_date', { ascending: true })
-        .limit(100);
+        .limit(100), 'festivals');
 
       const list = festivals || [];
       return renderHtml({
@@ -427,11 +466,11 @@ ${list.length > 0
 
     // ============ /festivals/:slug ============
     if (segments[0] === 'festivals' && segments.length === 2) {
-      const { data: f } = await supabase
+      const f = await q(supabase
         .from('festivals')
         .select('name, slug, description, edition, start_date, end_date, image_url, ticket_url, venues:venue_id (name, cities:city_id (name, countries:country_id (name)))')
         .eq('slug', segments[1])
-        .maybeSingle();
+        .maybeSingle(), 'f');
 
       if (!f) return notFound(path);
 
@@ -477,23 +516,18 @@ ${f.ticket_url ? `<p><a href="${esc(f.ticket_url)}" rel="sponsored noopener">Com
 
     // ============ /conciertos/:countrySlug (página de país) ============
     if (segments[0] === 'conciertos' && segments.length === 2) {
-      const { data: country } = await supabase
-        .from('countries')
-        .select('id, name, slug')
-        .eq('slug', segments[1])
-        .maybeSingle();
-
+      const country = COUNTRIES[segments[1]];
       if (!country) return notFound(path);
 
-      const { data: concerts } = await supabase
+      const concerts = await q(supabase
         .from('concerts')
         .select(`slug, title, date, description, ticket_url, image_url, event_type,
           artists:artist_id (name, slug, photo_url),
-          venues:venue_id!inner (name, slug, cities:city_id!inner (name, slug, countries:country_id!inner (name, slug)))`)
-        .eq('venues.cities.countries.slug', country.slug)
+          venues:venue_id!inner (name, slug, cities:city_id!inner (name, slug, countries:country_id!inner (name, iso_code)))`)
+        .eq('venues.cities.countries.iso_code', country.iso)
         .gte('date', today)
         .order('date', { ascending: true })
-        .limit(100);
+        .limit(100), 'concerts');
 
       const list = concerts || [];
       const year = new Date().getFullYear();
@@ -502,7 +536,7 @@ ${f.ticket_url ? `<p><a href="${esc(f.ticket_url)}" rel="sponsored noopener">Com
         description: list.length > 0
           ? `${list.length} conciertos próximos en ${country.name}. Calendario con fechas, venues y enlaces oficiales de entradas.`
           : `Calendario de conciertos y festivales en ${country.name}. Fechas, artistas y venta de entradas.`,
-        path: `/conciertos/${country.slug}`,
+        path: `/conciertos/${segments[1]}`,
         noindex: list.length === 0,
         jsonLd: list.length > 0
           ? [
@@ -528,20 +562,20 @@ ${list.length > 0
 
     // ============ /setlists y /setlist/... ============
     if (segments[0] === 'setlists' && segments.length === 1) {
-      const { data: songs } = await supabase
+      const songs = await q(supabase
         .from('setlist_songs')
         .select('concert_id')
-        .eq('status', 'approved');
+        .eq('status', 'approved'), 'songs');
 
       const concertIds = [...new Set((songs || []).map((s: any) => s.concert_id))];
-      const { data: concerts } = concertIds.length
-        ? await supabase
+      const concerts = concertIds.length
+        ? await q(supabase
             .from('concerts')
             .select(CONCERT_SELECT)
             .in('id', concertIds)
             .order('date', { ascending: false })
-            .limit(100)
-        : { data: [] };
+            .limit(100), 'setlistConcerts')
+        : [];
 
       const list = concerts || [];
       return renderHtml({
@@ -563,20 +597,20 @@ ${list.length > 0
 
     if (segments[0] === 'setlist' && segments.length === 5) {
       const concertSlug = segments[2];
-      const { data: c } = await supabase
+      const c = await q(supabase
         .from('concerts')
         .select(`id, ${CONCERT_SELECT}`)
         .eq('slug', concertSlug)
-        .maybeSingle();
+        .maybeSingle(), 'c');
 
       if (!c) return notFound(path);
 
-      const { data: setlist } = await supabase
+      const setlist = await q(supabase
         .from('setlist_songs')
         .select('song_name, position, is_official')
         .eq('concert_id', c.id)
         .eq('status', 'approved')
-        .order('position', { ascending: true });
+        .order('position', { ascending: true }), 'setlist');
 
       const songs = setlist || [];
       const city = c.venues?.cities?.name || '';
@@ -595,11 +629,11 @@ ${songs.length > 0 ? `<ol>${songs.map((s: any) => `<li>${esc(s.song_name)}</li>`
 
     // ============ /venues ============
     if (segments[0] === 'venues' && segments.length === 1) {
-      const { data: venues } = await supabase
+      const venues = await q(supabase
         .from('venues')
         .select('name, slug, cities:city_id (name, slug)')
         .order('name', { ascending: true })
-        .limit(300);
+        .limit(300), 'venues');
 
       const list = venues || [];
       return renderHtml({
@@ -618,21 +652,21 @@ ${songs.length > 0 ? `<ol>${songs.map((s: any) => `<li>${esc(s.song_name)}</li>`
     }
 
     if (segments[0] === 'venues' && segments.length === 3) {
-      const { data: v } = await supabase
+      const v = await q(supabase
         .from('venues')
         .select('id, name, slug, location, cities:city_id (name, slug, countries:country_id (name))')
         .eq('slug', segments[2])
-        .maybeSingle();
+        .maybeSingle(), 'v');
 
       if (!v) return notFound(path);
 
-      const { data: concerts } = await supabase
+      const concerts = await q(supabase
         .from('concerts')
         .select(CONCERT_SELECT)
         .eq('venue_id', v.id)
         .gte('date', today)
         .order('date', { ascending: true })
-        .limit(50);
+        .limit(50), 'concerts');
 
       const list = concerts || [];
       return renderHtml({
@@ -650,11 +684,11 @@ ${list.length > 0
 
     // ============ /promoters ============
     if (segments[0] === 'promoters' && segments.length === 1) {
-      const { data: promoters } = await supabase
+      const promoters = await q(supabase
         .from('promoters')
         .select('name')
         .order('name', { ascending: true })
-        .limit(200);
+        .limit(200), 'promoters');
 
       const list = promoters || [];
       return renderHtml({
@@ -667,14 +701,80 @@ ${list.length > 0
       });
     }
 
+    // ============ /publicidad (comercial) ============
+    if (segments[0] === 'publicidad' && segments.length === 1) {
+      const products = [
+        ['Evento destacado', 'Tu concierto o festival en las posiciones premium: home, página de tu país y notificación push a nuestra comunidad. Los fans lo ven donde ya están buscando qué show ir a ver.'],
+        ['Pauta display', 'Banners y espacios publicitarios en las páginas de mayor tráfico: listados de conciertos, artistas y noticias. Segmentación por país y por contexto musical.'],
+        ['Contenido aliado', 'Notas editoriales, entrevistas y galerías sobre tu evento o marca, producidas por nuestro equipo y siempre identificadas como contenido patrocinado según nuestros lineamientos.'],
+        ['Media partner', 'El paquete completo para promotoras: cubrimos tu evento del anuncio al setlist, con nota de anuncio, evento destacado, cobertura del show, galería y contenido post-evento.'],
+      ];
+      const faqs = [
+        ['¿Qué tipos de publicidad para conciertos y festivales ofrecen?', 'Cuatro formatos: evento destacado (posiciones premium + push), pauta display (banners segmentados por país), contenido aliado (notas editoriales patrocinadas) y media partner (cobertura completa de tu evento, del anuncio al setlist). Todos los paquetes se arman a la medida de tu objetivo.'],
+        ['¿A qué audiencia llega la pauta en Conciertos Latam?', 'A fans de música en vivo de 16 países de América Latina que llegan buscando activamente conciertos, entradas, artistas y festivales. Es tráfico orgánico con intención real de compra, no audiencia fría. Cubrimos Colombia, México, Argentina, Chile, Perú y toda la región.'],
+        ['¿Cuánto cuesta pautar en Conciertos Latam?', 'Armamos paquetes a la medida según el formato, el alcance y la duración de la campaña. Escríbenos con tu objetivo y te enviamos una propuesta con precios en un máximo de 48 horas.'],
+        ['¿Trabajan con promotoras de conciertos como media partner?', 'Sí, es nuestro producto principal para promotoras. Acompañamos el evento completo: nota de anuncio, posición destacada mientras dura la venta, cobertura editorial del show, galería de fotos y setlist. Tu evento vive en el sitio antes, durante y después.'],
+        ['¿El contenido patrocinado se identifica como tal?', 'Siempre. Todo contenido pagado se marca claramente como patrocinado y mantenemos separación entre lo editorial y lo publicitario, según nuestros lineamientos editoriales públicos. Eso protege tu marca y la confianza de la audiencia.'],
+      ];
+      const pageUrl = `${SITE}/publicidad`;
+      return renderHtml({
+        title: `Publicidad para Conciertos y Festivales en América Latina | Pauta y Media Partner | ${SITE_NAME}`,
+        description: 'Promociona tu concierto, festival o marca donde los fans ya lo buscan. Pauta display, eventos destacados, contenido patrocinado y media partnerships para promotoras en 16 países de LATAM. Cotiza en 48h.',
+        path: '/publicidad',
+        jsonLd: [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Service',
+            '@id': `${pageUrl}#service`,
+            name: 'Publicidad y media partnerships para conciertos y festivales',
+            serviceType: 'Publicidad digital para la industria de la música en vivo',
+            description: 'Pauta display, eventos destacados, contenido patrocinado y media partnerships para promotoras, festivales, venues y marcas en América Latina.',
+            provider: { '@type': 'Organization', name: SITE_NAME, url: SITE },
+            areaServed: { '@type': 'Place', name: 'América Latina' },
+            audience: { '@type': 'BusinessAudience', name: 'Promotoras de conciertos, festivales, venues, ticketeras y marcas' },
+            url: pageUrl,
+            hasOfferCatalog: {
+              '@type': 'OfferCatalog',
+              name: 'Formatos de publicidad',
+              itemListElement: products.map(([name, description]) => ({
+                '@type': 'Offer',
+                itemOffered: { '@type': 'Service', name, description },
+              })),
+            },
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: faqs.map(([question, answer]) => ({
+              '@type': 'Question',
+              name: question,
+              acceptedAnswer: { '@type': 'Answer', text: answer },
+            })),
+          },
+        ],
+        body: `<h1>Publicidad para conciertos y festivales en América Latina</h1>
+<p>Para promotoras, venues y marcas: promociona tu concierto, festival o marca donde los fans ya lo buscan. Pauta display, eventos destacados, contenido patrocinado y media partnerships en 16 países de LATAM. Cotizamos en 48 horas.</p>
+<section><h2>Formatos</h2>${products.map(([name, description]) => `<h3>${esc(name)}</h3><p>${esc(description)}</p>`).join('\n')}</section>
+<section><h2>Preguntas frecuentes</h2>${faqs.map(([question, answer]) => `<h3>${esc(question)}</h3><p>${esc(answer)}</p>`).join('\n')}</section>
+<p><a href="${pageUrl}">Cuéntanos de tu evento o marca</a> · <a href="${SITE}/editorial-guidelines">Lineamientos editoriales</a> · <a href="${SITE}/about">Acerca de ${SITE_NAME}</a></p>`,
+      });
+    }
+
     // ============ Home y fallback ============
     if (segments.length === 0) {
-      const { data: concerts } = await supabase
+      const concerts = await q(supabase
         .from('concerts')
         .select(CONCERT_SELECT)
         .gte('date', today)
         .order('date', { ascending: true })
-        .limit(20);
+        .limit(20), 'concerts');
+
+      const news = await q(supabase
+        .from('news_articles')
+        .select('title, slug, published_at')
+        .eq('status', 'published')
+        .order('published_at', { ascending: false })
+        .limit(10), 'homeNews');
 
       const list = concerts || [];
       return renderHtml({
@@ -683,17 +783,23 @@ ${list.length > 0
         path: '/',
         body: `<h1>Conciertos y festivales en América Latina</h1>
 <section><h2>Próximos conciertos</h2><ul>${list.map(concertLine).join('\n')}</ul></section>
-<p><a href="${SITE}/concerts">Ver el calendario completo</a></p>`,
+<p><a href="${SITE}/concerts">Ver el calendario completo</a></p>
+<section><h2>Últimas noticias</h2><ul>${(news || []).map((n: any) => `<li><a href="${SITE}/blog/${esc(n.slug)}">${esc(n.title)}</a></li>`).join('\n')}</ul></section>
+<p><a href="${SITE}/publicidad">Publicidad para promotoras, venues y marcas</a></p>`,
       });
     }
 
     return notFound(path);
   } catch (error) {
-    console.error('Prerender error:', error);
-    // Ante cualquier error devolvemos un shell básico indexable (sin cache largo)
+    console.error('[prerender] error', path, error instanceof Error ? error.message : error);
+    // 503 sin caché: Google reintenta más tarde y conserva la versión indexada.
+    // Un 200 vacío se indexaría como página sin contenido.
     return new Response(
-      `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${SITE_NAME}</title><link rel="canonical" href="${SITE}${path}"></head><body><h1>${SITE_NAME}</h1><p><a href="${SITE}/concerts">Conciertos en América Latina</a></p></body></html>`,
-      { status: 200, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' } }
+      `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>${SITE_NAME}</title><meta name="robots" content="noindex"></head><body><h1>${SITE_NAME}</h1><p>Servicio temporalmente no disponible.</p></body></html>`,
+      {
+        status: 503,
+        headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store', 'Retry-After': '300', 'X-Prerender': 'conciertos-latam' },
+      }
     );
   }
 });
