@@ -363,6 +363,7 @@ export const ConcertFormDialog = ({
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                             rows={4}
+                            placeholder="Déjala vacía y se genera sola con artista, venue, fecha, promotora y precios. Si escribes aquí, tu texto manda."
                         />
                     </div>
 
