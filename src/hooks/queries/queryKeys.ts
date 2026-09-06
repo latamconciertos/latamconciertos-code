@@ -127,6 +127,15 @@ export const queryKeys = {
     list: (limit?: number) => [...queryKeys.announcements.all, 'list', { limit }] as const,
   },
 
+  // Polls (encuestas de festival)
+  polls: {
+    all: ['polls'] as const,
+    active: () => [...queryKeys.polls.all, 'active'] as const,
+    admin: () => [...queryKeys.polls.all, 'admin'] as const,
+    detail: (slug: string) => [...queryKeys.polls.all, 'detail', slug] as const,
+    results: (token: string) => [...queryKeys.polls.all, 'results', token] as const,
+  },
+
   // User-related
   user: {
     favorites: {

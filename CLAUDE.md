@@ -46,8 +46,15 @@ The admin panel has a **portal entry** at `/admin` with two separate modules:
 
 ### Operaciones (`/admin/operations`)
 - Sidebar: morado (#7516E2 via brand-blue alias), defined in `OperationsSidebar.tsx`
-- Sections: Overview (Dashboard, Calendar), Gestión (Accreditations, Kanban, Contacts)
-- Database tables: `accreditations`, `event_team_assignments`, `contacts`, `notification_log`
+- Sections: Overview (Dashboard, Calendar), Gestión (Accreditations, Kanban, Contacts), Audiencia (Polls)
+- Database tables: `accreditations`, `event_team_assignments`, `contacts`, `notification_log`, `polls`, `poll_responses`, `poll_response_artists`, `poll_share_links`
+
+### Encuestas de festival (`/encuestas`, `/encuestas/:slug`, `/encuestas/resultados/:token`)
+- "Encuestas" aparece en el menú Experiencias solo si hay un poll con `is_active = true`
+- Respuestas anónimas: top-N de artistas (búsqueda Spotify) + perfil de audiencia opcional; ciudad de origen es texto libre (nunca geolocalización)
+- Escritura solo vía edge function `poll-submit` (service role, rate limit por IP); verifica el `spotify_id` contra Spotify y crea/dedupe en `artists` por `artists.spotify_id`
+- Resultados agregados con RPC `get_poll_results(token)`; el token vive en `poll_share_links` (solo admins) y se comparte con la promotora como enlace privado
+- `?src=stand` activa modo tablet compartida (token de dispositivo nuevo por envío)
 
 ### News Article Editor (`/admin/news/new`, `/admin/news/edit/:id`)
 - Full-screen page, no sidebar (maximizes writing space)
@@ -99,6 +106,11 @@ GEMINI_API_KEY             # Google Gemini API key (Supabase secret; ingestion e
 ## Edge Functions
 Deploy with: `npx supabase functions deploy <function-name> --no-verify-jwt`
 Set secrets with: `npx supabase secrets set KEY=value`
+
+### poll-submit
+- Recibe `{ poll_slug, device_token, artists[{spotify_id,name,position}], demographics, source }`
+- Whitelists de demografía deben coincidir con `src/lib/polls.ts`
+- 409 si el mismo `device_token` ya respondió; 404 si la encuesta no está activa o fuera de fechas
 
 ### notify-deadlines
 - Triggered daily by pg_cron or manually via POST

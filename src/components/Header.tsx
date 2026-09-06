@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Search, User, Settings, Calendar, LogOut, Home, Mic2, Music2, BookOpen, ListMusic, Lightbulb, Users, ChevronDown, Bot, Sparkles, Bell } from "lucide-react";
+import { Menu, X, Search, User, Settings, Calendar, LogOut, Home, Mic2, Music2, BookOpen, ListMusic, Lightbulb, Users, ChevronDown, Bot, Sparkles, Bell, Vote } from "lucide-react";
 import { PushSubscribeDialog } from "@/components/admin/PushSubscribeDialog";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "./ui/button";
@@ -28,6 +28,7 @@ const Header = ({ visible = true }: HeaderProps) => {
   const [experienciasOpen, setExperienciasOpen] = useState(false);
   const [miCuentaOpen, setMiCuentaOpen] = useState(false);
   const [wrappedActive, setWrappedActive] = useState(false);
+  const [pollsActive, setPollsActive] = useState(false);
   const { logout } = useAuth();
 
   useEffect(() => {
@@ -72,6 +73,16 @@ const Header = ({ visible = true }: HeaderProps) => {
       .maybeSingle()
       .then(({ data }: { data: { active: boolean } | null }) => {
         setWrappedActive(data?.active ?? false);
+      });
+
+    // "Encuestas" solo aparece en Experiencias mientras haya alguna encuesta activa
+    (supabase as any)
+      .from('polls')
+      .select('id')
+      .eq('is_active', true)
+      .limit(1)
+      .then(({ data }: { data: { id: string }[] | null }) => {
+        setPollsActive(!!data?.length);
       });
 
     const {
@@ -135,6 +146,7 @@ const Header = ({ visible = true }: HeaderProps) => {
     { name: "Asistente IA", path: "/ai-assistant", icon: Bot },
     { name: "Setlists", path: "/setlists", icon: ListMusic },
     { name: "Proyectos Fans", path: "/fan-projects", icon: Lightbulb },
+    ...(pollsActive ? [{ name: "Encuestas", path: "/encuestas", icon: Vote }] : []),
   ];
 
   const miCuentaItems = [

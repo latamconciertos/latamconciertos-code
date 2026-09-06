@@ -21,3 +21,4 @@ export * from './friendship';
 export * from './accreditation';
 export * from './contact';
 export * from './ingestion';
+export * from './poll';

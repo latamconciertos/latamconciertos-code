@@ -56,6 +56,9 @@ const FestivalDetail = lazy(() => import("./pages/FestivalDetail"));
 const NewHome = lazy(() => import("./pages/NewHome"));
 const Benefits = lazy(() => import("./pages/Benefits"));
 const Wrapped = lazy(() => import("./pages/Wrapped"));
+const PollsIndex = lazy(() => import("./pages/PollsIndex"));
+const PollPage = lazy(() => import("./pages/PollPage"));
+const PollResultsPage = lazy(() => import("./pages/PollResultsPage"));
 
 const AppContent = () => {
   useTrafficTracking();
@@ -141,6 +144,9 @@ const AppContent = () => {
           <Route path="/conciertos/:countrySlug" element={<ConcertsByCountry />} />
           <Route path="/beneficios" element={<Benefits />} />
           <Route path="/wrapped" element={<Wrapped />} />
+          <Route path="/encuestas" element={<PollsIndex />} />
+          <Route path="/encuestas/resultados/:token" element={<PollResultsPage />} />
+          <Route path="/encuestas/:slug" element={<PollPage />} />
 
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

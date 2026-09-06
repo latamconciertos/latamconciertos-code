@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   CalendarDays,
   Kanban,
+  Vote,
   LucideIcon,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -47,6 +48,12 @@ const menuGroups: MenuGroup[] = [
       { title: 'Acreditaciones', tab: 'accreditations', icon: BadgeCheck },
       { title: 'Kanban', tab: 'kanban', icon: Kanban },
       { title: 'Contactos', tab: 'contacts', icon: BookUser },
+    ],
+  },
+  {
+    label: 'Audiencia',
+    items: [
+      { title: 'Encuestas', tab: 'polls', icon: Vote },
     ],
   },
 ];

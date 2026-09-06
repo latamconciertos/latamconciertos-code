@@ -34,6 +34,11 @@ const ContactsAdmin = lazy(() =>
     default: m.ContactsAdmin,
   })),
 );
+const PollsAdmin = lazy(() =>
+  import('@/components/admin/polls/PollsAdmin').then((m) => ({
+    default: m.PollsAdmin,
+  })),
+);
 
 const AdminOperations = () => {
   const { user, isReady } = useRequireAdmin();
@@ -69,6 +74,8 @@ const AdminOperations = () => {
           return <AccreditationsKanban />;
         case 'contacts':
           return <ContactsAdmin />;
+        case 'polls':
+          return <PollsAdmin />;
         default:
           return <OperationsDashboard onNavigate={handleTabChange} />;
       }
